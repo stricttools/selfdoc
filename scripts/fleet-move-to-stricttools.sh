@@ -45,7 +45,7 @@ while [ $# -gt 0 ]; do
 done
 
 cache_repo="smm-h/selfdoc-cache"
-projects_root="${PROJECTS_ROOT:-$HOME/Projects}"
+projects_root="${PROJECTS_ROOT:-$HOME/Projects/stricttools/tools}"
 roster=$(gh api "repos/$cache_repo/contents/roster.toml" --jq .content | base64 -d)
 
 archive() { saferm delete -r --on-error abort --description "$1" "$2" >/dev/null 2>&1; }

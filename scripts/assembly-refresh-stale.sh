@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
 done
 
 cache_repo="smm-h/selfdoc-cache"
-projects_root="${PROJECTS_ROOT:-$HOME/Projects}"
+projects_root="${PROJECTS_ROOT:-$HOME/Projects/stricttools/tools}"
 
 roster=$(gh api "repos/$cache_repo/contents/roster.toml" --jq .content | base64 -d)
 home=$(printf '%s\n' "$roster" | sed -n 's/^home = "\(.*\)"/\1/p')
