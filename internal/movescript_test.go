@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // The layout move script is scripts/move-to-stricttools-layout.py: the one-way
@@ -621,5 +621,30 @@ func TestTheMoveScriptTakesTheBinaryFromPath(t *testing.T) {
 	}
 	if !strings.Contains(out, "the URL set is unchanged") {
 		t.Errorf("the after-the-move build did not run:\n%s", out)
+	}
+}
+
+// TestTheMoveScriptDryRunNeedsNoBinary asserts that a dry run, which builds
+// nothing and writes nothing, does not refuse a machine that has no selfdoc
+// binary: the binary is needed by the verifying build that only --apply runs,
+// so the dry run reports its absence and still prints the whole plan.
+func TestTheMoveScriptDryRunNeedsNoBinary(t *testing.T) {
+	requirePython3(t)
+	requireSafegit(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	makeToolRoot(t, dir)
+
+	out, status := runMoveOnPath(t, root, dir, toolPath(t, "git", "safegit"), "--dry-run")
+
+	if status != 0 {
+		t.Fatalf("the dry run refused with no selfdoc binary on PATH:\n%s", out)
+	}
+	if !strings.Contains(out, "moves planned:") {
+		t.Errorf("the dry run did not print its plan:\n%s", out)
+	}
+	if !strings.Contains(out, "--selfdoc") {
+		t.Errorf("the dry run does not say that apply will need a binary named with --selfdoc:\n%s", out)
 	}
 }

@@ -428,14 +428,27 @@ def main() -> int:
         return 1
 
 
+def find_selfdoc(project: Path, declared: str | None) -> tuple[str | None, str | None]:
+    """resolve_selfdoc's answer, or the refusal it would raise, without raising.
+
+    The plan names the binary when there is one; only --apply turns its
+    absence into the refusal, and does so before the first write.
+    """
+    try:
+        return resolve_selfdoc(project, declared), None
+    except Refusal as refusal:
+        return None, str(refusal)
+
+
 def resolve_selfdoc(project: Path, declared: str | None) -> str:
     """The selfdoc binary the after-the-move build runs, as an absolute path.
 
-    Resolved before anything is written. The build is the move's last step, so
-    a binary found missing there leaves both commits in place and nothing
-    verified -- and calling a path that does not exist raises rather than
-    refusing. A binary named with --selfdoc must be there; with none named the
-    PATH answer is taken, and then bin/selfdoc inside the project.
+    Demanded by --apply before anything is written. The build is the move's
+    last step, so a binary found missing there leaves both commits in place and
+    nothing verified -- and calling a path that does not exist raises rather
+    than refusing. A binary named with --selfdoc must be there; with none named
+    the PATH answer is taken, and then bin/selfdoc inside the project. A dry
+    run reports the answer, or the refusal, and never raises it.
     """
     if declared is not None:
         candidate = Path(declared) if os.path.isabs(declared) else project / declared
@@ -463,10 +476,12 @@ def move(project: Path, args) -> int:
     config = load_config(project)
     docs_rel, output_rel, posts_rel = declared_paths(config)
     require_tool_root(project)
-    # Resolved here, before the first write: the build that verifies the move
-    # is its last step, so a binary that cannot be found would otherwise be
-    # discovered with both commits already in place.
-    selfdoc = resolve_selfdoc(project, args.selfdoc)
+    # Looked up here so the plan can name it, and demanded only by --apply,
+    # right before the first write: the build that verifies the move is its
+    # last step, so a binary that cannot be found would otherwise be discovered
+    # with both commits already in place -- while a dry run, which builds
+    # nothing, only reports what apply would refuse.
+    selfdoc, selfdoc_missing = find_selfdoc(project, args.selfdoc)
 
     leftovers = []
     for prefix in (docs_rel, posts_rel, DEPRECATED_ROOT):
@@ -493,7 +508,11 @@ def move(project: Path, args) -> int:
 
     print(f"project: {project}")
     print(f"declared today: docs={docs_rel}/ output={output_rel}/ posts={posts_rel}/")
-    print(f"selfdoc binary for the verifying build: {selfdoc}")
+    if selfdoc is not None:
+        print(f"selfdoc binary for the verifying build: {selfdoc}")
+    else:
+        print("selfdoc binary for the verifying build: none found; --apply refuses "
+              f"before writing anything: {selfdoc_missing}")
     print(f"sitemap URLs captured: {len(urls_before)}")
     print(f"manifests to write: {len(manifests)}")
     for relative in manifests:
@@ -539,6 +558,8 @@ def move(project: Path, args) -> int:
         print("dry run: nothing was moved and nothing was written.")
         return 0
 
+    if selfdoc is None:
+        raise Refusal(selfdoc_missing)
     if moves or manifests:
         perform_moves(project, moves, manifests)
     perform_rewrites(project, rewrites, output_rel)
