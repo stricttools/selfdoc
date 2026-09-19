@@ -44,10 +44,20 @@ Coverage: 15/23 symbols documented (65%)
 Unreferenced symbols:
   mypackage/core.py: helper_function, InternalConfig
 Skeleton-only symbols:
+  Each is named only on a generated page whose frontmatter still declares
+  seeded = true, so that page's description is the one selfdoc emitted and
+  nobody has rewritten. The symbols' own doc comments are not the cause and
+  rewriting them changes nothing here: edit each page's frontmatter
+  description instead.
+  Pages whose description to edit:
+    .stricttools/docs-state/pages/mypackage-core.md
+  Symbols they leave undocumented:
   mypackage/core.py: Pipeline
 ```
 
-A symbol is **referenced** when a directive names it and **documented** when the source it came from actually says something about it. A symbol that is referenced but not documented is reported as skeleton-only: the page has a heading for it and nothing under it.
+A symbol is **referenced** when a directive on any page names it, and **documented** when a directive on a page that is not a bare generated skeleton names it. A page is a skeleton when its frontmatter declares both `generated = true` and `seeded = true`: its description is the placeholder `selfdoc gen` emitted and nobody has rewritten.
+
+So a skeleton-only symbol is never a statement about that symbol's doc comment -- the comment can be complete and the symbol still lands here. The cause is the page, and the fix is on the page: rewrite its frontmatter description in your own words. `selfdoc gen` keeps a description it did not write, so the edit stays.
 
 ### Coverage threshold
 

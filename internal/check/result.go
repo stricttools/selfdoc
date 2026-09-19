@@ -83,6 +83,12 @@ type CoverageStats struct {
 	DocumentedSymbols []string
 	// UnreferencedSymbols are the identifiers no directive names.
 	UnreferencedSymbols []string
+	// SkeletonPagesBySymbol maps a referenced identifier to the generated,
+	// still-seeded page that named it. It is what lets the report say
+	// WHICH page's description is the reason a symbol counts as referenced
+	// and not documented, because that is a property of the page and not
+	// of the symbol's own documentation.
+	SkeletonPagesBySymbol map[string]string
 }
 
 // TotalPublic reports how many public symbols there are, satisfying

@@ -198,10 +198,52 @@ func printCoverage(out io.Writer, coverage *CoverageStats, color bool) {
 			}
 		}
 		if len(skeletonOnly) > 0 {
-			fmt.Fprintln(out, colorize("Skeleton-only symbols:", "1", color))
-			printSymbolsByFile(out, skeletonOnly)
+			printSkeletonOnly(out, coverage, skeletonOnly, color)
 		}
 	}
+}
+
+// printSkeletonOnly writes the skeleton-only section: the pages whose
+// descriptions are the reason those symbols do not count as documented, what
+// makes a page one, and the edit that fixes it.
+//
+// The section names the PAGE first, because that is the cause. A symbol is
+// skeleton-only when the only page naming it is generated and still carries the
+// description selfdoc emitted -- its frontmatter declares `seeded = true` --
+// and nothing about the symbol's own documentation is involved. A section
+// listing symbols alone reads as a list of under-documented code and sends the
+// reader to rewrite doc comments that are already complete.
+func printSkeletonOnly(out io.Writer, coverage *CoverageStats, skeletonOnly []string, color bool) {
+	fmt.Fprintln(out, colorize("Skeleton-only symbols:", "1", color))
+	fmt.Fprintln(out, "  Each is named only on a generated page whose frontmatter still declares")
+	fmt.Fprintln(out, "  seeded = true, so that page's description is the one selfdoc emitted and")
+	fmt.Fprintln(out, "  nobody has rewritten. The symbols' own doc comments are not the cause and")
+	fmt.Fprintln(out, "  rewriting them changes nothing here: edit each page's frontmatter")
+	fmt.Fprintln(out, "  description instead.")
+	if pages := skeletonPagesOf(coverage, skeletonOnly); len(pages) > 0 {
+		fmt.Fprintln(out, "  Pages whose description to edit:")
+		for _, page := range pages {
+			fmt.Fprintf(out, "    %s\n", page)
+		}
+	}
+	fmt.Fprintln(out, "  Symbols they leave undocumented:")
+	printSymbolsByFile(out, skeletonOnly)
+}
+
+// skeletonPagesOf is the sorted set of pages accounting for skeletonOnly.
+func skeletonPagesOf(coverage *CoverageStats, skeletonOnly []string) []string {
+	seen := map[string]bool{}
+	var pages []string
+	for _, symbol := range skeletonOnly {
+		page := coverage.SkeletonPagesBySymbol[symbol]
+		if page == "" || seen[page] {
+			continue
+		}
+		seen[page] = true
+		pages = append(pages, page)
+	}
+	sort.Strings(pages)
+	return pages
 }
 
 // printSymbolsByFile writes a symbol list grouped by the file each symbol came

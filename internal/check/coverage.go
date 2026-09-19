@@ -139,6 +139,7 @@ func computeCoverage(
 	// by a directive on a non-skeleton page.
 	referencedSet := map[string]bool{}
 	documentedSet := map[string]bool{}
+	skeletonPageOf := map[string]string{}
 
 	for _, resolved := range resolvedDirectives {
 		// A directive that references source files carries a path
@@ -170,6 +171,14 @@ func computeCoverage(
 			referencedSet[qualified] = true
 			if !isSkeleton {
 				documentedSet[qualified] = true
+				return
+			}
+			// The page is what the report names as the cause, so the
+			// first skeleton page to claim a symbol is remembered with
+			// it. A symbol a non-skeleton page also names never reaches
+			// the report's skeleton-only list.
+			if _, present := skeletonPageOf[qualified]; !present {
+				skeletonPageOf[qualified] = resolved.File
 			}
 		}
 
@@ -243,6 +252,13 @@ func computeCoverage(
 			if documentedSet[qualified] {
 				stats.DocumentedCount++
 				stats.DocumentedSymbols = append(stats.DocumentedSymbols, qualified)
+				continue
+			}
+			if page := skeletonPageOf[qualified]; page != "" {
+				if stats.SkeletonPagesBySymbol == nil {
+					stats.SkeletonPagesBySymbol = map[string]string{}
+				}
+				stats.SkeletonPagesBySymbol[qualified] = page
 			}
 		}
 	}

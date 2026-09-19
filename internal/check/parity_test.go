@@ -13,6 +13,11 @@ import (
 // The report is a user-visible artifact -- it is what a reader sees and what
 // scripts scrape -- so the port is held to it byte for byte rather than to a
 // description of it.
+//
+// One section departs from the Python on purpose: the skeleton-only block now
+// names the pages whose seeded descriptions are the cause and says the symbols'
+// doc comments are not, because the bare symbol list the Python wrote sent
+// readers to rewrite doc comments that were already complete.
 const pythonReferenceReport = "Directives\n" +
 	"  a.md:3  ref path=\"mylib\"  OK\n" +
 	"  b.md:7  ref path=\"nope\"  FAILED: boom\n" +
@@ -23,6 +28,15 @@ const pythonReferenceReport = "Directives\n" +
 	"Unreferenced symbols:\n" +
 	"  n.py: four\n" +
 	"Skeleton-only symbols:\n" +
+	"  Each is named only on a generated page whose frontmatter still declares\n" +
+	"  seeded = true, so that page's description is the one selfdoc emitted and\n" +
+	"  nobody has rewritten. The symbols' own doc comments are not the cause and\n" +
+	"  rewriting them changes nothing here: edit each page's frontmatter\n" +
+	"  description instead.\n" +
+	"  Pages whose description to edit:\n" +
+	"    m.md\n" +
+	"    n.md\n" +
+	"  Symbols they leave undocumented:\n" +
 	"  m.py: two\n" +
 	"  n.py: three\n" +
 	"\n" +
@@ -46,6 +60,10 @@ func referenceResult() *CheckResult {
 			ReferencedSymbols:   []string{"m.py:one", "m.py:two", "n.py:three"},
 			DocumentedSymbols:   []string{"m.py:one"},
 			UnreferencedSymbols: []string{"n.py:four"},
+			SkeletonPagesBySymbol: map[string]string{
+				"m.py:two":   "m.md",
+				"n.py:three": "n.md",
+			},
 		},
 		Lints: []lints.LintResult{
 			lints.MustLintResult("a.md", nil, "SEO006",

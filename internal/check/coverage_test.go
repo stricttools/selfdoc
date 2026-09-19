@@ -1,7 +1,9 @@
 package check
 
 import (
+	"bytes"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -348,5 +350,58 @@ func TestXREF002MissingSourceFile(t *testing.T) {
 	if hasCode(result.Lints, "XREF002") {
 		t.Errorf("XREF002 fired for a path that is on disk: %v",
 			messagesOf(withCode(result.Lints, "XREF002")))
+	}
+}
+
+// TestSkeletonOnlySymbolsNameThePageAndTheSeededDescription asserts that the
+// report's skeleton-only section names the page whose description is the cause
+// and the edit that fixes it.
+//
+// The cause of a skeleton-only symbol is a property of the PAGE -- its
+// frontmatter declares `generated = true` and `seeded = true`, so its
+// description is the one selfdoc emitted and nobody rewrote -- and not a
+// property of the symbol's own doc comment. A section that lists only symbols
+// reads as a list of under-documented code, and sends the reader to rewrite
+// doc comments that were already complete.
+func TestSkeletonOnlySymbolsNameThePageAndTheSeededDescription(t *testing.T) {
+	root := twoTierProject(t)
+	write(t, filepath.Join(root, ".stricttools", "docs", "mylib.md"),
+		skeletonPage("mylib", "mylib"))
+	write(t, filepath.Join(root, ".stricttools", "docs", "mylib-utils.md"),
+		skeletonPage("mylib.utils", "mylib.utils"))
+	result := checkFixture(t, root)
+	if result.Coverage == nil {
+		t.Fatal("coverage was not measured")
+	}
+
+	var out bytes.Buffer
+	PrintResults(&out, result, false)
+	report := out.String()
+
+	index := strings.Index(report, "Skeleton-only symbols:")
+	if index < 0 {
+		t.Fatalf("the report has no skeleton-only section:\n%s", report)
+	}
+	// The section runs to the blank line that opens the lint block, so the
+	// assertions below cannot be satisfied by text elsewhere in the report.
+	section := report[index:]
+	if end := strings.Index(section, "\n\n"); end >= 0 {
+		section = section[:end]
+	}
+	report = section
+	for _, want := range []string{
+		// The pages whose descriptions are the cause.
+		"mylib.md",
+		"mylib-utils.md",
+		// The property that made them skeletons, spelled as the page
+		// declares it.
+		"seeded = true",
+		// What to edit, and what not to.
+		"description",
+		"doc comment",
+	} {
+		if !strings.Contains(report, want) {
+			t.Errorf("the skeleton-only section does not say %q:\n%s", want, report)
+		}
 	}
 }
