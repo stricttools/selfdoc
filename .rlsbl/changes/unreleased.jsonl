@@ -7,3 +7,4 @@
 {"format_version":1,"id":"18d6bb4e05e8de81f1bed797720f4bb9871ca162ccff26e3","commits":["3695937803c9f0b40f2039aad2f6ad4e8f1fe92a"],"user_facing":true,"description":"The coverage report's skeleton-only list now names the generated pages whose still-seeded frontmatter descriptions are the cause and says the symbols' own doc comments are not, instead of listing symbols alone and sending readers to rewrite doc comments that were already complete","type":"fix"}
 {"format_version":1,"id":"18d6bb5a4ed85666a9fc9a4d54054314bb38b410ab7a4fee","commits":["406156b444b9e31566f4484dda3bddb54335195b"],"user_facing":false}
 {"format_version":1,"id":"18d6bb69b4386e6ee957432675394201b36f5fda8d580148","commits":["244ea19c833ae622bafd4f77380cc55a4e795010"],"user_facing":false}
+{"format_version":1,"id":"18d6bb6ebc3c0777d22263fa4e5c4beea890a64877c8d4ce","commits":["315dbbc672a55189c61f630dac08d163c5ee1292","f38eecb27623e3fa1df05de47f9ed6e78ecdb3ba"],"user_facing":false}
