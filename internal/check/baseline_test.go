@@ -107,6 +107,63 @@ func TestAcceptAdvancesBaselineToCurrentHashes(t *testing.T) {
 	}
 }
 
+// TestAcceptAfterADescriptionEditSaysWhatHappened drives the remedy the
+// finding prints, in the order the finding invites: edit the description, then
+// run accept.
+//
+// Editing the description clears the finding on its own, so accept then has
+// nothing to accept and refuses. The refusal has to say that, rather than
+// reading as though the review was rejected.
+func TestAcceptAfterADescriptionEditSaysWhatHappened(t *testing.T) {
+	root := baselineProject(t, nil)
+	writePage(t, root, "Original description", "Original content here.", "page.md")
+	checkFixture(t, root)
+	writePage(t, root, "Original description", "Completely rewritten content.", "page.md")
+	if got := staleCount(checkFixture(t, root)); got != 1 {
+		t.Fatalf("STALE001 count = %d, want 1", got)
+	}
+
+	// The remedy: the description is rewritten to describe the new content.
+	writePage(t, root, "A description of the rewritten content",
+		"Completely rewritten content.", "page.md")
+
+	_, err := AcceptBaselines([]string{"page.md"}, root, nil, handle())
+	if err == nil {
+		t.Fatal("accept succeeded on a page with no outstanding finding")
+	}
+	message := err.Error()
+	for _, want := range []string{
+		"description",
+		"cleared",
+		"nothing to accept",
+	} {
+		if !strings.Contains(message, want) {
+			t.Errorf("the refusal does not say %q:\n%s", want, message)
+		}
+	}
+}
+
+// TestTheFindingHintOffersBothCourses asserts that the remedy a drift finding
+// prints names both ways out and says which one makes the other unnecessary.
+//
+// Printing "then run `selfdoc baseline accept <page>`" alone reads as a step to
+// take after any review, including a review that ended in a description edit --
+// and accept refuses in that state.
+func TestTheFindingHintOffersBothCourses(t *testing.T) {
+	hint := staleness.BaselineAcceptHint("en/index.md", "docstrings")
+	for _, want := range []string{
+		"edit",
+		"description",
+		"clears",
+		"selfdoc baseline accept en/index.md",
+		"docstrings",
+	} {
+		if !strings.Contains(hint, want) {
+			t.Errorf("the hint does not say %q:\n%s", want, hint)
+		}
+	}
+}
+
 func TestAcceptRefusals(t *testing.T) {
 	for _, testCase := range []struct {
 		name string

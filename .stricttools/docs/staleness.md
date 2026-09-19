@@ -1,6 +1,6 @@
 +++
 title = "Staleness Detection"
-description = "How selfdoc detects stale frontmatter descriptions by hashing page content, how to fix STALE001 errors, and how to accept reviewed dead-ends."
+description = "How selfdoc detects stale frontmatter descriptions by hashing page content, the two alternative ways to clear a STALE001 or DRIFT001 finding, and how to accept a reviewed dead-end."
 nav_group = "Guides"
 nav_order = 18
 +++
@@ -71,6 +71,7 @@ Acceptance is intentionally per-page and unforgiving:
 
 - Name each page explicitly, exactly as it appears in `selfdoc check` output (e.g. `en/cli-index.md`). There is no `--all`, no glob, and no `--force`.
 - Accepting a page that does not exist, has no recorded baseline, or is not currently reporting STALE001 or DRIFT001 is a hard error -- "nothing to accept" never silently succeeds.
+- The two courses are alternatives, not steps. Editing the description clears the finding on its own, so a page whose description was just rewritten is already cleared and accepting it afterwards is the "nothing to accept" error. Accept is for the other course: the description was reviewed against the change and deliberately left as it is.
 - The same guardrails apply to DRIFT001 (source-docstring and CLI-schema drift); accepting advances every tracked hash for the page.
 
 Like `selfdoc check`, the command commits the updated `.stricttools/docs-state/hashes/hashes.json` by default; pass `--no-auto-commit` to stage the change for a larger manual commit.

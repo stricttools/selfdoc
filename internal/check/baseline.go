@@ -312,7 +312,12 @@ func AcceptBaselines(
 			))
 		case state.ErrorPages[page] == "":
 			refusals = append(refusals, fmt.Sprintf(
-				"'%s': is not stale or drifted -- nothing to accept", page,
+				"'%s': is not stale or drifted -- nothing to accept. An "+
+					"edited frontmatter description clears a STALE001 or "+
+					"DRIFT001 finding on its own, so a page whose "+
+					"description was just rewritten is already cleared and "+
+					"needs no accept; accept is for the other course, where "+
+					"the description was reviewed and left as it is", page,
 			))
 		}
 	}

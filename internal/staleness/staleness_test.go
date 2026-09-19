@@ -456,8 +456,9 @@ func TestCheckDrift(t *testing.T) {
 			for _, fragment := range []string{
 				"page.md",
 				"possible documentation drift",
-				"after reviewing the page against the changed docstrings, run " +
-					"`selfdoc baseline accept page.md`",
+				"review the page against the changed docstrings",
+				"edit the page's frontmatter description, which clears this on its own",
+				"`selfdoc baseline accept page.md`",
 				"new baseline",
 			} {
 				if !strings.Contains(message, fragment) {
@@ -528,8 +529,9 @@ func TestCheckSchemaDrift(t *testing.T) {
 			for _, fragment := range []string{
 				"cli-run.md",
 				"CLI schema changed",
-				"after reviewing the page against the changed CLI schema, run " +
-					"`selfdoc baseline accept cli-run.md`",
+				"review the page against the changed CLI schema",
+				"edit the page's frontmatter description, which clears this on its own",
+				"`selfdoc baseline accept cli-run.md`",
 			} {
 				if !strings.Contains(message, fragment) {
 					t.Errorf("message %q does not carry %q", message, fragment)

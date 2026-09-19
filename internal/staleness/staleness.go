@@ -67,9 +67,17 @@ const HashVersion = 3
 // hint the operator is told a problem exists but not how to close it
 // honestly, and the only discoverable way out is to invent a description
 // edit.
-const BaselineAcceptHintTemplate = "after reviewing the page against the changed {source}, run " +
-	"`selfdoc baseline accept {page}` to accept the current content and " +
-	"description as the new baseline"
+//
+// The hint names BOTH ways out and says that they are alternatives. Naming
+// only the accept made it read as a step to take after any review, including a
+// review that ended in a description edit -- and an edited description clears
+// the finding by itself, so the accept that followed refused with nothing to
+// accept.
+const BaselineAcceptHintTemplate = "review the page against the changed {source}, then take " +
+	"ONE of these: edit the page's frontmatter description, which clears " +
+	"this on its own and needs no further command; or, when the description " +
+	"is still accurate, run `selfdoc baseline accept {page}` to accept the " +
+	"current content and description as the new baseline"
 
 // hashVersionKey is the top-level key the store's version is recorded under.
 // It sorts before every page key, because "_" precedes every letter and
