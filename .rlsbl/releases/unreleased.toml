@@ -2,11 +2,11 @@
 format_version = 1
 # Version bump type: patch, minor, major, infra, or prerelease
 #   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
-bump = ""
+bump = "patch"
 # Short description of this release (required)
-description = ""
+description = "Fixes for the defects a repository meets on its way off the old layout: a deleted generated page no longer leaves its hash-store entry behind, the layout and frontmatter refusals print a remedy the refused repository can run, the first refusal prints the whole ordered migration procedure, the move script resolves its selfdoc binary before it commits anything, a staleness finding names both ways out and accept says why it has nothing to do, check says in its own help that it writes and commits the baselines, and the skeleton-only coverage list names the page whose seeded description is the cause."
 # Optional context explaining why these changes were made
-context = ""
+context = "Every fix carries a red-green regression test. The two maintenance scripts -- the layout move and the frontmatter converter -- live only in selfdoc's own repository and no release artifact carries them, so every refusal that names one now prints the commands that fetch it and then run it, rather than a scripts/ path the refused repository does not have."
 # Pre-release channel: alpha, beta, rc, or stable (ordered;
 # demotion is an error). With patch/minor/major it ENTERS the
 # channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
