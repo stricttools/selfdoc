@@ -242,6 +242,15 @@ func GenerateDocs(config map[string]any, baseDir, versionOverride string, handle
 			return GenResult{}, err
 		}
 
+		// A page gen deleted has no hashes left to hold, so its entry is
+		// pruned with it. Nothing else would ever remove it: every other
+		// writer of this store merges into it, and none of them enumerates
+		// what is no longer on disk, so an entry left here is an entry the
+		// store carries for an absent page forever.
+		for _, name := range deleted {
+			delete(storedHashes, stalenessStoreKey(config, localeCode, name))
+		}
+
 		// Record each page's seed_hash. A page written with `seeded: true`
 		// carries machine text this run, so it is hashed; a page written
 		// without the marker was preserved as handwritten, so any stale

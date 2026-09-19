@@ -468,6 +468,36 @@ func TestStaleCleanup(t *testing.T) {
 	}
 }
 
+// TestStaleCleanupPrunesTheHashEntry asserts that a page gen deletes loses its
+// hash-store entry with it.
+//
+// An entry left behind keys a page that is not on disk any more, and the store
+// accumulates one such entry per deletion: nothing else ever removes them,
+// because every other writer merges into the store and none of them enumerates
+// what is no longer there.
+func TestStaleCleanupPrunesTheHashEntry(t *testing.T) {
+	isolate(t)
+	requirePython3(t)
+	dir, cfg := pythonProject(t)
+	generate(t, cfg, dir)
+
+	if _, present := loadStore(t, dir)["mylib-utils.md"]; !present {
+		t.Fatalf("the first run recorded no entry for the page: %v", loadStore(t, dir))
+	}
+
+	if err := os.Remove(filepath.Join(dir, "mylib", "utils.py")); err != nil {
+		t.Fatalf("remove source: %v", err)
+	}
+	result := generate(t, cfg, dir)
+	if !names(result.Deleted)["mylib-utils.md"] {
+		t.Fatalf("the stale page was not deleted: %v", result.Deleted)
+	}
+
+	if entry, present := loadStore(t, dir)["mylib-utils.md"]; present {
+		t.Errorf("the deleted page kept its hash entry: %+v", entry)
+	}
+}
+
 func TestStaleCleanupSpareHandwrittenPages(t *testing.T) {
 	isolate(t)
 	requirePython3(t)
