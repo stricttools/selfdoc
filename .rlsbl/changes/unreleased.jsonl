@@ -1,0 +1,1 @@
+{"format_version":1,"id":"18d6ba916ffb2dc28db4f1d7a7884063a2c104db6e815651","commits":["2263faf413ed885869feb186abdc32eec7b931b6"],"user_facing":true,"description":"`selfdoc gen` now removes a deleted generated page's entry from the hash baseline store instead of leaving it behind, so the store no longer accumulates entries for pages that are not on disk","type":"fix"}
