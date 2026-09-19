@@ -271,6 +271,52 @@ func TestTheOldLayoutRefusalPrintsAnExecutableRemedy(t *testing.T) {
 	}
 }
 
+// TestTheOldLayoutRefusalPrintsTheWholeMigrationProcedure asserts that the
+// refusal that starts the migration prints every step it depends on, in order.
+//
+// The move has a chain of prerequisites -- a config the pre-flip build accepts,
+// documents the pre-flip build can read, a build that publishes the URL set the
+// move preserves, and the repository's own grant of permission -- and each one
+// used to be discovered only by running into the next refusal.
+func TestTheOldLayoutRefusalPrintsTheWholeMigrationProcedure(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, DeprecatedRoot), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	err := RefuseOldLayout(dir, "", "", "")
+	if err == nil {
+		t.Fatal("the old layout was accepted")
+	}
+	message := err.Error()
+	for _, want := range []string{
+		// The config the pre-flip build demands.
+		`"versions"`,
+		`"locales"`,
+		// The frontmatter conversion, generated pages included -- which the
+		// converter leaves alone unless it is told otherwise.
+		scripts.Run(scripts.ConvertFrontmatter, "--include-generated", "--dry-run"),
+		scripts.Run(scripts.ConvertFrontmatter, "--include-generated", "--apply"),
+		// The build whose sitemap the move compares its result against.
+		"go run github.com/smm-h/selfdoc@v0.41.0 build",
+		// The grant of permission the move refuses without.
+		"mkdir " + Root,
+		// The move itself.
+		scripts.Run(scripts.Move, "--dry-run"),
+		scripts.Run(scripts.Move, "--apply"),
+	} {
+		if !strings.Contains(message, want) {
+			t.Errorf("the refusal does not print %q:\n%s", want, message)
+		}
+	}
+	// The steps are numbered, so the order is stated rather than implied.
+	for _, step := range []string{"1.", "2.", "3.", "4.", "5."} {
+		if !strings.Contains(message, step) {
+			t.Errorf("the refusal does not number step %q:\n%s", step, message)
+		}
+	}
+}
+
 func TestTheNewLayoutIsAccepted(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := owned(t)

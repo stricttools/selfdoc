@@ -1,6 +1,6 @@
 +++
 title = "The .stricttools/ layout"
-description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, a manifest inside each one naming its owner, a derived ignore file, the two layout commands, and how to fetch and run the move script."
+description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, a manifest inside each one naming its owner, a derived ignore file, the two layout commands, and the ordered procedure that moves a repository onto the layout."
 nav_group = "Guides"
 nav_order = 4
 +++
@@ -130,6 +130,39 @@ selfdoc reads this layout and no other. A repository still carrying a
 outside `.stricttools/`, is refused by every command that reads project state,
 with the move named. There is no migrator inside selfdoc and no dual reading.
 
+The refusal prints the whole ordered procedure, prerequisites included, so the
+chain below is never discovered one refusal at a time.
+
+### Before the move
+
+The move holds its own result to the URL set the site publishes today, and that
+set comes from a build made with the last release that reads the old layout.
+Three things have to be true before that build runs:
+
+1. `selfdoc.json` declares a `versions` array and a `locales` array. The build
+   refuses a config carrying neither.
+2. No document is still on the retired `---` frontmatter block -- the generated
+   pages included. The build refuses each one, and the converter leaves a
+   generated page alone unless `--include-generated` tells it to take it:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/convert-frontmatter-to-toml.py -o convert-frontmatter-to-toml.py
+   python3 convert-frontmatter-to-toml.py --include-generated --dry-run
+   python3 convert-frontmatter-to-toml.py --include-generated --apply
+   ```
+
+3. The pre-flip build has run, writing the sitemap the move compares against:
+
+   ```bash
+   go run github.com/smm-h/selfdoc@v0.41.0 build
+   ```
+
+Then create `.stricttools/` itself. It is the repository's own grant of
+permission: the script writes each directory's `manifest.toml` inside it and
+refuses while the directory is absent.
+
+### The move
+
 A repository is moved once, by hand. The move script lives in selfdoc's own
 repository and no release artifact carries it, so a repository fetches it first
 -- which is what the refusal prints:
@@ -150,10 +183,14 @@ is identical to the one the last build before the move published. Page addresses
 come from the path relative to the docs root, so the move keeps every URL, and
 the comparison is what proves it.
 
-Before running it, create `.stricttools/`: the script refuses until the
-directory is there, and prints the manifests it will write inside it. Those
-manifests are part of the move's first commit, so the permission is committed
-alongside the files it permits.
+The dry run also prints the manifests it will write inside `.stricttools/`.
+Those manifests are part of the move's first commit, so the permission is
+committed alongside the files it permits.
+
+The script also resolves the selfdoc binary that verifying build runs before it
+writes anything -- `--selfdoc` when it names one, otherwise `selfdoc` on `PATH`,
+otherwise `bin/selfdoc` in the project -- and refuses with the repository
+untouched when there is none.
 
 ### What the config declares afterwards
 
