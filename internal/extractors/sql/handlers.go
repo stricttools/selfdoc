@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/tables"
 )
 
 // typeLabel is the one-line shape of a user-defined type: its labels, or its

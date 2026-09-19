@@ -4,12 +4,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/themes"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // ReadSlug returns the assembly slug the project at sourceDir declares.

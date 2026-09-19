@@ -8,12 +8,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/catalog"
-	"github.com/smm-h/selfdoc/internal/content"
-	"github.com/smm-h/selfdoc/internal/directives"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/resolver"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/content"
+	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/resolver"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // rootFileHeaderPrefix is what the first line of every generated root file

@@ -1,6 +1,6 @@
 package directives
 
-import "github.com/smm-h/selfdoc/internal/util"
+import "github.com/stricttools/selfdoc/internal/util"
 
 // The three classes below are this package's short spellings of Python's `\s`,
 // `\S` and `\w` for a str pattern, which the marker patterns are built from.

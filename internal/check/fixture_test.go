@@ -9,19 +9,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/smm-h/stricttest/go/hygiene"
 
 	// Every language the check's fixtures declare has to be linked in, or
 	// resolution answers with a stub and the coverage tests measure
 	// nothing.
-	_ "github.com/smm-h/selfdoc/internal/extractors/golang"
-	_ "github.com/smm-h/selfdoc/internal/extractors/python"
-	_ "github.com/smm-h/selfdoc/internal/extractors/typescript"
+	_ "github.com/stricttools/selfdoc/internal/extractors/golang"
+	_ "github.com/stricttools/selfdoc/internal/extractors/python"
+	_ "github.com/stricttools/selfdoc/internal/extractors/typescript"
 )
 
 // isolate binds the test-environment isolation floor: a throwaway HOME (so the

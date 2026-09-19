@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // tsJSExtensions are the file extensions this extractor recognizes as

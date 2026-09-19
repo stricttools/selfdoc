@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/page"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/page"
 )
 
 // pagefindTimeout bounds one indexing run.

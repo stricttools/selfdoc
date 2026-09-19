@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors"
 )
 
 // tsParam is one parameter read out of a parameter list, before the

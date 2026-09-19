@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // TestResolveTableLintsRendersTheWholeRegistry pins the directive that keeps

@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors"
 )
 
 // structType is one public struct declaration with its fields.

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // postFrontmatter is a well-formed post frontmatter block whose description is

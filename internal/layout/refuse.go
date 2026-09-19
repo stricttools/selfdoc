@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/scripts"
+	"github.com/stricttools/selfdoc/internal/scripts"
 )
 
 // DeprecatedRoot is the directory selfdoc kept a repository's state in before

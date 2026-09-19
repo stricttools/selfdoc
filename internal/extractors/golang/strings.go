@@ -1,7 +1,7 @@
 package golang
 
 import (
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // pyStrip is Python's str.strip() with no argument.

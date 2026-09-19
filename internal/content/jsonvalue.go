@@ -1,7 +1,7 @@
 package content
 
 import (
-	"github.com/smm-h/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors"
 )
 
 // object is one decoded JSON object, remembering the order its keys appeared

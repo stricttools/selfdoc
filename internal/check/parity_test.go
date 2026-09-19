@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // pythonReferenceReport is what the Python surface's print_results wrote for

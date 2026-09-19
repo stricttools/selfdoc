@@ -34,7 +34,7 @@ const (
 // It is the repository's default branch rather than a tag: a script is
 // maintained after the release that first refused without it, and the person
 // running one wants the maintained version.
-const RawBase = "https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/"
+const RawBase = "https://raw.githubusercontent.com/stricttools/selfdoc/main/scripts/"
 
 // RepoPath is a script's path inside selfdoc's own checkout, which is where it
 // is edited and where the suite drives it.

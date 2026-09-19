@@ -9,7 +9,7 @@ nav_order = 1
 
 This page documents selfdoc's internal design for contributors and anyone extending or debugging the system. For the user-facing overview, see [Architecture](../architecture/).
 
-selfdoc is one Go module, `github.com/smm-h/selfdoc`, whose root package is the binary's entry point, with every engine package under `internal/`. Package names below are those import paths.
+selfdoc is one Go module, `github.com/stricttools/selfdoc`, whose root package is the binary's entry point, with every engine package under `internal/`. Package names below are those import paths.
 
 ## Tokenizer
 

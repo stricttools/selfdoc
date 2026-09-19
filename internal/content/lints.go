@@ -1,8 +1,8 @@
 package content
 
 import (
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/tables"
 )
 
 // ResolveTableLints produces a Markdown table of every lint code selfdoc can

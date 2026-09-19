@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/catalog"
-	"github.com/smm-h/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/directives"
 )
 
 // write creates path's parents and writes content to it.

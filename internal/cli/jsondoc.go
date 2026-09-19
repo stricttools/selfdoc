@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // jsonPair is one member of an ordered JSON object.

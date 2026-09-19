@@ -7,7 +7,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The three character classes below are the exported spellings of Python's

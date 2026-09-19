@@ -3,8 +3,8 @@ package python
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // handleModule resolves a ref directive: a module's docstring, its functions

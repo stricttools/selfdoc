@@ -9,19 +9,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/staleness"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/staleness"
+	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/smm-h/stricttest/go/hygiene"
 
 	// The language packages register their extractors, which is what links
 	// a language into a binary. A build links them through internal/cli; the
 	// suite does it here.
-	_ "github.com/smm-h/selfdoc/internal/extractors/golang"
-	_ "github.com/smm-h/selfdoc/internal/extractors/python"
-	_ "github.com/smm-h/selfdoc/internal/extractors/typescript"
+	_ "github.com/stricttools/selfdoc/internal/extractors/golang"
+	_ "github.com/stricttools/selfdoc/internal/extractors/python"
+	_ "github.com/stricttools/selfdoc/internal/extractors/typescript"
 )
 
 // genDir is where gen writes its pages: the generated root, which the build

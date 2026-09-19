@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // today is the date every scaffolded post carries.

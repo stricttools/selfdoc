@@ -23,14 +23,14 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/catalog"
-	"github.com/smm-h/selfdoc/internal/directives"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/manifest"
-	"github.com/smm-h/selfdoc/internal/resolver"
-	"github.com/smm-h/selfdoc/internal/staleness"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/manifest"
+	"github.com/stricttools/selfdoc/internal/resolver"
+	"github.com/stricttools/selfdoc/internal/staleness"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Doc is one docs-tree page, parsed and resolved.

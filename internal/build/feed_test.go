@@ -6,12 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/page"
-	"github.com/smm-h/selfdoc/internal/urls"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/page"
+	"github.com/stricttools/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // addressesUnder maps every source's Markdown path to its address under the

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/smm-h/selfdoc/internal/blog/assembly/fakegh"
+	"github.com/stricttools/selfdoc/internal/blog/assembly/fakegh"
 )
 
 func main() {

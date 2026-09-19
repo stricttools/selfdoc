@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // writeFile puts content at a path relative to root, making the directories it

@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors"
 )
 
 // fileContents is a package's files with their text, in the order they were

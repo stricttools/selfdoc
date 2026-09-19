@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/strictclisupport"
 )
 
 // writeSchema writes a minimal dumped schema under dir.

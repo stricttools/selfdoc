@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
 )
 
 // The reference set was produced by running the Python implementation this

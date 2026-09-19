@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/themes"
-	"github.com/smm-h/selfdoc/internal/urls"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The reference files under testdata were recorded from the Python renderer

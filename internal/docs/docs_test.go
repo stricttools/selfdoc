@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/directives"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

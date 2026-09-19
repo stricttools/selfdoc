@@ -37,8 +37,8 @@ import (
 
 	"bytes"
 
-	"github.com/smm-h/selfdoc/internal/identity"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/identity"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // CVSource is where the home project declares its CV, relative to the project

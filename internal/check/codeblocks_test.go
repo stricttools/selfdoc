@@ -3,7 +3,7 @@ package check
 import (
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // A fenced code block is not prose, and no page rule may read one. The rules

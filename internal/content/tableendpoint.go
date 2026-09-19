@@ -5,9 +5,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/tables"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // pathItemNonMethods are the keys of an OpenAPI path item that are not

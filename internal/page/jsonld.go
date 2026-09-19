@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/identity"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/identity"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // jsonDumps encodes v the way Python's json.dumps(v) does with every default

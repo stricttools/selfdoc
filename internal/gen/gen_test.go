@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/ownership"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/ownership"
 )
 
 func TestBasicGeneration(t *testing.T) {

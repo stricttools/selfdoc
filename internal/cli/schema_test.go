@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/payloadschemas"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/payloadschemas"
 )
 
 // The declared payload schema of `selfdoc check`, held to three things: it is
@@ -261,7 +261,7 @@ func TestDumpSchemaWritesTheProjectIdentity(t *testing.T) {
 	// the module's own identity rather than the binary's name.
 	isolate(t)
 	dir := t.TempDir()
-	writeText(t, filepath.Join(dir, "go.mod"), "module github.com/smm-h/selfdoc\n\ngo 1.26.3\n")
+	writeText(t, filepath.Join(dir, "go.mod"), "module github.com/stricttools/selfdoc\n\ngo 1.26.3\n")
 
 	result := runCLI(t, dir, "--dump-schema")
 	if result.ExitCode != 0 {
@@ -279,7 +279,7 @@ func TestDumpSchemaWritesTheProjectIdentity(t *testing.T) {
 	if schema["schema_version"] != float64(2) {
 		t.Errorf("schema_version is %v, want 2", schema["schema_version"])
 	}
-	if schema["project_id"] != "github.com/smm-h/selfdoc" {
+	if schema["project_id"] != "github.com/stricttools/selfdoc" {
 		t.Errorf("project_id is %v, want the module path", schema["project_id"])
 	}
 	if schema["name"] != "selfdoc" {

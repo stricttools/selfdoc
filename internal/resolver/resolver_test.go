@@ -8,15 +8,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/smm-h/stricttest/go/hygiene"
 
 	// The language packages register their extractors, which is what links
 	// a language into a binary. A build links them through internal/cli; the
 	// suite does it here.
-	_ "github.com/smm-h/selfdoc/internal/extractors/golang"
-	_ "github.com/smm-h/selfdoc/internal/extractors/python"
-	_ "github.com/smm-h/selfdoc/internal/extractors/zig"
+	_ "github.com/stricttools/selfdoc/internal/extractors/golang"
+	_ "github.com/stricttools/selfdoc/internal/extractors/python"
+	_ "github.com/stricttools/selfdoc/internal/extractors/zig"
 )
 
 func isolate(t *testing.T) {

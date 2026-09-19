@@ -454,7 +454,7 @@ def resolve_selfdoc(project: Path, declared: str | None) -> str:
         "the build that verifies this move needs a selfdoc binary, and there is "
         "none: 'selfdoc' is not on PATH and there is no executable bin/selfdoc "
         "in the project. Install it with "
-        "'go install github.com/smm-h/selfdoc@v0', or name the binary with "
+        "'go install github.com/stricttools/selfdoc@v0', or name the binary with "
         "'--selfdoc <path>', and run this again."
     )
 

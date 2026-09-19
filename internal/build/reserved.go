@@ -7,8 +7,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // reservedTopSegments are the top-level segments of a mount that belong to the

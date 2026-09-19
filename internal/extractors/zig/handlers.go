@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // kindOrder is the order a reference page renders the declaration kinds in:

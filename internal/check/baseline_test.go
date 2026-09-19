@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/staleness"
+	"github.com/stricttools/selfdoc/internal/staleness"
 )
 
 // baselineProject writes a minimal project with one source module and an empty

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // Result is one project's score: the shape both the text report and the

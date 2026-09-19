@@ -3,7 +3,7 @@ package unified
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/html"
 )
 
 // projectCard is one constituent project's entry on the landing page.

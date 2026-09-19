@@ -25,8 +25,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // SupportedSchemaVersion is the one dumped-schema format this reader

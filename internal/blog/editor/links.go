@@ -7,10 +7,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/blog/shared"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/blog/shared"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Cross-repository link targets, addressed the way a post has to address
@@ -24,9 +24,9 @@ import (
 // directories down.
 //
 // Both halves of that sentence are read from the authority rather than
-// restated here. [github.com/smm-h/selfdoc/internal/blog/shared.PageTarget]
+// restated here. [github.com/stricttools/selfdoc/internal/blog/shared.PageTarget]
 // decides where a manifest page lives on the site, and
-// [github.com/smm-h/selfdoc/internal/blog/shared.PostTarget] decides where a
+// [github.com/stricttools/selfdoc/internal/blog/shared.PostTarget] decides where a
 // post lives; the number of hops back to the site root is derived from the
 // second, so a change to either address scheme moves these links with it.
 //

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // lintCase is one lint-rule scenario: a set of pages, optional config

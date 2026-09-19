@@ -7,16 +7,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/check"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/check"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/stricttest/go/hygiene"
 
 	// The fixtures declare Python sources, so the Python extractor has to
 	// be linked in or resolution answers with a stub.
-	_ "github.com/smm-h/selfdoc/internal/extractors/python"
+	_ "github.com/stricttools/selfdoc/internal/extractors/python"
 )
 
 // isolate binds the test-environment isolation floor: a throwaway HOME, an

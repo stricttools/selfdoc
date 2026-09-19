@@ -7,14 +7,14 @@
 // publishes it.
 //
 // The entry point is the module root, so the binary installs with
-// "go install github.com/smm-h/selfdoc@v0" and takes its name from the
+// "go install github.com/stricttools/selfdoc@v0" and takes its name from the
 // module's last path element. Every engine package lives under internal/, and
 // the command tree -- with the language extractors every code directive is
 // resolved through -- is registered by internal/cli.
 package main
 
 import (
-	"github.com/smm-h/selfdoc/internal/cli"
+	"github.com/stricttools/selfdoc/internal/cli"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

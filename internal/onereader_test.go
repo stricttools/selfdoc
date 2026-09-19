@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // retiredFrontmatterReaders are the readers of a frontmatter block that this

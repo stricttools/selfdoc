@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/listing"
+	"github.com/stricttools/selfdoc/internal/blog/listing"
 )
 
 // The reference files are the Python's real output, written by

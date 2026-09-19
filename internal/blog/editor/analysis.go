@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/blog/posts"
-	"github.com/smm-h/selfdoc/internal/check"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/spelling"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/blog/posts"
+	"github.com/stricttools/selfdoc/internal/check"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/spelling"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // What the editor can say about a buffer that was never saved.
@@ -20,14 +20,14 @@ import (
 // Two lanes, both answered from the machinery the check already owns rather
 // than from a second opinion written for the editor:
 //
-//   - spelling -- [github.com/smm-h/selfdoc/internal/spelling], the same
+//   - spelling -- [github.com/stricttools/selfdoc/internal/spelling], the same
 //     engine the check runs (SPELL001) and the corpus sweep runs over the
 //     fleet: the same masks, the same vendored word list, the same
 //     machine-local accept list. Its coordinates are line and column, because
 //     that is what a diagnostic in a terminal needs; the editor's decoration
 //     interface takes flat character offsets over the buffer, so the one
 //     thing this adds is that mapping.
-//   - lints -- [github.com/smm-h/selfdoc/internal/check.LintPostBuffer],
+//   - lints -- [github.com/stricttools/selfdoc/internal/check.LintPostBuffer],
 //     which overlays the buffer on the saved post set and runs the project's
 //     real lint rules over the result. No rule is restated here, so a mark on
 //     screen is a finding the check will report, worded identically.
@@ -46,7 +46,7 @@ import (
 // A buffer that is not a valid post does not lose its diagnostics: the post
 // parser's refusal is reported as the POST00x lint the check reports it as,
 // through the same mapping
-// ([github.com/smm-h/selfdoc/internal/check.PostErrorLint]).
+// ([github.com/stricttools/selfdoc/internal/check.PostErrorLint]).
 
 // spellingCode is the lint code the spelling lane owns. Dropped from the lint
 // lane so one misspelling is one finding.

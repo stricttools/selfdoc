@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/ownership"
-	"github.com/smm-h/selfdoc/internal/resolver"
-	"github.com/smm-h/selfdoc/internal/staleness"
-	"github.com/smm-h/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/ownership"
+	"github.com/stricttools/selfdoc/internal/resolver"
+	"github.com/stricttools/selfdoc/internal/staleness"
+	"github.com/stricttools/selfdoc/internal/strictclisupport"
 )
 
 // AcceptError reports that `selfdoc baseline accept` cannot accept a named

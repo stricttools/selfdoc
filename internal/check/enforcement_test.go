@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/catalog"
 )
 
 // enforcementProject writes a project whose one page carries the given body.

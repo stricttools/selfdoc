@@ -3,7 +3,7 @@ package page
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/html"
 )
 
 // The theme toggle's three glyphs, one per colour-scheme state.

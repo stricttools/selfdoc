@@ -17,8 +17,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // guardVar is the environment variable that marks a selfdoc process as

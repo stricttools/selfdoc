@@ -11,11 +11,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/chrome"
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/blog/chrome"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 const integrateCanonicalBase = "https://docs.example.com"

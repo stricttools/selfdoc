@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/andybalholm/brotli"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // compressibleExtensions are the file kinds a compressed companion is written

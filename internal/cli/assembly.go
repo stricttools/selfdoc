@@ -9,14 +9,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/assembly"
-	"github.com/smm-h/selfdoc/internal/blog/preview"
-	"github.com/smm-h/selfdoc/internal/blog/serving"
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/blog/verify"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/assembly"
+	"github.com/stricttools/selfdoc/internal/blog/preview"
+	"github.com/stricttools/selfdoc/internal/blog/serving"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/blog/verify"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

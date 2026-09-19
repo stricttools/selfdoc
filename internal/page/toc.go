@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
 )
 
 var (

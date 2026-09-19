@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

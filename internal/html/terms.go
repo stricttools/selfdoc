@@ -7,7 +7,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // TermAnchor returns the id a definition site carries for term.

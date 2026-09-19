@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/themes"
 )
 
 // themeSignatures is what each theme's documentation page computed for its

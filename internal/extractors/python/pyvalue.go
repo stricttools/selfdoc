@@ -19,7 +19,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // infLiteral is what ast.unparse substitutes for an infinity, which has no

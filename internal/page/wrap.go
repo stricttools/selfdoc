@@ -4,11 +4,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/js"
-	"github.com/smm-h/selfdoc/internal/themes"
-	"github.com/smm-h/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/js"
+	"github.com/stricttools/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/urls"
 )
 
 // pageTypeClassRE is what a declared page type must match to become a class

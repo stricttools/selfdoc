@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/blog/verify"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/blog/verify"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The values the deploy passes for every input it does not read from the

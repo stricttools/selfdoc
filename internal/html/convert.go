@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/alecthomas/chroma/v2/lexers"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 
-	"github.com/smm-h/selfdoc/internal/directives"
-	"github.com/smm-h/selfdoc/internal/icons"
-	"github.com/smm-h/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/icons"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
 )
 
 // HeadingAnchor is one heading and the element id it will carry on the

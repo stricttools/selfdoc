@@ -3,7 +3,7 @@ package check
 import (
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/directives"
 )
 
 // The report quotes a directive in the spelling its author typed, attributes

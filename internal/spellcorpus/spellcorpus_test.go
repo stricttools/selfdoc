@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/fleet"
-	"github.com/smm-h/selfdoc/internal/spelling"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/fleet"
+	"github.com/stricttools/selfdoc/internal/spelling"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

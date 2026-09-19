@@ -16,9 +16,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/prose"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/prose"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // exported is a regexp fragment matching an exported Go identifier: an

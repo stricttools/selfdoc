@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // SerializeCheckResult builds the machine payload `selfdoc check --json`

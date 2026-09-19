@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/tokenizer"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // TestDocsCorpusMatchesReference renders a frozen copy of the repository's own

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // `selfdoc layout dump` publishes selfdoc's claim on a repository's tool-state

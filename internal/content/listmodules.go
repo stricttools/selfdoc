@@ -10,10 +10,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/excludes"
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/prose"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/excludes"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/prose"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // testPatterns are the test-file patterns per language family. A test file is

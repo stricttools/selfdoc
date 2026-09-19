@@ -14,9 +14,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/unified"
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/blog/unified"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

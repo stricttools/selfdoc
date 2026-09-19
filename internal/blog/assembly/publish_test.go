@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // buildTree writes a local documentation build, as a build leaves it, and

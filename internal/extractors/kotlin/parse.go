@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/smm-h/selfdoc/internal/tables"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The two character classes the ported patterns are written against.

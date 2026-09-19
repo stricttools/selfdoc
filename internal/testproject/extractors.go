@@ -7,4 +7,4 @@ package testproject
 //
 // A suite whose fixtures declare another language blank-imports that
 // language's package the same way.
-import _ "github.com/smm-h/selfdoc/internal/extractors/python"
+import _ "github.com/stricttools/selfdoc/internal/extractors/python"

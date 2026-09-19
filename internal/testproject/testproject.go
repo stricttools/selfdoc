@@ -23,7 +23,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/layout"
 )
 
 // TB is the slice of testing.TB these helpers use.

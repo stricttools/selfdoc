@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/html"
 )
 
 // brandingString reads a string out of the branding block, answering "" for

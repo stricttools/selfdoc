@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // pySpace and pyWord are this package's short spellings of Python's str-mode

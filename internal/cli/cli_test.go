@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // requirePython3 skips a test when no interpreter is on PATH: the Python

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/chrome"
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/blog/chrome"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/config"
 )
 
 // -- the clean tree ---------------------------------------------------------

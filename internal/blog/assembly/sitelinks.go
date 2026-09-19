@@ -6,9 +6,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/chrome"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/resolution"
+	"github.com/stricttools/selfdoc/internal/blog/chrome"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/resolution"
 )
 
 // RelativizeSiteLinks re-expresses every clickable link in the assembled tree
@@ -20,7 +20,7 @@ import (
 // "https://<site>/blog/" is wrong in a way the file-existence half of the
 // resolution check can never see: the page it names really is there, on
 // production, which is where the click quietly goes from everywhere else.
-// [github.com/smm-h/selfdoc/internal/resolution] states the rule and refuses a
+// [github.com/stricttools/selfdoc/internal/resolution] states the rule and refuses a
 // tree that breaks it.
 //
 // This runs over every page in the tree, beside the chrome re-pointing pass

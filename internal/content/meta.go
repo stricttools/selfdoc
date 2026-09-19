@@ -3,9 +3,9 @@ package content
 import (
 	"sort"
 
-	"github.com/smm-h/selfdoc/internal/catalog"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/tables"
 )
 
 // ResolveTableDirectives produces a Markdown table of every core built-in

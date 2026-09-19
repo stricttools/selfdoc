@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // unknownKeys returns the keys of table that allowed does not name, sorted --

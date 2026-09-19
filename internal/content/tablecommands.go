@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/strictclisupport"
-	"github.com/smm-h/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/tables"
 )
 
 // ResolveTableCommands produces a Markdown table of the CLI commands a

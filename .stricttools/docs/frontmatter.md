@@ -93,7 +93,7 @@ converter lives in selfdoc's own repository and no release artifact carries it,
 so a repository fetches it first:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/convert-frontmatter-to-toml.py -o convert-frontmatter-to-toml.py
+curl -fsSL https://raw.githubusercontent.com/stricttools/selfdoc/main/scripts/convert-frontmatter-to-toml.py -o convert-frontmatter-to-toml.py
 python3 convert-frontmatter-to-toml.py --dry-run --expect-files 30
 python3 convert-frontmatter-to-toml.py --apply --expect-files 30
 ```

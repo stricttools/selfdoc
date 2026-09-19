@@ -3,8 +3,8 @@ package check
 import (
 	"fmt"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/extractors/python"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/extractors/python"
 )
 
 // pythonSyntaxVerdict is what parsing a fenced Python block concluded.

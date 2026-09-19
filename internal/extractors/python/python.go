@@ -28,9 +28,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/prose"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/prose"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Extractor reads Python source through an in-process tree-sitter parse.

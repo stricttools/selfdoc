@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // DispatchEventType is the repository_dispatch event type the generated

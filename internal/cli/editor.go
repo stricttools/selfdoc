@@ -1,11 +1,11 @@
 package cli
 
 import (
-	"github.com/smm-h/selfdoc/internal/blog/editor"
-	"github.com/smm-h/selfdoc/internal/blog/editor/assets"
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/blog/serving"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/blog/editor"
+	"github.com/stricttools/selfdoc/internal/blog/editor/assets"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/blog/serving"
+	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

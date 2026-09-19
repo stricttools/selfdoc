@@ -7,12 +7,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/catalog"
-	"github.com/smm-h/selfdoc/internal/directives"
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/resolver"
-	"github.com/smm-h/selfdoc/internal/strictclisupport"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/resolver"
+	"github.com/stricttools/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // errorMarkerPrefix opens the block-quoted note a resolver leaves in place of

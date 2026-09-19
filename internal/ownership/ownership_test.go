@@ -7,9 +7,9 @@ package ownership
 import (
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/strictclisupport"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // moduleTemplate is the current module template instantiated for the module

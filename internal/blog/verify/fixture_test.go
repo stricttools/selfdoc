@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/chrome"
-	"github.com/smm-h/selfdoc/internal/blog/shared"
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/blog/chrome"
+	"github.com/stricttools/selfdoc/internal/blog/shared"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // The tree every assertion is measured against.

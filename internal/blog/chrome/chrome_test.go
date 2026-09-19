@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 const canonicalBase = "https://docs.example.com"

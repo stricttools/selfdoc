@@ -14,7 +14,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/smm-h/selfdoc/internal/blog/serving"
+	"github.com/stricttools/selfdoc/internal/blog/serving"
 )
 
 // BareNotFound is the page served for an address the tree does not carry, when

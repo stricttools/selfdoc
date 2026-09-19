@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // `selfdoc init` on a project with no source code.

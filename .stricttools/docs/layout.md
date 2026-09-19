@@ -146,7 +146,7 @@ Three things have to be true before that build runs:
    generated page alone unless `--include-generated` tells it to take it:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/convert-frontmatter-to-toml.py -o convert-frontmatter-to-toml.py
+   curl -fsSL https://raw.githubusercontent.com/stricttools/selfdoc/main/scripts/convert-frontmatter-to-toml.py -o convert-frontmatter-to-toml.py
    python3 convert-frontmatter-to-toml.py --include-generated --dry-run
    python3 convert-frontmatter-to-toml.py --include-generated --apply
    ```
@@ -168,7 +168,7 @@ repository and no release artifact carries it, so a repository fetches it first
 -- which is what the refusal prints:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/move-to-stricttools-layout.py -o move-to-stricttools-layout.py
+curl -fsSL https://raw.githubusercontent.com/stricttools/selfdoc/main/scripts/move-to-stricttools-layout.py -o move-to-stricttools-layout.py
 python3 move-to-stricttools-layout.py --dry-run
 python3 move-to-stricttools-layout.py --apply
 ```

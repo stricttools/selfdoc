@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // wrapForTest renders one page by hand, the way the Python tests called the

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

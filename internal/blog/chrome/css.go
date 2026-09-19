@@ -5,11 +5,11 @@ import (
 	"encoding/hex"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/manifest"
-	"github.com/smm-h/selfdoc/internal/themes"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/manifest"
+	"github.com/stricttools/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Dir is the site-level directory the chrome assets are served from.

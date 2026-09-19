@@ -5,9 +5,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/urls"
 )
 
 // VersionEntry is one version the project has published, as the config

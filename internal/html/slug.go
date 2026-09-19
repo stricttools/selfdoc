@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/text/unicode/norm"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 var (

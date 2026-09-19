@@ -3,8 +3,8 @@ package cli
 import (
 	"encoding/json"
 
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/payloadschemas"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/payloadschemas"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

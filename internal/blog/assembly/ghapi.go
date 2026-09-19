@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // ghAPITimeout bounds every gh api call. A hung API call in CI would hold the

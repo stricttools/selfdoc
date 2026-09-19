@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/identity"
+	"github.com/stricttools/selfdoc/internal/identity"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

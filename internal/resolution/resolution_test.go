@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

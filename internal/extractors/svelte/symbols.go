@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/extractors/typescript"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors/typescript"
 )
 
 // symbolDetailsFromScript reads what a script block says about one exported

@@ -46,7 +46,7 @@
 //     arrival page may curate what it shows. The home project is exempt: the
 //     site root is its own front page.
 //   - Outbound links still answer, when the assembly declares a list of pages
-//     to check them on. See [github.com/smm-h/selfdoc/internal/blog/site.LoadOutbound].
+//     to check them on. See [github.com/stricttools/selfdoc/internal/blog/site.LoadOutbound].
 //
 // The outbound cache is the one piece of state a verification produces.
 // Verification itself never writes: [VerifyAssembly] returns the updated cache

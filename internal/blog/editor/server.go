@@ -18,9 +18,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/blog/serving"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/blog/serving"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Server is one bound editor server: a listener on loopback, the routes over

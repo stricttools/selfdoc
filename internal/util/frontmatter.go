@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	tomledit "github.com/smm-h/go-toml-edit"
-	"github.com/smm-h/selfdoc/internal/scripts"
+	"github.com/stricttools/selfdoc/internal/scripts"
 	"github.com/smm-h/strictspec/go/strictspec"
 )
 

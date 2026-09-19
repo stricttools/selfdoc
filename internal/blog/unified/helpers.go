@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/smm-h/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/config"
 )
 
 // unifiedProjects is the constituent project entries a unified config

@@ -32,7 +32,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // scanTimeout is how long one dirstat scan may run. A scan that hangs is a

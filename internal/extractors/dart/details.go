@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // isWordRune reports whether r is a word character by Python's \w rule for

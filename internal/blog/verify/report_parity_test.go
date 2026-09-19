@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/shared"
+	"github.com/stricttools/selfdoc/internal/blog/shared"
 )
 
 // breakEverything injects one defect per asserted property, in a fixed order.

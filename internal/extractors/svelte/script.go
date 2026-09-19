@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors/typescript"
+	"github.com/stricttools/selfdoc/internal/extractors/typescript"
 )
 
 var (

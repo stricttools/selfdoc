@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Error is the failure every deploy operation reports: a missing wrangler,

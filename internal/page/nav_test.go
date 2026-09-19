@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // navToDocument renders a navigation tree in the shape the Python built it:

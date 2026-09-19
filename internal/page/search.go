@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/themes"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // PagefindFacetKeys are the facets the corpus carries, in the order they are

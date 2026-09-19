@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // DecodeDocument decodes a selfdoc.json document into the value shapes the

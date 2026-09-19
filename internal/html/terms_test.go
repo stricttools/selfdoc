@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/themes"
 )
 
 // A term is only ever declared, never inferred from prose: it appears only

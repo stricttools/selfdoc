@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/spelling"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/spelling"
 )
 
 // directiveDataFiles returns the documents the content rendered onto one page

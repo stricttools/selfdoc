@@ -14,7 +14,7 @@ package urls
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/address"
 )
 
 // URLBuilder builds absolute URLs from relative paths.

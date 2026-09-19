@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/cli/faketool"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/cli/faketool"
+	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/strictcli/go/strictcli"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 	}
 	fakeToolBinary = filepath.Join(dir, "faketool")
 	build := exec.Command("go", "build", "-o", fakeToolBinary,
-		"github.com/smm-h/selfdoc/internal/cli/faketoolcmd")
+		"github.com/stricttools/selfdoc/internal/cli/faketoolcmd")
 	build.Stderr = os.Stderr
 	if err := build.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "building the fake tool: %v\n", err)

@@ -5,14 +5,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/posts"
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/gen"
-	"github.com/smm-h/selfdoc/internal/gitcommit"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/manifest"
-	"github.com/smm-h/selfdoc/internal/staleness"
+	"github.com/stricttools/selfdoc/internal/blog/posts"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/gen"
+	"github.com/stricttools/selfdoc/internal/gitcommit"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/manifest"
+	"github.com/stricttools/selfdoc/internal/staleness"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

@@ -3,9 +3,9 @@ package cli
 import (
 	"path/filepath"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/payloadschemas"
-	"github.com/smm-h/selfdoc/internal/spellcorpus"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/payloadschemas"
+	"github.com/stricttools/selfdoc/internal/spellcorpus"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

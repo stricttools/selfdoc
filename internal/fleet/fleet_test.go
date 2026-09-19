@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/smm-h/strictcli/go/strictcli"
 	"github.com/smm-h/stricttest/go/hygiene"
 )

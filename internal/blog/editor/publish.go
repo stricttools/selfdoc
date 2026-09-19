@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The editor's publish surface: the descriptor, the plan, and the consent

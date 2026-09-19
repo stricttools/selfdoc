@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The frontmatter converter is scripts/convert-frontmatter-to-toml.py: the

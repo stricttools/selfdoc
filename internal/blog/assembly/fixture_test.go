@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/assembly/fakegh"
+	"github.com/stricttools/selfdoc/internal/blog/assembly/fakegh"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 
@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 	}
 	fakeGHBinary = filepath.Join(dir, "gh")
 	build := exec.Command("go", "build", "-o", fakeGHBinary,
-		"github.com/smm-h/selfdoc/internal/blog/assembly/fakeghcmd")
+		"github.com/stricttools/selfdoc/internal/blog/assembly/fakeghcmd")
 	build.Stderr = os.Stderr
 	if err := build.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "building the fake gh: %v\n", err)

@@ -3,9 +3,9 @@ package build
 import (
 	"sort"
 
-	"github.com/smm-h/selfdoc/internal/page"
-	"github.com/smm-h/selfdoc/internal/urls"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/page"
+	"github.com/stricttools/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // sortedSources returns the sources ordered by their docs-relative path.

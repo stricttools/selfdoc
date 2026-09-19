@@ -5,14 +5,14 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/page"
-	"github.com/smm-h/selfdoc/internal/urls"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/page"
+	"github.com/stricttools/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // buildConstituents builds every constituent project once per docs-site

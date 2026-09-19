@@ -3,7 +3,7 @@ package extractors
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/prose"
+	"github.com/stricttools/selfdoc/internal/prose"
 )
 
 // sectionHeaders are the section headers recognized in Google-style

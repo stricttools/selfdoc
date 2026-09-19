@@ -8,15 +8,15 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/page"
-	"github.com/smm-h/selfdoc/internal/prose"
-	"github.com/smm-h/selfdoc/internal/spelling"
-	"github.com/smm-h/selfdoc/internal/tokenizer"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/page"
+	"github.com/stricttools/selfdoc/internal/prose"
+	"github.com/stricttools/selfdoc/internal/spelling"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // directiveMarkers are the six marker spellings a directive can open with. A

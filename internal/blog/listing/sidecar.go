@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Load returns the listing declared in the TOML document at path.

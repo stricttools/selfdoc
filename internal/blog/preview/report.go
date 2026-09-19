@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/verify"
+	"github.com/stricttools/selfdoc/internal/blog/verify"
 )
 
 // RenderReport returns the verification report as the preview prints it.

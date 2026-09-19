@@ -3,7 +3,7 @@ package content
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/robots"
+	"github.com/stricttools/selfdoc/internal/robots"
 )
 
 // ResolveListCrawlers produces a Markdown bullet list of every user agent the

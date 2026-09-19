@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // `selfdoc baseline accept` -- the STALE001/DRIFT001 escape hatch.

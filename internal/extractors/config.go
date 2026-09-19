@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/tables"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // RenderTable renders a Markdown table in the one form the extractors emit:

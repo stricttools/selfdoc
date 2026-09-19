@@ -18,24 +18,24 @@ import (
 	"io"
 	"os"
 
-	"github.com/smm-h/selfdoc/internal/blog/assembly"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/blog/assembly"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/smm-h/strictcli/go/strictcli"
 
 	// The language packages register their extractors from init, which is
 	// what links a language into the binary. Every command that resolves a
 	// code directive needs all nine, so the blank imports live beside the
 	// command tree rather than in one entry point that a test never builds.
-	_ "github.com/smm-h/selfdoc/internal/extractors/dart"
-	_ "github.com/smm-h/selfdoc/internal/extractors/golang"
-	_ "github.com/smm-h/selfdoc/internal/extractors/kotlin"
-	_ "github.com/smm-h/selfdoc/internal/extractors/python"
-	_ "github.com/smm-h/selfdoc/internal/extractors/sql"
-	_ "github.com/smm-h/selfdoc/internal/extractors/svelte"
-	_ "github.com/smm-h/selfdoc/internal/extractors/swift"
-	_ "github.com/smm-h/selfdoc/internal/extractors/typescript"
-	_ "github.com/smm-h/selfdoc/internal/extractors/zig"
+	_ "github.com/stricttools/selfdoc/internal/extractors/dart"
+	_ "github.com/stricttools/selfdoc/internal/extractors/golang"
+	_ "github.com/stricttools/selfdoc/internal/extractors/kotlin"
+	_ "github.com/stricttools/selfdoc/internal/extractors/python"
+	_ "github.com/stricttools/selfdoc/internal/extractors/sql"
+	_ "github.com/stricttools/selfdoc/internal/extractors/svelte"
+	_ "github.com/stricttools/selfdoc/internal/extractors/swift"
+	_ "github.com/stricttools/selfdoc/internal/extractors/typescript"
+	_ "github.com/stricttools/selfdoc/internal/extractors/zig"
 )
 
 // AppHelp is the one-line description `selfdoc --help` prints.

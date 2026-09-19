@@ -47,8 +47,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/scripts"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/scripts"
 )
 
 // Root is the one hidden directory a repository's tool-owned state lives in,

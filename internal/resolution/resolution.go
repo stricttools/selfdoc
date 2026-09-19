@@ -62,9 +62,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	pagehtml "github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/address"
+	pagehtml "github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // LintCode is the lint code every unresolvable reference is reported under.

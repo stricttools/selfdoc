@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // encodeJSON encodes v the way Python's json.dumps(v) encodes it with no

@@ -9,10 +9,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/listing"
-	"github.com/smm-h/selfdoc/internal/blog/shared"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/listing"
+	"github.com/stricttools/selfdoc/internal/blog/shared"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // SiteDirectives is the directives this package resolves, in one place so the

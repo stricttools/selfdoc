@@ -8,9 +8,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // NotFoundPage is the page a hosting provider serves for an address that

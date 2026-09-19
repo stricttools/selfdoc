@@ -30,8 +30,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/strictclisupport"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // ModuleDescTemplate is the current auto-generated description of a module

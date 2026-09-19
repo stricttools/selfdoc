@@ -15,10 +15,10 @@ import (
 	"testing/fstest"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/assets"
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/blog/editor/assets"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // The posts the fixtures publish. Each is a whole Markdown source as it would

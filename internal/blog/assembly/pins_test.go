@@ -136,13 +136,13 @@ func TestGoModulePathIsTheModuleRoot(t *testing.T) {
 	// the module itself and the binary takes its name from the last path
 	// element. A path with a cmd/ suffix would name a package that no longer
 	// exists and the deploy's "go install" would fail at dispatch.
-	if GoModulePath != "github.com/smm-h/selfdoc" {
+	if GoModulePath != "github.com/stricttools/selfdoc" {
 		t.Fatalf("GoModulePath = %q", GoModulePath)
 	}
 }
 
 func TestGoProxyURLTargetsTheVersionInfoEndpoint(t *testing.T) {
-	want := "https://proxy.golang.org/github.com/smm-h/selfdoc/@v/v0.39.0.info"
+	want := "https://proxy.golang.org/github.com/stricttools/selfdoc/@v/v0.39.0.info"
 	if got := GoProxyURL("0.39.0"); got != want {
 		t.Fatalf("GoProxyURL = %q, want %q", got, want)
 	}

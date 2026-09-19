@@ -7,10 +7,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/excludes"
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/gen"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/excludes"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/gen"
 )
 
 // isSkeletonPage reports whether a page is a bare auto-generated skeleton.

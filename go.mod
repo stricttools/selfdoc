@@ -1,4 +1,4 @@
-module github.com/smm-h/selfdoc
+module github.com/stricttools/selfdoc
 
 go 1.26.3
 

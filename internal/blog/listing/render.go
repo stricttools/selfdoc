@@ -4,8 +4,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // CheckAgainst returns an error unless every listed slug can actually be

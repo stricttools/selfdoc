@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/tables"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // depSpecifierRE splits a PEP 508 dependency specifier at the end of its name:

@@ -15,14 +15,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/assembly"
-	"github.com/smm-h/selfdoc/internal/blog/posts"
-	"github.com/smm-h/selfdoc/internal/blog/preview"
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/docs"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/manifest"
+	"github.com/stricttools/selfdoc/internal/blog/assembly"
+	"github.com/stricttools/selfdoc/internal/blog/posts"
+	"github.com/stricttools/selfdoc/internal/blog/preview"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/manifest"
 )
 
 // CanonicalBase is the site every fixture page canonicalizes against. It is

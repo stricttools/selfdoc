@@ -3,11 +3,11 @@ package unifiedcheck
 import (
 	"errors"
 
-	"github.com/smm-h/selfdoc/internal/blog/unified"
-	"github.com/smm-h/selfdoc/internal/check"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/blog/unified"
+	"github.com/stricttools/selfdoc/internal/check"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // CommonSlug is the attribution prefix the docs-site's own pages carry.

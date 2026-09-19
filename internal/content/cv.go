@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/smm-h/selfdoc/internal/cv"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/cv"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // ResolveCV renders the CV declared at the path attribute as the page's body.

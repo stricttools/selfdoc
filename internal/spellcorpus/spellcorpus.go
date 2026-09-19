@@ -23,11 +23,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/fleet"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/spelling"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/fleet"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/spelling"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // ProjectSpellReport is what the sweep found in one project.

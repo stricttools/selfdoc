@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/robots"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/robots"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // SitemapPath is the address of the sitemap the site-wide robots.txt names.

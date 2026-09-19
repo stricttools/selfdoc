@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/extractors/golang"
-	"github.com/smm-h/selfdoc/internal/extractors/python"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/extractors/golang"
+	"github.com/stricttools/selfdoc/internal/extractors/python"
 )
 
 // This file exercises the registry with real language packages linked in,

@@ -18,7 +18,7 @@ package payloadschemas
 import (
 	"sort"
 
-	"github.com/smm-h/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 

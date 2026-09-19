@@ -7,10 +7,10 @@
 //
 // The point is that it looks at the *real* tree. Every step below is the
 // production function the deploy itself calls -- the same build, the same
-// [github.com/smm-h/selfdoc/internal/blog/site.SplitBuildOutput] graft, the
-// same [github.com/smm-h/selfdoc/internal/blog/assembly.GenerateSharedFiles]
+// [github.com/stricttools/selfdoc/internal/blog/site.SplitBuildOutput] graft, the
+// same [github.com/stricttools/selfdoc/internal/blog/assembly.GenerateSharedFiles]
 // (chrome asset included), the same
-// [github.com/smm-h/selfdoc/internal/blog/verify.VerifyAssembly]. A preview
+// [github.com/stricttools/selfdoc/internal/blog/verify.VerifyAssembly]. A preview
 // that rendered through a second implementation would be a picture of
 // something that is not going to be published, which is worse than no preview
 // at all.
@@ -19,9 +19,9 @@
 // clones from tags, it pushes manifests and membership records to the assembly
 // repository, and it deploys. Those have local equivalents here, built from the
 // same functions' outputs into the preview tree -- a roster rendered by
-// [github.com/smm-h/selfdoc/internal/blog/site.RenderRoster] from the
+// [github.com/stricttools/selfdoc/internal/blog/site.RenderRoster] from the
 // checkouts named on the command line, a projects.json written by
-// [github.com/smm-h/selfdoc/internal/blog/site.RecordMembership], manifests
+// [github.com/stricttools/selfdoc/internal/blog/site.RecordMembership], manifests
 // copied by the graft. The tree the preview serves is therefore an assembly
 // checkout in every respect verification can see, which is why verification
 // runs against it unchanged.

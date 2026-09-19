@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/layout"
 )
 
 // MarkdownLOC returns the project's Markdown line and file counts.

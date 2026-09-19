@@ -3,7 +3,7 @@ package assembly
 import (
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/blog/site"
 )
 
 // WorkflowGoVersion is the Go toolchain the generated workflow sets up before

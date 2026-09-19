@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/scripts"
+	"github.com/stricttools/selfdoc/internal/scripts"
 )
 
 // TestReadFrontmatterAcceptsTOML drives the reader with the blocks a page and

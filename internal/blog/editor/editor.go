@@ -25,7 +25,7 @@
 // event stream, while analysis answers the request that asked for it.
 //
 // The preview is the part with a property worth stating. It goes through
-// [github.com/smm-h/selfdoc/internal/render.Post], which is the *publish*
+// [github.com/stricttools/selfdoc/internal/render.Post], which is the *publish*
 // renderer handed an in-memory buffer instead of a file: same directive
 // resolution, same HTML pass, same site-level addressing, and no write
 // anywhere. So what the author approves on screen is the bytes readers get,
@@ -44,13 +44,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/blog/posts"
-	"github.com/smm-h/selfdoc/internal/config"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/render"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/blog/posts"
+	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/render"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // Error reports that a request cannot be served, for the reason the message
@@ -340,7 +340,7 @@ func PostSlug(rel, content string) (string, error) {
 // RenderPreview renders a buffer to the exact HTML publishing it would
 // produce.
 //
-// One renderer: this is [github.com/smm-h/selfdoc/internal/render.Post],
+// One renderer: this is [github.com/stricttools/selfdoc/internal/render.Post],
 // which is the build's own page pass over an in-memory overlay. The bytes
 // equal what a posts-target build writes for the same source saved to disk,
 // and nothing is written anywhere.

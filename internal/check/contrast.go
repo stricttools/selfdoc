@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/themes"
 )
 
 // rgb is a colour parsed out of a stylesheet, each channel 0-255.

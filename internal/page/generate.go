@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/themes"
-	"github.com/smm-h/selfdoc/internal/tokenizer"
-	"github.com/smm-h/selfdoc/internal/urls"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // PageDates are the dates one page states: when it was first published and

@@ -4,12 +4,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
-	"github.com/smm-h/selfdoc/internal/cv"
-	"github.com/smm-h/selfdoc/internal/html"
-	"github.com/smm-h/selfdoc/internal/identity"
-	"github.com/smm-h/selfdoc/internal/prose"
-	"github.com/smm-h/selfdoc/internal/urls"
+	"github.com/stricttools/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/cv"
+	"github.com/stricttools/selfdoc/internal/html"
+	"github.com/stricttools/selfdoc/internal/identity"
+	"github.com/stricttools/selfdoc/internal/prose"
+	"github.com/stricttools/selfdoc/internal/urls"
 )
 
 // absentBaseURL is what a missing base URL renders as inside an absolute URL

@@ -53,7 +53,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // ArchivePrefix is the URL segment every archived (superseded) version is

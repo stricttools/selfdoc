@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/serving"
-	"github.com/smm-h/selfdoc/internal/effects"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/blog/serving"
+	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

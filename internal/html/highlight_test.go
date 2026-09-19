@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/themes"
 )
 
 // Syntax highlighting is a token layer, not two piles of literals.

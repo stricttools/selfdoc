@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/playwright-community/playwright-go"
-	"github.com/smm-h/selfdoc/internal/blog/preview"
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/blog/preview"
+	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 

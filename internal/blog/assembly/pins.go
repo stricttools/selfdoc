@@ -19,14 +19,14 @@ const PyPIJSONURL = "https://pypi.org/pypi/{package}/json"
 //
 // The selfdoc pin names a Go module version rather than a PyPI distribution:
 // the workflow installs the binary with "go install
-// github.com/smm-h/selfdoc@v<version>", so what has to exist is a tag the
+// github.com/stricttools/selfdoc@v<version>", so what has to exist is a tag the
 // proxy serves, and PyPI has nothing to say about it.
-const GoProxyInfoURL = "https://proxy.golang.org/github.com/smm-h/selfdoc/@v/v{version}.info"
+const GoProxyInfoURL = "https://proxy.golang.org/github.com/stricttools/selfdoc/@v/v{version}.info"
 
 // GoModulePath is the module the generated workflow installs the binary from.
 // The entry point is the module root, so installing the module installs the
 // binary and the last path element names it.
-const GoModulePath = "github.com/smm-h/selfdoc"
+const GoModulePath = "github.com/stricttools/selfdoc"
 
 // registryTimeout bounds every registry read. A pin check that hangs would
 // hang a release.

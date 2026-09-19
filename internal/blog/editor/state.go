@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor/assets"
-	"github.com/smm-h/selfdoc/internal/blog/editor/registry"
-	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/blog/editor/assets"
+	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
+	"github.com/stricttools/selfdoc/internal/effects"
 )
 
 // HeartbeatInterval is how often an idle event stream emits a comment, so a

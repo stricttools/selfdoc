@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/smm-h/selfdoc/internal/build"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // MergedPost is one post as the assembly sees it: the post's own metadata plus

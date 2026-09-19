@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // canonicalBase is the deployed base every fixture page carries its canonical

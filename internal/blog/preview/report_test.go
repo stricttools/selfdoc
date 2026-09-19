@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/verify"
+	"github.com/stricttools/selfdoc/internal/blog/verify"
 )
 
 // The report is printed first and loudly, and says out loud that the server

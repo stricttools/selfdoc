@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/ownership"
+	"github.com/stricttools/selfdoc/internal/ownership"
 )
 
 // driftProject writes a one-module project whose module docstring and page

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
 // makeWorkspace writes a monorepo carrying an rlsbl workspace declaration

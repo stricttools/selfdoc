@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/smm-h/selfdoc/internal/cli/faketool"
+	"github.com/stricttools/selfdoc/internal/cli/faketool"
 )
 
 func main() {

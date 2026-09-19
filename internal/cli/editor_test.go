@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/blog/editor"
-	"github.com/smm-h/selfdoc/internal/blog/editor/assets"
+	"github.com/stricttools/selfdoc/internal/blog/editor"
+	"github.com/stricttools/selfdoc/internal/blog/editor/assets"
 )
 
 // The editor's command surface.

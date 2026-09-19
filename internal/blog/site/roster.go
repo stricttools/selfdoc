@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // RosterFields is every key a [[project]] block may carry, all of them

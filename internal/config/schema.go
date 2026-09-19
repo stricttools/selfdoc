@@ -25,7 +25,7 @@
 // first.
 package config
 
-import "github.com/smm-h/selfdoc/internal/layout"
+import "github.com/stricttools/selfdoc/internal/layout"
 
 // FieldType is the value shape a [FieldSpec] accepts.
 type FieldType string

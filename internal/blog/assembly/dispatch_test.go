@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/config"
 )
 
 // dispatchPayload decodes the request body a dispatch POSTs.

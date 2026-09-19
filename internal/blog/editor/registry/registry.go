@@ -43,7 +43,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // DefaultPath returns where the registry lives. Machine-local by design --

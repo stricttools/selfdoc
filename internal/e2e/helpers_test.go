@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/playwright-community/playwright-go"
-	"github.com/smm-h/selfdoc/internal/themes"
+	"github.com/stricttools/selfdoc/internal/themes"
 )
 
 // served returns the tree label is served from, and its path on that tree.

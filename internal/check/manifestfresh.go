@@ -8,9 +8,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/layout"
-	"github.com/smm-h/selfdoc/internal/lints"
-	"github.com/smm-h/selfdoc/internal/manifest"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/selfdoc/internal/manifest"
 )
 
 // checkManifestFreshness checks the manifest's pages and posts against the

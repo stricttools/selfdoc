@@ -1,6 +1,6 @@
 package html
 
-import "github.com/smm-h/selfdoc/internal/themes"
+import "github.com/stricttools/selfdoc/internal/themes"
 
 // GetCSS returns the composed stylesheet for the named theme.
 //

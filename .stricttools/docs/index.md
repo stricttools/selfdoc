@@ -45,7 +45,7 @@ selfdoc figures out the rest. It detects your project structure, builds navigati
 Run `selfdoc build` and you get a full static site -- HTML, CSS, search index, sitemap, the works. Serve it locally with `selfdoc serve`, or deploy anywhere that hosts static files.
 
 ```bash
-go install github.com/smm-h/selfdoc@v0
+go install github.com/stricttools/selfdoc@v0
 selfdoc init --base-url https://myproject.pages.dev
 selfdoc build
 ```

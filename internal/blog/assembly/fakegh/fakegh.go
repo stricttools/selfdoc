@@ -28,7 +28,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/blog/site"
 )
 
 // StateEnv names the directory the fake keeps its state in. The test sets it

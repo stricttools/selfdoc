@@ -3,7 +3,7 @@ package verify
 import (
 	"fmt"
 
-	"github.com/smm-h/selfdoc/internal/blog/site"
+	"github.com/stricttools/selfdoc/internal/blog/site"
 )
 
 // check is one assertion: the name it reports under and the pass that makes

@@ -4,7 +4,7 @@
 //
 // The model half -- the roster, the published-file records, the graft rule,
 // membership reconciliation, the tag resolution -- is
-// [github.com/smm-h/selfdoc/internal/blog/site], which touches neither the
+// [github.com/stricttools/selfdoc/internal/blog/site], which touches neither the
 // network nor the GitHub API. This package is everything that does:
 //
 //   - The generated workflow. [GenerateWorkflowYAML] renders the one file the
@@ -29,7 +29,7 @@
 //     exists for.
 //
 // Every subprocess launch and every write goes through an explicit
-// [github.com/smm-h/selfdoc/internal/effects.Handle], passed in by the caller.
+// [github.com/stricttools/selfdoc/internal/effects.Handle], passed in by the caller.
 // The two registry reads are plain GETs: they change nothing, so they do not
 // go through the handle -- a recorded read would have nothing to record and a
 // preview still needs the answer.

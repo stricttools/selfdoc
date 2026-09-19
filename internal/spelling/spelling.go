@@ -80,9 +80,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/smm-h/selfdoc/internal/directives"
-	"github.com/smm-h/selfdoc/internal/tokenizer"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/tokenizer"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // wordlistFS carries the vendored word list, its retrieval record and

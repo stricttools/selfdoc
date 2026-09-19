@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/address"
+	"github.com/stricttools/selfdoc/internal/address"
 )
 
 // pageRefRE matches a reference attribute whose value may name a page of

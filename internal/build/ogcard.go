@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // ogCardWidth and ogCardHeight are the recommended social-card resolution,

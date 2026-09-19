@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/selfdoc/internal/js"
+	"github.com/stricttools/selfdoc/internal/js"
 )
 
 func TestMinifyJSRemovesComments(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/smm-h/selfdoc/internal/extractors"
-	"github.com/smm-h/selfdoc/internal/tables"
-	"github.com/smm-h/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/extractors"
+	"github.com/stricttools/selfdoc/internal/tables"
+	"github.com/stricttools/selfdoc/internal/util"
 )
 
 // The two character classes the ported patterns are written against.
