@@ -26,6 +26,7 @@ Every fix carries a red-green regression test. The two maintenance scripts -- th
 - A STALE001 or DRIFT001 finding now says that editing the page description and running `selfdoc baseline accept` are alternatives rather than consecutive steps, and `baseline accept` explains that a rewritten description already cleared the finding instead of only reporting "nothing to accept"
 - `selfdoc check` now says in its own help that it advances the staleness baseline store and commits it, so a run that looks like a read-only audit no longer surprises with a write; `--auto-commit` help also states the store is written whether or not it is committed
 - The coverage report's skeleton-only list now names the generated pages whose still-seeded frontmatter descriptions are the cause and says the symbols' own doc comments are not, instead of listing symbols alone and sending readers to rewrite doc comments that were already complete
+- **A dry run of the layout move no longer needs a selfdoc binary.** The dry run builds nothing, so it now prints which binary `--apply` would use for its verifying build, or that none was found, and still prints the whole plan; `--apply` refuses a missing binary before it writes anything, as before.
 
 ## 0.42.1
 
