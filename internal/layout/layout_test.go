@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/smm-h/selfdoc/internal/scripts"
 	"github.com/smm-h/stricttest/go/hygiene"
 )
 
@@ -231,10 +232,42 @@ func TestTheOldLayoutIsRefused(t *testing.T) {
 			if !strings.Contains(err.Error(), testCase.wantName) {
 				t.Errorf("the refusal does not name what it found: %v", err)
 			}
-			if !strings.Contains(err.Error(), MoveScript) {
+			if !strings.Contains(err.Error(), scripts.Move) {
 				t.Errorf("the refusal does not name the move script: %v", err)
 			}
 		})
+	}
+}
+
+// TestTheOldLayoutRefusalPrintsAnExecutableRemedy asserts that the remedy the
+// refusal prints can be executed as printed by the repository being refused.
+//
+// The move script lives in selfdoc's own checkout and no release artifact
+// carries it, so a refusal naming "python3 scripts/<name>" named a path the
+// refused repository does not have: the printed remedy has to fetch the script
+// before it runs it.
+func TestTheOldLayoutRefusalPrintsAnExecutableRemedy(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, DeprecatedRoot), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	err := RefuseOldLayout(dir, "", "", "")
+	if err == nil {
+		t.Fatal("the old layout was accepted")
+	}
+	message := err.Error()
+	for _, want := range []string{
+		scripts.Fetch(scripts.Move),
+		scripts.Run(scripts.Move, "--dry-run"),
+		scripts.Run(scripts.Move, "--apply"),
+	} {
+		if !strings.Contains(message, want) {
+			t.Errorf("the refusal does not print %q:\n%s", want, message)
+		}
+	}
+	if strings.Contains(message, "python3 "+scripts.RepoPath(scripts.Move)) {
+		t.Errorf("the refusal tells the repository to run a path it does not have:\n%s", message)
 	}
 }
 

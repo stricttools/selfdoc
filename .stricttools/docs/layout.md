@@ -1,6 +1,6 @@
 +++
 title = "The .stricttools/ layout"
-description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, a manifest inside each one naming its owner, a derived ignore file, the two layout commands, and the move script."
+description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, a manifest inside each one naming its owner, a derived ignore file, the two layout commands, and how to fetch and run the move script."
 nav_group = "Guides"
 nav_order = 4
 +++
@@ -130,11 +130,14 @@ selfdoc reads this layout and no other. A repository still carrying a
 outside `.stricttools/`, is refused by every command that reads project state,
 with the move named. There is no migrator inside selfdoc and no dual reading.
 
-A repository is moved once, by hand:
+A repository is moved once, by hand. The move script lives in selfdoc's own
+repository and no release artifact carries it, so a repository fetches it first
+-- which is what the refusal prints:
 
 ```bash
-python3 scripts/move-to-stricttools-layout.py --dry-run
-python3 scripts/move-to-stricttools-layout.py --apply
+curl -fsSL https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/move-to-stricttools-layout.py -o move-to-stricttools-layout.py
+python3 move-to-stricttools-layout.py --dry-run
+python3 move-to-stricttools-layout.py --apply
 ```
 
 The dry run prints every manifest it would write, every move and every content

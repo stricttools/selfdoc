@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/smm-h/selfdoc/internal/scripts"
 )
 
 // DeprecatedRoot is the directory selfdoc kept a repository's state in before
@@ -15,8 +17,8 @@ const DeprecatedRoot = ".selfdoc"
 // selfdoc used to lay one out.
 //
 // There is no migrator and no dual reading: a repository is moved once, by
-// hand, with [MoveScript], and until it is, every command that reads project
-// state refuses it.
+// hand, with the script [MoveScript] names, and until it is, every command
+// that reads project state refuses it.
 type OldLayoutError struct {
 	// Found is what was found, as the repository spells it.
 	Found string
@@ -29,8 +31,12 @@ type OldLayoutError struct {
 func (e *OldLayoutError) Error() string {
 	return fmt.Sprintf(
 		"%s selfdoc keeps every directory it owns under %s/ now, so %s becomes %s. "+
-			"Move this repository with 'python3 %s --dry-run' and then 'python3 %s --apply'.",
-		e.Detail, Root, e.Found, e.Replacement, MoveScript, MoveScript)
+			"Move this repository by fetching the move script and running it: "+
+			"'%s', then '%s', then '%s'.",
+		e.Detail, Root, e.Found, e.Replacement,
+		scripts.Fetch(scripts.Move),
+		scripts.Run(scripts.Move, "--dry-run"),
+		scripts.Run(scripts.Move, "--apply"))
 }
 
 // RefuseOldLayout returns an [OldLayoutError] when a repository has not been

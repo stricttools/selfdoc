@@ -48,6 +48,7 @@ import (
 	"strings"
 
 	"github.com/smm-h/selfdoc/internal/effects"
+	"github.com/smm-h/selfdoc/internal/scripts"
 )
 
 // Root is the one hidden directory a repository's tool-owned state lives in,
@@ -78,8 +79,10 @@ const (
 const IgnoreFileName = ".gitignore"
 
 // MoveScript is the script that moves a repository off the layout selfdoc used
-// before this one. Every refusal of the old layout names it.
-const MoveScript = "scripts/move-to-stricttools-layout.py"
+// before this one, as it is spelled inside selfdoc's own checkout. A refusal
+// prints the fetch-and-run commands instead, because the repository being
+// refused does not have this path.
+var MoveScript = scripts.RepoPath(scripts.Move)
 
 // GeneratedMarkerPrefix opens the HTML comment every page selfdoc generates
 // carries under its frontmatter. It is what tells a generated page from a

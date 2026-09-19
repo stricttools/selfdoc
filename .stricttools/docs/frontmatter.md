@@ -1,6 +1,6 @@
 +++
 title = "Frontmatter"
-description = "The TOML block every selfdoc page and post opens with: the +++ fences, the declared key registry the schema validates it against, and the converter that rewrites a retired block."
+description = "The TOML block every selfdoc page and post opens with: the +++ fences, the declared key registry the schema validates it against, and how to fetch and run the converter that rewrites a retired block."
 nav_group = "Guides"
 nav_order = 5
 +++
@@ -88,11 +88,14 @@ the release keys (`version`, `prev_version`, `bump_type`, `release_url`,
 
 Before the TOML format, frontmatter was a hand-parsed block between `---`
 fences in a `key: value` dialect with no key registry. selfdoc refuses such a
-block by name and names the converter that rewrites it:
+block by name and prints the commands that fetch the converter and run it. The
+converter lives in selfdoc's own repository and no release artifact carries it,
+so a repository fetches it first:
 
 ```bash
-scripts/convert-frontmatter-to-toml.py --dry-run --expect-files 30
-scripts/convert-frontmatter-to-toml.py --apply --expect-files 30
+curl -fsSL https://raw.githubusercontent.com/smm-h/selfdoc/main/scripts/convert-frontmatter-to-toml.py -o convert-frontmatter-to-toml.py
+python3 convert-frontmatter-to-toml.py --dry-run --expect-files 30
+python3 convert-frontmatter-to-toml.py --apply --expect-files 30
 ```
 
 The dry run prints a unified diff of every block it would change and writes

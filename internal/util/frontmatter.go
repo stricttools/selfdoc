@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	tomledit "github.com/smm-h/go-toml-edit"
+	"github.com/smm-h/selfdoc/internal/scripts"
 	"github.com/smm-h/strictspec/go/strictspec"
 )
 
@@ -20,8 +21,10 @@ const Fence = "+++"
 const RetiredFence = "---"
 
 // ConverterScript is the dry-run-capable script that rewrites a retired block
-// into a TOML one. Every refusal of a retired block names it.
-const ConverterScript = "scripts/convert-frontmatter-to-toml.py"
+// into a TOML one, as it is spelled inside selfdoc's own checkout. A refusal
+// prints the fetch-and-run commands instead, because the repository holding the
+// refused document does not have this path.
+var ConverterScript = scripts.RepoPath(scripts.ConvertFrontmatter)
 
 // Frontmatter is the read surface of a parsed frontmatter block: the declared
 // keys mapped to their values.
@@ -182,9 +185,12 @@ func SplitFrontmatter(text, source string) (block, body string, consumed int, er
 			Source: source,
 			Summary: fmt.Sprintf(
 				"frontmatter opens with the retired %q fence. Frontmatter is TOML "+
-					"between %q fences; convert this document with `%s --dry-run` "+
-					"and then `%s --apply`",
-				RetiredFence, Fence, ConverterScript, ConverterScript),
+					"between %q fences; fetch the converter and run it: `%s`, "+
+					"then `%s`, then `%s`",
+				RetiredFence, Fence,
+				scripts.Fetch(scripts.ConvertFrontmatter),
+				scripts.Run(scripts.ConvertFrontmatter, "--dry-run"),
+				scripts.Run(scripts.ConvertFrontmatter, "--apply")),
 		}
 	}
 	if first != Fence {

@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/smm-h/selfdoc/internal/scripts"
 )
 
 // TestReadFrontmatterAcceptsTOML drives the reader with the blocks a page and
@@ -128,6 +130,34 @@ func TestReadFrontmatterAcceptsTOML(t *testing.T) {
 	}
 }
 
+// TestTheRetiredFenceRefusalPrintsAnExecutableRemedy asserts that the remedy
+// the refusal prints can be executed as printed by the repository holding the
+// document.
+//
+// The converter lives in selfdoc's own checkout and no release artifact carries
+// it, so a refusal naming "scripts/<name>" named a path the refused repository
+// does not have: the printed remedy has to fetch the script before it runs it.
+func TestTheRetiredFenceRefusalPrintsAnExecutableRemedy(t *testing.T) {
+	t.Parallel()
+	_, err := ReadFrontmatter("---\ntitle: Hello\n---\nBody\n", "page.md", KindPage)
+	if err == nil {
+		t.Fatal("a retired block was accepted")
+	}
+	message := err.Error()
+	for _, want := range []string{
+		scripts.Fetch(scripts.ConvertFrontmatter),
+		scripts.Run(scripts.ConvertFrontmatter, "--dry-run"),
+		scripts.Run(scripts.ConvertFrontmatter, "--apply"),
+	} {
+		if !strings.Contains(message, want) {
+			t.Errorf("the refusal does not print %q:\n%s", want, message)
+		}
+	}
+	if strings.Contains(message, scripts.RepoPath(scripts.ConvertFrontmatter)+" --") {
+		t.Errorf("the refusal tells the repository to run a path it does not have:\n%s", message)
+	}
+}
+
 // TestReadFrontmatterRefusals covers every block the reader will not accept,
 // and what each refusal has to say.
 func TestReadFrontmatterRefusals(t *testing.T) {
@@ -142,7 +172,7 @@ func TestReadFrontmatterRefusals(t *testing.T) {
 			name:      "the retired fence names the converter and the page",
 			input:     "---\ntitle: Hello\n---\nBody\n",
 			kind:      KindPage,
-			wantParts: []string{"page.md", "---", "+++", ConverterScript},
+			wantParts: []string{"page.md", "---", "+++", scripts.ConvertFrontmatter},
 		},
 		{
 			name:      "an unclosed fence is refused rather than ignored",
