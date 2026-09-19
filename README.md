@@ -9,10 +9,10 @@ Extractors ship for Go, Python, TypeScript/JavaScript, Svelte, Zig, Dart, Kotlin
 ## Install
 
 ```
-go install github.com/smm-h/selfdoc@v0
+go install github.com/stricttools/selfdoc@v0
 ```
 
-On a machine with no Go toolchain, download the archive for your platform from the [latest GitHub Release](https://github.com/smm-h/selfdoc/releases/latest) -- prebuilt binaries are published for Linux, macOS and Windows on amd64 and arm64 -- and put `selfdoc` on your `PATH`.
+On a machine with no Go toolchain, download the archive for your platform from the [latest GitHub Release](https://github.com/stricttools/selfdoc/releases/latest) -- prebuilt binaries are published for Linux, macOS and Windows on amd64 and arm64 -- and put `selfdoc` on your `PATH`.
 
 Two optional dependencies, needed only by the features that use them: [Pagefind](https://pagefind.app/) for the search index, and `python3` for custom directives (a `.py` directive script is the only thing selfdoc runs an interpreter for; every built-in extractor, the Python one included, parses in process).
 
