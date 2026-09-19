@@ -17,3 +17,7 @@ context = "Every fix carries a red-green regression test. The two maintenance sc
 # blog = false
 include = ["go"]
 exclude = []
+candidate_sha = "94352b7a9db5b020a8217a982bb50218b2603d19"
+
+[tree_hashes]
+"." = "8c5f28526e2fc42b9d5c027796b7960e2022d0f1"
