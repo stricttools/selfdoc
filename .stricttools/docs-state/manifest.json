@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "selfdoc",
   "slug": "selfdoc",
-  "version": "0.42.0",
+  "version": "0.42.1",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -7120,11 +7120,6 @@
         },
         {
           "level": 3,
-          "text": "`MoveScript`",
-          "anchor": "movescript"
-        },
-        {
-          "level": 3,
           "text": "`GeneratedMarkerPrefix`",
           "anchor": "generatedmarkerprefix"
         },
@@ -7265,6 +7260,11 @@
         },
         {
           "level": 3,
+          "text": "`PreFlipRelease`",
+          "anchor": "prefliprelease"
+        },
+        {
+          "level": 3,
           "text": "`GeneratedBy`",
           "anchor": "generatedby"
         },
@@ -7292,6 +7292,11 @@
           "level": 3,
           "text": "`CheckIgnore`",
           "anchor": "checkignore"
+        },
+        {
+          "level": 3,
+          "text": "`MoveScript`",
+          "anchor": "movescript"
         },
         {
           "level": 3,
@@ -7407,6 +7412,11 @@
           "level": 3,
           "text": "`IgnoreIsCurrent`",
           "anchor": "ignoreiscurrent"
+        },
+        {
+          "level": 3,
+          "text": "`MigrationProcedure`",
+          "anchor": "migrationprocedure"
         },
         {
           "level": 3,
@@ -8545,6 +8555,58 @@
       ]
     },
     {
+      "path": "internal-scripts.md",
+      "title": "internal/scripts",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/scripts",
+          "anchor": "internalscripts"
+        },
+        {
+          "level": 2,
+          "text": "`internal/scripts`",
+          "anchor": "internalscripts"
+        },
+        {
+          "level": 3,
+          "text": "Why a refusal cannot name a repository path",
+          "anchor": "why-a-refusal-cannot-name-a-repository-path"
+        },
+        {
+          "level": 3,
+          "text": "`Move`",
+          "anchor": "move"
+        },
+        {
+          "level": 3,
+          "text": "`ConvertFrontmatter`",
+          "anchor": "convertfrontmatter"
+        },
+        {
+          "level": 3,
+          "text": "`RawBase`",
+          "anchor": "rawbase"
+        },
+        {
+          "level": 3,
+          "text": "`RepoPath`",
+          "anchor": "repopath"
+        },
+        {
+          "level": 3,
+          "text": "`Fetch`",
+          "anchor": "fetch"
+        },
+        {
+          "level": 3,
+          "text": "`Run`",
+          "anchor": "run"
+        }
+      ]
+    },
+    {
       "path": "internal-spellcorpus.md",
       "title": "internal/spellcorpus",
       "type": "doc",
@@ -9477,11 +9539,6 @@
         },
         {
           "level": 3,
-          "text": "`ConverterScript`",
-          "anchor": "converterscript"
-        },
-        {
-          "level": 3,
           "text": "`KindPage`",
           "anchor": "kindpage"
         },
@@ -9529,6 +9586,11 @@
           "level": 3,
           "text": "`SchemaFormatVersion`",
           "anchor": "schemaformatversion"
+        },
+        {
+          "level": 3,
+          "text": "`ConverterScript`",
+          "anchor": "converterscript"
         },
         {
           "level": 3,
@@ -10063,6 +10125,16 @@
           "level": 2,
           "text": "Moving a repository onto the layout",
           "anchor": "moving-a-repository-onto-the-layout"
+        },
+        {
+          "level": 3,
+          "text": "Before the move",
+          "anchor": "before-the-move"
+        },
+        {
+          "level": 3,
+          "text": "The move",
+          "anchor": "the-move"
         },
         {
           "level": 3,
@@ -10650,6 +10722,6 @@
       ]
     }
   ],
-  "last_gen": "2026-09-15T23:36:30.965518+00:00",
+  "last_gen": "2026-09-19T13:17:46.481981+00:00",
   "theme": "minimal"
 }

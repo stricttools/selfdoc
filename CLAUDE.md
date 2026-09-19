@@ -209,6 +209,7 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - **internal/resolver**: Package resolver dispatches one directive to whatever can answer it.
 - **internal/revisions**: Package revisions tracks post revisions in a sidecar revisions.json.
 - **internal/robots**: Package robots holds the crawler policy, declared once for every robots.txt this repository writes.
+- **internal/scripts**: Package scripts declares selfdoc's hand-run maintenance scripts and renders the commands that fetch and run one.
 - **internal/spellcorpus**: Package spellcorpus is the corpus-wide spelling run: the same engine, every sibling project.
 - **internal/spelling**: Package spelling is the spelling engine: one word checker serving every surface that needs one.
 - **internal/staleness**: Package staleness detects descriptions that no longer describe what they sit on, by hashing what a description is about and comparing that hash against the one recorded the last time the description was written.

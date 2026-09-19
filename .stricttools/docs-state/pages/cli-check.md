@@ -9,7 +9,7 @@ nav_order = 5
 
 # selfdoc check
 
-Check documentation coverage, directive resolution, and lint rules
+Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .stricttools/docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one
 
 **Effect:** mutating
 
@@ -18,5 +18,5 @@ Check documentation coverage, directive resolution, and lint rules
 | Name | Short | Type | Presence | Env | Description |
 | --- | --- | --- | --- | --- | --- |
 | `--ignore` |  | str | optional |  | Comma-separated SEO codes to suppress (e.g., SEO007,SEO008) |
-| `--auto-commit`, `--no-auto-commit` |  | bool | optional |  | Automatically commit updated content hash tracking files to git after checking. Omitted, it commits; pass --no-auto-commit to leave them uncommitted |
+| `--auto-commit`, `--no-auto-commit` |  | bool | optional |  | Automatically commit .stricttools/docs-state/hashes/hashes.json, the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way |
 | `--version-override` |  | str | optional |  | Project version that version-bearing generated content is expected to embed (VER004), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump |

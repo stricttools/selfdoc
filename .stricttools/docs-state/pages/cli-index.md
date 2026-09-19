@@ -19,7 +19,7 @@ Version: :-: var key="project.version"
 - [build](../cli-build/) -- Build the documentation site from templates and source code
 - [serve](../cli-serve/) -- Serve the documentation site locally with live reload
 - [deploy](../cli-deploy/) -- Deploy the built documentation site to the configured provider
-- [check](../cli-check/) -- Check documentation coverage, directive resolution, and lint rules
+- [check](../cli-check/) -- Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .stricttools/docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one
 - [gen](../cli-gen/) -- Auto-generate documentation pages from project structure
 - [gen-data](../cli-gen-data/) -- Generate data files by running sandboxed scripts via bwrap
 - [spell-corpus](../cli-spell-corpus/) -- Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits

@@ -233,7 +233,7 @@ Dispatch order is content directives, then custom directives, then the language 
 | `build` | Build the documentation site from templates and source code |
 | `serve` | Serve the documentation site locally with live reload |
 | `deploy` | Deploy the built documentation site to the configured provider |
-| `check` | Check documentation coverage, directive resolution, and lint rules |
+| `check` | Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .stricttools/docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one |
 | `gen` | Auto-generate documentation pages from project structure |
 | `gen-data` | Generate data files by running sandboxed scripts via bwrap |
 | `spell-corpus` | Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits |

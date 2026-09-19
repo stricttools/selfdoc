@@ -93,8 +93,8 @@
     "description": "a88fdbfd865bb583c35a594a76b0fd7c9f861cd6fd9c0ec5c29a23c60d80da52"
   },
   "en/check-guide.md": {
-    "content": "33ef0a368e199862e9f6f2fa51ab39d1f1f7e63d356c0d9196f2d49babca0175",
-    "description": "f441c3b055ea08876a70e1c3c790d81ec1e8b23776ad95b1577df3085783770d"
+    "content": "c4573863dfb3e85eec205b61e9c989e3717514465e71bcaeb64d78776b9e7f2d",
+    "description": "695eef39f1d6f5b685e2dfb6573d648e25604bf5d356dfab5124a81fe20ed1c3"
   },
   "en/cli-assembly.md": {
     "content": "4837aa933a360885feb77273bfe487e8959f4687d7bfa4e9932f5a1b671cf033",
@@ -120,9 +120,9 @@
     "schema_hash": "57c15b102ef9ce76a79014ad43612cdb70b9736c9143e17997a6fdc4732c15f6"
   },
   "en/cli-check.md": {
-    "content": "6d2ecbb6184759e17d05a3bbf746625531f0c8548a11d176953844e53fe72c86",
+    "content": "e08f6a6e83fead6995fcd43303cb7ba073569cb4fc4f97de1d0c4cfbe4075499",
     "description": "7ded848e80672d3121d55b1298869333328ceeb3bab2ed722fd190f4f36865dd",
-    "schema_hash": "84fa2260203e3d45be2ecd68b0f9ac5953263354b8c1da3ec53332e084f9d04e"
+    "schema_hash": "b5a65337c647d9965a7ea412c88b4d6e41624d5dd46a0e18b5389a11c2e27e18"
   },
   "en/cli-deploy.md": {
     "content": "5f2c7b3815dd00bf1e296d241c328d80019676afe6790d08616316a3b19a65cb",
@@ -152,7 +152,7 @@
     "schema_hash": "806779b013a5e275c0d03ad141b4c4d807782d52bb3994e3c0e4a2cfb2bb559f"
   },
   "en/cli-index.md": {
-    "content": "52d654fd59fc9d80bb1a22dc6b7c1b8efdd2f534b8b3fb45a724c09d9990f97c",
+    "content": "51328253c684208c1d63505c8f264ccdd8e456eb24b35392ca7de470bb766d44",
     "description": "724db89f86f422c6d4f6edce194686ba7f6d8460094aef06b0daebc495476948"
   },
   "en/cli-init.md": {
@@ -231,17 +231,17 @@
     "description": "6464fca42fdb52aaa26b9f9e280835b324810beb538bc7d1bfb5d914da1a8ae0"
   },
   "en/frontmatter.md": {
-    "content": "8501c0529d74ed2ccb1bf52579e11b17db1577bf5122cf2c561e09399a96e854",
-    "description": "8914468d2a97db4d6baf5030d2019e415ca220a31e9530016991a76150c41308"
+    "content": "9705f4aafc1b5e6822cade876b4622b25c5f7fc69f69a3e15a63fcb67889b097",
+    "description": "a3cb1093cb772f25933417179e4d50f14b470eb6dce840438cab28492252f69a"
   },
   "en/gen-data-guide.md": {
     "content": "39d580e897970494b0188bf86b51e39779c456261c0abb1a6337f261712c1cf1",
     "description": "b987b85e7d65fca02cfb007948ec96dc77f35fb6b5cf331b0759a8037f2adb82"
   },
   "en/gen-index.md": {
-    "content": "292d0942b7fe02edc95d10bfe7b8356bee08e7b9680e1b0d67b393fb5c413f17",
-    "description": "99beb11b7e51e27008a3b9a709c4bfe1060053fe10aa997bc143d2ea472496f9",
-    "seed_hash": "99beb11b7e51e27008a3b9a709c4bfe1060053fe10aa997bc143d2ea472496f9"
+    "content": "0bbf3308db2790930ebaeb6176cd04908e4df37076ea4ed6d7da4e38e0d9b056",
+    "description": "3a5e5039119f82a76e5b6fc6cfcaca9e06bd5cb944e177d7419fb756fc234df5",
+    "seed_hash": "3a5e5039119f82a76e5b6fc6cfcaca9e06bd5cb944e177d7419fb756fc234df5"
   },
   "en/getting-started.md": {
     "content": "faa9e27edb743798c0523383395e5027730d8ce407c8a2280f5730c7a7833ef7",
@@ -589,6 +589,11 @@
     "description": "ae9028e94dce8ef6e7ffcbb1acdadfa3c21d5ceb8fa2964620d0d2298fe80d74",
     "source_docstring": "962a3a4a743d839cb73fee5cea8d0eeff140faf2623387ca66437a17861e42c0"
   },
+  "en/internal-scripts.md": {
+    "content": "948879466f8fe0754a74c3ddce1bc9d5e474c19946d6f601859c6ddbbd77e955",
+    "description": "f9c3d1ea6fc5f06bfb33b9bda56eb0a8242816864141bc54c949a26bd465b011",
+    "source_docstring": "166459aabe686ffe65e62316947a4ad20958b5393ecf2bc42bea08ddbde2f749"
+  },
   "en/internal-spellcorpus.md": {
     "content": "df8b5710560939df2be57c75c2d6599190ed9938c3f4a473885a343b481e1d31",
     "description": "95d516c977472dc3cd405b5816ffcd8d894eef5b68544cb0849ff5d0c154615c",
@@ -639,8 +644,8 @@
     "description": "368283e2ae5434b431437461e25c722f4ddc31083b2720fe7794ada67c517418"
   },
   "en/layout.md": {
-    "content": "99f9c952727cdf60347e8055350ec3ab7e9f16b97d741747f25399c3704cf7ab",
-    "description": "9ab8f600d07ef5e7165ede9cd9893c917093f3be85b539a49a36c7a2c83d0a61"
+    "content": "2982319dee05c29b3b40272a531f79fbe323f3ade0d7d7650fb83018a4bf353f",
+    "description": "94ca63d3e296e57039da4a2536d10f168f606c2bca66f04c548134a9d185a23e"
   },
   "en/llms-txt.md": {
     "content": "f2b2dbaace9656c8aa7445983484cdd8cd142c49cbe289301dc23871d641d7aa",
@@ -871,8 +876,8 @@
     "description": "459bf62cb188c627f8b79d9e10f3a47c9304420ad6fdd0464dcdb2541d19df25"
   },
   "en/staleness.md": {
-    "content": "0e44d81e44917fb6f2b12ffe598a73bd1cebbac928d46eb8486be03164e37f12",
-    "description": "5e3bc8a5c461afb1c43cee84a6e4ce7eeb544c36201849aa061e801b938ad726"
+    "content": "9abfab99dbbee8d2ff798302408285d5b26fda5a4e44239c9a50d3dcc132c015",
+    "description": "7c191609b83c0d4a6d5bbca1573ecbc80dc46a34522aad428a2eb11659aa59c0"
   },
   "en/theming.md": {
     "content": "2c825e2f83ec21145379579c28241986e1778b0ee450a256ec17e652876e02f3",
