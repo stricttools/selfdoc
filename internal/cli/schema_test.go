@@ -286,3 +286,40 @@ func TestDumpSchemaWritesTheProjectIdentity(t *testing.T) {
 		t.Errorf("name is %v, want selfdoc", schema["name"])
 	}
 }
+
+// commandEntry is one registered command's schema entry.
+func commandEntry(t *testing.T, name string) map[string]any {
+	t.Helper()
+	commands, ok := New(Options{}).DumpSchemaDict()["commands"].(map[string]any)
+	if !ok {
+		t.Fatal("the application declares no commands")
+	}
+	entry, ok := commands[name].(map[string]any)
+	if !ok {
+		t.Fatalf("the %s command is not registered", name)
+	}
+	return entry
+}
+
+// TestCheckHelpSaysThatItWrites asserts that the check command's own help says
+// it advances the staleness baselines and commits them.
+//
+// check is one of the two declared writers of the hash store, and it is
+// registered as a mutating command -- but a command called "check" is run as a
+// read-only audit, and a help line that only promises to check leaves the
+// write to be discovered from a dirty working tree.
+func TestCheckHelpSaysThatItWrites(t *testing.T) {
+	entry := commandEntry(t, "check")
+	if entry["effect"] != "mutating" {
+		t.Errorf("check declares effect %v, want mutating", entry["effect"])
+	}
+	help, ok := entry["help"].(string)
+	if !ok {
+		t.Fatal("check declares no help")
+	}
+	for _, want := range []string{"baseline", "commits"} {
+		if !strings.Contains(help, want) {
+			t.Errorf("the check help does not say %q:\n%s", want, help)
+		}
+	}
+}

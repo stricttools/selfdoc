@@ -10,6 +10,7 @@ import (
 	"github.com/smm-h/selfdoc/internal/config"
 	"github.com/smm-h/selfdoc/internal/effects"
 	"github.com/smm-h/selfdoc/internal/gitcommit"
+	"github.com/smm-h/selfdoc/internal/layout"
 	"github.com/smm-h/selfdoc/internal/lints"
 	"github.com/smm-h/selfdoc/internal/payloadschemas"
 	"github.com/smm-h/selfdoc/internal/util"
@@ -17,13 +18,18 @@ import (
 )
 
 func (c *cli) registerCheck() {
-	c.app.Command("check", "Check documentation coverage, directive resolution, and lint rules",
+	c.app.Command("check",
+		"Check documentation coverage, directive resolution, and lint rules. It also WRITES: "+
+			"every page that is not reported stale or drifted has its content and description "+
+			"baseline advanced in "+layout.HashesRel+", and it commits the store unless "+
+			"--no-auto-commit says otherwise. That is why check is a mutating command rather "+
+			"than a read-only one",
 		c.cmdCheck,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.Check()),
 		strictcli.WithFlags(
 			strictcli.StringFlag("ignore", "Comma-separated SEO codes to suppress (e.g., SEO007,SEO008)", strictcli.Optional()),
-			strictcli.BoolFlag("auto-commit", "Automatically commit updated content hash tracking files to git after checking. Omitted, it commits; pass --no-auto-commit to leave them uncommitted", strictcli.Optional()),
+			strictcli.BoolFlag("auto-commit", "Automatically commit "+layout.HashesRel+", the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way", strictcli.Optional()),
 			strictcli.StringFlag("version-override", "Project version that version-bearing generated content is expected to embed (VER004), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump", strictcli.Optional()),
 		),
 	)
