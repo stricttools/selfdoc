@@ -1,6 +1,6 @@
 +++
 title = "Check Guide"
-description = "Run selfdoc check to validate directives, measure coverage, execute marked examples, spell-check page prose against the vendored word list and the shared accept list, lint blog posts alongside documentation pages, and apply every registered lint rule with its declared severity -- suppressing warnings only, never errors."
+description = "Run selfdoc check to validate directives, measure two-tier coverage and read what a skeleton-only symbol really means, execute marked examples, spell-check page prose, lint blog posts alongside documentation pages, and apply every registered lint rule with its declared severity -- suppressing warnings only, never errors."
 nav_group = "Guides"
 nav_order = 10
 +++
