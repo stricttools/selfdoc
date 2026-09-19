@@ -19,11 +19,10 @@ import (
 
 func (c *cli) registerCheck() {
 	c.app.Command("check",
-		"Check documentation coverage, directive resolution, and lint rules. It also WRITES: "+
-			"every page that is not reported stale or drifted has its content and description "+
-			"baseline advanced in "+layout.HashesRel+", and it commits the store unless "+
-			"--no-auto-commit says otherwise. That is why check is a mutating command rather "+
-			"than a read-only one",
+		"Check documentation coverage, directive resolution, and lint rules -- and write: it "+
+			"advances the content and description baseline of every page it does not report "+
+			"stale or drifted in "+layout.HashesRel+" and commits the store, which is why "+
+			"check is a mutating command and not a read-only one",
 		c.cmdCheck,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.Check()),
