@@ -32,9 +32,13 @@ What it does, in order:
   4. Rewrites the paths the moved content names -- the config keys, the root
      ignore file, and the old paths spelled inside pages, posts and templates
      -- as a SECOND commit through 'safegit commit'.
-  5. Builds the site again and refuses to finish unless the URL set is
-     identical to the one captured in step 2. The commits stay in place; the
-     difference is printed.
+  5. Builds the site again with the selfdoc binary resolved in step 0 and
+     refuses to finish unless the URL set is identical to the one captured in
+     step 2. The commits stay in place; the difference is printed.
+
+The binary that build runs is resolved BEFORE step 3, so a machine with no
+selfdoc is refused while the repository is still untouched: --selfdoc when it
+is named, otherwise 'selfdoc' on PATH, otherwise bin/selfdoc in the project.
 
 Usage:
 
@@ -404,9 +408,10 @@ def main() -> int:
                       help="perform the moves and the rewrites, as two commits")
     parser.add_argument("--project", default=".",
                         help="the repository to move; defaults to the working directory")
-    parser.add_argument("--selfdoc", default="./bin/selfdoc",
+    parser.add_argument("--selfdoc", default=None,
                         help="the selfdoc binary the after-the-move build runs, relative to "
-                             "the project or absolute; defaults to ./bin/selfdoc")
+                             "the project or absolute; with none named, 'selfdoc' on PATH is "
+                             "used, then bin/selfdoc inside the project")
     parser.add_argument("--expect-manifests", type=int, default=None,
                         help="fail unless the plan writes exactly this many ownership manifests")
     parser.add_argument("--expect-moves", type=int, default=None,
@@ -423,10 +428,45 @@ def main() -> int:
         return 1
 
 
+def resolve_selfdoc(project: Path, declared: str | None) -> str:
+    """The selfdoc binary the after-the-move build runs, as an absolute path.
+
+    Resolved before anything is written. The build is the move's last step, so
+    a binary found missing there leaves both commits in place and nothing
+    verified -- and calling a path that does not exist raises rather than
+    refusing. A binary named with --selfdoc must be there; with none named the
+    PATH answer is taken, and then bin/selfdoc inside the project.
+    """
+    if declared is not None:
+        candidate = Path(declared) if os.path.isabs(declared) else project / declared
+        if not (candidate.is_file() and os.access(candidate, os.X_OK)):
+            raise Refusal(
+                f"--selfdoc names {candidate}, which is not an executable file."
+            )
+        return str(candidate.resolve())
+    found = shutil.which("selfdoc")
+    if found:
+        return str(Path(found).resolve())
+    fallback = project / "bin" / "selfdoc"
+    if fallback.is_file() and os.access(fallback, os.X_OK):
+        return str(fallback.resolve())
+    raise Refusal(
+        "the build that verifies this move needs a selfdoc binary, and there is "
+        "none: 'selfdoc' is not on PATH and there is no executable bin/selfdoc "
+        "in the project. Install it with "
+        "'go install github.com/smm-h/selfdoc@v0', or name the binary with "
+        "'--selfdoc <path>', and run this again."
+    )
+
+
 def move(project: Path, args) -> int:
     config = load_config(project)
     docs_rel, output_rel, posts_rel = declared_paths(config)
     require_tool_root(project)
+    # Resolved here, before the first write: the build that verifies the move
+    # is its last step, so a binary that cannot be found would otherwise be
+    # discovered with both commits already in place.
+    selfdoc = resolve_selfdoc(project, args.selfdoc)
 
     leftovers = []
     for prefix in (docs_rel, posts_rel, DEPRECATED_ROOT):
@@ -453,6 +493,7 @@ def move(project: Path, args) -> int:
 
     print(f"project: {project}")
     print(f"declared today: docs={docs_rel}/ output={output_rel}/ posts={posts_rel}/")
+    print(f"selfdoc binary for the verifying build: {selfdoc}")
     print(f"sitemap URLs captured: {len(urls_before)}")
     print(f"manifests to write: {len(manifests)}")
     for relative in manifests:
@@ -501,7 +542,7 @@ def move(project: Path, args) -> int:
     if moves or manifests:
         perform_moves(project, moves, manifests)
     perform_rewrites(project, rewrites, output_rel)
-    return verify_urls(project, args.selfdoc, urls_before)
+    return verify_urls(project, selfdoc, urls_before)
 
 
 def perform_moves(project: Path, moves: list[tuple[str, str]], manifests: list[str]) -> None:
@@ -599,8 +640,7 @@ def print_followups(project: Path) -> None:
 
 
 def verify_urls(project: Path, selfdoc: str, urls_before: set[str]) -> int:
-    binary = selfdoc if os.path.isabs(selfdoc) else str(project / selfdoc)
-    result = run([binary, "build", "--no-auto-commit"], project)
+    result = run([selfdoc, "build", "--no-auto-commit"], project)
     sys.stdout.write(result.stdout[-4000:])
     sys.stderr.write(result.stderr[-4000:])
     if result.returncode != 0:

@@ -513,3 +513,113 @@ func TestTheMoveScriptRewritesAnUnslashedDocsKey(t *testing.T) {
 		}
 	}
 }
+
+// toolPath builds a PATH holding only the named tools, each symlinked into one
+// directory, so a test decides what the move script finds and what it does not.
+// The script is still launched through the session's own python3: Go resolves
+// that name before the child's environment applies.
+func toolPath(t *testing.T, tools ...string) string {
+	t.Helper()
+	dir := filepath.Join(t.TempDir(), "bin")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", dir, err)
+	}
+	for _, tool := range tools {
+		resolved, err := exec.LookPath(tool)
+		if err != nil {
+			t.Skipf("%s is not on PATH: the move script runs it", tool)
+		}
+		if err := os.Symlink(resolved, filepath.Join(dir, tool)); err != nil {
+			t.Fatalf("symlink %s: %v", tool, err)
+		}
+	}
+	return dir
+}
+
+// runMoveOnPath runs the move script with PATH set to exactly path.
+func runMoveOnPath(t *testing.T, root, dir, path string, args ...string) (string, int) {
+	t.Helper()
+	argv := append([]string{filepath.Join(root, moveScript), "--project", dir}, args...)
+	cmd := exec.Command("python3", argv...)
+	cmd.Dir = root
+	var env []string
+	for _, entry := range os.Environ() {
+		if !strings.HasPrefix(entry, "PATH=") {
+			env = append(env, entry)
+		}
+	}
+	cmd.Env = append(env, "PATH="+path)
+	out, err := cmd.CombinedOutput()
+	status := 0
+	var exitErr *exec.ExitError
+	if err != nil {
+		if !asExitError(err, &exitErr) {
+			t.Fatalf("running the move script: %v\n%s", err, out)
+		}
+		status = exitErr.ExitCode()
+	}
+	return string(out), status
+}
+
+// TestTheMoveScriptRefusesBeforeCommittingWhenTheBinaryIsMissing asserts that a
+// repository with no selfdoc binary is refused BEFORE the move's commits, with
+// a refusal rather than a Python traceback.
+//
+// The after-the-move build is the last step, so a binary that cannot be found
+// used to be discovered only once both commits were already in place: the
+// subprocess call raised FileNotFoundError and the person was left with a
+// traceback on top of a half-verified move.
+func TestTheMoveScriptRefusesBeforeCommittingWhenTheBinaryIsMissing(t *testing.T) {
+	requirePython3(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	makeToolRoot(t, dir)
+	before := gitOutput(t, dir, "rev-parse", "HEAD")
+
+	// git and safegit are on this PATH and selfdoc deliberately is not, so
+	// the script gets as far as it can before the binary is needed.
+	out, status := runMoveOnPath(t, root, dir, toolPath(t, "git", "safegit"), "--apply")
+
+	if status == 0 {
+		t.Fatalf("the move finished with no selfdoc binary to verify it:\n%s", out)
+	}
+	if strings.Contains(out, "Traceback (most recent call last)") {
+		t.Errorf("the script crashed instead of refusing:\n%s", out)
+	}
+	if !strings.Contains(out, "refused:") || !strings.Contains(out, "--selfdoc") {
+		t.Errorf("the refusal does not name the binary or how to supply one:\n%s", out)
+	}
+	if after := gitOutput(t, dir, "rev-parse", "HEAD"); after != before {
+		t.Errorf("the refusal came after a commit: HEAD moved from %s to %s\n%s",
+			before, after, out)
+	}
+}
+
+// TestTheMoveScriptTakesTheBinaryFromPath asserts that a repository with
+// selfdoc on PATH needs no --selfdoc: the default is what the person has, not a
+// bin/ directory only selfdoc's own checkout carries.
+func TestTheMoveScriptTakesTheBinaryFromPath(t *testing.T) {
+	requirePython3(t)
+	requireSafegit(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	makeToolRoot(t, dir)
+
+	stub := fakeSelfdoc(t, dir, sitemapXML("https://example.com/", "https://example.com/guide/"))
+	// The stub writes its sitemap with mkdir and cat, so both are on this
+	// PATH alongside the tools the script itself runs.
+	path := toolPath(t, "git", "safegit", "mkdir", "cat")
+	if err := os.Symlink(stub, filepath.Join(path, "selfdoc")); err != nil {
+		t.Fatalf("installing the stub on PATH: %v", err)
+	}
+
+	out, status := runMoveOnPath(t, root, dir, path, "--apply")
+	if status != 0 {
+		t.Fatalf("the move refused with selfdoc on PATH:\n%s", out)
+	}
+	if !strings.Contains(out, "the URL set is unchanged") {
+		t.Errorf("the after-the-move build did not run:\n%s", out)
+	}
+}
