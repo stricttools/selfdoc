@@ -2,6 +2,14 @@
 
 # Changelog
 
+## 0.43.1
+
+An edited page description now clears DRIFT001 even when `selfdoc gen` or `selfdoc build` runs before the next check.
+
+### Fixes
+
+- **An edited description now clears DRIFT001 when `selfdoc gen` or `selfdoc build` runs before the next check.** Those commands recorded the new description beside the page's old source-docstring and CLI-schema hashes, so `selfdoc check` kept reporting the rewritten page as drifted and only `selfdoc baseline accept` cleared it.
+
 ## 0.43.0
 
 The Go module moves to github.com/stricttools/selfdoc (install with go install github.com/stricttools/selfdoc@v0), and fixes for the defects a repository meets on its way off the old layout: a deleted generated page no longer leaves its hash-store entry behind, the layout and frontmatter refusals print a remedy the refused repository can run, the first refusal prints the whole ordered migration procedure, the move script resolves its selfdoc binary before it commits anything, a staleness finding names both ways out and accept says why it has nothing to do, check says in its own help that it writes and commits the baselines, and the skeleton-only coverage list names the page whose seeded description is the cause.
