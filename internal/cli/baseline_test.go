@@ -284,3 +284,58 @@ func TestTheHashStoreMessageBelongsToCheck(t *testing.T) {
 		t.Fatalf("HEAD subject = %q, want %q", subject, hashStoreMessage)
 	}
 }
+
+// driftIdentifiers runs the check and returns every page the run reports as
+// drifted, named exactly as the report names it.
+func driftIdentifiers(t *testing.T, dir string) []string {
+	t.Helper()
+	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	payload := payloadOf(t, result)
+	var pages []string
+	for _, raw := range payload["lints"].([]any) {
+		lint := raw.(map[string]any)
+		if lint["code"] == "DRIFT001" {
+			pages = append(pages, lint["file"].(string))
+		}
+	}
+	return pages
+}
+
+// TestADescriptionEditClearsDriftThroughGen is the release order: a docstring
+// changes, check reports DRIFT001, the description is rewritten, and gen runs
+// before the next check. gen records the new description; it used to keep the
+// old source-docstring hash beside it, so the check after it reported the
+// rewritten page as drifted and only `baseline accept` cleared it -- against
+// the diagnostic's own word that the edit clears it with no further command.
+func TestADescriptionEditClearsDriftThroughGen(t *testing.T) {
+	isolate(t)
+	dir := postProject(t, map[string]any{
+		"source": []any{map[string]any{"path": "mylib/", "language": "python"}},
+		"docs":   ".stricttools/docs/",
+		"output": ".stricttools/docs-cache/build/",
+	})
+	writeSource := func(docstring string) {
+		t.Helper()
+		writeText(t, filepath.Join(dir, "mylib", "__init__.py"),
+			"\"\"\""+docstring+"\"\"\"\n\ndef greet(name):\n    \"\"\"Say hello.\"\"\"\n    return name\n")
+	}
+	writeSource("Original docstring.")
+	body := ":-: ref path=\"mylib\""
+	writePage(t, dir, "Library docs for the mylib package and its greeting helper.", body, "mylib.md")
+	if drift := driftIdentifiers(t, dir); len(drift) != 0 {
+		t.Fatalf("a fresh page is reported drifted: %v", drift)
+	}
+
+	writeSource("Completely rewritten docstring.")
+	if drift := driftIdentifiers(t, dir); len(drift) != 1 {
+		t.Fatalf("expected one drifted page, got %v", drift)
+	}
+
+	writePage(t, dir, "Rewritten library docs for the mylib package and its helper.", body, "mylib.md")
+	if result := run(t, dir, "gen", "--no-auto-commit"); result.ExitCode != 0 {
+		t.Fatalf("gen failed: %s\n%s", result.Stdout, result.Stderr)
+	}
+	if drift := driftIdentifiers(t, dir); len(drift) != 0 {
+		t.Errorf("DRIFT001 survived the description edit: %v", drift)
+	}
+}

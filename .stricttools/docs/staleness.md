@@ -1,6 +1,6 @@
 +++
 title = "Staleness Detection"
-description = "How selfdoc detects stale frontmatter descriptions by hashing page content, the two alternative ways to clear a STALE001 or DRIFT001 finding, and how to accept a reviewed dead-end."
+description = "How selfdoc detects stale frontmatter descriptions by hashing page content, which command records each stored hash, the two alternative ways to clear a STALE001 or DRIFT001 finding, and how to accept a reviewed dead-end."
 nav_group = "Guides"
 nav_order = 18
 +++
@@ -114,7 +114,7 @@ Descriptions are handwritten; machine-emitted text is only ever a placeholder. T
 }
 ```
 
-Ownership of the store fields is split by writer: `selfdoc gen` owns `seed_hash`, while `selfdoc build`/`selfdoc check` own `content`, `description`, and the drift hashes. Each writer merges rather than overwriting, so they never clobber the other's fields.
+Only `selfdoc gen` writes `seed_hash`. The `content` and `description` hashes are recorded by every command that writes the store -- `selfdoc gen` and `selfdoc build` as well as `selfdoc check` -- and each of them holds the baseline of a page with an outstanding STALE001. Only `selfdoc check` measures the drift hashes (`source_docstring` and `schema_hash`). A description certifies the drift hashes stored beside it, so a command that records a changed description pairs it with the drift hashes it measured: `selfdoc check` records the current ones, while `selfdoc gen` and `selfdoc build` drop them, and the next `selfdoc check` records them again without a finding. An edited description therefore clears DRIFT001 whichever of these commands runs first after the edit. Each writer merges rather than overwriting, so none of them clobbers a field it does not write.
 
 This is what lets `selfdoc gen` safely regenerate: a description is reseeded only when it is machine-owned (it matches the recorded `seed_hash` or a known machine template), and a description you rewrote by hand is preserved -- even if a stale `seeded: true` marker was left in the frontmatter. The same predicate drives the STALE001/DRIFT001 exemption: only genuinely machine-generated descriptions are exempt from the staleness hold, so a generated page you describe by hand is checked like any other page.
 

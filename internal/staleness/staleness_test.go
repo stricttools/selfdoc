@@ -1015,6 +1015,119 @@ func TestSchemaDriftPersistsUntilTheDescriptionIsRewritten(t *testing.T) {
 	}
 }
 
+// A description rewrite recorded by a pass that does not measure drift -- gen
+// and build pass nil for both drift inputs -- must still clear the drift. The
+// description is what certifies the recorded source hashes, so advancing it
+// while keeping the old source hashes left the rewritten description paired
+// with sources it was never reviewed against: the next check reported DRIFT001
+// forever, and only `selfdoc baseline accept` could clear it.
+
+func TestSchemaDriftClearsWhenAnUnmeasuringPassRecordsTheRewrite(t *testing.T) {
+	base := testproject.Dir(t)
+	handle := effects.Unbound()
+	pages := docs([3]string{"cli-build.md", "Build the project", "# Build\n\nContent."})
+	if _, _, err := UpdateHashes(pages, base, false, nil, map[string]string{"cli-build.md": "schema_v1"}, nil, handle); err != nil {
+		t.Fatalf("the baseline pass: %v", err)
+	}
+	changed := map[string]string{"cli-build.md": "schema_v2"}
+	if _, drift, err := UpdateHashes(pages, base, false, nil, changed, nil, handle); err != nil || len(drift) != 1 {
+		t.Fatalf("the drift pass reported %v (err %v), want one schema drift", drift, err)
+	}
+
+	// The description is rewritten, and a gen-shaped pass records it first.
+	fixed := docs([3]string{"cli-build.md", "Build the project with new flags", "# Build\n\nContent."})
+	if _, _, err := UpdateHashes(fixed, base, false, nil, nil, map[string]bool{}, handle); err != nil {
+		t.Fatalf("the unmeasuring pass: %v", err)
+	}
+	_, drift, err := UpdateHashes(fixed, base, false, nil, changed, nil, handle)
+	if err != nil {
+		t.Fatalf("the check pass: %v", err)
+	}
+	if len(drift) != 0 {
+		t.Errorf("the drift survived the description rewrite: %v", drift)
+	}
+	store, err := LoadHashes(base)
+	if err != nil {
+		t.Fatalf("loading the store: %v", err)
+	}
+	if store["cli-build.md"].SchemaHash != "schema_v2" {
+		t.Errorf("the check pass recorded the schema hash as %q, want schema_v2",
+			store["cli-build.md"].SchemaHash)
+	}
+
+	// The new pairing is live: a later schema change reports again.
+	if _, drift, err := UpdateHashes(fixed, base, false, nil,
+		map[string]string{"cli-build.md": "schema_v3"}, nil, handle); err != nil || len(drift) != 1 {
+		t.Errorf("a later schema change reported %v (err %v), want one schema drift", drift, err)
+	}
+}
+
+func TestSourceDriftClearsWhenAnUnmeasuringPassRecordsTheRewrite(t *testing.T) {
+	requirePython3(t)
+	hygiene.Isolate(t)
+	base := testproject.Dir(t)
+	handle := effects.Unbound()
+	source := filepath.Join(base, "mod.py")
+	writeSource := func(docstring string) {
+		t.Helper()
+		if err := os.WriteFile(source, []byte("\"\"\""+docstring+"\"\"\"\n\ndef foo(): pass\n"), 0o644); err != nil {
+			t.Fatalf("writing the source: %v", err)
+		}
+	}
+	directives := func() map[string][]PageDirective {
+		return map[string][]PageDirective{
+			"mod.md": {{
+				PathArg:     source,
+				SourceEntry: &extractors.SourceEntry{Path: base, Language: "python", Extractor: pythonextractor.New()},
+			}},
+		}
+	}
+	writeSource("Original docstring.")
+	pages := docs([3]string{"mod.md", "The original module.", "# Mod\n\nContent."})
+	if _, _, err := UpdateHashes(pages, base, false, directives(), nil, nil, handle); err != nil {
+		t.Fatalf("the baseline pass: %v", err)
+	}
+	writeSource("Updated docstring with new info.")
+	if _, drift, err := UpdateHashes(pages, base, false, directives(), nil, nil, handle); err != nil || len(drift) != 1 {
+		t.Fatalf("the drift pass reported %v (err %v), want one documentation drift", drift, err)
+	}
+
+	fixed := docs([3]string{"mod.md", "The module, with new info.", "# Mod\n\nContent."})
+	if _, _, err := UpdateHashes(fixed, base, false, nil, nil, map[string]bool{}, handle); err != nil {
+		t.Fatalf("the unmeasuring pass: %v", err)
+	}
+	_, drift, err := UpdateHashes(fixed, base, false, directives(), nil, nil, handle)
+	if err != nil {
+		t.Fatalf("the check pass: %v", err)
+	}
+	if len(drift) != 0 {
+		t.Errorf("the drift survived the description rewrite: %v", drift)
+	}
+
+	writeSource("A third docstring.")
+	if _, drift, err := UpdateHashes(fixed, base, false, directives(), nil, nil, handle); err != nil || len(drift) != 1 {
+		t.Errorf("a later docstring change reported %v (err %v), want one documentation drift", drift, err)
+	}
+}
+
+// An unmeasuring pass that leaves the description alone keeps the recorded
+// source hashes: a drifted page stays reported until someone acts.
+func TestAnUnmeasuringPassKeepsTheDriftOfAnUnrewrittenDescription(t *testing.T) {
+	base := testproject.Dir(t)
+	handle := effects.Unbound()
+	pages := docs([3]string{"cli-build.md", "Build the project", "# Build\n\nContent."})
+	if _, _, err := UpdateHashes(pages, base, false, nil, map[string]string{"cli-build.md": "schema_v1"}, nil, handle); err != nil {
+		t.Fatalf("the baseline pass: %v", err)
+	}
+	changed := map[string]string{"cli-build.md": "schema_v2"}
+	if _, _, err := UpdateHashes(pages, base, false, nil, nil, map[string]bool{}, handle); err != nil {
+		t.Fatalf("the unmeasuring pass: %v", err)
+	}
+	if _, drift, err := UpdateHashes(pages, base, false, nil, changed, nil, handle); err != nil || len(drift) != 1 {
+		t.Errorf("the check pass reported %v (err %v), want one schema drift", drift, err)
+	}
+}
+
 // TestSourceDocstringDriftIsMeasuredThroughTheExtractor covers the whole
 // drift path: a module page's baseline is the docstring hash of the sources
 // its directives resolved to, and a changed docstring with an unchanged

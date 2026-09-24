@@ -22,6 +22,13 @@
 // and schema_hash. UpdateHashes therefore MERGES into an existing entry
 // instead of replacing it, so neither writer erases the other's fields.
 //
+// gen and build also run UpdateHashes, with neither drift input, so they
+// advance content and description without measuring source_docstring or
+// schema_hash. A description certifies the drift hashes beside it, so when a
+// page's description advances, its drift hashes are replaced with what that
+// pass measured -- nothing, for gen and build -- and the next check records
+// them again without a report.
+//
 // # The empty string stands for an absent hash
 //
 // Every hash this package stores is a 64-character hex digest, so no real
@@ -572,7 +579,10 @@ func ComputeCurrentHashes(
 // A page reported stale or drifted keeps its ENTIRE previous entry, so the
 // error persists until the description is rewritten. Every other page's
 // freshly computed fields are MERGED into its existing entry, so the
-// gen-owned seed_hash survives a check pass and vice versa.
+// gen-owned seed_hash survives a check pass and vice versa. The one exception
+// is a page whose description changed: its drift hashes are replaced with the
+// ones this pass measured, which are none when pageDirectives or schemaHashes
+// is nil.
 func UpdateHashes(
 	allDocs map[string]Doc,
 	baseDir string,
@@ -645,7 +655,21 @@ func UpdateHashes(
 			// Do not advance the baseline of a page with errors.
 			continue
 		}
-		stored[relPath] = merge(stored[relPath], entry)
+		previous, known := stored[relPath]
+		advanced := merge(previous, entry)
+		if known && entry.Description != previous.Description {
+			// The description certifies the source hashes stored beside
+			// it, so a new description is paired with the sources THIS
+			// pass measured, and with none where it measured none. A pass
+			// that does not measure drift (gen, build) used to keep the old
+			// hashes here, pairing the rewrite with sources it was never
+			// reviewed against: the next check reported drift the edit had
+			// cleared. An absent hash is re-recorded by the next measuring
+			// pass without a report.
+			advanced.SourceDocstring = entry.SourceDocstring
+			advanced.SchemaHash = entry.SchemaHash
+		}
+		stored[relPath] = advanced
 	}
 	if !dryRun {
 		if err := SaveHashes(stored, baseDir, handle); err != nil {
