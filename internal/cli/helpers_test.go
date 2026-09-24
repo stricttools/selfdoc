@@ -13,7 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/cli/faketool"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/strictcli/go/strictcli"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // fakeToolBinary is the fake external tool this test binary built for itself:

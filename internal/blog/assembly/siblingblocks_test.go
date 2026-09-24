@@ -11,7 +11,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/build"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // siblingEntry is one line of the block a test expects to read.

@@ -8,7 +8,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The output-directory refusal has both halves: a path git ignores is

@@ -152,7 +152,7 @@ func writeJSON(t *testing.T, path string, value any) {
 
 // runGit runs git in dir.
 //
-// No identity is injected: stricttest's isolation floor owns the git identity
+// No identity is injected: testisolation's isolation floor owns the git identity
 // and the throwaway global config for the whole test.
 func runGit(t *testing.T, dir string, args ...string) {
 	t.Helper()

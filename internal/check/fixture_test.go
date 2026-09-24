@@ -14,7 +14,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 
 	// Every language the check's fixtures declare has to be linked in, or
 	// resolution answers with a stub and the coverage tests measure

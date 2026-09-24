@@ -12,7 +12,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/blog/sitedirectives"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // homeListingTOML is the home project's curated listing, as its author writes

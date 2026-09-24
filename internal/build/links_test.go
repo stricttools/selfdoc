@@ -10,7 +10,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/resolution"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // linkedPages is every internal link shape a page can write: a sibling, a

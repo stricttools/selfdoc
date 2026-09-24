@@ -14,7 +14,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/staleness"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 
 	// The language packages register their extractors, which is what links
 	// a language into a binary. A build links them through internal/cli; the

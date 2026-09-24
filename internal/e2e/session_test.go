@@ -13,7 +13,7 @@ import (
 	"github.com/playwright-community/playwright-go"
 	"github.com/stricttools/selfdoc/internal/blog/preview"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // playwrightModule is the driver binding whose version decides which Node

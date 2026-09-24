@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/config"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // multiReleasableTags is a repository that releases several packages, newest

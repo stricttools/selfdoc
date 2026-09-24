@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 func TestCheckReservedPagePaths(t *testing.T) {

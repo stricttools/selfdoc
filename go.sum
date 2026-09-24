@@ -36,14 +36,14 @@ github.com/smm-h/strictcli/go v0.34.0 h1:EgqXJ5eEQQ26C1Y5oI9QKaU/9ES24JuWOTRR6Gr
 github.com/smm-h/strictcli/go v0.34.0/go.mod h1:6mGIkQYXOG1UYkwBclbTmj8Rw9fP8jjEEDXSDsH0bNI=
 github.com/smm-h/strictspec/go v0.2.5 h1:JLX2quk+Pvibv+pW5VkIntjhXodFqTM6U6nQSlkAkQk=
 github.com/smm-h/strictspec/go v0.2.5/go.mod h1:D/rx0tstMHNDuk5aD2C5FLe2NPvmGng/fCkpNJtxEWk=
-github.com/smm-h/stricttest/go v0.2.0 h1:Yanc930kSovMdCMmB+KPbqbRZTdeWiivlOwvs0qBztM=
-github.com/smm-h/stricttest/go v0.2.0/go.mod h1:/rFaWmnLgp6wY9Ne+/kZIMUdOOGTPjjTHDgJjxyaYTs=
 github.com/smm-h/tinymoon v0.11.0 h1:I5t9RrcqTqR6+rK4cCGEyG58rpltjI2aoXSOHNdsVDM=
 github.com/smm-h/tinymoon v0.11.0/go.mod h1:B8vP5etlKik5OD6oYy+fVwrrueEIzTZ19ittvn1Y/uQ=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stricttools/testisolation/go v0.3.0 h1:L9CeDnuBA3laRsRhE3HkUl6gZH1mR/7tXQz187CivZw=
+github.com/stricttools/testisolation/go v0.3.0/go.mod h1:rLfo/WBRt3thVzVHSO0R+dN/7lN1a1KF0b8ySt69bWY=
 github.com/toml-lang/toml-test/v2 v2.2.0 h1:q3ELZu7oPnpl9TClC6OOcAccXwj+jwAyFP8WvzBdK1M=
 github.com/toml-lang/toml-test/v2 v2.2.0/go.mod h1:TQdjhQItoZ0R+OODNiHUuxxxErtaE0Xsod2ENZbMvxI=
 github.com/xyproto/randomstring v1.0.5 h1:YtlWPoRdgMu3NZtP45drfy1GKoojuR7hmRcnhZqKjWU=

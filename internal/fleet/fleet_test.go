@@ -11,7 +11,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/smm-h/strictcli/go/strictcli"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // defaultConfig is the minimal valid selfdoc config the Python fixture used:

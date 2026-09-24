@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // write puts content at name inside a fresh temporary directory and returns

@@ -9,7 +9,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/extractors"
 	"github.com/stricttools/selfdoc/internal/prose"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // isolate binds the environment isolation floor. Nothing here calls

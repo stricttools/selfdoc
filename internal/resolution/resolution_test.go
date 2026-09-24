@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/lints"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 const base = "https://example.com"

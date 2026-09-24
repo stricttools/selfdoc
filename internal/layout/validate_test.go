@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // validated is a repository whose layout is exactly as declared: every claimed

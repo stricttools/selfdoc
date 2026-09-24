@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/smm-h/strictcli/go/strictcli"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // dispatch runs body through a mutating strictcli command and returns the

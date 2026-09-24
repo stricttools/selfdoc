@@ -10,7 +10,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/resolution"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // threeSiblings is the roster an assembled build is handed, out of name order

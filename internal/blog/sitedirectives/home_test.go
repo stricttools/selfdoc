@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // homeProject is a home project whose front page carries both site-level

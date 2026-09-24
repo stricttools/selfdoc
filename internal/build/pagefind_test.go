@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // indexFragment is one indexed page, as Pagefind recorded it.

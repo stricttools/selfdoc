@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The publish surface: the declaration, the plan, and the consent path.

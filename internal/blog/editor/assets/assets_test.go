@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // isolate binds the environment-isolation floor. Resolving a "~" path reads

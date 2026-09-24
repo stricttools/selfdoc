@@ -9,7 +9,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/blog/listing"
 	"github.com/stricttools/selfdoc/internal/config"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // -- the posts overlay -------------------------------------------------------

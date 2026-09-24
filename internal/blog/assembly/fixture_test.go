@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly/fakegh"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // fakeGHBinary is the fake gh this test binary built for itself: one plain,

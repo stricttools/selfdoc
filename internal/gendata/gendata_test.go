@@ -12,7 +12,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/smm-h/strictcli/go/strictcli"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // isolate binds the environment isolation floor and returns a directory at

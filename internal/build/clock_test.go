@@ -11,7 +11,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/page"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/stricttools/selfdoc/internal/urls"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The clock is the one thing a build reads that is not the project: a page

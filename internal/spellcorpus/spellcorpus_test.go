@@ -13,7 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/fleet"
 	"github.com/stricttools/selfdoc/internal/spelling"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // isolate binds the test-environment isolation floor. It also points the

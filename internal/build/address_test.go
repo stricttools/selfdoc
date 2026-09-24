@@ -15,7 +15,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // addressPages is a docs tree with depth plus one page that opts out of

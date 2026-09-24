@@ -15,7 +15,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The posts the fixtures publish, each a full Markdown source as it would be

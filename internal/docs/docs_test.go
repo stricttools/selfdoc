@@ -12,7 +12,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/directives"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/layout"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 func isolate(t *testing.T) {

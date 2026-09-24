@@ -17,7 +17,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // words returns the unrecognized words found in text, as plain strings.

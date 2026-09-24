@@ -13,7 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/verify"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The command's whole claim is that what it shows you is what a deploy would

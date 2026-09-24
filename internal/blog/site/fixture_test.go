@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // canonicalBase is the assembly site's base URL in every fixture page.

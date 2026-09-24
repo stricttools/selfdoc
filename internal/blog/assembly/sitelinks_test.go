@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // siteLinksBase is the site the relativizing pass recognises as its own.

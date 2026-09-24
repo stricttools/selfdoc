@@ -20,7 +20,7 @@ import (
 	pythonextractor "github.com/stricttools/selfdoc/internal/extractors/python"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // requirePython3 skips a test that reads a Python source tree when there is

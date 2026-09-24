@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/extractors"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // Every expectation in this file is a recorded observation: the strings were

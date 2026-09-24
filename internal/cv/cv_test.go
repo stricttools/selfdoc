@@ -14,7 +14,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/identity"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // testAuthor is the author a site declares, as the shared test fixture

@@ -11,7 +11,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The server half is asserted on the wire, against a real server on an

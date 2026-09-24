@@ -8,7 +8,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/scripts"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // grant writes one directory's ownership manifest, which is what makes the

@@ -13,7 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/chrome"
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/stricttest/go/hygiene"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 const sharedCanonicalBase = "https://docs.example.com"
