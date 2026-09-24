@@ -2,6 +2,26 @@
 
 # Changelog
 
+## 0.44.0
+
+selfdoc init adopts a fresh repository (all three directory manifests) and writes the versioned form; baseline accept keeps seed_hash; CI runs the development Go
+
+<details>
+<summary>Context</summary>
+
+`selfdoc init` refused every repository that had not already been granted `.stricttools/docs/`, so a new project could not start from it, and it declared codeless projects `"unversioned": true`, which gen refuses once source code appears. Init now performs the adoption itself and always writes `version`/`versions` (0.0.0 for a new project). That changed output is why this is a minor release.
+
+</details>
+
+### Breaking
+
+- **`selfdoc init` writes the versioned form, never `"unversioned": true`.** The config gets `version` and a one-entry `versions` at the version the project's manifest states, or `0.0.0` for a project that states none yet (a code project without a version is no longer refused, and a codeless one is no longer declared unversioned, which `selfdoc gen` refuses once the project gains source code).
+
+### Fixes
+
+- **`selfdoc init` works in a fresh repository: it writes the ownership manifests of `.stricttools/docs/`, `.stricttools/docs-state/` and `.stricttools/docs-cache/`.** It used to refuse because `.stricttools/docs/manifest.toml` was missing, and never created the other two. A manifest already naming selfdoc is kept; one naming another tool stops init before anything is written.
+- **`selfdoc baseline accept` no longer erases a page's `seed_hash`.** Accepting a baseline replaced the page's whole hash entry, dropping the record `selfdoc gen` keeps of the description it wrote, so a generated page whose baseline was accepted stopped being recognized as machine-described. Accept now merges the fields it measures into the stored entry, as the docs already said every writer does.
+
 ## 0.43.1
 
 An edited page description now clears DRIFT001 even when `selfdoc gen` or `selfdoc build` runs before the next check.
