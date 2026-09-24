@@ -8,7 +8,7 @@ import (
 
 	tomledit "github.com/smm-h/go-toml-edit"
 	"github.com/stricttools/selfdoc/internal/scripts"
-	"github.com/smm-h/strictspec/go/strictspec"
+	"github.com/stricttools/strictspec/go/strictspec"
 )
 
 // Fence opens and closes a frontmatter block. Everything between the opening

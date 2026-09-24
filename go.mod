@@ -17,8 +17,8 @@ require (
 	github.com/andybalholm/brotli v1.2.4
 	github.com/odvcencio/gotreesitter v0.52.0
 	github.com/playwright-community/playwright-go v0.6000.0
-	github.com/smm-h/strictspec/go v0.2.5
 	github.com/smm-h/tinymoon v0.11.0
+	github.com/stricttools/strictspec/go v0.4.0
 	golang.org/x/text v0.42.0
 )
 

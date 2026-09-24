@@ -71,7 +71,7 @@ const OwnerKey = "owner"
 // key has exactly one author and a manifest on disk stays one line long.
 const (
 	formatVersionKey      = "format_version"
-	manifestFormatVersion = SchemaFormatVersion
+	manifestFormatVersion = SCHEMA_FORMAT_VERSION
 )
 
 // IgnoreFileName is the derived ignore file inside [Root], and the one entry
