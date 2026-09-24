@@ -82,12 +82,12 @@
   },
   "project_id": "github.com/stricttools/selfdoc",
   "name": "selfdoc",
-  "version": "0.43.1",
+  "version": "0.44.0",
   "help": "Code-aware static site generator with directive-based content extraction",
   "commands": {
     "init": {
       "name": "init",
-      "help": "Initialize selfdoc configuration and starter docs template",
+      "help": "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page",
       "effect": "mutating",
       "flags": [
         {
