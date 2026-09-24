@@ -329,7 +329,9 @@ func AcceptBaselines(
 
 	var accepted []AcceptedBaseline
 	for _, page := range ordered {
-		state.Stored[page] = state.Current[page]
+		// Merged, not replaced: the current entry carries only what accept
+		// measures, and the stored one also holds gen's seed_hash.
+		state.Stored[page] = staleness.Merge(state.Stored[page], state.Current[page])
 		accepted = append(accepted, AcceptedBaseline{
 			Page: page, Code: state.ErrorPages[page],
 		})

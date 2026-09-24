@@ -107,6 +107,44 @@ func TestAcceptAdvancesBaselineToCurrentHashes(t *testing.T) {
 	}
 }
 
+// TestAcceptKeepsTheSeedHash: accept advances the fields a finding is about
+// and merges them into the stored entry rather than replacing it. gen's
+// seed_hash -- the record of the machine-written description that makes the
+// page machine-owned -- is not something accept measures, so it survives.
+func TestAcceptKeepsTheSeedHash(t *testing.T) {
+	root := baselineProject(t, nil)
+	writePage(t, root, "Original description", "Original content here.", "page.md")
+	checkFixture(t, root)
+
+	stored, err := staleness.LoadHashes(root)
+	if err != nil {
+		t.Fatalf("LoadHashes: %v", err)
+	}
+	entry := stored["page.md"]
+	entry.SeedHash = "seedseedseed"
+	stored["page.md"] = entry
+	if err := staleness.SaveHashes(stored, root, handle()); err != nil {
+		t.Fatalf("SaveHashes: %v", err)
+	}
+
+	writePage(t, root, "Original description", "Brand new body text.", "page.md")
+	checkFixture(t, root)
+	if _, err := AcceptBaselines([]string{"page.md"}, root, nil, handle()); err != nil {
+		t.Fatalf("AcceptBaselines: %v", err)
+	}
+
+	after, err := staleness.LoadHashes(root)
+	if err != nil {
+		t.Fatalf("LoadHashes: %v", err)
+	}
+	if after["page.md"].SeedHash != "seedseedseed" {
+		t.Errorf("seed_hash = %q after accept, want it kept", after["page.md"].SeedHash)
+	}
+	if want := staleness.ComputeContentHash("# Page\n\nBrand new body text.\n"); after["page.md"].Content != want {
+		t.Errorf("content hash not advanced: %q", after["page.md"].Content)
+	}
+}
+
 // TestAcceptAfterADescriptionEditSaysWhatHappened drives the remedy the
 // finding prints, in the order the finding invites: edit the description, then
 // run accept.

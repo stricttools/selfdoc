@@ -656,7 +656,7 @@ func UpdateHashes(
 			continue
 		}
 		previous, known := stored[relPath]
-		advanced := merge(previous, entry)
+		advanced := Merge(previous, entry)
 		if known && entry.Description != previous.Description {
 			// The description certifies the source hashes stored beside
 			// it, so a new description is paired with the sources THIS
@@ -679,10 +679,11 @@ func UpdateHashes(
 	return staleWarnings, driftWarnings, nil
 }
 
-// merge writes the freshly computed build/check-owned fields over an existing
+// Merge writes the freshly computed build/check-owned fields over an existing
 // entry, keeping the gen-owned seed_hash and keeping any field the fresh
-// computation did not produce.
-func merge(existing, fresh Entry) Entry {
+// computation did not produce. Every writer of the store goes through it, so
+// none clobbers a field it does not write.
+func Merge(existing, fresh Entry) Entry {
 	if fresh.Content != "" {
 		existing.Content = fresh.Content
 	}
