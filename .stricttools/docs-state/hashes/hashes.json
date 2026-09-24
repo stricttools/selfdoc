@@ -152,13 +152,13 @@
     "schema_hash": "806779b013a5e275c0d03ad141b4c4d807782d52bb3994e3c0e4a2cfb2bb559f"
   },
   "en/cli-index.md": {
-    "content": "51328253c684208c1d63505c8f264ccdd8e456eb24b35392ca7de470bb766d44",
+    "content": "0026e638a1923fbf9a9b9901e797e67afd66245bf8b81ed34af20f389a0d64c2",
     "description": "724db89f86f422c6d4f6edce194686ba7f6d8460094aef06b0daebc495476948"
   },
   "en/cli-init.md": {
-    "content": "cf5efe95b3ee24ff744fa1581ca153fbfd92f26b8bc0dcd32fb35f96979257da",
+    "content": "0d60dc8fe63b33db01e43308dc5183456471e27c810576ae45293faf042dc87e",
     "description": "292d5b1660cfeae08b31c785b6ccf7b94c4067d5ba0c0d1f63fbbbe456684bfb",
-    "schema_hash": "9fbee196ae95ef7b8093a914a091cdfc3827dd9b15109aaede03b32c4ec8cecc"
+    "schema_hash": "d6410f6b2537f50bb956969bd6eae0705d3049466c628c8c71a0a81223d2dcb7"
   },
   "en/cli-layout.md": {
     "content": "dfd3c29d9789df5d182d9475a73ac6f32a0a3c1806354c79c691d5cd01a6a0b7",
@@ -244,7 +244,7 @@
     "seed_hash": "3a5e5039119f82a76e5b6fc6cfcaca9e06bd5cb944e177d7419fb756fc234df5"
   },
   "en/getting-started.md": {
-    "content": "25cb73fbd6c9fcf253659d966b1c849587ff28495eeefbe3a701c74e13c3c36f",
+    "content": "10a445f21a383001fc5283140dab761d4ec5ecf0abbe61b8a7b5e78085b37c9e",
     "description": "997a99cc3c95957051c66a6970d4a4e3ec0e79b0819fe0fe9041a71af3a29987"
   },
   "en/glossary-guide.md": {
@@ -527,7 +527,7 @@
   "en/internal-layout.md": {
     "content": "52f92ef04414261f2f49481d476762ebd38a5b6a8947ed602f3b647d8d28bdd8",
     "description": "af3462390e8feacf50d8b9b9eb76c082d5026b07d60939b31c2fe787bf24c6bf",
-    "source_docstring": "e2e1bf190c16979d11fe9c714a7bebbfd31e63f66c0defc2a69035d92b8ab6a7"
+    "source_docstring": "94d831a6c115b7a8e6f7f0a199dc05ebe89923dd4821b5778d119b13a411718b"
   },
   "en/internal-lints.md": {
     "content": "7911da93c39e1c1946c429f921a8ec87c3f58e00e93165f136b092d3ae5aa2e4",
@@ -644,7 +644,7 @@
     "description": "368283e2ae5434b431437461e25c722f4ddc31083b2720fe7794ada67c517418"
   },
   "en/layout.md": {
-    "content": "6b5f14d5ecdfb1699e8fbb66e3c2ad9ef7d5d1fb2adbbd51974b46de0326fb1d",
+    "content": "7e8b8f6f187e3e9904f29c40ed79c3eb732e37eacfb18f1d3eda045805b3664f",
     "description": "94ca63d3e296e57039da4a2536d10f168f606c2bca66f04c548134a9d185a23e"
   },
   "en/llms-txt.md": {
