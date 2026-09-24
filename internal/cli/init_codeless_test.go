@@ -59,9 +59,8 @@ func TestInitAcceptsACodelessProject(t *testing.T) {
 	if config["base_url"] != fixtureBaseURL {
 		t.Errorf("base_url is %v", config["base_url"])
 	}
-	if config["unversioned"] != true {
-		t.Errorf("a codeless project is not declared unversioned: %v", config["unversioned"])
-	}
+	// Versioned at 0.0.0, never "unversioned": true (see init_layout_test.go).
+	assertVersionedAt(t, dir, "0.0.0")
 }
 
 func TestInitWritesTheDeclaredAuthor(t *testing.T) {
@@ -192,26 +191,5 @@ func TestInitEmitsALoadableConfigForACodeProject(t *testing.T) {
 	run(t, dir, "build", "--no-auto-commit")
 	if !exists(filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html")) {
 		t.Error("the scaffolded project does not build")
-	}
-}
-
-func TestInitRefusesAVersionlessCodeProject(t *testing.T) {
-	// A project with code reads its version out of its own manifest; when the
-	// manifest states none, init refuses rather than writing a number the
-	// project never released.
-	isolate(t)
-	dir := testproject.Dir(t)
-	writeText(t, filepath.Join(dir, "pyproject.toml"), "[project]\nname = \"testproj\"\n")
-	writeText(t, filepath.Join(dir, "testproj", "__init__.py"), "")
-
-	code, _, stderr := initProject(t, dir)
-	if code != 1 {
-		t.Fatalf("exit code is %d, want 1", code)
-	}
-	if !strings.Contains(stderr, "No version found") {
-		t.Errorf("the refusal does not name the missing version: %s", stderr)
-	}
-	if exists(filepath.Join(dir, "selfdoc.json")) {
-		t.Error("a refused init wrote a config")
 	}
 }

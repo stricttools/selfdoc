@@ -182,9 +182,9 @@ func MakeLocalized(t TB, locales []map[string]any, overrides map[string]any) str
 // Manifests writes the ownership manifest every directory selfdoc claims needs
 // before selfdoc may write into it.
 //
-// selfdoc never writes a manifest: the file is the permission, and granting it
-// is the repository's own act. A fixture project is a repository, so it grants
-// every one of them here.
+// Only `selfdoc init` writes manifests: the file is the permission, and
+// granting it is the repository's own act. A fixture project is a repository,
+// so it grants every one of them here.
 func Manifests(t TB, projectDir string) {
 	t.Helper()
 	for _, claimed := range layout.Declared() {

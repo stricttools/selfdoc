@@ -65,10 +65,13 @@ owner = "selfdoc"
 That line is the permission to write. selfdoc writes into a directory under
 `.stricttools/` only when that directory's manifest names selfdoc as its owner,
 and refuses with the exact file and the exact line to write when it does not.
-selfdoc never writes a manifest itself, and never creates `.stricttools/`
-either: granting the permission is the repository's own act. The one exception
-is the move script below, which writes the manifests of the directories it
-moves content into.
+Granting the permission is the repository's own act, so only two things write
+a manifest: `selfdoc init`, which a repository runs to adopt selfdoc and which
+writes the manifests of `.stricttools/docs/`, `.stricttools/docs-state/` and
+`.stricttools/docs-cache/` (keeping one that already names selfdoc, and refusing
+one that names another tool), and the move script below, which writes the
+manifests of the directories it moves content into. No other command writes a
+manifest or creates `.stricttools/`.
 
 A manifest is also what makes a directory exist. git carries no empty
 directory, so a directory whose content has not been written yet -- a project

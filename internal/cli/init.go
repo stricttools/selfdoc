@@ -118,7 +118,7 @@ func projectName(dir string) string {
 }
 
 func (c *cli) registerInit() {
-	c.app.Command("init", "Initialize selfdoc configuration and starter docs template",
+	c.app.Command("init", "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page",
 		c.cmdInit,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
@@ -129,6 +129,10 @@ func (c *cli) registerInit() {
 		),
 	)
 }
+
+// newProjectVersion is the version init declares for a project whose manifest
+// states none yet.
+const newProjectVersion = "0.0.0"
 
 // indexRel is the starter page init writes, relative to the project root.
 const indexRel = layout.DocsRel + "/index.md"
@@ -186,25 +190,27 @@ func (c *cli) cmdInit(ctx *strictcli.Context, kwargs map[string]any) strictcli.O
 	}
 	name := projectName(dir)
 
-	// What the project states about its own version decides what goes in the
-	// file, and nothing is invented. A codeless project publishes no
-	// artifact, so it declares it has no public version and its pages carry
-	// no badge, no version filter and no picker. A project with code reads
-	// its version out of its own manifest; when the manifest states none,
-	// init refuses rather than writing a number the project never released.
-	var versionDeclaration []jsonPair
-	if len(sourceEntries) > 0 {
-		detectedVersion := util.DetectProjectVersion(dir, "")
-		if detectedVersion == "" {
-			return c.failf("No version found in pyproject.toml, package.json or " +
-				"VERSION. A project that ships code has a version, so " +
-				"declare it there and run init again.")
-		}
-		versionDeclaration = []jsonPair{{"versions", []any{
-			jsonObject{{"version", detectedVersion}},
-		}}}
-	} else {
-		versionDeclaration = []jsonPair{{"unversioned", true}}
+	// The config is written in the versioned form: "version" and "versions"
+	// at the version the project's own manifest states, or 0.0.0 for a new
+	// project that states none yet. It is never "unversioned": true, which
+	// gen refuses as soon as the project has source code -- a codeless site
+	// that later gains code would otherwise have to be re-declared by hand.
+	initVersion := util.DetectProjectVersion(dir, "")
+	if initVersion == "" {
+		initVersion = newProjectVersion
+	}
+	versionDeclaration := []jsonPair{
+		{"version", initVersion},
+		{"versions", []any{jsonObject{{"version", initVersion}}}},
+	}
+
+	// Running init is the repository adopting selfdoc, so this is where the
+	// ownership manifests of the directories a project needs are written --
+	// before anything else, so a directory another tool owns refuses the
+	// whole init with nothing written.
+	grantedManifests, err := layout.GrantInit(handle, dir)
+	if err != nil {
+		return c.fail(err)
 	}
 
 	// Everything the loader and the build require is written into the file,
@@ -294,6 +300,9 @@ func (c *cli) cmdInit(ctx *strictcli.Context, kwargs map[string]any) strictcli.O
 	}
 	c.println("  Created: selfdoc.json")
 	c.printf("  Created: %s\n", indexRel)
+	for _, rel := range grantedManifests {
+		c.printf("  Created: %s\n", rel)
+	}
 	if len(sourcePaths) > 0 {
 		c.printf("  Source:  %s\n", strings.Join(sourcePaths, ", "))
 	}
@@ -302,8 +311,10 @@ func (c *cli) cmdInit(ctx *strictcli.Context, kwargs map[string]any) strictcli.O
 	c.printf("\nRun 'selfdoc build' to generate documentation.\n")
 
 	if autoCommit {
+		committed := append([]string{"selfdoc.json", indexRel}, grantedManifests...)
+		committed = append(committed, layout.Root+"/"+layout.IgnoreFileName)
 		if _, _, err := gitcommit.AutoCommit(
-			[]string{"selfdoc.json", indexRel}, "selfdoc init", dir, handle,
+			committed, "selfdoc init", dir, handle,
 		); err != nil {
 			return c.fail(err)
 		}

@@ -13,8 +13,9 @@
 // Every directory under [Root] has exactly one owner tool, declared in the
 // [ManifestFileName] the directory itself carries. The manifest is the
 // permission to write: [EnsureDir] refuses a directory whose manifest does not
-// name selfdoc, printing the file and the line to put in it, and selfdoc never
-// writes one itself. A manifest is also what makes a directory with no content
+// name selfdoc, printing the file and the line to put in it. The one command
+// that writes manifests is `selfdoc init`, the repository's deliberate act of
+// adopting selfdoc ([GrantInit]). A manifest is also what makes a directory with no content
 // yet exist in git. Reading and writing are open to anyone; the owner decides
 // whether what was written is acceptable, which is what [Validate] answers.
 //
@@ -352,12 +353,12 @@ func KnownOwner(owner string) bool {
 //
 // The manifest is the permission. A directory carrying none, or one naming
 // another tool, is refused -- the first with the file and the line to write,
-// which selfdoc never writes itself.
+// which no command but `selfdoc init` writes.
 func EnsureOwned(baseDir, name string) error {
 	manifest, err := ReadDirectoryManifest(baseDir, name)
 	if errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf(
-			"selfdoc may not write into %s: it carries no %s, and the manifest is the permission. selfdoc never writes one. Create %s holding this line:\n%s",
+			"selfdoc may not write into %s: it carries no %s, and the manifest is the permission. Only `selfdoc init` writes one. Create %s holding this line:\n%s",
 			filepath.Join(Root, name), ManifestFileName, DirectoryManifestRel(name),
 			strings.TrimRight(DirectoryManifestContent(Owner), "\n"))
 	}
@@ -370,6 +371,51 @@ func EnsureOwned(baseDir, name string) error {
 			filepath.Join(Root, name), DirectoryManifestRel(name), manifest.Owner, Owner)
 	}
 	return nil
+}
+
+// InitDirectories are the directories `selfdoc init` grants selfdoc: the
+// pages, the generated state and the cache every project writes from its first
+// build on.
+var InitDirectories = []string{DocsName, DocsStateName, DocsCacheName}
+
+// GrantInit writes the ownership manifests of [InitDirectories] that are
+// missing, naming selfdoc, and refreshes the derived ignore file. It returns
+// the slash-form relative paths it wrote.
+//
+// It is the adopting act a repository performs by running `selfdoc init`, the
+// one command that writes manifests. A manifest already naming selfdoc is kept
+// as it stands, and one naming another tool refuses the whole grant before
+// anything is written: that directory is the other tool's.
+func GrantInit(h *effects.Handle, baseDir string) ([]string, error) {
+	var missing []string
+	for _, name := range InitDirectories {
+		manifest, err := ReadDirectoryManifest(baseDir, name)
+		switch {
+		case errors.Is(err, os.ErrNotExist):
+			missing = append(missing, name)
+		case err != nil:
+			return nil, err
+		case manifest.Owner != Owner:
+			return nil, fmt.Errorf(
+				"selfdoc init may not adopt %s: %s declares %q as its owner, not %q",
+				filepath.Join(Root, name), DirectoryManifestRel(name), manifest.Owner, Owner)
+		}
+	}
+	written := make([]string, 0, len(missing))
+	for _, name := range missing {
+		if err := h.MkdirAll(Path(baseDir, Root+"/"+name)); err != nil {
+			return nil, err
+		}
+		if err := h.AtomicWrite(DirectoryManifestPath(baseDir, name),
+			[]byte(DirectoryManifestContent(Owner)), effects.ModeDefault); err != nil {
+			return nil, err
+		}
+		written = append(written, DirectoryManifestRel(name))
+	}
+	if err := WriteIgnore(h, baseDir); err != nil {
+		return nil, err
+	}
+	return written, nil
 }
 
 // EnsureDir creates a directory inside one of selfdoc's function directories,
