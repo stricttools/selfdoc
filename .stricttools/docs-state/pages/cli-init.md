@@ -9,7 +9,7 @@ nav_order = 9
 
 # selfdoc init
 
-Initialize selfdoc configuration and starter docs template
+Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page
 
 **Effect:** mutating
 

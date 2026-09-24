@@ -59,9 +59,13 @@ declares that instead of naming a version it never released:
 refused for a project that declares `source`, because code is what gets
 released and therefore carries a version. Such a project's pages show no
 version badge, offer no version search filter and no version picker.
-`selfdoc init` writes this declaration for a project with no detectable
-language, and refuses to invent a version for one that has code but states
-none in its manifest.
+`selfdoc init` never writes this declaration: it writes `version` and
+`versions` at the version the project's manifest states, or 0.0.0 for a new
+project that states none, so a site that later gains source code needs no
+re-declaration. Init also writes the ownership manifests of
+`.stricttools/docs/`, `.stricttools/docs-state/` and `.stricttools/docs-cache/`
+(the repository adopting selfdoc), and refuses a directory whose manifest names
+another tool.
 
 ### Multi-version builds
 

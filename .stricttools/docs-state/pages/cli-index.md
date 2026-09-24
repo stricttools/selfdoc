@@ -15,7 +15,7 @@ Version: :-: var key="project.version"
 
 ## Commands
 
-- [init](../cli-init/) -- Initialize selfdoc configuration and starter docs template
+- [init](../cli-init/) -- Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page
 - [build](../cli-build/) -- Build the documentation site from templates and source code
 - [serve](../cli-serve/) -- Serve the documentation site locally with live reload
 - [deploy](../cli-deploy/) -- Deploy the built documentation site to the configured provider

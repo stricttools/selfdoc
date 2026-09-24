@@ -229,7 +229,7 @@ Dispatch order is content directives, then custom directives, then the language 
 
 | Command | Description |
 | --- | --- |
-| `init` | Initialize selfdoc configuration and starter docs template |
+| `init` | Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page |
 | `build` | Build the documentation site from templates and source code |
 | `serve` | Serve the documentation site locally with live reload |
 | `deploy` | Deploy the built documentation site to the configured provider |

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "selfdoc",
   "slug": "selfdoc",
-  "version": "0.43.0",
+  "version": "0.43.1",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -7310,6 +7310,11 @@
         },
         {
           "level": 3,
+          "text": "`InitDirectories`",
+          "anchor": "initdirectories"
+        },
+        {
+          "level": 3,
           "text": "`Side`",
           "anchor": "side"
         },
@@ -7392,6 +7397,11 @@
           "level": 3,
           "text": "`EnsureOwned`",
           "anchor": "ensureowned"
+        },
+        {
+          "level": 3,
+          "text": "`GrantInit`",
+          "anchor": "grantinit"
         },
         {
           "level": 3,
@@ -8944,6 +8954,11 @@
           "level": 3,
           "text": "`UpdateHashes`",
           "anchor": "updatehashes"
+        },
+        {
+          "level": 3,
+          "text": "`Merge`",
+          "anchor": "merge"
         }
       ]
     },
@@ -10742,6 +10757,6 @@
       ]
     }
   ],
-  "last_gen": "2026-09-24T17:43:37.649275+00:00",
+  "last_gen": "2026-09-24T21:17:43.438426+00:00",
   "theme": "minimal"
 }
