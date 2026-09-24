@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stricttools/testisolation/go/hygiene"
 	"github.com/stricttools/selfdoc/internal/testproject"
+	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // The layout move script is scripts/move-to-stricttools-layout.py: the one-way
