@@ -149,8 +149,8 @@ func matchPattern(pattern, s string) bool {
 // trailing "$" becomes "\n?\z".
 //
 // Anything else Python-specific -- a backreference, a lookaround, a "$" that
-// is not at the end -- is refused rather than approximated. The campaign's
-// rule for those is a hand-written scanner, not a nearly-right regex.
+// is not at the end -- is refused rather than approximated. The rule for those is a hand-written
+// scanner, not a nearly-right regex.
 func pythonPatternToRE2(pattern string) (string, error) {
 	var b strings.Builder
 	inClass := false

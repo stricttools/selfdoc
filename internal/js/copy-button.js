@@ -1,4 +1,4 @@
-// Copy button on code blocks (Feature 5)
+// Copy button on code blocks
 //
 // The framework's copy button is a .copy-btn holding an icon, and the slot
 // it goes in is .tm-code-actions -- the sheet reserves the slot and does no

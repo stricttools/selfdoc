@@ -990,7 +990,7 @@ export function extractModule(sourcePath: string): string {
 </dialog>
 
 <script>
-// Theme toggle (Feature 6)
+// Theme toggle
 (function() {
   var btn = document.querySelector('.theme-toggle');
   var states = ['system', 'light', 'dark'];
@@ -1046,7 +1046,7 @@ export function extractModule(sourcePath: string): string {
   update();
 })();
 
-// Copy button on code blocks (Feature 5)
+// Copy button on code blocks
 document.querySelectorAll('pre').forEach(function(pre) {
   var code = pre.querySelector('code');
   if (!code) return;
@@ -1063,7 +1063,7 @@ document.querySelectorAll('pre').forEach(function(pre) {
   pre.appendChild(btn);
 });
 
-// Scrollspy for TOC (Feature 2)
+// Scrollspy for TOC
 (function() {
   var tocLinks = document.querySelectorAll('.toc a');
   if (!tocLinks.length) return;
@@ -1098,7 +1098,7 @@ document.querySelectorAll('pre').forEach(function(pre) {
   update();
 })();
 
-// Mobile sidebar toggle (Feature 25)
+// Mobile sidebar toggle
 (function() {
   var toggle = document.querySelector('.hamburger');
   var sidebar = document.getElementById('sidebar');
@@ -1131,7 +1131,7 @@ document.querySelectorAll('pre').forEach(function(pre) {
   });
 })();
 
-// Cmd+K search (Feature 19) - demo mode with static results
+// Cmd+K search - demo mode with static results
 (function() {
   var dialog = document.getElementById('search-dialog');
   if (!dialog) return;
@@ -1248,7 +1248,7 @@ document.querySelectorAll('pre').forEach(function(pre) {
   });
 })();
 
-// Prefetch links on hover (Feature 20)
+// Prefetch links on hover
 document.querySelectorAll('.sidebar a, .page-nav a').forEach(function(link) {
   link.addEventListener('mouseenter', function() {
     var href = link.getAttribute('href');
@@ -1261,7 +1261,7 @@ document.querySelectorAll('.sidebar a, .page-nav a').forEach(function(link) {
   }, { once: true });
 });
 
-// Feedback widget (Feature 30)
+// Feedback widget
 (function() {
   var widget = document.querySelector('.feedback');
   if (!widget) return;
@@ -1278,7 +1278,7 @@ document.querySelectorAll('.sidebar a, .page-nav a').forEach(function(link) {
   });
 })();
 
-// Code tabs: switch between language panels (Feature 31)
+// Code tabs: switch between language panels
 (function() {
   document.querySelectorAll('.code-tabs').forEach(function(tabGroup) {
     var buttons = tabGroup.querySelectorAll('.tab-bar .tab');
@@ -1308,7 +1308,7 @@ document.querySelectorAll('.sidebar a, .page-nav a').forEach(function(link) {
   });
 })();
 
-// Embedded live code playground (Feature 41)
+// Embedded live code playground
 (function() {
   document.querySelectorAll('.code-block').forEach(function(block) {
     var label = block.querySelector('.code-label');

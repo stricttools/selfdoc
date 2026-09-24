@@ -1,4 +1,4 @@
-// Code tabs: switch between language panels (Feature 31)
+// Code tabs: switch between language panels
 (function() {
   var syncing = false;
   document.querySelectorAll('.code-tabs').forEach(function(tabGroup) {

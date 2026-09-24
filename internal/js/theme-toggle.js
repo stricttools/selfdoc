@@ -1,4 +1,4 @@
-// Theme toggle (Feature 6)
+// Theme toggle
 (function(){
   var btn = document.querySelector('.theme-toggle');
   var states = ['system', 'light', 'dark'];

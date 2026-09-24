@@ -1,4 +1,4 @@
-// Feedback widget (Feature 30)
+// Feedback widget
 (function() {
   var widget = document.querySelector('.feedback');
   if (!widget) return;

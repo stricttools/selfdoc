@@ -1,4 +1,4 @@
-// Scrollspy for the table of contents (Feature 2, Issue 44)
+// Scrollspy for the table of contents
 //
 // The entries are the framework's anchor spelling, so the state they carry
 // is aria-current="page" -- the static counterpart of the .active class a

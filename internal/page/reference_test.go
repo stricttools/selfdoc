@@ -25,7 +25,7 @@ import (
 
 // highlightedCodeRE matches the interior of a highlighted code element.
 //
-// The campaign that ported this package replaced Pygments with chroma, so a
+// The Go port of this package replaced Pygments with chroma, so a
 // code block's token markup is deliberately not the Python's: different class
 // names, and a different set of characters escaped. The interior is masked on
 // both sides of a comparison, which leaves every byte of the page around it --

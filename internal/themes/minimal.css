@@ -1,7 +1,7 @@
 /* selfdoc minimal theme
    Clean, content-focused documentation styling. */
 
-/* === CSS Reset (Feature 46) === */
+/* === CSS Reset === */
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -213,7 +213,7 @@ body {
     min-height: 100vh;
 }
 
-/* === Gradient accent strip (Feature 47) === */
+/* === Gradient accent strip === */
 
 body::before {
     content: '';
@@ -669,7 +669,7 @@ code {
     font-size: 0.875em;
 }
 
-/* Inline code styling distinct from code blocks (Feature 29) */
+/* Inline code styling distinct from code blocks */
 :not(pre) > code {
     background: var(--code-bg);
     padding: 2px 6px;
@@ -695,7 +695,7 @@ pre code {
     white-space: pre;
 }
 
-/* === Copy button on code blocks (Feature 5) === */
+/* === Copy button on code blocks === */
 
 /* The framework reserves the slot -- .tm-code-actions in the label bar --
    and does no copying, so the button's own dress is stated here.  It sits
@@ -730,7 +730,7 @@ pre code {
     color: var(--link);
 }
 
-/* === Run button on code blocks (Feature 41) === */
+/* === Run button on code blocks === */
 
 .run-btn {
     position: absolute;
@@ -1247,7 +1247,7 @@ blockquote p:last-child {
     gap: 0.25rem;
 }
 
-/* === API entry cards (Feature 48) === */
+/* === API entry cards === */
 
 .api-entry {
     border: 1px solid var(--border);
@@ -1369,7 +1369,7 @@ blockquote p:last-child {
     border-bottom-color: var(--link);
 }
 
-/* === Focus indicators (Feature 12) === */
+/* === Focus indicators === */
 
 a:focus-visible,
 button:focus-visible,
@@ -1498,7 +1498,7 @@ hr {
     margin-bottom: 0;
 }
 
-/* === Page prev/next navigation (Feature 8) === */
+/* === Page prev/next navigation === */
 
 .page-nav {
     display: flex;
@@ -1526,7 +1526,7 @@ hr {
     margin-bottom: 0.25rem;
 }
 
-/* === Theme toggle button (Feature 6) === */
+/* === Theme toggle button === */
 
 .theme-toggle {
     margin-left: auto;
@@ -1649,7 +1649,7 @@ hr {
     color: var(--link);
 }
 
-/* === Page footer (Feature 18) === */
+/* === Page footer === */
 
 .page-footer {
     margin-top: 2.5rem;
@@ -1680,7 +1680,7 @@ hr {
     text-decoration: underline;
 }
 
-/* === Search dialog (Feature 19) === */
+/* === Search dialog === */
 
 .search-dialog {
     position: fixed;
@@ -1816,7 +1816,7 @@ hr {
     left: 0;
 }
 
-/* === Mobile TOC disclosure (Feature 26) === */
+/* === Mobile TOC disclosure === */
 
 .mobile-toc {
     display: none;
@@ -1865,7 +1865,7 @@ hr {
     padding: 0 1rem 0.75rem;
 }
 
-/* === Feedback widget (Feature 30) === */
+/* === Feedback widget === */
 
 .feedback {
     display: flex;
@@ -1959,7 +1959,7 @@ hr {
     }
 }
 
-/* === Print stylesheet (Feature 37) === */
+/* === Print stylesheet === */
 
 @page { margin: 2cm; }
 
@@ -2046,7 +2046,7 @@ hr {
     }
 }
 
-/* === Table wrapper for horizontal scrolling (Feature 38) === */
+/* === Table wrapper for horizontal scrolling === */
 
 .table-wrap {
     overflow-x: auto;
@@ -2157,7 +2157,7 @@ hr {
     opacity: 0;
 }
 
-/* === Step-by-step guides (Feature 33) === */
+/* === Step-by-step guides === */
 
 .steps {
     counter-reset: step;
@@ -2188,7 +2188,7 @@ hr {
     font-size: 0.875rem;
 }
 
-/* === Code tabs (Feature 31) === */
+/* === Code tabs === */
 
 .code-tabs {
     margin-bottom: 1rem;
@@ -2242,7 +2242,7 @@ hr {
     border-top-right-radius: 0;
 }
 
-/* === Inline code annotations (Feature 32) === */
+/* === Inline code annotations === */
 
 /* === Glossary (:::glossary directive) === */
 
@@ -2294,7 +2294,7 @@ hr {
     color: var(--link);
 }
 
-/* === Inline code annotations (Feature 32) === */
+/* === Inline code annotations === */
 
 .code-annotation {
     display: inline-flex;
@@ -2345,7 +2345,7 @@ hr {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* === Content details/summary styling (Feature 9.1) === */
+/* === Content details/summary styling === */
 
 article details:not(.mobile-toc) {
     border: 1px solid var(--border);
@@ -2399,7 +2399,7 @@ article details:not(.mobile-toc) > :not(summary) {
     padding: 0.75rem 1rem 0.75rem;
 }
 
-/* === Prev/next nav cards (Feature 9.3) === */
+/* === Prev/next nav cards === */
 
 .page-nav a {
     display: flex;
@@ -2421,7 +2421,7 @@ article details:not(.mobile-toc) > :not(summary) {
     text-decoration: none;
 }
 
-/* === Standalone dfn styling (Feature 9.4) === */
+/* === Standalone dfn styling === */
 
 dfn {
     font-style: normal;
@@ -2429,7 +2429,7 @@ dfn {
     cursor: help;
 }
 
-/* === Feed link in site footer (Feature 9.5) === */
+/* === Feed link in site footer === */
 
 .feed-link {
     display: inline-flex;
@@ -2447,7 +2447,7 @@ dfn {
     display: inline-block;
 }
 
-/* === Heading copy toast (Issue 53) === */
+/* === Heading copy toast === */
 
 .copy-toast {
     position: absolute;
@@ -2469,7 +2469,7 @@ dfn {
     100% { opacity: 0; }
 }
 
-/* === Feedback follow-up (Issue 53) === */
+/* === Feedback follow-up === */
 
 .feedback-input {
     font-size: 0.8125rem;

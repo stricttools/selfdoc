@@ -1,4 +1,4 @@
-// Mobile sidebar drawer (Feature 25)
+// Mobile sidebar drawer
 //
 // The framework's shell paints the drawer -- #tm-sidebar slides in when
 // #tm-app carries .sidebar-open, over a backdrop -- but ships no toggle a

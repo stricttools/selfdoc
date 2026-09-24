@@ -1,4 +1,4 @@
-// Re-enable smooth scroll after initial load (Issue 32)
+// Re-enable smooth scroll after initial load
 requestAnimationFrame(function() {
   requestAnimationFrame(function() {
     document.documentElement.style.scrollBehavior = '';

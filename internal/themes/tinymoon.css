@@ -127,7 +127,7 @@ h1, h2, h3, h4, h5, h6 {
     scroll-margin-top: 1rem;
 }
 
-/* === Accent strip (Feature 47) === */
+/* === Accent strip === */
 
 /* The other themes run a three-stop gradient here.  tinymoon has no
    gradients: one solid accent hairline with the glow that is the
@@ -234,7 +234,7 @@ h6:hover .heading-link {
     :target { animation: none; }
 }
 
-/* === Copy button on code blocks (Feature 5) === */
+/* === Copy button on code blocks === */
 
 /* The framework reserves the slot (.tm-code-actions in the label bar) and
    does no copying; the button is the consumer's, so its resting state is
@@ -269,7 +269,7 @@ h6:hover .heading-link {
     opacity: 1;
 }
 
-/* === Run button on code blocks (Feature 41) === */
+/* === Run button on code blocks === */
 
 .run-btn {
     position: absolute;
@@ -461,7 +461,7 @@ pre:focus-within .run-btn {
    is nothing to restate here. */
 
 
-/* === API entry cards (Feature 48) === */
+/* === API entry cards === */
 
 .api-entry {
     border: 1px solid var(--border);
@@ -631,7 +631,7 @@ pre:focus-within .run-btn {
     margin-bottom: 0;
 }
 
-/* === Page prev/next navigation (Feature 8) === */
+/* === Page prev/next navigation === */
 
 .page-nav {
     display: flex;
@@ -659,7 +659,7 @@ pre:focus-within .run-btn {
     margin-bottom: 0.25rem;
 }
 
-/* === Theme toggle button (Feature 6) === */
+/* === Theme toggle button === */
 
 .theme-toggle {
     margin-left: auto;
@@ -765,7 +765,7 @@ pre:focus-within .run-btn {
     font-family: var(--font-mono);
 }
 
-/* === Page footer (Feature 18) === */
+/* === Page footer === */
 
 .page-footer {
     margin-top: 2.5rem;
@@ -815,7 +815,7 @@ pre:focus-within .run-btn {
     display: none;
 }
 
-/* === Mobile TOC disclosure (Feature 26) === */
+/* === Mobile TOC disclosure === */
 
 .mobile-toc {
     display: none;
@@ -864,7 +864,7 @@ pre:focus-within .run-btn {
     padding: 0 1rem 0.75rem;
 }
 
-/* === Feedback widget (Feature 30) === */
+/* === Feedback widget === */
 
 .feedback {
     display: flex;
@@ -944,7 +944,7 @@ pre:focus-within .run-btn {
     }
 }
 
-/* === Print stylesheet (Feature 37) === */
+/* === Print stylesheet === */
 
 @page { margin: 2cm; }
 
@@ -1016,7 +1016,7 @@ pre:focus-within .run-btn {
     }
 }
 
-/* === Table wrapper for horizontal scrolling (Feature 38) === */
+/* === Table wrapper for horizontal scrolling === */
 
 /* A flag name, a type, an identifier: one token that means one thing, and
    breaking it across lines makes it read as two.  The wrapper scrolls, so
@@ -1169,7 +1169,7 @@ pre:focus-within .run-btn {
     opacity: 0;
 }
 
-/* === Step-by-step guides (Feature 33) === */
+/* === Step-by-step guides === */
 
 .steps {
     counter-reset: step;
@@ -1202,7 +1202,7 @@ pre:focus-within .run-btn {
     font-size: 0.875rem;
 }
 
-/* === Code tabs (Feature 31) === */
+/* === Code tabs === */
 
 .code-tabs {
     margin-bottom: 1rem;
@@ -1258,7 +1258,7 @@ pre:focus-within .run-btn {
     border-top-right-radius: 0;
 }
 
-/* === Inline code annotations (Feature 32) === */
+/* === Inline code annotations === */
 
 /* === Glossary (:::glossary directive) === */
 
@@ -1314,7 +1314,7 @@ pre:focus-within .run-btn {
     color: var(--link);
 }
 
-/* === Inline code annotations (Feature 32) === */
+/* === Inline code annotations === */
 
 .code-annotation {
     display: inline-flex;
@@ -1366,7 +1366,7 @@ pre:focus-within .run-btn {
     box-shadow: var(--shadow-pop);
 }
 
-/* === Content details/summary styling (Feature 9.1) === */
+/* === Content details/summary styling === */
 
 article details:not(.mobile-toc) {
     border: 1px solid var(--border);
@@ -1420,7 +1420,7 @@ article details:not(.mobile-toc) > :not(summary) {
     padding: 0.75rem 1rem 0.75rem;
 }
 
-/* === Prev/next nav cards (Feature 9.3) === */
+/* === Prev/next nav cards === */
 
 .page-nav a {
     display: flex;
@@ -1443,7 +1443,7 @@ article details:not(.mobile-toc) > :not(summary) {
     text-decoration: none;
 }
 
-/* === Standalone dfn styling (Feature 9.4) === */
+/* === Standalone dfn styling === */
 
 dfn {
     font-style: normal;
@@ -1451,7 +1451,7 @@ dfn {
     cursor: help;
 }
 
-/* === Feed link in site footer (Feature 9.5) === */
+/* === Feed link in site footer === */
 
 .feed-link {
     display: inline-flex;
@@ -1469,7 +1469,7 @@ dfn {
     display: inline-block;
 }
 
-/* === Heading copy toast (Issue 53) === */
+/* === Heading copy toast === */
 
 .copy-toast {
     position: absolute;
@@ -1493,7 +1493,7 @@ dfn {
     100% { opacity: 0; }
 }
 
-/* === Feedback follow-up (Issue 53) === */
+/* === Feedback follow-up === */
 
 .feedback-input {
     font-size: 0.8125rem;

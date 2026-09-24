@@ -1,4 +1,4 @@
-// Embedded live code playground (Feature 41)
+// Embedded live code playground
 (function() {
   document.querySelectorAll('.tm-code[data-run="true"]').forEach(function(block) {
     var label = block.querySelector('.tm-code-label');

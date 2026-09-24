@@ -1,4 +1,4 @@
-// Heading anchor copy toast (Issue 53)
+// Heading anchor copy toast
 (function() {
   document.querySelectorAll('.heading-link').forEach(function(link) {
     link.addEventListener('click', function(e) {
