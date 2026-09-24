@@ -4182,13 +4182,18 @@
         },
         {
           "level": 3,
-          "text": "`GeneratedBy`",
-          "anchor": "generatedby"
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
         },
         {
           "level": 3,
-          "text": "`SchemaFormatVersion`",
-          "anchor": "schemaformatversion"
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
         },
         {
           "level": 3,
@@ -7265,13 +7270,18 @@
         },
         {
           "level": 3,
-          "text": "`GeneratedBy`",
-          "anchor": "generatedby"
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
         },
         {
           "level": 3,
-          "text": "`SchemaFormatVersion`",
-          "anchor": "schemaformatversion"
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
         },
         {
           "level": 3,
@@ -7487,13 +7497,18 @@
         },
         {
           "level": 3,
-          "text": "`GeneratedBy`",
-          "anchor": "generatedby"
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
         },
         {
           "level": 3,
-          "text": "`SchemaFormatVersion`",
-          "anchor": "schemaformatversion"
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
         },
         {
           "level": 3,
@@ -9579,13 +9594,18 @@
         },
         {
           "level": 3,
-          "text": "`GeneratedBy`",
-          "anchor": "generatedby"
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
         },
         {
           "level": 3,
-          "text": "`SchemaFormatVersion`",
-          "anchor": "schemaformatversion"
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
         },
         {
           "level": 3,
@@ -10722,6 +10742,6 @@
       ]
     }
   ],
-  "last_gen": "2026-09-24T15:44:08.378494+00:00",
+  "last_gen": "2026-09-24T17:43:37.649275+00:00",
   "theme": "minimal"
 }
