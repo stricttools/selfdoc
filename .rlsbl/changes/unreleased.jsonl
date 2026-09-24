@@ -2,3 +2,4 @@
 {"format_version":1,"id":"18d84c380201bc6f8e75a486116e4d4fbea465d69fa570d8","commits":["79edcd1aa9afefb29accc47393ffd0d4af269c27"],"user_facing":false}
 {"format_version":1,"id":"18d84c8ced63c5635da884e7c8904fc19291debc28f46448","commits":["7a0f6c2aaff3e7ab69a057d45fbebab3c0864b44"],"user_facing":false}
 {"format_version":1,"id":"18d8526409e6f5d35ad5efe17db2467c9fc0c85e2f296e22","commits":["03c76f142ecf241333e1ccbeab3946a964523b5a"],"user_facing":false}
+{"format_version":1,"id":"18d8528db6a79c9379d0ad7074ce49bfbc4cd07c1262663c","commits":["03d06bca34e6bb8e7e4887254ea555e9c7f36548"],"user_facing":true,"description":"**An edited description now clears DRIFT001 when `selfdoc gen` or `selfdoc build` runs before the next check.** Those commands recorded the new description beside the page's old source-docstring and CLI-schema hashes, so `selfdoc check` kept reporting the rewritten page as drifted and only `selfdoc baseline accept` cleared it.","type":"fix"}
