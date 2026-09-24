@@ -614,7 +614,7 @@ pre:focus-within .run-btn {
     white-space: nowrap;
 }
 
-/* === Page summary block (Phase 2.6) === */
+/* === Page summary block === */
 
 .page-summary {
     background: var(--surface);

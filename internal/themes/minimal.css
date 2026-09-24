@@ -1482,7 +1482,7 @@ hr {
     color: var(--text-secondary);
 }
 
-/* === Page summary block (Phase 2.6) === */
+/* === Page summary block === */
 
 .page-summary {
     background: var(--sidebar-bg);
