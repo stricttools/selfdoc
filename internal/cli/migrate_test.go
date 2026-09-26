@@ -271,3 +271,23 @@ func gitOutput(t *testing.T, dir string, args ...string) string {
 	}
 	return string(output)
 }
+
+// A selfdoc.json path the move cannot find as written is refused with the
+// spelling to write instead; writing it that way lets the move through.
+func TestMigrateRefusesAPathSpelledWithEscapedSlashes(t *testing.T) {
+	isolate(t)
+	dir := previousLayoutProject(t, false)
+	configPath := filepath.Join(dir, "selfdoc.json")
+	plain := readText(t, configPath)
+	escaped := strings.ReplaceAll(plain, `".stricttools/docs/"`, `".stricttools\/docs\/"`)
+	writeText(t, configPath, escaped)
+	result := run(t, dir, "layout", "migrate", "--no-auto-commit")
+	want := "Write it as \".stricttools/docs/\""
+	if result.ExitCode == 0 || !strings.Contains(result.Stderr, want) {
+		t.Fatalf("exit %d, want a refusal carrying %q:\n%s", result.ExitCode, want, result.Stderr)
+	}
+	writeText(t, configPath, plain)
+	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
+		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
+	}
+}

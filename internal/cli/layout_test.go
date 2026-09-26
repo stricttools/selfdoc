@@ -99,7 +99,8 @@ func TestLayoutDumpPrintsTheDeclarationAsJSON(t *testing.T) {
 
 func TestLayoutValidateRefusesARepositoryWithNoLayout(t *testing.T) {
 	isolate(t)
-	result := run(t, t.TempDir(), "layout", "validate")
+	dir := t.TempDir()
+	result := run(t, dir, "layout", "validate")
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code = %d, want 1", result.ExitCode)
 	}
@@ -107,10 +108,19 @@ func TestLayoutValidateRefusesARepositoryWithNoLayout(t *testing.T) {
 		layout.Root,
 		layout.ManifestFileName,
 		strings.TrimRight(layout.DirectoryManifestContent(layout.Owner), "\n"),
+		"selfdoc init",
 	} {
 		if !strings.Contains(result.Stderr, want) {
 			t.Errorf("the refusal lacks %q:\n%s", want, result.Stderr)
 		}
+	}
+
+	// The remedy the refusal names clears it.
+	if code, stdout, stderr := initProject(t, dir); code != 0 {
+		t.Fatalf("init failed:\n%s\n%s", stdout, stderr)
+	}
+	if result := run(t, dir, "layout", "validate"); result.ExitCode != 0 {
+		t.Errorf("layout validate after init exited %d:\n%s", result.ExitCode, result.Stderr)
 	}
 }
 

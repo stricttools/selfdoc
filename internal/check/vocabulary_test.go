@@ -247,6 +247,18 @@ meaning = "The widget that turns."
 	if line := matching[0].Line(); line == nil || *line != 7 {
 		t.Errorf("VOCAB005 line = %v, want 7", line)
 	}
+
+	// The remedy: move the named entry up to its place.
+	write(t, layout.Path(root, layout.TermsRel), vocabulary.EmptyTerms+`
+[[accepted]]
+word = "frobnitz"
+meaning = "The widget that turns."
+
+[[accepted]]
+word = "zeta"
+meaning = "The last."
+`)
+	noLint(t, root, "VOCAB005")
 }
 
 // A word both accepted and rejected stops the check before any page is

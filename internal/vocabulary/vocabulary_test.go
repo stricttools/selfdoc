@@ -235,8 +235,16 @@ reason = "Say use."
 	if _, err := Reject(effects.Unbound(), dir, "Leverage", KindWord, "r"); err == nil || !strings.Contains(err.Error(), "already rejected") {
 		t.Errorf("a duplicate rejection = %v", err)
 	}
-	if _, err := Reject(effects.Unbound(), dir, "shaped", KindSuffix, "r"); err == nil || !strings.Contains(err.Error(), "misshaped") {
-		t.Errorf("a rejection covering an accepted word = %v", err)
+	_, err := Reject(effects.Unbound(), dir, "shaped", KindSuffix, "r")
+	if err == nil || !strings.Contains(err.Error(), "selfdoc vocabulary remove misshaped") {
+		t.Fatalf("a rejection covering an accepted word = %v", err)
+	}
+	// The remedy the refusal names lets the rejection through.
+	if _, err := Remove(effects.Unbound(), dir, "misshaped"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Reject(effects.Unbound(), dir, "shaped", KindSuffix, "r"); err != nil {
+		t.Errorf("the rejection after the remedy = %v", err)
 	}
 	if _, err := Reject(effects.Unbound(), dir, "blast radius", KindPhrase, "Say what is affected."); err != nil {
 		t.Fatalf("Reject: %v", err)
