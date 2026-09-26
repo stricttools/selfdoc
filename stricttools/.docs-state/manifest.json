@@ -1430,40 +1430,6 @@
       ]
     },
     {
-      "path": "experiments-vocabulary-split-scan.md",
-      "title": "experiments/vocabulary-split/scan",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "experiments/vocabulary-split/scan",
-          "anchor": "experimentsvocabulary-splitscan"
-        },
-        {
-          "level": 2,
-          "text": "`experiments/vocabulary-split/scan`",
-          "anchor": "experimentsvocabulary-splitscan"
-        }
-      ]
-    },
-    {
-      "path": "experiments.md",
-      "title": "experiments",
-      "type": "doc",
-      "headings": [
-        {
-          "level": 1,
-          "text": "experiments",
-          "anchor": "experiments"
-        },
-        {
-          "level": 2,
-          "text": "`experiments`",
-          "anchor": "experiments"
-        }
-      ]
-    },
-    {
       "path": "feeds.md",
       "title": "Atom Feeds",
       "type": "doc",
@@ -11511,6 +11477,6 @@
       ]
     }
   ],
-  "last_gen": "2026-09-26T18:33:41.768370+00:00",
+  "last_gen": "2026-09-26T17:51:38.535652+00:00",
   "theme": "minimal"
 }

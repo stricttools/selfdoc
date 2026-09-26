@@ -229,16 +229,6 @@
     "content": "59e8cd0eec7b22286799e6db06ad0bd67556e422b421654a3a648066aeed67db",
     "description": "38a476c5f710dadace70dd593f9813b47d8a180564628ed6f6f06bfaaaf1516b"
   },
-  "en/experiments-vocabulary-split-scan.md": {
-    "content": "429b111db8a07c83dfcdb04a9efaf0ea58c700273c7d9fb754362abb99117205",
-    "description": "ee32b12febada35d7c0528b808db9233e86654c769a4c5117b891863593c69c8",
-    "seed_hash": "ee32b12febada35d7c0528b808db9233e86654c769a4c5117b891863593c69c8"
-  },
-  "en/experiments.md": {
-    "content": "82cc205c8fce456e5f99a7501971400b79ffe603a63b88d8813492bcd7f5d3ef",
-    "description": "81c98835ea49032aafa601d4187f7daea0788d615e143ba02e38533a67e2a7c6",
-    "seed_hash": "81c98835ea49032aafa601d4187f7daea0788d615e143ba02e38533a67e2a7c6"
-  },
   "en/feeds.md": {
     "content": "7b096cc3828610f7abd402164949958e147483a2e148f60c4b559d046e207e9c",
     "description": "6464fca42fdb52aaa26b9f9e280835b324810beb538bc7d1bfb5d914da1a8ae0"
@@ -252,9 +242,9 @@
     "description": "b987b85e7d65fca02cfb007948ec96dc77f35fb6b5cf331b0759a8037f2adb82"
   },
   "en/gen-index.md": {
-    "content": "f2500b715cac0e0982ef0784d18bc2535c0006886ef39490dc75ffad0e708469",
-    "description": "44fef8ff484223a8eba35c1dee61dbacd7e9bd7675562ca64c1a24ce1c20ea06",
-    "seed_hash": "44fef8ff484223a8eba35c1dee61dbacd7e9bd7675562ca64c1a24ce1c20ea06"
+    "content": "d608180fe78439c58fea2c5b93a0a6d3badcf9da5e7a727373903c24a7345fd7",
+    "description": "d7f6b63b6104f51b11266a3eb1b7f3416135d1abc998d7bd7473ee77516fe614",
+    "seed_hash": "d7f6b63b6104f51b11266a3eb1b7f3416135d1abc998d7bd7473ee77516fe614"
   },
   "en/getting-started.md": {
     "content": "6889fb5f7c00aee82882021ba63ac4d73e1efc933f110551e049b58b4dce4250",

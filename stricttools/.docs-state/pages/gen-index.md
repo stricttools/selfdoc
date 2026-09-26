@@ -1,6 +1,6 @@
 +++
 title = "API Reference"
-description = "API reference index for selfdoc covering 75 modules"
+description = "API reference index for selfdoc covering 73 modules"
 generated = true
 seeded = true
 nav_group = "API Reference"
@@ -10,8 +10,6 @@ nav_order = 90
 
 # API Reference
 
-- [experiments](../experiments/)
-- [experiments/vocabulary-split/scan](../experiments-vocabulary-split-scan/)
 - [internal/address](../internal-address/)
 - [internal/blog/assembly](../internal-blog-assembly/)
 - [internal/blog/chrome](../internal-blog-chrome/)
