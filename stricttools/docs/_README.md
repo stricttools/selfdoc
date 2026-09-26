@@ -201,7 +201,7 @@ Enable GitHub Pages in your repo settings (source: `gh-pages` branch).
 
 ## Integration with rlsbl
 
-When [rlsbl](https://github.com/smm-h/rlsbl) detects a `selfdoc.json` in the project, it can trigger `selfdoc build` and `selfdoc deploy` as part of the release lifecycle via the `.rlsbl/hooks/post-release.sh` hook.
+When [rlsbl](https://github.com/stricttools/rlsbl) detects a `selfdoc.json` in the project, it can trigger `selfdoc build` and `selfdoc deploy` as part of the release lifecycle via the `.rlsbl/hooks/post-release.sh` hook.
 
 ## Documentation
 

@@ -131,7 +131,7 @@ Sandboxed script execution via bubblewrap (bwrap). Runs scripts in isolated envi
 
 ## Release workflow
 
-This project uses [rlsbl](https://github.com/smm-h/rlsbl) for release orchestration.
+This project uses [rlsbl](https://github.com/stricttools/rlsbl) for release orchestration.
 
 - `selfdoc check` runs during release (validates directives, coverage, lint)
 - Deploy to the unified assembly via post-release hook

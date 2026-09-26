@@ -23,7 +23,7 @@ Three themes are available:
 
 - **minimal** (default) -- GitHub-inspired styling with Inter and JetBrains Mono fonts. Blue accent color (`#0969da`), light sidebar background, dark topbar. Content-focused and familiar.
 - **clean** -- Stripe-inspired styling with system fonts and a purple accent (`#5046e4`). White topbar, borderless code blocks, slightly taller line height (1.7 vs 1.6). Feels more polished and modern.
-- **tinymoon** -- the [tinymoon](https://github.com/smm-h/tinymoon) framework itself, not an imitation of it: dark by default, sharp corners everywhere, three vendored fonts (IBM Plex Sans for prose, IBM Plex Mono for anything that reads as data, Space Grotesk for headings), hairline borders with an accent glow instead of shadows, and a 100-180ms motion vocabulary. Blue accent (`#2d6cf4`). Tables, badges, breadcrumbs and metadata are all set in mono, and a faint grain overlay sits over the page.
+- **tinymoon** -- the [tinymoon](https://github.com/stricttools/tinymoon) framework itself, not an imitation of it: dark by default, sharp corners everywhere, three vendored fonts (IBM Plex Sans for prose, IBM Plex Mono for anything that reads as data, Space Grotesk for headings), hairline borders with an accent glow instead of shadows, and a 100-180ms motion vocabulary. Blue accent (`#2d6cf4`). Tables, badges, breadcrumbs and metadata are all set in mono, and a faint grain overlay sits over the page.
 
 All three include full dark mode, high contrast, reduced motion, and print support.
 
@@ -31,7 +31,7 @@ All three include full dark mode, high contrast, reduced motion, and print suppo
 
 Three things are worth knowing before choosing it.
 
-**It is not a stylesheet in this repository.** minimal and clean are single CSS files selfdoc owns. tinymoon is an *overlay* on the [tinymoon](https://github.com/smm-h/tinymoon) framework, which selfdoc depends on: the stylesheet a page receives is the framework's own sheets -- `tokens`, `base`, `shell`, `primitives`, `widgets`, `prose`, in that order, byte for byte out of the dependency -- with selfdoc's overlay appended. The overlay carries the parts of a selfdoc page the framework has no shape for and a *bridge* that defines selfdoc's custom-property names as references to the framework's tokens. Upgrading the framework upgrades the theme.
+**It is not a stylesheet in this repository.** minimal and clean are single CSS files selfdoc owns. tinymoon is an *overlay* on the [tinymoon](https://github.com/stricttools/tinymoon) framework, which selfdoc depends on: the stylesheet a page receives is the framework's own sheets -- `tokens`, `base`, `shell`, `primitives`, `widgets`, `prose`, in that order, byte for byte out of the dependency -- with selfdoc's overlay appended. The overlay carries the parts of a selfdoc page the framework has no shape for and a *bridge* that defines selfdoc's custom-property names as references to the framework's tokens. Upgrading the framework upgrades the theme.
 
 **It rests in dark.** The framework's `:root` is the dark palette and the light one is a reassignment, which is the reverse of the other two themes. A `custom.css` override still lands on the same custom property names, but a `:root` override will be changing the *dark* values. The light palette is in `html[data-theme="light"]` for the explicit choice, and in `html:not([data-theme])` inside a `@media (prefers-color-scheme: light)` block for the system one -- so all three toggle states resolve in CSS alone, with no JavaScript involved in painting the right scheme.
 

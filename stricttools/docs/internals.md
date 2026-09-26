@@ -129,7 +129,7 @@ The driver runs as a declared read through the effects handle, so `--dry-run` re
 
 ### Built-in directive catalog
 
-**Package:** `internal/catalog` -- the catalogue is a declarative TOML document embedded in the binary, validated by a [strictspec](https://github.com/smm-h/strictspec)-generated validator that is generated into the package that loads it. Nothing else can bind an unvalidated document. Directives come in two tiers:
+**Package:** `internal/catalog` -- the catalogue is a declarative TOML document embedded in the binary, validated by a [strictspec](https://github.com/stricttools/strictspec)-generated validator that is generated into the package that loads it. Nothing else can bind an unvalidated document. Directives come in two tiers:
 
 - **Core directives** -- shipped and functional. The [directives reference](../directives/) renders the table straight out of the catalogue.
 - **Future directives** -- declared, parse-valid, not yet implemented, organized by prefix (`table-*`, `code-*`, `list-*`, `callout-*`, `prose-*`). Declaring them means the parser accepts them without error, so authors can mark intent before extraction logic exists.
