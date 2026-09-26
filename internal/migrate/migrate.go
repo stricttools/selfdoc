@@ -453,15 +453,14 @@ func Apply(h *effects.Handle, baseDir string, plan Plan) error {
 	if err := h.MkdirAll(filepath.Join(baseDir, layout.Root)); err != nil {
 		return err
 	}
+	created := map[string]bool{filepath.Join(baseDir, layout.Root): true}
 	for _, move := range plan.Moves {
-		if err := h.Rename(
-			filepath.Join(baseDir, filepath.FromSlash(move.From)),
-			filepath.Join(baseDir, filepath.FromSlash(move.To)),
-		); err != nil {
+		to := filepath.Join(baseDir, filepath.FromSlash(move.To))
+		if err := h.Rename(filepath.Join(baseDir, filepath.FromSlash(move.From)), to); err != nil {
 			return err
 		}
+		created[to] = true
 	}
-	created := map[string]bool{filepath.Join(baseDir, layout.Root): true}
 	for _, write := range plan.Writes {
 		target := filepath.Join(baseDir, filepath.FromSlash(write.Path))
 		if parent := filepath.Dir(target); !created[parent] {
