@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/smm-h/strictcli/go/strictcli"
 	"github.com/stricttools/selfdoc/internal/blog/assembly/fakegh"
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/cli/faketool"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/strictcli/go/strictcli"
 )
 
 // `selfdoc assembly republish-all` publishes every project on the roster again
