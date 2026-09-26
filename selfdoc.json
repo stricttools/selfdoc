@@ -6,8 +6,8 @@
       "language": "go"
     }
   ],
-  "docs": ".stricttools/docs/",
-  "output": ".stricttools/docs-cache/build/",
+  "docs": "stricttools/docs/",
+  "output": "stricttools/.docs-cache/build/",
   "changelog": "CHANGELOG.md",
   "base_url": "https://smmh.dev/selfdoc",
   "author": {
@@ -42,8 +42,8 @@
     ]
   },
   "root_files": [
-    ".stricttools/docs/_CLAUDE.md",
-    ".stricttools/docs/_README.md"
+    "stricttools/docs/_CLAUDE.md",
+    "stricttools/docs/_README.md"
   ],
   "branding": {
     "tagline": "Your code is the documentation.",
