@@ -3,3 +3,4187 @@
 # stricttools/vocabulary/terms.toml. Same format as that file, validated by the
 # same schema (.strictspec/vocabulary-terms.schema.toml).
 format_version = 1
+
+[[accepted]]
+word = "AAAA"
+meaning = "The DNS record type that maps a hostname to an IPv6 address."
+
+[[accepted]]
+word = "AAB"
+meaning = "Android App Bundle, the publishing format Google Play accepts for Android apps."
+
+[[accepted]]
+word = "AAC"
+meaning = "Advanced Audio Coding, a lossy audio compression format."
+
+[[accepted]]
+word = "AADC"
+meaning = "Age Appropriate Design Code, the UK code of practice for online services likely to be used by children."
+
+[[accepted]]
+word = "accessors"
+meaning = "Methods or properties that read or write an object's internal state."
+
+[[accepted]]
+word = "acyclicity"
+meaning = "The property of a graph or relation having no cycles."
+
+[[accepted]]
+word = "ADAA"
+meaning = "Antiderivative antialiasing, a technique that reduces aliasing from nonlinear waveshaping by processing the waveshaper's antiderivative."
+
+[[accepted]]
+word = "additively"
+meaning = "In an additive way, by adding parts together."
+
+[[accepted]]
+word = "addr"
+meaning = "Short for address, as in a network or memory address."
+
+[[accepted]]
+word = "ADSR"
+meaning = "Attack, decay, sustain, release: the four stages of a classic synthesizer envelope."
+
+[[accepted]]
+word = "AGPL"
+meaning = "GNU Affero General Public License, a copyleft license that also covers software offered over a network."
+
+[[accepted]]
+word = "agui"
+meaning = "AG-UI, the Agent-User Interaction protocol for streaming events between an AI agent and a user-facing application."
+
+[[accepted]]
+word = "Airwindows"
+meaning = "A collection of open-source audio effect plugins by Chris Johnson."
+
+[[accepted]]
+word = "AKWF"
+meaning = "Adventure Kid Waveforms, a free collection of single-cycle waveforms for wavetable synthesis."
+
+[[accepted]]
+word = "Alda"
+meaning = "A text-based programming language for music composition."
+
+[[accepted]]
+word = "Alertmanager"
+meaning = "The Prometheus component that deduplicates, groups, and routes alerts to receivers."
+
+[[accepted]]
+word = "Algolia"
+meaning = "A hosted search service that sites query instead of a local index."
+
+[[accepted]]
+word = "allowlist"
+meaning = "A list of the only values something accepts; everything not on it is refused."
+
+[[accepted]]
+word = "allpairspy"
+meaning = "A Python library that generates pairwise (all-pairs) test combinations."
+
+[[accepted]]
+word = "allpass"
+meaning = "An allpass filter: a filter that passes all frequencies at equal gain while changing their phase."
+aliases = ["allpasses"]
+
+[[accepted]]
+word = "AMO"
+meaning = "addons.mozilla.org, Mozilla's official add-on site, which signs Firefox extensions."
+
+[[accepted]]
+word = "AMQP"
+meaning = "Advanced Message Queuing Protocol, an open standard for message-oriented middleware."
+
+[[accepted]]
+word = "Ansible"
+meaning = "An agentless configuration management and automation tool driven by YAML playbooks."
+
+[[accepted]]
+word = "antialiasing"
+meaning = "Techniques that reduce aliasing artifacts in sampled signals or rendered images."
+
+[[accepted]]
+word = "antiderivative"
+meaning = "A function whose derivative is the given function."
+
+[[accepted]]
+word = "AnyIO"
+meaning = "A Python library providing structured concurrency on top of asyncio or Trio."
+
+[[accepted]]
+word = "AOT"
+meaning = "Ahead-of-time, as in compiling code before it runs rather than just in time."
+
+[[accepted]]
+word = "API"
+meaning = "Application programming interface: the defined surface through which software components interact."
+
+[[accepted]]
+word = "Arazzo"
+meaning = "The OpenAPI Initiative's specification for describing sequences of API calls as workflows."
+
+[[accepted]]
+word = "arcball"
+meaning = "A rotation control that maps mouse drags onto a virtual sphere to rotate a 3D view."
+
+[[accepted]]
+word = "arg"
+meaning = "Short for argument, a value passed to a function or command."
+aliases = ["args"]
+
+[[accepted]]
+word = "argparse"
+meaning = "Python's standard-library module for parsing command-line arguments."
+
+[[accepted]]
+word = "argv"
+meaning = "The argument vector: the list of command-line arguments a program receives."
+
+[[accepted]]
+word = "arity"
+meaning = "The number of arguments a function or operator takes."
+
+[[accepted]]
+word = "ASGI"
+meaning = "Asynchronous Server Gateway Interface, the Python standard between async web servers and applications."
+
+[[accepted]]
+word = "AST"
+meaning = "Abstract syntax tree, the tree representation of parsed source code."
+
+[[accepted]]
+word = "async"
+meaning = "Asynchronous: work that runs without blocking the caller, as in async functions."
+
+[[accepted]]
+word = "asyncio"
+meaning = "Python's standard-library framework for asynchronous I/O with coroutines and an event loop."
+
+[[accepted]]
+word = "asyncpg"
+meaning = "A fast asynchronous PostgreSQL client library for Python."
+
+[[accepted]]
+word = "atan"
+meaning = "The arctangent function."
+
+[[accepted]]
+word = "atexit"
+meaning = "Python's standard-library module for registering functions to run at interpreter exit."
+
+[[accepted]]
+word = "attrs"
+meaning = "A Python library for declaring classes with generated boilerplate such as init and comparison methods."
+
+[[accepted]]
+word = "ATX"
+meaning = "The Markdown heading style that opens a heading with '#' characters."
+
+[[accepted]]
+word = "AudioGen"
+meaning = "Meta's AI model that generates sound effects from text descriptions."
+
+[[accepted]]
+word = "autoconfig"
+meaning = "Automatic configuration, where settings are discovered rather than written by hand."
+
+[[accepted]]
+word = "Autodoc"
+meaning = "The Sphinx extension that pulls API documentation out of Python docstrings."
+
+[[accepted]]
+word = "autogenerated"
+meaning = "Produced automatically by a tool rather than written by hand."
+
+[[accepted]]
+word = "autoincrement"
+meaning = "A column that assigns the next integer automatically to each new row."
+
+[[accepted]]
+word = "automatable"
+meaning = "Able to be automated, as in a synthesizer parameter that an automation lane can drive."
+
+[[accepted]]
+word = "autopan"
+meaning = "An audio effect that moves a signal between the left and right channels automatically."
+
+[[accepted]]
+word = "autoscaler"
+meaning = "A component that adds or removes compute capacity automatically as load changes."
+
+[[accepted]]
+word = "autostash"
+meaning = "Git's option to stash local changes before a rebase or pull and reapply them afterward."
+
+[[accepted]]
+word = "autovacuum"
+meaning = "PostgreSQL's background process that vacuums and analyzes tables automatically."
+
+[[accepted]]
+word = "awaitable"
+meaning = "An object that can be awaited, such as a coroutine, task, or future."
+
+[[accepted]]
+word = "awk"
+meaning = "A pattern-scanning and text-processing language and command-line tool."
+
+[[accepted]]
+word = "backdoors"
+meaning = "Hidden ways of bypassing normal authentication or security controls."
+
+[[accepted]]
+word = "backend"
+meaning = "The part of a system that runs behind its interface: a server, a storage layer, or a compiler stage."
+aliases = ["backends"]
+
+[[accepted]]
+word = "backoff"
+meaning = "Waiting progressively longer between retries of a failed operation."
+
+[[accepted]]
+word = "backorders"
+meaning = "Orders taken for items that are out of stock, to be fulfilled later."
+
+[[accepted]]
+word = "backported"
+meaning = "Applied to an older release line after first being made on a newer one."
+
+[[accepted]]
+word = "backpressure"
+meaning = "Resistance a slow consumer applies to a fast producer so data does not pile up unbounded."
+
+[[accepted]]
+word = "backreferences"
+meaning = "References back to an earlier captured group in a regular expression."
+
+[[accepted]]
+word = "backtick"
+meaning = "The ` character, which delimits inline code in Markdown and command substitution in shells."
+aliases = ["backticks"]
+
+[[accepted]]
+word = "bandpass"
+meaning = "A filter that passes a band of frequencies and attenuates those above and below it."
+aliases = ["bandpassed"]
+
+[[accepted]]
+word = "basename"
+meaning = "The final component of a path, without its directory."
+aliases = ["basenames"]
+
+[[accepted]]
+word = "BCNF"
+meaning = "Boyce-Codd normal form, a database normalization level stricter than third normal form."
+
+[[accepted]]
+word = "BCP"
+meaning = "Best Current Practice, the IETF document series; BCP 47 defines language tags."
+
+[[accepted]]
+word = "bcrypt"
+meaning = "A password-hashing function based on the Blowfish cipher, with a tunable cost factor."
+
+[[accepted]]
+word = "BFS"
+meaning = "Breadth-first search, a graph traversal that visits all neighbors before going deeper."
+
+[[accepted]]
+word = "BG"
+meaning = "Short for background, as in a background color."
+
+[[accepted]]
+word = "BGP"
+meaning = "Border Gateway Protocol, the routing protocol that exchanges reachability between networks on the internet."
+
+[[accepted]]
+word = "bidirectionality"
+meaning = "The property of working or relating in both directions."
+
+[[accepted]]
+word = "bigint"
+meaning = "The SQL 64-bit integer type."
+
+[[accepted]]
+word = "bigserial"
+meaning = "The PostgreSQL auto-incrementing 64-bit integer column type."
+
+[[accepted]]
+word = "biquad"
+meaning = "A second-order recursive digital filter with two poles and two zeros."
+
+[[accepted]]
+word = "birthdate"
+meaning = "A person's date of birth."
+
+[[accepted]]
+word = "Bitbucket"
+meaning = "Atlassian's hosted Git repository service."
+
+[[accepted]]
+word = "bitcrush"
+meaning = "An audio effect that reduces bit depth and sample rate for a lo-fi, distorted sound."
+
+[[accepted]]
+word = "bitrate"
+meaning = "The number of bits used per unit of time to represent audio or video."
+
+[[accepted]]
+word = "blockquote"
+meaning = "Quoted blocks of text, marked in Markdown with a leading '>'."
+aliases = ["blockquotes"]
+
+[[accepted]]
+word = "Bluesky"
+meaning = "A decentralized social network built on the AT Protocol."
+
+[[accepted]]
+word = "Bohm"
+meaning = "Corrado Böhm, co-author with Giuseppe Jacopini of the structured program theorem."
+
+[[accepted]]
+word = "booleans"
+meaning = "Values that are either true or false."
+aliases = ["bools"]
+
+[[accepted]]
+word = "Boyce"
+meaning = "Raymond Boyce, co-author with Edgar Codd of Boyce-Codd normal form."
+
+[[accepted]]
+word = "Brevo"
+meaning = "An email marketing and transactional email service, formerly Sendinblue."
+
+[[accepted]]
+word = "brickwall"
+meaning = "A filter or limiter with an extremely steep cutoff that allows nothing past its threshold."
+
+[[accepted]]
+word = "BRIN"
+meaning = "Block Range Index, a compact PostgreSQL index type for naturally ordered large tables."
+
+[[accepted]]
+word = "Brotli"
+meaning = "A lossless compression algorithm from Google, widely used for web content."
+
+[[accepted]]
+word = "browsable"
+meaning = "Able to be browsed or navigated."
+
+[[accepted]]
+word = "btree"
+meaning = "B-tree, the balanced tree structure used for most database indexes."
+
+[[accepted]]
+word = "Btrfs"
+meaning = "A copy-on-write Linux filesystem with snapshots and checksums."
+
+[[accepted]]
+word = "bubblewrap"
+meaning = "Bubblewrap (bwrap), an unprivileged Linux sandboxing tool built on namespaces."
+aliases = ["bwrap", "bwrap'd"]
+
+[[accepted]]
+word = "buildability"
+meaning = "Whether something can be built successfully."
+
+[[accepted]]
+word = "builtin"
+meaning = "A function, type, or command provided by the language or tool itself."
+aliases = ["builtins"]
+
+[[accepted]]
+word = "bundler"
+meaning = "A tool that combines source modules and assets into files for deployment."
+
+[[accepted]]
+word = "Butterworth"
+meaning = "A filter design with a maximally flat passband response."
+
+[[accepted]]
+word = "BYO"
+meaning = "Bring your own: the user supplies the component."
+
+[[accepted]]
+word = "BYOK"
+meaning = "Bring your own key: the user supplies their own API or encryption key."
+
+[[accepted]]
+word = "bytea"
+meaning = "The PostgreSQL binary string column type."
+
+[[accepted]]
+word = "CAA"
+meaning = "The DNS record type that states which certificate authorities may issue certificates for a domain."
+
+[[accepted]]
+word = "Caddyfile"
+meaning = "The configuration file format of the Caddy web server."
+
+[[accepted]]
+word = "caffeinate"
+meaning = "The macOS command that prevents the system from sleeping while it runs."
+
+[[accepted]]
+word = "callables"
+meaning = "Objects that can be called like functions."
+
+[[accepted]]
+word = "callee"
+meaning = "The function being called, as opposed to its caller."
+aliases = ["callees"]
+
+[[accepted]]
+word = "callout"
+meaning = "A highlighted note, tip, or warning box in a document."
+aliases = ["callouts"]
+
+[[accepted]]
+word = "callsite"
+meaning = "A place in code where a function is called."
+
+[[accepted]]
+word = "canonicality"
+meaning = "The property of being the canonical form or source."
+
+[[accepted]]
+word = "canonicalize"
+meaning = "To convert data to its single standard (canonical) form."
+aliases = ["canonicalized", "canonicalizes", "canonicalizing", "canonicalization", "canonicalizer"]
+
+[[accepted]]
+word = "cardinality"
+meaning = "The number of elements in a set, or of distinct values in a column."
+
+[[accepted]]
+word = "CAS"
+meaning = "Compare-and-swap, an atomic operation that updates a value only if it still holds an expected value."
+
+[[accepted]]
+word = "CDN"
+meaning = "Content delivery network: servers around the world that cache and serve content close to users."
+
+[[accepted]]
+word = "CEL"
+meaning = "Common Expression Language, Google's non-Turing-complete expression language for policies and validation."
+
+[[accepted]]
+word = "CER"
+meaning = "A file extension for X.509 certificates."
+
+[[accepted]]
+word = "certbot"
+meaning = "The EFF's client that obtains and renews Let's Encrypt TLS certificates."
+
+[[accepted]]
+word = "cgo"
+meaning = "The Go tool and mechanism for calling C code from Go."
+
+[[accepted]]
+word = "changelog"
+meaning = "A file recording the notable changes in each release of a project."
+aliases = ["changelogs"]
+
+[[accepted]]
+word = "changeset"
+meaning = "A set of changes applied together, such as one commit or one migration."
+aliases = ["changesets"]
+
+[[accepted]]
+word = "charset"
+meaning = "A character set or character encoding."
+
+[[accepted]]
+word = "chmod"
+meaning = "The Unix command that changes file permission bits."
+
+[[accepted]]
+word = "chokepoint"
+meaning = "A single narrow point that all traffic or control flow must pass through."
+
+[[accepted]]
+word = "CI"
+meaning = "Continuous integration: building and testing every change automatically."
+
+[[accepted]]
+word = "cibuildwheel"
+meaning = "A tool that builds Python wheels for many platforms in CI."
+
+[[accepted]]
+word = "CIDR"
+meaning = "Classless Inter-Domain Routing notation for IP address ranges, such as 10.0.0.0/8."
+
+[[accepted]]
+word = "citext"
+meaning = "The PostgreSQL extension type for case-insensitive text."
+
+[[accepted]]
+word = "Citus"
+meaning = "A PostgreSQL extension that distributes tables across multiple nodes."
+
+[[accepted]]
+word = "Claude"
+meaning = "Anthropic's family of AI models and assistants."
+
+[[accepted]]
+word = "CLI"
+meaning = "Command-line interface."
+
+[[accepted]]
+word = "Clippy"
+meaning = "Rust's official linter."
+
+[[accepted]]
+word = "Cloudflare"
+meaning = "A company providing CDN, DNS, DDoS protection, and edge computing services."
+
+[[accepted]]
+word = "cmd"
+meaning = "Short for command."
+
+[[accepted]]
+word = "CNAME"
+meaning = "The DNS record type that aliases one hostname to another."
+
+[[accepted]]
+word = "Codd"
+meaning = "Edgar F. Codd, the computer scientist who invented the relational database model."
+
+[[accepted]]
+word = "codegen"
+meaning = "Code generation: producing source code from a model or schema."
+
+[[accepted]]
+word = "codeless"
+meaning = "Having no code."
+
+[[accepted]]
+word = "codepaths"
+meaning = "The routes execution can take through code."
+
+[[accepted]]
+word = "codomain"
+meaning = "The set a function's output values belong to."
+
+[[accepted]]
+word = "collab"
+meaning = "Short for collaboration."
+
+[[accepted]]
+word = "colo"
+meaning = "Short for colocation: a data center, as in the location that served a request."
+
+[[accepted]]
+word = "colocate"
+meaning = "To place together in the same location."
+aliases = ["colocated"]
+
+[[accepted]]
+word = "combinable"
+meaning = "Able to be combined."
+
+[[accepted]]
+word = "combinatorial"
+meaning = "Relating to combinations, especially the rapid growth in their number."
+
+[[accepted]]
+word = "Comby"
+meaning = "A structural code search and rewrite tool."
+
+[[accepted]]
+word = "compat"
+meaning = "Short for compatibility."
+
+[[accepted]]
+word = "composable"
+meaning = "Able to be combined with other parts to build larger ones."
+
+[[accepted]]
+word = "conda"
+meaning = "A cross-platform package and environment manager, common in scientific Python."
+
+[[accepted]]
+word = "configs"
+meaning = "Short for configuration."
+
+[[accepted]]
+word = "const"
+meaning = "A constant, or the keyword that declares one."
+
+[[accepted]]
+word = "contenteditable"
+meaning = "The HTML attribute that makes an element's content editable by the user."
+
+[[accepted]]
+word = "Contentful"
+meaning = "A hosted headless content management system."
+
+[[accepted]]
+word = "contextvars"
+meaning = "Python's standard-library module for context-local state in async code."
+
+[[accepted]]
+word = "coprime"
+meaning = "Two integers whose greatest common divisor is 1."
+
+[[accepted]]
+word = "copysign"
+meaning = "The math function that returns a magnitude with the sign of another number."
+
+[[accepted]]
+word = "coroutine"
+meaning = "A function that can suspend and resume its execution, the basis of async code."
+
+[[accepted]]
+word = "CPX"
+meaning = "Hetzner Cloud's line of shared-vCPU AMD server types."
+
+[[accepted]]
+word = "crawlable"
+meaning = "Able to be discovered and indexed by a search engine's crawler."
+
+[[accepted]]
+word = "creatable"
+meaning = "Able to be created."
+
+[[accepted]]
+word = "credstore"
+meaning = "The systemd directory from which services load encrypted or plain credentials."
+
+[[accepted]]
+word = "CRLF"
+meaning = "Carriage return plus line feed, the Windows line ending."
+
+[[accepted]]
+word = "Crockford"
+meaning = "Douglas Crockford, as in Crockford Base32, an encoding alphabet that avoids ambiguous characters."
+
+[[accepted]]
+word = "cron"
+meaning = "The Unix scheduler that runs commands at fixed times."
+
+[[accepted]]
+word = "cryptominers"
+meaning = "Software that mines cryptocurrency, often run illicitly on someone else's machine."
+
+[[accepted]]
+word = "CSAM"
+meaning = "Child sexual abuse material."
+
+[[accepted]]
+word = "CSP"
+meaning = "Content Security Policy, the HTTP header restricting what a page may load and run."
+
+[[accepted]]
+word = "CSR"
+meaning = "Certificate signing request, or client-side rendering, depending on context."
+
+[[accepted]]
+word = "CSRF"
+meaning = "Cross-site request forgery, an attack that tricks a browser into making an unwanted authenticated request."
+
+[[accepted]]
+word = "CSV"
+meaning = "Comma-separated values, a plain-text table format."
+
+[[accepted]]
+word = "Ctrl"
+meaning = "The Control key."
+
+[[accepted]]
+word = "ctx"
+meaning = "Short for context, commonly a context object passed through calls."
+
+[[accepted]]
+word = "culori"
+meaning = "A JavaScript color library for conversions and manipulation across color spaces."
+
+[[accepted]]
+word = "cwd"
+meaning = "The current working directory."
+
+[[accepted]]
+word = "Cytomic"
+meaning = "The audio company whose published trapezoidal filter designs are widely used in digital synthesis."
+
+[[accepted]]
+word = "DAHDSR"
+meaning = "Delay, attack, hold, decay, sustain, release: a six-stage synthesizer envelope."
+
+[[accepted]]
+word = "darcs"
+meaning = "A distributed version control system based on a theory of patches."
+
+[[accepted]]
+word = "dashboarding"
+meaning = "Building and using dashboards to display metrics."
+
+[[accepted]]
+word = "datacenter"
+meaning = "A facility housing servers and networking equipment."
+
+[[accepted]]
+word = "dataclass"
+meaning = "A Python class decorated with @dataclass, which generates init, repr, and comparison methods from its fields."
+aliases = ["dataclasses"]
+
+[[accepted]]
+word = "Datadog"
+meaning = "A hosted monitoring and observability service."
+
+[[accepted]]
+word = "datemultirange"
+meaning = "The PostgreSQL type holding a set of non-overlapping date ranges."
+
+[[accepted]]
+word = "daterange"
+meaning = "The PostgreSQL type for a range of dates."
+
+[[accepted]]
+word = "datetime"
+meaning = "A value holding both a date and a time of day."
+aliases = ["datetimes"]
+
+[[accepted]]
+word = "Dattorro"
+meaning = "Jon Dattorro, whose 1997 plate reverb design is a standard digital reverb topology."
+
+[[accepted]]
+word = "DCS"
+meaning = "Distributed configuration store, the consensus store (such as etcd) Patroni uses for leader election."
+
+[[accepted]]
+word = "DDL"
+meaning = "Data definition language: the SQL statements that create and alter schema objects."
+
+[[accepted]]
+word = "dealbreaker"
+meaning = "A factor that alone rules an option out."
+
+[[accepted]]
+word = "debounce"
+meaning = "To delay acting on rapid repeated events until they stop for a set interval."
+aliases = ["debounced", "debounces", "debouncing"]
+
+[[accepted]]
+word = "debuggability"
+meaning = "How easily something can be debugged."
+
+[[accepted]]
+word = "decidability"
+meaning = "Whether a problem can be decided by an algorithm that always terminates."
+
+[[accepted]]
+word = "declaratively"
+meaning = "By stating what is wanted rather than the steps to get it."
+
+[[accepted]]
+word = "decodability"
+meaning = "Whether data can be decoded unambiguously."
+
+[[accepted]]
+word = "dedup"
+meaning = "Short for deduplication: removing duplicate entries."
+
+[[accepted]]
+word = "deletable"
+meaning = "Able to be deleted."
+
+[[accepted]]
+word = "Deno"
+meaning = "A JavaScript and TypeScript runtime with built-in tooling and a permission model."
+
+[[accepted]]
+word = "denylist"
+meaning = "A list of values that are refused; everything not on it is allowed."
+
+[[accepted]]
+word = "deparse"
+meaning = "To turn a parsed syntax tree back into source text."
+
+[[accepted]]
+word = "deprioritized"
+meaning = "Given a lower priority."
+
+[[accepted]]
+word = "deps"
+meaning = "Short for dependencies."
+
+[[accepted]]
+word = "deques"
+meaning = "Double-ended queues, which support adding and removing at both ends."
+
+[[accepted]]
+word = "deref"
+meaning = "To follow a pointer or reference to the value it points at."
+aliases = ["dereference"]
+
+[[accepted]]
+word = "deregister"
+meaning = "To remove a previous registration."
+aliases = ["deregisters"]
+
+[[accepted]]
+word = "desc"
+meaning = "Short for descending (sort order) or description."
+
+[[accepted]]
+word = "desugared"
+meaning = "Rewritten from convenient syntax into a more basic equivalent form."
+aliases = ["desugars"]
+
+[[accepted]]
+word = "desynchronising"
+meaning = "Falling out of synchronization."
+aliases = ["desynchronizing"]
+
+[[accepted]]
+word = "detune"
+meaning = "To shift a pitch slightly away from its nominal frequency, often to thicken a sound."
+aliases = ["detuned"]
+
+[[accepted]]
+word = "dev"
+meaning = "Short for development, as in a development server or build."
+
+[[accepted]]
+word = "devpi"
+meaning = "A self-hosted Python package index server and caching proxy."
+
+[[accepted]]
+word = "Dexed"
+meaning = "An open-source software synthesizer emulating the Yamaha DX7."
+
+[[accepted]]
+word = "DFS"
+meaning = "Depth-first search, a graph traversal that goes as deep as possible before backtracking."
+
+[[accepted]]
+word = "dialogs"
+meaning = "Windows or panels that ask the user for input or confirmation."
+
+[[accepted]]
+word = "dicts"
+meaning = "Python dictionaries: mappings from keys to values."
+
+[[accepted]]
+word = "direnv"
+meaning = "A shell extension that loads and unloads environment variables per directory."
+
+[[accepted]]
+word = "dirs"
+meaning = "Short for directories."
+
+[[accepted]]
+word = "disableable"
+meaning = "Able to be disabled."
+
+[[accepted]]
+word = "discoverability"
+meaning = "How easily something can be found by those who need it."
+
+[[accepted]]
+word = "disjointness"
+meaning = "The property of sets having no elements in common."
+
+[[accepted]]
+word = "dispatchable"
+meaning = "Able to be dispatched, as an event or a job."
+
+[[accepted]]
+word = "distro"
+meaning = "Short for a Linux distribution."
+
+[[accepted]]
+word = "dlopen"
+meaning = "The POSIX function that loads a shared library at run time."
+
+[[accepted]]
+word = "DMG"
+meaning = "The macOS disk image format used to distribute applications."
+
+[[accepted]]
+word = "DML"
+meaning = "Data manipulation language: the SQL statements that read and change rows."
+
+[[accepted]]
+word = "DNS"
+meaning = "Domain Name System, which maps domain names to addresses and other records."
+
+[[accepted]]
+word = "DNSSEC"
+meaning = "DNS Security Extensions, which sign DNS records so resolvers can verify them."
+
+[[accepted]]
+word = "dockerized"
+meaning = "Packaged to run in a Docker container."
+
+[[accepted]]
+word = "docstring"
+meaning = "A string literal documenting a function, class, or module, stored with it in the source."
+aliases = ["docstrings"]
+
+[[accepted]]
+word = "doctest"
+meaning = "Tests embedded in documentation as interactive examples whose output is checked."
+aliases = ["doctests"]
+
+[[accepted]]
+word = "Docusaurus"
+meaning = "Meta's static site generator for documentation sites."
+
+[[accepted]]
+word = "dogfooded"
+meaning = "Using one's own product in one's own work."
+aliases = ["dogfooding"]
+
+[[accepted]]
+word = "Dolson"
+meaning = "Mark Dolson, co-author with Jean Laroche of phase-locked phase vocoder techniques."
+
+[[accepted]]
+word = "don'ts"
+meaning = "Things one should not do, as in dos and don'ts."
+
+[[accepted]]
+word = "dotenv"
+meaning = "A .env file of environment variables, or the libraries that load one."
+
+[[accepted]]
+word = "dotfiles"
+meaning = "Configuration files whose names start with a dot, hidden by default on Unix."
+
+[[accepted]]
+word = "downloader"
+meaning = "A program that downloads files."
+
+[[accepted]]
+word = "downstreams"
+meaning = "Projects or consumers that depend on a given project."
+
+[[accepted]]
+word = "DP"
+meaning = "Density-independent pixel, Android's unit for sizing layouts."
+
+[[accepted]]
+word = "DPA"
+meaning = "Data processing agreement, the GDPR contract between a controller and a processor."
+
+[[accepted]]
+word = "dropdown"
+meaning = "A control that reveals a list of options when opened."
+
+[[accepted]]
+word = "DSA"
+meaning = "The EU Digital Services Act, or the Digital Signature Algorithm, depending on context."
+
+[[accepted]]
+word = "DSN"
+meaning = "Data source name: a connection string naming a database or service endpoint."
+
+[[accepted]]
+word = "DSP"
+meaning = "Digital signal processing."
+
+[[accepted]]
+word = "DSS"
+meaning = "Data Security Standard, as in PCI DSS for payment card data."
+
+[[accepted]]
+word = "DTO"
+meaning = "Data transfer object: a plain structure carrying data between layers."
+
+[[accepted]]
+word = "DVCS"
+meaning = "Distributed version control system, such as Git or Mercurial."
+
+[[accepted]]
+word = "DWIM"
+meaning = "Do what I mean: behavior that guesses the user's intent from loose input."
+
+[[accepted]]
+word = "dynadot"
+meaning = "A domain registrar."
+
+[[accepted]]
+word = "EAGAIN"
+meaning = "The POSIX error code meaning a resource is temporarily unavailable; try again."
+
+[[accepted]]
+word = "EBNF"
+meaning = "Extended Backus-Naur Form, a notation for formal grammars."
+
+[[accepted]]
+word = "EBUSY"
+meaning = "The POSIX error code meaning a device or resource is busy."
+
+[[accepted]]
+word = "EEA"
+meaning = "The European Economic Area."
+
+[[accepted]]
+word = "EIO"
+meaning = "The POSIX error code for an input/output error."
+
+[[accepted]]
+word = "elementwise"
+meaning = "Applied separately to each element of a collection."
+
+[[accepted]]
+word = "eliminable"
+meaning = "Able to be eliminated."
+
+[[accepted]]
+word = "embeddable"
+meaning = "Able to be embedded in something else."
+
+[[accepted]]
+word = "Emscripten"
+meaning = "A compiler toolchain that compiles C and C++ to WebAssembly."
+
+[[accepted]]
+word = "encodings"
+meaning = "Schemes for representing characters or data as bytes."
+
+[[accepted]]
+word = "endian"
+meaning = "Byte order: whether the most or least significant byte of a value comes first."
+
+[[accepted]]
+word = "ENOLCK"
+meaning = "The POSIX error code meaning no locks are available."
+
+[[accepted]]
+word = "ENOSPC"
+meaning = "The POSIX error code meaning no space is left on the device."
+
+[[accepted]]
+word = "enum"
+meaning = "An enumerated type: a type with a fixed set of named values."
+aliases = ["enums"]
+
+[[accepted]]
+word = "envfile"
+meaning = "A file of environment variable assignments."
+
+[[accepted]]
+word = "EOF"
+meaning = "End of file."
+
+[[accepted]]
+word = "erroring"
+meaning = "Producing an error."
+
+[[accepted]]
+word = "ESLint"
+meaning = "A pluggable linter for JavaScript and TypeScript."
+
+[[accepted]]
+word = "ESM"
+meaning = "ECMAScript modules, the standard JavaScript module system using import and export."
+
+[[accepted]]
+word = "etcd"
+meaning = "A distributed, consistent key-value store used for configuration and coordination."
+
+[[accepted]]
+word = "eval"
+meaning = "Evaluation: running code from a string, or measuring a model against a test set."
+aliases = ["evals"]
+
+[[accepted]]
+word = "executables"
+meaning = "Files that can be run as programs."
+
+[[accepted]]
+word = "exfiltrate"
+meaning = "To extract data from a system without authorization."
+aliases = ["exfiltrating", "exfiltration"]
+
+[[accepted]]
+word = "extensionality"
+meaning = "The principle that two functions or sets are equal when they agree on every input or element."
+
+[[accepted]]
+word = "extensionless"
+meaning = "Having no filename extension."
+
+[[accepted]]
+word = "facto"
+meaning = "As in de facto: in practice, whether or not officially recognized."
+
+[[accepted]]
+word = "failover"
+meaning = "Switching automatically to a standby system when the primary fails."
+
+[[accepted]]
+word = "Falkenstein"
+meaning = "A town in Germany that hosts Hetzner data centers."
+
+[[accepted]]
+word = "fallthrough"
+meaning = "Control passing from one case into the next, as in a switch statement."
+
+[[accepted]]
+word = "falsy"
+meaning = "Treated as false in a boolean context."
+
+[[accepted]]
+word = "FD"
+meaning = "File descriptor: the integer handle a process uses for an open file or socket."
+aliases = ["FDs"]
+
+[[accepted]]
+word = "FDN"
+meaning = "Feedback delay network, a reverb structure of delay lines mixed through a feedback matrix."
+
+[[accepted]]
+word = "featureful"
+meaning = "Having many features."
+
+[[accepted]]
+word = "Fernet"
+meaning = "A symmetric authenticated encryption format from Python's cryptography library."
+
+[[accepted]]
+word = "FFI"
+meaning = "Foreign function interface: calling code written in another language."
+
+[[accepted]]
+word = "FFmpeg"
+meaning = "A command-line tool and library suite for converting and processing audio and video."
+
+[[accepted]]
+word = "FG"
+meaning = "Short for foreground, as in a foreground color."
+
+[[accepted]]
+word = "FI"
+meaning = "The second half of hi-fi and lo-fi, as in fidelity."
+
+[[accepted]]
+word = "Figma"
+meaning = "A browser-based collaborative interface design tool."
+
+[[accepted]]
+word = "filesystem"
+meaning = "The structure an operating system uses to store and organize files."
+aliases = ["filesystems"]
+
+[[accepted]]
+word = "fillfactor"
+meaning = "The PostgreSQL storage parameter that sets how full each table or index page is packed."
+
+[[accepted]]
+word = "firstname"
+meaning = "A person's given name."
+
+[[accepted]]
+word = "fixpoint"
+meaning = "A fixed point: a value that a function maps to itself, or where an iteration stops changing."
+
+[[accepted]]
+word = "FK"
+meaning = "Foreign key."
+
+[[accepted]]
+word = "FLAC"
+meaning = "Free Lossless Audio Codec."
+
+[[accepted]]
+word = "flanger"
+meaning = "An audio effect that mixes a signal with a slightly delayed copy whose delay sweeps."
+
+[[accepted]]
+word = "Flatpak"
+meaning = "A Linux application packaging and sandboxing system."
+
+[[accepted]]
+word = "FluidSynth"
+meaning = "An open-source software synthesizer that plays SoundFont files."
+
+[[accepted]]
+word = "flyout"
+meaning = "A panel or menu that slides out from an edge or control."
+
+[[accepted]]
+word = "FMA"
+meaning = "Fused multiply-add: computing a*b+c with a single rounding."
+
+[[accepted]]
+word = "fnmatch"
+meaning = "Shell-style wildcard filename matching, as in the C function and Python module."
+
+[[accepted]]
+word = "FNV"
+meaning = "Fowler-Noll-Vo, a family of simple non-cryptographic hash functions."
+
+[[accepted]]
+word = "foldables"
+meaning = "Phones with folding screens."
+
+[[accepted]]
+word = "forkable"
+meaning = "Able to be forked."
+
+[[accepted]]
+word = "formedness"
+meaning = "As in well-formedness: conformance to the syntax rules of a format."
+
+[[accepted]]
+word = "Fortnite"
+meaning = "Epic Games' online battle royale game."
+
+[[accepted]]
+word = "freedesktop"
+meaning = "freedesktop.org, the project hosting interoperability standards for Linux desktops."
+
+[[accepted]]
+word = "freeform"
+meaning = "Not constrained to a fixed structure."
+
+[[accepted]]
+word = "freemium"
+meaning = "A business model where the basic product is free and premium features are paid."
+
+[[accepted]]
+word = "Freeverb"
+meaning = "A widely used public-domain Schroeder-Moorer reverb algorithm."
+
+[[accepted]]
+word = "frontend"
+meaning = "The user-facing part of a system, or the parsing stage of a compiler."
+aliases = ["frontends"]
+
+[[accepted]]
+word = "frontmatter"
+meaning = "The metadata block at the top of a Markdown file, delimited by fences."
+
+[[accepted]]
+word = "frozenset"
+meaning = "Python's immutable set type."
+
+[[accepted]]
+word = "fsck"
+meaning = "The Unix filesystem consistency checker; in Git, the object database integrity check."
+
+[[accepted]]
+word = "fullscreen"
+meaning = "Occupying the whole screen."
+
+[[accepted]]
+word = "func"
+meaning = "Short for function; the Go keyword that declares one."
+
+[[accepted]]
+word = "gamertag"
+meaning = "A player's public username on a gaming platform."
+aliases = ["gamertags"]
+
+[[accepted]]
+word = "gapless"
+meaning = "Played without silence between consecutive tracks."
+
+[[accepted]]
+word = "gateable"
+meaning = "Able to be switched on or off by a condition or flag."
+
+[[accepted]]
+word = "GC"
+meaning = "Garbage collection, or garbage-collected."
+aliases = ["gc'd"]
+
+[[accepted]]
+word = "GCC"
+meaning = "The GNU Compiler Collection."
+
+[[accepted]]
+word = "GDPR"
+meaning = "The EU General Data Protection Regulation."
+
+[[accepted]]
+word = "Genshin"
+meaning = "Genshin Impact, an open-world action role-playing game by HoYoverse."
+
+[[accepted]]
+word = "Gerrit"
+meaning = "A web-based code review system for Git."
+
+[[accepted]]
+word = "gettext"
+meaning = "The GNU internationalization system for translating program messages."
+
+[[accepted]]
+word = "gh"
+meaning = "GitHub's official command-line client."
+
+[[accepted]]
+word = "GHCR"
+meaning = "GitHub Container Registry."
+
+[[accepted]]
+word = "GIL"
+meaning = "Global interpreter lock: the CPython lock that lets only one thread run Python bytecode at a time."
+
+[[accepted]]
+word = "Gitea"
+meaning = "A self-hosted Git service."
+
+[[accepted]]
+word = "GitHub"
+meaning = "Microsoft's hosted Git repository and collaboration service."
+
+[[accepted]]
+word = "gitignore"
+meaning = "The .gitignore file listing paths Git should not track."
+
+[[accepted]]
+word = "gitignored"
+meaning = "Matched by a .gitignore pattern, so Git does not track it."
+
+[[accepted]]
+word = "gitlink"
+meaning = "A Git tree entry that records a submodule's commit."
+aliases = ["gitlinks"]
+
+[[accepted]]
+word = "gitoxide"
+meaning = "A pure-Rust implementation of Git; gix is its crate and command-line tool."
+aliases = ["gix"]
+
+[[accepted]]
+word = "glibc"
+meaning = "The GNU C Library."
+
+[[accepted]]
+word = "globals"
+meaning = "Global variables."
+
+[[accepted]]
+word = "Godoc"
+meaning = "Go's documentation tool and format for doc comments."
+
+[[accepted]]
+word = "goldens"
+meaning = "Stored expected outputs that a test compares actual output against."
+
+[[accepted]]
+word = "Googler"
+meaning = "A Google employee."
+
+[[accepted]]
+word = "goreleaser"
+meaning = "A tool that builds, packages, and publishes Go release artifacts."
+
+[[accepted]]
+word = "GORM"
+meaning = "An object-relational mapper for Go."
+
+[[accepted]]
+word = "goroutines"
+meaning = "Lightweight threads managed by the Go runtime."
+
+[[accepted]]
+word = "goto"
+meaning = "A statement that jumps unconditionally to a label."
+
+[[accepted]]
+word = "gotreesitter"
+meaning = "A pure-Go implementation of the tree-sitter parsing runtime."
+
+[[accepted]]
+word = "GPG"
+meaning = "GNU Privacy Guard, an OpenPGP implementation for signing and encryption."
+
+[[accepted]]
+word = "GPL"
+meaning = "GNU General Public License, a copyleft license."
+
+[[accepted]]
+word = "Gradle"
+meaning = "A build automation tool for JVM and Android projects."
+
+[[accepted]]
+word = "Grafana"
+meaning = "An open-source dashboarding and observability platform."
+
+[[accepted]]
+word = "grammaticality"
+meaning = "Whether a sentence or string conforms to a grammar."
+
+[[accepted]]
+word = "Granian"
+meaning = "A Rust-based HTTP server for Python ASGI, WSGI, and RSGI applications."
+
+[[accepted]]
+word = "GraphQL"
+meaning = "A query language and runtime for APIs."
+
+[[accepted]]
+word = "Graphviz"
+meaning = "Graph visualization software that lays out graphs described in the DOT language."
+
+[[accepted]]
+word = "greppable"
+meaning = "Easy to find with grep or text search."
+
+[[accepted]]
+word = "Grotesk"
+meaning = "A sans-serif typeface style, as in the Space Grotesk typeface."
+
+[[accepted]]
+word = "GTK"
+meaning = "A widget toolkit for building graphical user interfaces, used by GNOME."
+
+[[accepted]]
+word = "Gunicorn"
+meaning = "A Python WSGI HTTP server."
+
+[[accepted]]
+word = "gzip"
+meaning = "The gzip compression format and tool."
+aliases = ["gzipped"]
+
+[[accepted]]
+word = "Hadamard"
+meaning = "As in a Hadamard matrix or transform, an orthogonal matrix of +1 and -1 entries."
+
+[[accepted]]
+word = "halfband"
+meaning = "A lowpass filter with its cutoff at a quarter of the sample rate, used in 2x resampling."
+
+[[accepted]]
+word = "hardcode"
+meaning = "To write a value directly into code instead of reading it from input or configuration."
+aliases = ["hardcoded", "hardcodes", "hardcoding"]
+
+[[accepted]]
+word = "heredoc"
+meaning = "A here-document: a block of literal text fed inline to a command or string."
+
+[[accepted]]
+word = "Hetzner"
+meaning = "A German hosting provider of dedicated and cloud servers."
+
+[[accepted]]
+word = "HH"
+meaning = "Hours, as in the HH:MM:SS time format."
+
+[[accepted]]
+word = "highpass"
+meaning = "A filter that passes frequencies above a cutoff and attenuates those below."
+aliases = ["highpassed"]
+
+[[accepted]]
+word = "HMAC"
+meaning = "Hash-based message authentication code."
+
+[[accepted]]
+word = "HMR"
+meaning = "Hot module replacement: swapping changed modules into a running app without a full reload."
+
+[[accepted]]
+word = "HNSW"
+meaning = "Hierarchical navigable small world, a graph-based index for approximate nearest-neighbor search."
+
+[[accepted]]
+word = "Hoare"
+meaning = "Tony Hoare, the computer scientist known for Hoare logic, Quicksort, and CSP."
+
+[[accepted]]
+word = "hom"
+meaning = "Short for homomorphism, as in a hom-set of morphisms between two objects in category theory."
+
+[[accepted]]
+word = "Homebrew"
+meaning = "A package manager for macOS and Linux."
+
+[[accepted]]
+word = "hostname"
+meaning = "A name that identifies a host on a network."
+aliases = ["hostnames"]
+
+[[accepted]]
+word = "HSTS"
+meaning = "HTTP Strict Transport Security, the header telling browsers to use only HTTPS."
+
+[[accepted]]
+word = "HSV"
+meaning = "Hue, saturation, value: a cylindrical color model."
+
+[[accepted]]
+word = "HTML"
+meaning = "HyperText Markup Language."
+
+[[accepted]]
+word = "HTTP"
+meaning = "Hypertext Transfer Protocol."
+
+[[accepted]]
+word = "HTTPS"
+meaning = "HTTP over TLS."
+
+[[accepted]]
+word = "httptools"
+meaning = "A Python binding for the Node.js HTTP parser."
+
+[[accepted]]
+word = "HTTPX"
+meaning = "A Python HTTP client with sync and async APIs."
+
+[[accepted]]
+word = "HUD"
+meaning = "Heads-up display: an overlay of status information."
+
+[[accepted]]
+word = "Hypercorn"
+meaning = "A Python ASGI server supporting HTTP/2 and HTTP/3."
+
+[[accepted]]
+word = "hypot"
+meaning = "The math function computing the length of the hypotenuse, sqrt(x*x + y*y)."
+
+[[accepted]]
+word = "IAP"
+meaning = "In-app purchase."
+
+[[accepted]]
+word = "idempotence"
+meaning = "The property that repeating an operation has the same effect as doing it once."
+aliases = ["idempotency"]
+
+[[accepted]]
+word = "iframe"
+meaning = "An HTML inline frame that embeds another document in a page."
+
+[[accepted]]
+word = "ILIKE"
+meaning = "PostgreSQL's case-insensitive LIKE pattern-matching operator."
+
+[[accepted]]
+word = "inet"
+meaning = "The PostgreSQL type for an IPv4 or IPv6 host address."
+
+[[accepted]]
+word = "informationally"
+meaning = "In terms of information content."
+
+[[accepted]]
+word = "inharmonicity"
+meaning = "The degree to which a sound's overtones deviate from exact integer multiples of the fundamental."
+
+[[accepted]]
+word = "init"
+meaning = "Short for initialize or initialization."
+
+[[accepted]]
+word = "initialiser"
+meaning = "An initializer (British spelling)."
+
+[[accepted]]
+word = "injectable"
+meaning = "Able to be injected, as a dependency or as code in an injection attack."
+
+[[accepted]]
+word = "injective"
+meaning = "A function mapping distinct inputs to distinct outputs."
+
+[[accepted]]
+word = "inlined"
+meaning = "Replacing a function call with the function's body, or placing content inline."
+aliases = ["inlines", "inlining"]
+
+[[accepted]]
+word = "inode"
+meaning = "The Unix filesystem structure holding a file's metadata."
+
+[[accepted]]
+word = "Inoreader"
+meaning = "A web-based RSS feed reader."
+
+[[accepted]]
+word = "inspectability"
+meaning = "Able to be inspected."
+aliases = ["inspectable"]
+
+[[accepted]]
+word = "interop"
+meaning = "Short for interoperability."
+
+[[accepted]]
+word = "intersphinx"
+meaning = "The Sphinx extension that links to other projects' documentation."
+
+[[accepted]]
+word = "interstitials"
+meaning = "Pages or screens shown between content, such as ads or warnings."
+
+[[accepted]]
+word = "intl"
+meaning = "Short for internationalization."
+
+[[accepted]]
+word = "introspectable"
+meaning = "Able to be examined at run time."
+
+[[accepted]]
+word = "invertibility"
+meaning = "Whether a function or transformation can be reversed."
+
+[[accepted]]
+word = "INWX"
+meaning = "A German domain registrar."
+
+[[accepted]]
+word = "IO"
+meaning = "Input/output."
+
+[[accepted]]
+word = "IOPS"
+meaning = "Input/output operations per second, a storage performance measure."
+
+[[accepted]]
+word = "iOS"
+meaning = "Apple's mobile operating system."
+
+[[accepted]]
+word = "IP"
+meaning = "Internet Protocol, or an IP address."
+
+[[accepted]]
+word = "IPA"
+meaning = "The iOS application archive format."
+
+[[accepted]]
+word = "IPC"
+meaning = "Inter-process communication."
+
+[[accepted]]
+word = "ISC"
+meaning = "The ISC license, a permissive open-source license."
+
+[[accepted]]
+word = "isinstance"
+meaning = "Python's built-in function testing whether an object is an instance of a type."
+
+[[accepted]]
+word = "ISO"
+meaning = "The International Organization for Standardization, as in ISO 8601 dates."
+
+[[accepted]]
+word = "IVFFlat"
+meaning = "A pgvector index type that clusters vectors into inverted lists for approximate search."
+
+[[accepted]]
+word = "Jacopini"
+meaning = "Giuseppe Jacopini, co-author with Corrado Böhm of the structured program theorem."
+
+[[accepted]]
+word = "JAES"
+meaning = "The Journal of the Audio Engineering Society."
+
+[[accepted]]
+word = "Jaffe"
+meaning = "David Jaffe, as in the Jaffe-Smith extensions to the Karplus-Strong plucked-string algorithm."
+
+[[accepted]]
+word = "JavaScript"
+meaning = "The programming language of the web."
+
+[[accepted]]
+word = "JDBC"
+meaning = "Java Database Connectivity, Java's database access API."
+
+[[accepted]]
+word = "JIT"
+meaning = "Just-in-time compilation: compiling code while the program runs."
+
+[[accepted]]
+word = "jj"
+meaning = "Jujutsu, a Git-compatible version control system whose command is jj."
+aliases = ["Jujutsu"]
+
+[[accepted]]
+word = "Joern"
+meaning = "An open-source code analysis platform built on code property graphs."
+
+[[accepted]]
+word = "journalled"
+meaning = "Recorded in a journal or log before being applied."
+
+[[accepted]]
+word = "JPA"
+meaning = "Jakarta Persistence API, Java's object-relational mapping specification."
+
+[[accepted]]
+word = "jq"
+meaning = "A command-line JSON processor."
+
+[[accepted]]
+word = "JS"
+meaning = "JavaScript."
+
+[[accepted]]
+word = "JSON"
+meaning = "JavaScript Object Notation, a text data format."
+
+[[accepted]]
+word = "JSONB"
+meaning = "PostgreSQL's binary JSON column type."
+
+[[accepted]]
+word = "JSONC"
+meaning = "JSON with comments."
+
+[[accepted]]
+word = "JSONL"
+meaning = "JSON Lines: one JSON value per line."
+
+[[accepted]]
+word = "jsonschema"
+meaning = "JSON Schema, or the Python library that validates documents against it."
+
+[[accepted]]
+word = "JSR"
+meaning = "The JavaScript Registry, a package registry for JavaScript and TypeScript."
+
+[[accepted]]
+word = "JSX"
+meaning = "The XML-like syntax extension for JavaScript used by React."
+
+[[accepted]]
+word = "JUCE"
+meaning = "A C++ framework for audio applications and plugins."
+
+[[accepted]]
+word = "JVM"
+meaning = "Java Virtual Machine."
+
+[[accepted]]
+word = "JWKS"
+meaning = "JSON Web Key Set: a published set of public keys for verifying tokens."
+
+[[accepted]]
+word = "JWT"
+meaning = "JSON Web Token: a signed token carrying claims."
+
+[[accepted]]
+word = "Karplus"
+meaning = "As in the Karplus-Strong algorithm, a plucked-string synthesis method."
+
+[[accepted]]
+word = "keepalive"
+meaning = "A message or setting that keeps an idle connection open."
+
+[[accepted]]
+word = "Keybase"
+meaning = "A service for identity proofs and encrypted messaging."
+
+[[accepted]]
+word = "keystores"
+meaning = "Files or services that hold cryptographic keys and certificates."
+
+[[accepted]]
+word = "kinded"
+meaning = "Having a kind: tagged with which kind of thing it is."
+
+[[accepted]]
+word = "KMS"
+meaning = "Key management service."
+
+[[accepted]]
+word = "Kubernetes"
+meaning = "A container orchestration system."
+
+[[accepted]]
+word = "KV"
+meaning = "Key-value, as in a key-value store."
+
+[[accepted]]
+word = "kwargs"
+meaning = "Keyword arguments, as in Python's **kwargs."
+
+[[accepted]]
+word = "Kythe"
+meaning = "Google's ecosystem for building cross-references and indexes of source code."
+
+[[accepted]]
+word = "Laroche"
+meaning = "Jean Laroche, co-author with Mark Dolson of phase-locked phase vocoder techniques."
+
+[[accepted]]
+word = "Lattix"
+meaning = "A commercial tool for architecture analysis with dependency structure matrices."
+
+[[accepted]]
+word = "LCP"
+meaning = "Largest Contentful Paint, the page-speed measure of when a page's main content appears."
+
+[[accepted]]
+word = "ldflags"
+meaning = "Linker flags, as passed to the Go or C linker."
+
+[[accepted]]
+word = "lerp"
+meaning = "Linear interpolation."
+
+[[accepted]]
+word = "letterboxing"
+meaning = "Fitting content into a display of a different aspect ratio by adding bars on two sides."
+
+[[accepted]]
+word = "Levenshtein"
+meaning = "As in Levenshtein distance, the number of single-character edits between two strings."
+
+[[accepted]]
+word = "lexing"
+meaning = "Lexical analysis: splitting source text into tokens."
+
+[[accepted]]
+word = "LF"
+meaning = "Line feed, the Unix line ending."
+
+[[accepted]]
+word = "LFO"
+meaning = "Low-frequency oscillator, used to modulate synthesizer parameters."
+
+[[accepted]]
+word = "LFS"
+meaning = "Git Large File Storage, which stores large files outside the repository."
+
+[[accepted]]
+word = "LGPL"
+meaning = "GNU Lesser General Public License, a weak copyleft license."
+
+[[accepted]]
+word = "libc"
+meaning = "The C standard library."
+
+[[accepted]]
+word = "libm"
+meaning = "The C math library."
+
+[[accepted]]
+word = "libpq"
+meaning = "PostgreSQL's C client library."
+
+[[accepted]]
+word = "LibreWolf"
+meaning = "A privacy-focused fork of Firefox."
+
+[[accepted]]
+word = "libsamplerate"
+meaning = "A C library for audio sample-rate conversion."
+
+[[accepted]]
+word = "libsndfile"
+meaning = "A C library for reading and writing audio files."
+
+[[accepted]]
+word = "lifecycle"
+meaning = "The stages something goes through from creation to disposal."
+
+[[accepted]]
+word = "Linkwitz"
+meaning = "As in the Linkwitz-Riley crossover, a filter design used to split audio into bands."
+
+[[accepted]]
+word = "LINQ"
+meaning = "Language Integrated Query, .NET's query syntax for collections and data sources."
+
+[[accepted]]
+word = "Liquibase"
+meaning = "A database schema migration tool."
+
+[[accepted]]
+word = "Litestar"
+meaning = "A Python ASGI web framework, formerly called Starlite."
+
+[[accepted]]
+word = "liveness"
+meaning = "Whether a process or service is alive and responding, as in a liveness probe."
+
+[[accepted]]
+word = "loadtest"
+meaning = "A test that measures how a system behaves under heavy load."
+
+[[accepted]]
+word = "LOC"
+meaning = "Lines of code."
+
+[[accepted]]
+word = "localhost"
+meaning = "The hostname that refers to the local machine."
+
+[[accepted]]
+word = "lockfile"
+meaning = "A file recording exact resolved dependency versions, or a file used as a mutual-exclusion lock."
+aliases = ["lockfiles"]
+
+[[accepted]]
+word = "locustfile"
+meaning = "The Python file that defines a Locust load test."
+
+[[accepted]]
+word = "lookahead"
+meaning = "Examining upcoming input without consuming it."
+
+[[accepted]]
+word = "lookups"
+meaning = "Retrievals of values by key."
+
+[[accepted]]
+word = "loopback"
+meaning = "The virtual network interface that routes traffic back to the same machine."
+
+[[accepted]]
+word = "lossiness"
+meaning = "The degree to which a process loses information."
+
+[[accepted]]
+word = "lowercased"
+meaning = "Converted to lowercase letters."
+aliases = ["lowercases"]
+
+[[accepted]]
+word = "lowpass"
+meaning = "A filter that passes frequencies below a cutoff and attenuates those above."
+aliases = ["lowpassed", "lowpasses"]
+
+[[accepted]]
+word = "Lua"
+meaning = "A lightweight embeddable scripting language."
+
+[[accepted]]
+word = "LUKS"
+meaning = "Linux Unified Key Setup, the standard Linux disk encryption format."
+
+[[accepted]]
+word = "Lunr"
+meaning = "A small client-side full-text search library in JavaScript."
+
+[[accepted]]
+word = "LUT"
+meaning = "Lookup table."
+
+[[accepted]]
+word = "LWN"
+meaning = "LWN.net, a Linux and free-software news publication."
+
+[[accepted]]
+word = "macaddr"
+meaning = "The PostgreSQL type for MAC addresses."
+
+[[accepted]]
+word = "madronalib"
+meaning = "A C++ library for audio DSP from Madrona Labs."
+
+[[accepted]]
+word = "Makefiles"
+meaning = "Files defining build rules for the make tool."
+
+[[accepted]]
+word = "manylinux"
+meaning = "The Python packaging standard for binary wheels portable across Linux distributions."
+
+[[accepted]]
+word = "matchable"
+meaning = "Able to be matched."
+
+[[accepted]]
+word = "matchmade"
+meaning = "Paired or grouped with other players by a matchmaking system."
+
+[[accepted]]
+word = "matrixed"
+meaning = "Arranged or run across a matrix of combinations, as in a test matrix."
+
+[[accepted]]
+word = "matviews"
+meaning = "Materialized views: database views whose results are stored and refreshed."
+
+[[accepted]]
+word = "MAXALIGN"
+meaning = "PostgreSQL's maximum alignment boundary, to which tuple data is padded."
+aliases = ["maxalign'd"]
+
+[[accepted]]
+word = "MCP"
+meaning = "Model Context Protocol, the open protocol for connecting AI models to tools and data sources."
+
+[[accepted]]
+word = "MD"
+meaning = "Markdown, as in the .md file extension."
+
+[[accepted]]
+word = "MDX"
+meaning = "Markdown with embedded JSX components."
+
+[[accepted]]
+word = "MeltySynth"
+meaning = "A SoundFont synthesizer library."
+
+[[accepted]]
+word = "memcmp"
+meaning = "The C function that compares two blocks of memory byte by byte."
+
+[[accepted]]
+word = "memoizing"
+meaning = "Caching a function's results by its arguments."
+
+[[accepted]]
+word = "Merkle"
+meaning = "As in a Merkle tree, a tree of hashes where each node hashes its children."
+
+[[accepted]]
+word = "metacharacters"
+meaning = "Characters with special meaning in a pattern or shell, such as '*' or '$'."
+
+[[accepted]]
+word = "mgmt"
+meaning = "Short for management."
+
+[[accepted]]
+word = "microtonality"
+meaning = "Music using intervals smaller than a semitone."
+
+[[accepted]]
+word = "mimetype"
+meaning = "A MIME type: the standard label for a file's format, such as text/html."
+aliases = ["mimetypes"]
+
+[[accepted]]
+word = "mingw"
+meaning = "Minimalist GNU for Windows, a GCC toolchain targeting Windows."
+
+[[accepted]]
+word = "minimality"
+meaning = "The property of being minimal."
+
+[[accepted]]
+word = "minimap"
+meaning = "A small overview map of a larger view."
+
+[[accepted]]
+word = "minimax"
+meaning = "A decision rule that minimizes the maximum possible loss."
+
+[[accepted]]
+word = "mipmapped"
+meaning = "Stored with precomputed downscaled versions for rendering at smaller sizes."
+
+[[accepted]]
+word = "misattribution"
+meaning = "Attributing something to the wrong source."
+
+[[accepted]]
+word = "misconfigurations"
+meaning = "Configured incorrectly."
+aliases = ["misconfigured"]
+
+[[accepted]]
+word = "misparse"
+meaning = "To parse incorrectly."
+aliases = ["misparses"]
+
+[[accepted]]
+word = "mitigations"
+meaning = "Measures that reduce a risk or its impact."
+
+[[accepted]]
+word = "MITM"
+meaning = "Man-in-the-middle, an attack intercepting communication between two parties."
+
+[[accepted]]
+word = "mixins"
+meaning = "Classes that provide methods to other classes through inheritance without being a standalone base."
+
+[[accepted]]
+word = "mkdir"
+meaning = "The command that creates a directory."
+
+[[accepted]]
+word = "mobileprovision"
+meaning = "The Apple provisioning profile file format for iOS apps."
+
+[[accepted]]
+word = "modularity"
+meaning = "The degree to which a system is composed of separable parts."
+
+[[accepted]]
+word = "Mononoke"
+meaning = "Meta's source control server for large monorepos."
+
+[[accepted]]
+word = "monorepo"
+meaning = "A single repository holding several projects."
+aliases = ["monorepos"]
+
+[[accepted]]
+word = "morphism"
+meaning = "A structure-preserving map between objects in category theory."
+aliases = ["morphisms"]
+
+[[accepted]]
+word = "mortem"
+meaning = "As in post-mortem: an analysis of what went wrong after an incident."
+aliases = ["mortems"]
+
+[[accepted]]
+word = "Mozilla"
+meaning = "The organization behind Firefox."
+
+[[accepted]]
+word = "MPE"
+meaning = "MIDI Polyphonic Expression, which gives each note its own MIDI channel for per-note pitch bend and control."
+
+[[accepted]]
+word = "MRO"
+meaning = "Method resolution order: the order Python searches base classes for an attribute."
+
+[[accepted]]
+word = "MSB"
+meaning = "Most significant byte or bit."
+
+[[accepted]]
+word = "msg"
+meaning = "Short for message."
+
+[[accepted]]
+word = "msgspec"
+meaning = "A fast Python library for serialization and validation of JSON and MessagePack."
+
+[[accepted]]
+word = "MSI"
+meaning = "The Windows Installer package format."
+
+[[accepted]]
+word = "mtime"
+meaning = "A file's last modification time."
+
+[[accepted]]
+word = "multiband"
+meaning = "Operating separately on several frequency bands."
+
+[[accepted]]
+word = "multigraph"
+meaning = "A graph allowed to have several edges between the same pair of nodes."
+
+[[accepted]]
+word = "multiline"
+meaning = "Spanning several lines."
+
+[[accepted]]
+word = "multiplicatively"
+meaning = "By multiplication."
+
+[[accepted]]
+word = "multirange"
+meaning = "A PostgreSQL type holding a set of non-overlapping ranges."
+
+[[accepted]]
+word = "multiversion"
+meaning = "Covering several versions at once."
+
+[[accepted]]
+word = "musl"
+meaning = "A lightweight C standard library for Linux, often used for static binaries."
+
+[[accepted]]
+word = "mutator"
+meaning = "A function that changes an object's state."
+aliases = ["mutators"]
+
+[[accepted]]
+word = "mutex"
+meaning = "A mutual-exclusion lock."
+
+[[accepted]]
+word = "mv"
+meaning = "The Unix command that moves or renames files."
+
+[[accepted]]
+word = "MVCC"
+meaning = "Multi-version concurrency control, how PostgreSQL gives each transaction a consistent snapshot."
+
+[[accepted]]
+word = "MX"
+meaning = "The DNS record type naming a domain's mail servers."
+
+[[accepted]]
+word = "mypy"
+meaning = "A static type checker for Python."
+
+[[accepted]]
+word = "Namecheap"
+meaning = "A domain registrar and web hosting company."
+
+[[accepted]]
+word = "namedtuples"
+meaning = "Python tuples with named fields, from collections.namedtuple."
+
+[[accepted]]
+word = "nameserver"
+meaning = "A server that answers DNS queries for a domain."
+aliases = ["nameservers"]
+
+[[accepted]]
+word = "namespace"
+meaning = "A named scope that keeps identifiers from colliding."
+aliases = ["namespaced", "namespaces"]
+
+[[accepted]]
+word = "natively"
+meaning = "Built in, without a plugin, emulation, or extra tool."
+
+[[accepted]]
+word = "nav"
+meaning = "Short for navigation."
+
+[[accepted]]
+word = "navigations"
+meaning = "Movements from one page or screen to another."
+
+[[accepted]]
+word = "NDJSON"
+meaning = "Newline-delimited JSON: one JSON value per line."
+
+[[accepted]]
+word = "NDK"
+meaning = "The Android Native Development Kit."
+
+[[accepted]]
+word = "negatable"
+meaning = "Able to be negated, as in a boolean flag with a --no- form."
+
+[[accepted]]
+word = "netcode"
+meaning = "The networking code that synchronizes state in a multiplayer game."
+
+[[accepted]]
+word = "NFS"
+meaning = "Network File System."
+
+[[accepted]]
+word = "NG"
+meaning = "Next generation, as in QuickJS-ng."
+
+[[accepted]]
+word = "nginx"
+meaning = "A web server and reverse proxy."
+
+[[accepted]]
+word = "nonoverlap"
+meaning = "The absence of overlap between ranges or regions."
+
+[[accepted]]
+word = "npm"
+meaning = "The Node.js package manager and its package registry."
+
+[[accepted]]
+word = "NTP"
+meaning = "Network Time Protocol."
+
+[[accepted]]
+word = "NUL"
+meaning = "The null character, byte value zero."
+
+[[accepted]]
+word = "nullability"
+meaning = "Whether a value or column may be null."
+
+[[accepted]]
+word = "nullable"
+meaning = "Allowed to be null."
+
+[[accepted]]
+word = "numerics"
+meaning = "Numeric types or numerical computation."
+
+[[accepted]]
+word = "nummultirange"
+meaning = "The PostgreSQL type holding a set of non-overlapping numeric ranges."
+
+[[accepted]]
+word = "numpy"
+meaning = "The fundamental Python library for numerical arrays."
+
+[[accepted]]
+word = "numrange"
+meaning = "The PostgreSQL type for a range of numeric values."
+
+[[accepted]]
+word = "Nyquist"
+meaning = "As in the Nyquist frequency, half the sample rate: the highest frequency a sampled signal can represent."
+
+[[accepted]]
+word = "OAuth"
+meaning = "An open standard for delegated authorization."
+
+[[accepted]]
+word = "OCSP"
+meaning = "Online Certificate Status Protocol, for checking whether a certificate is revoked."
+
+[[accepted]]
+word = "OFAC"
+meaning = "The US Treasury's Office of Foreign Assets Control, which administers sanctions."
+
+[[accepted]]
+word = "offsite"
+meaning = "Located away from the main site, as in offsite backups."
+
+[[accepted]]
+word = "OG"
+meaning = "Open Graph, the protocol whose meta tags describe a page's share card."
+
+[[accepted]]
+word = "Ogg"
+meaning = "An open multimedia container format."
+
+[[accepted]]
+word = "OID"
+meaning = "Object identifier, as PostgreSQL uses to identify system objects."
+
+[[accepted]]
+word = "OIDC"
+meaning = "OpenID Connect, an identity layer on top of OAuth 2.0."
+
+[[accepted]]
+word = "ok"
+meaning = "Okay; as in Go's comma-ok idiom."
+
+[[accepted]]
+word = "OOM"
+meaning = "Out of memory."
+
+[[accepted]]
+word = "opclass"
+meaning = "A PostgreSQL operator class, which defines how an index type handles a data type."
+aliases = ["opclasses"]
+
+[[accepted]]
+word = "oplog"
+meaning = "An operation log recording each operation applied."
+
+[[accepted]]
+word = "ORM"
+meaning = "Object-relational mapper."
+
+[[accepted]]
+word = "OSC"
+meaning = "Operating System Command, a terminal escape sequence family; or an oscillator in synthesis."
+
+[[accepted]]
+word = "OSS"
+meaning = "Open-source software."
+
+[[accepted]]
+word = "OTA"
+meaning = "Over-the-air, as in updates delivered wirelessly to devices."
+
+[[accepted]]
+word = "oto"
+meaning = "A Go library for low-level audio playback."
+
+[[accepted]]
+word = "overridable"
+meaning = "Able to be overridden."
+
+[[accepted]]
+word = "oversampled"
+meaning = "Processed at a higher sample rate than the signal's native rate, to reduce aliasing."
+
+[[accepted]]
+word = "Pagefind"
+meaning = "A static search library that indexes a built site for client-side search."
+
+[[accepted]]
+word = "pageview"
+meaning = "A single load of a web page, counted by analytics."
+aliases = ["pageviews"]
+
+[[accepted]]
+word = "param"
+meaning = "Short for parameter."
+aliases = ["params"]
+
+[[accepted]]
+word = "Parnas"
+meaning = "David Parnas, the computer scientist known for information hiding and modular design."
+
+[[accepted]]
+word = "parseable"
+meaning = "Able to be parsed."
+
+[[accepted]]
+word = "partman"
+meaning = "pg_partman, the PostgreSQL extension that automates time- and serial-based partition management."
+
+[[accepted]]
+word = "passthrough"
+meaning = "Passing something through unchanged."
+aliases = ["passthroughs"]
+
+[[accepted]]
+word = "passwordless"
+meaning = "Authentication without a password."
+
+[[accepted]]
+word = "patchsets"
+meaning = "Sets of patches submitted or applied together."
+
+[[accepted]]
+word = "pathspec"
+meaning = "Git's pattern syntax for selecting paths."
+
+[[accepted]]
+word = "Patroni"
+meaning = "A high-availability manager for PostgreSQL clusters."
+
+[[accepted]]
+word = "payloadless"
+meaning = "Carrying no payload."
+
+[[accepted]]
+word = "pbxproj"
+meaning = "The Xcode project file, project.pbxproj."
+
+[[accepted]]
+word = "PCI"
+meaning = "Payment Card Industry, as in PCI DSS."
+
+[[accepted]]
+word = "petgraph"
+meaning = "A graph data structure library for Rust."
+
+[[accepted]]
+word = "pganalyze"
+meaning = "A hosted PostgreSQL performance monitoring service."
+
+[[accepted]]
+word = "pgBackRest"
+meaning = "A backup and restore tool for PostgreSQL."
+
+[[accepted]]
+word = "pgcat"
+meaning = "A PostgreSQL connection pooler and proxy with sharding and load balancing."
+
+[[accepted]]
+word = "PGDG"
+meaning = "The PostgreSQL Global Development Group, which publishes the official PostgreSQL package repositories."
+
+[[accepted]]
+word = "pgdump"
+meaning = "pg_dump, the PostgreSQL utility that exports a database."
+
+[[accepted]]
+word = "PGO"
+meaning = "Profile-guided optimization."
+
+[[accepted]]
+word = "pgroll"
+meaning = "A zero-downtime schema migration tool for PostgreSQL."
+
+[[accepted]]
+word = "pgvector"
+meaning = "The PostgreSQL extension for vector similarity search."
+
+[[accepted]]
+word = "pgxpool"
+meaning = "The connection pool package of pgx, the Go PostgreSQL driver."
+
+[[accepted]]
+word = "PID"
+meaning = "Process identifier."
+
+[[accepted]]
+word = "piecewise"
+meaning = "Defined by different expressions over different intervals."
+
+[[accepted]]
+word = "PII"
+meaning = "Personally identifiable information."
+
+[[accepted]]
+word = "Pijul"
+meaning = "A distributed version control system based on a theory of patches."
+
+[[accepted]]
+word = "PIL"
+meaning = "The Python Imaging Library, maintained today as Pillow."
+
+[[accepted]]
+word = "PITR"
+meaning = "Point-in-time recovery: restoring a database to its state at a chosen moment."
+
+[[accepted]]
+word = "plaintext"
+meaning = "Unencrypted or unformatted text."
+
+[[accepted]]
+word = "playability"
+meaning = "How well a game plays."
+
+[[accepted]]
+word = "plist"
+meaning = "An Apple property list file."
+
+[[accepted]]
+word = "PLTE"
+meaning = "The PNG chunk that holds an indexed image's palette."
+
+[[accepted]]
+word = "pluggable"
+meaning = "Replaceable with another implementation through a defined interface."
+
+[[accepted]]
+word = "PNG"
+meaning = "Portable Network Graphics, a lossless image format."
+
+[[accepted]]
+word = "pnpm"
+meaning = "A disk-efficient JavaScript package manager."
+
+[[accepted]]
+word = "polymeter"
+meaning = "Simultaneous musical parts in different meters."
+
+[[accepted]]
+word = "pooler"
+meaning = "A connection pooler: a proxy that shares a few database connections among many clients."
+
+[[accepted]]
+word = "Porffor"
+meaning = "An ahead-of-time JavaScript-to-WebAssembly compiler."
+
+[[accepted]]
+word = "positionals"
+meaning = "Positional arguments, identified by position rather than by name."
+
+[[accepted]]
+word = "POSIX"
+meaning = "The IEEE standards for Unix-like operating system interfaces."
+
+[[accepted]]
+word = "postcondition"
+meaning = "A condition guaranteed to hold after an operation completes."
+aliases = ["postconditions"]
+
+[[accepted]]
+word = "Postgres"
+meaning = "PostgreSQL, the open-source relational database."
+
+[[accepted]]
+word = "powerline"
+meaning = "A status-line style for shells and editors using special separator glyphs."
+
+[[accepted]]
+word = "PPID"
+meaning = "Parent process identifier."
+
+[[accepted]]
+word = "pragma"
+meaning = "A compiler or interpreter directive embedded in source code."
+aliases = ["pragmas"]
+
+[[accepted]]
+word = "precomputation"
+meaning = "Computing values ahead of time for later use."
+
+[[accepted]]
+word = "predelay"
+meaning = "The delay before a reverb's reflections begin."
+
+[[accepted]]
+word = "preid"
+meaning = "A prerelease identifier, such as alpha or rc in a semantic version."
+
+[[accepted]]
+word = "premaking"
+meaning = "Making in advance."
+
+[[accepted]]
+word = "prepended"
+meaning = "Added at the beginning."
+aliases = ["prepends"]
+
+[[accepted]]
+word = "prepush"
+meaning = "Run before a push, as in a Git pre-push hook."
+
+[[accepted]]
+word = "presigned"
+meaning = "Signed in advance to grant temporary access, as in a presigned storage URL."
+
+[[accepted]]
+word = "PRNG"
+meaning = "Pseudorandom number generator."
+
+[[accepted]]
+word = "proxied"
+meaning = "Passed through a proxy."
+aliases = ["proxying"]
+
+[[accepted]]
+word = "pseudonymously"
+meaning = "Under a pseudonym."
+
+[[accepted]]
+word = "psql"
+meaning = "PostgreSQL's interactive terminal client."
+
+[[accepted]]
+word = "psutil"
+meaning = "A Python library for process and system monitoring."
+
+[[accepted]]
+word = "psycopg"
+meaning = "The PostgreSQL adapter for Python."
+
+[[accepted]]
+word = "PTY"
+meaning = "Pseudo-terminal."
+
+[[accepted]]
+word = "PUBG"
+meaning = "PlayerUnknown's Battlegrounds, an online battle royale game."
+
+[[accepted]]
+word = "Pulumi"
+meaning = "An infrastructure-as-code tool using general-purpose programming languages."
+
+[[accepted]]
+word = "purego"
+meaning = "A Go library for calling C functions without cgo."
+
+[[accepted]]
+word = "PWA"
+meaning = "Progressive web app."
+
+[[accepted]]
+word = "py"
+meaning = "The Python file extension."
+
+[[accepted]]
+word = "Pydantic"
+meaning = "A Python data validation library based on type hints."
+
+[[accepted]]
+word = "PyJWT"
+meaning = "A Python library for encoding and decoding JSON Web Tokens."
+
+[[accepted]]
+word = "PyPI"
+meaning = "The Python Package Index."
+
+[[accepted]]
+word = "pyproject"
+meaning = "The pyproject.toml file that configures a Python project."
+
+[[accepted]]
+word = "pytest"
+meaning = "A Python testing framework."
+
+[[accepted]]
+word = "pywebview"
+meaning = "A Python library that shows web content in a native desktop window."
+
+[[accepted]]
+word = "quantizer"
+meaning = "A component that maps continuous values onto a discrete set of levels."
+
+[[accepted]]
+word = "queryable"
+meaning = "Able to be queried."
+
+[[accepted]]
+word = "queueing"
+meaning = "Placing items in a queue."
+
+[[accepted]]
+word = "quickstart"
+meaning = "A short guide to getting started."
+
+[[accepted]]
+word = "randomblob"
+meaning = "The SQLite function that returns a blob of random bytes."
+
+[[accepted]]
+word = "randomizer"
+meaning = "Something that produces random values or arrangements."
+
+[[accepted]]
+word = "rastering"
+meaning = "Rasterizing: converting vector shapes or commands into pixels."
+
+[[accepted]]
+word = "rasterizer"
+meaning = "A component that converts vector shapes into pixels."
+
+[[accepted]]
+word = "Ratatui"
+meaning = "A Rust library for building terminal user interfaces."
+
+[[accepted]]
+word = "RBAC"
+meaning = "Role-based access control."
+
+[[accepted]]
+word = "RBJ"
+meaning = "Robert Bristow-Johnson, whose audio EQ cookbook gives standard biquad filter formulas."
+
+[[accepted]]
+word = "RCE"
+meaning = "Remote code execution."
+
+[[accepted]]
+word = "readme"
+meaning = "A README file introducing a project."
+
+[[accepted]]
+word = "readonly"
+meaning = "Read-only: able to be read but not changed."
+
+[[accepted]]
+word = "rebase"
+meaning = "In Git, to replay commits on top of a different base commit."
+aliases = ["rebased", "rebases", "rebasing"]
+
+[[accepted]]
+word = "recurse"
+meaning = "To apply an operation recursively."
+aliases = ["recursed", "recurses", "recursing"]
+
+[[accepted]]
+word = "redeclaration"
+meaning = "Declaring an already declared name again."
+aliases = ["redeclared", "redeclaring"]
+
+[[accepted]]
+word = "redistributable"
+meaning = "Allowed to be redistributed."
+
+[[accepted]]
+word = "refcounted"
+meaning = "Managed by reference counting."
+aliases = ["refcounting"]
+
+[[accepted]]
+word = "reflog"
+meaning = "Git's log of where references have pointed."
+
+[[accepted]]
+word = "refspec"
+meaning = "Git's syntax mapping remote references to local ones for fetch and push."
+
+[[accepted]]
+word = "regen"
+meaning = "Short for regenerate or regeneration."
+
+[[accepted]]
+word = "regenerable"
+meaning = "Able to be regenerated."
+
+[[accepted]]
+word = "regexes"
+meaning = "Regular expressions."
+
+[[accepted]]
+word = "reimplement"
+meaning = "To implement again, often from scratch."
+aliases = ["reimplementation", "reimplementations"]
+
+[[accepted]]
+word = "reinstalls"
+meaning = "Installations done again."
+
+[[accepted]]
+word = "repitch"
+meaning = "To change the pitch of a sound."
+
+[[accepted]]
+word = "REPL"
+meaning = "Read-eval-print loop: an interactive programming prompt."
+
+[[accepted]]
+word = "replayable"
+meaning = "Able to be replayed."
+
+[[accepted]]
+word = "replayer"
+meaning = "A component that replays recorded events."
+
+[[accepted]]
+word = "repmgr"
+meaning = "A replication and failover manager for PostgreSQL."
+
+[[accepted]]
+word = "repoint"
+meaning = "To point to a different target."
+aliases = ["repoints"]
+
+[[accepted]]
+word = "repr"
+meaning = "A value's developer-facing string representation, from Python's repr()."
+
+[[accepted]]
+word = "representability"
+meaning = "Whether something can be represented."
+
+[[accepted]]
+word = "reproducibility"
+meaning = "The property of producing the same result every time."
+aliases = ["reproducibly"]
+
+[[accepted]]
+word = "rerere"
+meaning = "Git's reuse-recorded-resolution feature for merge conflicts."
+
+[[accepted]]
+word = "respawn"
+meaning = "To start again after exiting or dying."
+aliases = ["respawned", "respawns"]
+
+[[accepted]]
+word = "retargeted"
+meaning = "Directed at a different target."
+
+[[accepted]]
+word = "retriable"
+meaning = "Safe or eligible to retry."
+aliases = ["retryable", "retryability"]
+
+[[accepted]]
+word = "reviewable"
+meaning = "Able to be reviewed."
+
+[[accepted]]
+word = "revsets"
+meaning = "Expressions selecting sets of revisions, as in Mercurial and Jujutsu."
+
+[[accepted]]
+word = "RGB"
+meaning = "Red, green, blue: the additive color model."
+
+[[accepted]]
+word = "RGBA"
+meaning = "RGB with an alpha channel."
+
+[[accepted]]
+word = "RLS"
+meaning = "Row-level security, PostgreSQL's per-row access policies."
+
+[[accepted]]
+word = "RNG"
+meaning = "Random number generator."
+
+[[accepted]]
+word = "roadmap"
+meaning = "A plan of intended future work."
+
+[[accepted]]
+word = "rolloff"
+meaning = "The rate at which a filter attenuates frequencies beyond its cutoff."
+
+[[accepted]]
+word = "rootdir"
+meaning = "Root directory."
+
+[[accepted]]
+word = "routings"
+meaning = "Ways something is routed."
+
+[[accepted]]
+word = "Royale"
+meaning = "As in battle royale or Clash Royale, a game genre or title."
+
+[[accepted]]
+word = "RPC"
+meaning = "Remote procedure call."
+
+[[accepted]]
+word = "RPG"
+meaning = "Role-playing game."
+
+[[accepted]]
+word = "RSA"
+meaning = "A public-key cryptosystem."
+
+[[accepted]]
+word = "RST"
+meaning = "reStructuredText, a markup language."
+
+[[accepted]]
+word = "rsync"
+meaning = "A tool for synchronizing files efficiently between locations."
+
+[[accepted]]
+word = "rulesets"
+meaning = "Sets of rules."
+
+[[accepted]]
+word = "runbook"
+meaning = "A documented procedure for an operational task."
+
+[[accepted]]
+word = "runewidth"
+meaning = "The number of terminal display cells a character occupies."
+
+[[accepted]]
+word = "runnable"
+meaning = "Able to be run."
+
+[[accepted]]
+word = "runtimes"
+meaning = "Environments that execute programs."
+
+[[accepted]]
+word = "Rustdoc"
+meaning = "Rust's documentation generator."
+
+[[accepted]]
+word = "rustworkx"
+meaning = "A Python graph library implemented in Rust."
+
+[[accepted]]
+word = "sandboxed"
+meaning = "Run inside a sandbox that restricts what code can access."
+aliases = ["sandboxing"]
+
+[[accepted]]
+word = "Sanic"
+meaning = "An asynchronous Python web framework."
+
+[[accepted]]
+word = "SARIF"
+meaning = "Static Analysis Results Interchange Format, a JSON format for static analysis findings."
+
+[[accepted]]
+word = "scaffolded"
+meaning = "Generated as an initial project skeleton."
+
+[[accepted]]
+word = "schema'd"
+meaning = "Described or validated by a schema."
+
+[[accepted]]
+word = "schemas"
+meaning = "Formal descriptions of a data structure."
+
+[[accepted]]
+word = "scikit"
+meaning = "The prefix of scientific Python libraries such as scikit-learn."
+
+[[accepted]]
+word = "SCM"
+meaning = "Source control management."
+
+[[accepted]]
+word = "SCP"
+meaning = "Secure copy, the SSH file copy command."
+
+[[accepted]]
+word = "scrollable"
+meaning = "Able to be scrolled."
+
+[[accepted]]
+word = "SDist"
+meaning = "A Python source distribution."
+
+[[accepted]]
+word = "SDK"
+meaning = "Software development kit."
+
+[[accepted]]
+word = "SDL"
+meaning = "Simple DirectMedia Layer, a cross-platform multimedia library; or schema definition language."
+
+[[accepted]]
+word = "SDUI"
+meaning = "Server-driven UI: user interfaces whose layout is sent by the server as data."
+
+[[accepted]]
+word = "seccomp"
+meaning = "The Linux kernel facility that restricts which system calls a process may make."
+
+[[accepted]]
+word = "selectable"
+meaning = "Able to be selected."
+
+[[accepted]]
+word = "Semgrep"
+meaning = "A static analysis tool that matches code patterns."
+
+[[accepted]]
+word = "semver"
+meaning = "Semantic versioning."
+
+[[accepted]]
+word = "Sendinblue"
+meaning = "The former name of the Brevo email service."
+
+[[accepted]]
+word = "SEO"
+meaning = "Search engine optimization."
+
+[[accepted]]
+word = "serializer"
+meaning = "A component that converts data into a storable or transmittable form."
+aliases = ["serializers"]
+
+[[accepted]]
+word = "severities"
+meaning = "Levels of seriousness."
+
+[[accepted]]
+word = "sfizz"
+meaning = "An open-source SFZ sample player library."
+
+[[accepted]]
+word = "SFTP"
+meaning = "SSH File Transfer Protocol."
+
+[[accepted]]
+word = "SFX"
+meaning = "Sound effects."
+
+[[accepted]]
+word = "SFZ"
+meaning = "A text format defining sampled instruments."
+
+[[accepted]]
+word = "SHA"
+meaning = "Secure Hash Algorithm; in Git, a commit's hash."
+
+[[accepted]]
+word = "shader"
+meaning = "A program that runs on the GPU to compute rendering effects."
+aliases = ["shaders"]
+
+[[accepted]]
+word = "sharded"
+meaning = "Split across several databases or nodes by key."
+aliases = ["sharding"]
+
+[[accepted]]
+word = "Shoemake"
+meaning = "Ken Shoemake, known for quaternion slerp and the arcball rotation controller."
+
+[[accepted]]
+word = "sidechain"
+meaning = "Using one signal to control a processor acting on another, as in sidechain compression."
+
+[[accepted]]
+word = "SIGINT"
+meaning = "The interrupt signal, sent by Ctrl+C."
+
+[[accepted]]
+word = "SIGKILL"
+meaning = "The signal that kills a process immediately and cannot be caught."
+
+[[accepted]]
+word = "Signalsmith"
+meaning = "Signalsmith Audio, maker of open-source audio DSP libraries."
+
+[[accepted]]
+word = "signbit"
+meaning = "The function or bit indicating whether a number is negative."
+
+[[accepted]]
+word = "signoff"
+meaning = "An approval, or Git's Signed-off-by commit trailer."
+
+[[accepted]]
+word = "signup"
+meaning = "Registration for an account or service."
+
+[[accepted]]
+word = "SIGTERM"
+meaning = "The termination signal, which asks a process to exit gracefully."
+
+[[accepted]]
+word = "SIMD"
+meaning = "Single instruction, multiple data: processing several values with one instruction."
+
+[[accepted]]
+word = "SKU"
+meaning = "Stock keeping unit, a product identifier."
+
+[[accepted]]
+word = "SLA"
+meaning = "Service level agreement."
+
+[[accepted]]
+word = "slowloris"
+meaning = "A denial-of-service attack that holds many connections open by sending requests slowly."
+
+[[accepted]]
+word = "smallint"
+meaning = "The SQL 16-bit integer type."
+
+[[accepted]]
+word = "smallserial"
+meaning = "The PostgreSQL auto-incrementing 16-bit integer column type."
+
+[[accepted]]
+word = "smartlog"
+meaning = "A condensed graph view of a user's commits, as in Sapling and git-branchless."
+
+[[accepted]]
+word = "smol"
+meaning = "Small or minimal."
+
+[[accepted]]
+word = "SMPL"
+meaning = "The WAV file chunk that holds sampler loop points."
+
+[[accepted]]
+word = "SMTP"
+meaning = "Simple Mail Transfer Protocol."
+
+[[accepted]]
+word = "snapshotted"
+meaning = "Captured as a snapshot."
+
+[[accepted]]
+word = "SoundFont"
+meaning = "A sample-based instrument file format for synthesizers."
+
+[[accepted]]
+word = "sourceable"
+meaning = "Able to be sourced by a shell."
+
+[[accepted]]
+word = "Sourcegraph"
+meaning = "A code search and intelligence platform."
+
+[[accepted]]
+word = "SPM"
+meaning = "Swift Package Manager."
+
+[[accepted]]
+word = "spoofable"
+meaning = "Able to be forged or impersonated."
+
+[[accepted]]
+word = "Spotify"
+meaning = "A music streaming service."
+
+[[accepted]]
+word = "SQL"
+meaning = "Structured Query Language."
+
+[[accepted]]
+word = "SQLAlchemy"
+meaning = "A Python SQL toolkit and object-relational mapper."
+
+[[accepted]]
+word = "SQLSTATE"
+meaning = "The standard five-character SQL error code."
+
+[[accepted]]
+word = "srcdoc"
+meaning = "The iframe attribute that supplies the frame's HTML inline."
+
+[[accepted]]
+word = "SSE"
+meaning = "Server-sent events, a one-way HTTP streaming protocol."
+
+[[accepted]]
+word = "SSG"
+meaning = "Static site generator."
+
+[[accepted]]
+word = "SSHFS"
+meaning = "A filesystem that mounts a remote directory over SSH."
+
+[[accepted]]
+word = "SSL"
+meaning = "Secure Sockets Layer, the predecessor of TLS."
+
+[[accepted]]
+word = "SSPL"
+meaning = "Server Side Public License, a source-available license."
+
+[[accepted]]
+word = "Starlark"
+meaning = "A Python-like configuration language used by Bazel."
+
+[[accepted]]
+word = "Starlette"
+meaning = "A lightweight Python ASGI framework."
+
+[[accepted]]
+word = "Starlite"
+meaning = "The former name of the Litestar Python web framework."
+
+[[accepted]]
+word = "stateful"
+meaning = "Keeping state between operations."
+
+[[accepted]]
+word = "statelessly"
+meaning = "Without keeping state between operations."
+
+[[accepted]]
+word = "statusline"
+meaning = "A line showing status information at the edge of a terminal or editor."
+aliases = ["statuslines"]
+
+[[accepted]]
+word = "stderr"
+meaning = "The standard error stream."
+
+[[accepted]]
+word = "stdin"
+meaning = "The standard input stream."
+
+[[accepted]]
+word = "stdlib"
+meaning = "A language's standard library."
+
+[[accepted]]
+word = "stdout"
+meaning = "The standard output stream."
+
+[[accepted]]
+word = "stealable"
+meaning = "Able to be stolen."
+
+[[accepted]]
+word = "STK"
+meaning = "The Synthesis ToolKit, a C++ library of audio synthesis and processing classes."
+
+[[accepted]]
+word = "stochastics"
+meaning = "Randomness, or random processes."
+
+[[accepted]]
+word = "storer"
+meaning = "Something that stores data."
+
+[[accepted]]
+word = "streamable"
+meaning = "Able to be streamed."
+
+[[accepted]]
+word = "struct"
+meaning = "A composite type grouping named fields."
+aliases = ["structs"]
+
+[[accepted]]
+word = "structlog"
+meaning = "A Python library for structured logging."
+
+[[accepted]]
+word = "stylesheet"
+meaning = "A file of style rules, such as CSS."
+aliases = ["stylesheets"]
+
+[[accepted]]
+word = "subclassed"
+meaning = "Derived as a subclass."
+aliases = ["subclassing"]
+
+[[accepted]]
+word = "subcommand"
+meaning = "A command nested under a main command, such as git commit."
+aliases = ["subcommands"]
+
+[[accepted]]
+word = "subdir"
+meaning = "Subdirectory."
+
+[[accepted]]
+word = "subkey"
+meaning = "A key subordinate to a primary key, as in an OpenPGP subkey."
+
+[[accepted]]
+word = "sublanguage"
+meaning = "A language contained within another."
+
+[[accepted]]
+word = "sublicense"
+meaning = "To grant a license to others under a license one holds."
+
+[[accepted]]
+word = "submodule"
+meaning = "A repository or module nested within another."
+aliases = ["submodules"]
+
+[[accepted]]
+word = "subnet"
+meaning = "A subdivision of an IP network."
+aliases = ["subnets"]
+
+[[accepted]]
+word = "subparser"
+meaning = "A parser for a subcommand's arguments."
+
+[[accepted]]
+word = "subpath"
+meaning = "A path within another path."
+
+[[accepted]]
+word = "subphase"
+meaning = "A phase within a larger phase."
+aliases = ["subphases"]
+
+[[accepted]]
+word = "subprocess"
+meaning = "A process started by another process."
+aliases = ["subprocesses"]
+
+[[accepted]]
+word = "subqueries"
+meaning = "Queries nested inside other queries."
+
+[[accepted]]
+word = "substring"
+meaning = "A contiguous sequence of characters within a string."
+
+[[accepted]]
+word = "subtable"
+meaning = "A table nested within another table, as in TOML."
+aliases = ["subtables"]
+
+[[accepted]]
+word = "subtask"
+meaning = "A task that is part of a larger task."
+aliases = ["subtasks"]
+
+[[accepted]]
+word = "subtree"
+meaning = "A tree formed by a node and all its descendants."
+aliases = ["subtrees"]
+
+[[accepted]]
+word = "subtyping"
+meaning = "A relation where one type can stand in for another."
+
+[[accepted]]
+word = "sudo"
+meaning = "The command that runs another command as another user, usually root."
+
+[[accepted]]
+word = "Supercell"
+meaning = "A Finnish mobile game developer."
+
+[[accepted]]
+word = "superkey"
+meaning = "A set of columns that uniquely identifies rows in a table."
+
+[[accepted]]
+word = "superset"
+meaning = "A set containing all elements of another set."
+
+[[accepted]]
+word = "supervisord"
+meaning = "A process control system for Unix."
+
+[[accepted]]
+word = "suppressions"
+meaning = "Declarations that silence specific warnings or findings."
+
+[[accepted]]
+word = "SVF"
+meaning = "State-variable filter: a filter providing lowpass, highpass, and bandpass outputs from one structure."
+
+[[accepted]]
+word = "SVG"
+meaning = "Scalable Vector Graphics."
+
+[[accepted]]
+word = "symlink"
+meaning = "A symbolic link: a file that points to another path."
+aliases = ["symlinked", "symlinks"]
+
+[[accepted]]
+word = "syntaxes"
+meaning = "Sets of rules for the structure of a language."
+
+[[accepted]]
+word = "syscalls"
+meaning = "System calls into the operating system kernel."
+
+[[accepted]]
+word = "systemctl"
+meaning = "The command that controls systemd services."
+
+[[accepted]]
+word = "systemd"
+meaning = "The Linux init system and service manager."
+
+[[accepted]]
+word = "tac"
+meaning = "As in tic-tac-toe."
+
+[[accepted]]
+word = "targetless"
+meaning = "Having no target."
+
+[[accepted]]
+word = "Tarjan"
+meaning = "Robert Tarjan, as in Tarjan's algorithm for strongly connected components."
+
+[[accepted]]
+word = "Tauri"
+meaning = "A framework for building desktop apps with a web frontend and a Rust backend."
+
+[[accepted]]
+word = "TBD"
+meaning = "To be determined."
+
+[[accepted]]
+word = "Tcl"
+meaning = "Tool Command Language, a scripting language."
+
+[[accepted]]
+word = "TCP"
+meaning = "Transmission Control Protocol."
+
+[[accepted]]
+word = "TDD"
+meaning = "Test-driven development."
+
+[[accepted]]
+word = "teardown"
+meaning = "Cleanup after a test or operation."
+
+[[accepted]]
+word = "tempfile"
+meaning = "A temporary file, or Python's module for creating them."
+
+[[accepted]]
+word = "textareas"
+meaning = "Multi-line text input fields."
+
+[[accepted]]
+word = "tfvars"
+meaning = "A Terraform variable definitions file."
+
+[[accepted]]
+word = "theming"
+meaning = "Applying themes to change appearance."
+
+[[accepted]]
+word = "timestamping"
+meaning = "Adding timestamps."
+
+[[accepted]]
+word = "timestamptz"
+meaning = "The PostgreSQL timestamp-with-time-zone type."
+
+[[accepted]]
+word = "timetz"
+meaning = "The PostgreSQL time-with-time-zone type."
+
+[[accepted]]
+word = "timezones"
+meaning = "Regions sharing a standard time."
+
+[[accepted]]
+word = "TLD"
+meaning = "Top-level domain."
+
+[[accepted]]
+word = "TLS"
+meaning = "Transport Layer Security."
+
+[[accepted]]
+word = "tmp"
+meaning = "Temporary, as in the /tmp directory."
+
+[[accepted]]
+word = "tmpfs"
+meaning = "A filesystem stored in memory."
+
+[[accepted]]
+word = "TOC"
+meaning = "Table of contents."
+
+[[accepted]]
+word = "todo"
+meaning = "A pending task, or a note marking work still to be done."
+aliases = ["todos"]
+
+[[accepted]]
+word = "toggleable"
+meaning = "Able to be toggled on and off."
+
+[[accepted]]
+word = "TOML"
+meaning = "Tom's Obvious Minimal Language, a configuration file format."
+
+[[accepted]]
+word = "tomlkit"
+meaning = "A Python library for reading and writing TOML while preserving formatting."
+
+[[accepted]]
+word = "toolchain"
+meaning = "The set of tools used to build software."
+aliases = ["toolchains"]
+
+[[accepted]]
+word = "tooltip"
+meaning = "A small popup that describes an element when the pointer hovers over it."
+aliases = ["tooltips"]
+
+[[accepted]]
+word = "topbar"
+meaning = "A bar across the top of a page or window."
+
+[[accepted]]
+word = "TOS"
+meaning = "Terms of service."
+
+[[accepted]]
+word = "TOTP"
+meaning = "Time-based one-time password."
+
+[[accepted]]
+word = "TPDF"
+meaning = "Triangular probability density function, as in TPDF dither."
+
+[[accepted]]
+word = "TPT"
+meaning = "Topology-preserving transform, a method for building digital filters from analog prototypes."
+
+[[accepted]]
+word = "traceback"
+meaning = "A report of the call stack at the point an error occurred."
+aliases = ["tracebacks"]
+
+[[accepted]]
+word = "tradeoff"
+meaning = "A balance between competing factors."
+aliases = ["tradeoffs"]
+
+[[accepted]]
+word = "transactionally"
+meaning = "Within a transaction, so that it all happens or none does."
+
+[[accepted]]
+word = "transcendentals"
+meaning = "Transcendental functions, such as exp, log, and sin."
+
+[[accepted]]
+word = "transcoding"
+meaning = "Converting media from one encoding to another."
+
+[[accepted]]
+word = "treeish"
+meaning = "Git's term for an object that resolves to a tree, such as a commit or tag."
+
+[[accepted]]
+word = "trunc"
+meaning = "Truncation toward zero."
+
+[[accepted]]
+word = "truthy"
+meaning = "Treated as true in a boolean context."
+
+[[accepted]]
+word = "TS"
+meaning = "TypeScript."
+
+[[accepted]]
+word = "TSC"
+meaning = "The TypeScript compiler."
+
+[[accepted]]
+word = "tsmultirange"
+meaning = "The PostgreSQL type holding a set of non-overlapping timestamp ranges."
+
+[[accepted]]
+word = "tsquery"
+meaning = "The PostgreSQL full-text search query type."
+
+[[accepted]]
+word = "tsrange"
+meaning = "The PostgreSQL type for a range of timestamps without time zone."
+
+[[accepted]]
+word = "tstzmultirange"
+meaning = "The PostgreSQL type holding a set of non-overlapping timestamp-with-time-zone ranges."
+
+[[accepted]]
+word = "tstzrange"
+meaning = "The PostgreSQL type for a range of timestamps with time zone."
+
+[[accepted]]
+word = "tsvector"
+meaning = "The PostgreSQL full-text search document type."
+
+[[accepted]]
+word = "TSX"
+meaning = "TypeScript with JSX syntax."
+
+[[accepted]]
+word = "TTL"
+meaning = "Time to live."
+
+[[accepted]]
+word = "Tuist"
+meaning = "A tool for generating and managing Xcode projects."
+
+[[accepted]]
+word = "tuplets"
+meaning = "Rhythmic groupings that divide a beat into a non-standard number of parts, such as triplets."
+
+[[accepted]]
+word = "Twilio"
+meaning = "A cloud communications platform for SMS, voice, and email."
+
+[[accepted]]
+word = "txt"
+meaning = "The plain text file extension."
+
+[[accepted]]
+word = "typeinfo"
+meaning = "Type information."
+
+[[accepted]]
+word = "typo'd"
+meaning = "Mistyped."
+
+[[accepted]]
+word = "typosquatting"
+meaning = "Registering names similar to popular ones to catch mistyped lookups."
+
+[[accepted]]
+word = "TÜV"
+meaning = "The German technical inspection and certification organizations, such as TÜV Rheinland."
+aliases = ["TUV"]
+
+[[accepted]]
+word = "Ubicloud"
+meaning = "An open-source cloud platform that runs on bare-metal providers."
+
+[[accepted]]
+word = "UDP"
+meaning = "User Datagram Protocol."
+
+[[accepted]]
+word = "UI"
+meaning = "User interface."
+
+[[accepted]]
+word = "ULID"
+meaning = "Universally Unique Lexicographically Sortable Identifier."
+
+[[accepted]]
+word = "ULP"
+meaning = "Unit in the last place, the spacing between adjacent floating-point numbers."
+
+[[accepted]]
+word = "umask"
+meaning = "The Unix mask of permission bits removed from newly created files."
+
+[[accepted]]
+word = "UML"
+meaning = "Unified Modeling Language."
+
+[[accepted]]
+word = "unadjudicated"
+meaning = "Not yet decided or ruled on."
+
+[[accepted]]
+word = "unassign"
+meaning = "To remove an assignment."
+
+[[accepted]]
+word = "unbundled"
+meaning = "Separated from a bundle."
+aliases = ["unbundling"]
+
+[[accepted]]
+word = "unchecking"
+meaning = "Clearing a checkbox."
+
+[[accepted]]
+word = "unclosable"
+meaning = "Unable to be closed."
+
+[[accepted]]
+word = "uncommented"
+meaning = "Having its comment marker removed, or lacking comments."
+
+[[accepted]]
+word = "unconsented"
+meaning = "Done without consent."
+
+[[accepted]]
+word = "undecidability"
+meaning = "The property of a problem having no algorithm that always decides it."
+
+[[accepted]]
+word = "undeletable"
+meaning = "Unable to be deleted."
+
+[[accepted]]
+word = "undiscriminated"
+meaning = "Having no discriminator field to tell variants apart, as in an undiscriminated union."
+
+[[accepted]]
+word = "undoable"
+meaning = "Able to be undone."
+
+[[accepted]]
+word = "unencrypted"
+meaning = "Not encrypted."
+
+[[accepted]]
+word = "unescaping"
+meaning = "Reversing escape sequences to the characters they represent."
+
+[[accepted]]
+word = "unexported"
+meaning = "Not exported from its package."
+
+[[accepted]]
+word = "unfalsifiable"
+meaning = "Impossible to prove false."
+
+[[accepted]]
+word = "unformatted"
+meaning = "Not formatted."
+
+[[accepted]]
+word = "unfused"
+meaning = "Not fused, as in a multiply and an add performed with separate roundings."
+
+[[accepted]]
+word = "ungated"
+meaning = "Not controlled by a condition or flag."
+
+[[accepted]]
+word = "ungoogled"
+meaning = "As in ungoogled-chromium, a Chromium build with Google services removed."
+
+[[accepted]]
+word = "ungrouped"
+meaning = "Not grouped."
+
+[[accepted]]
+word = "uninspectable"
+meaning = "Unable to be inspected."
+
+[[accepted]]
+word = "uninvite"
+meaning = "To withdraw an invitation."
+
+[[accepted]]
+word = "uniques"
+meaning = "Unique constraints."
+
+[[accepted]]
+word = "unmarshal"
+meaning = "To decode serialized data into an in-memory value."
+
+[[accepted]]
+word = "unmerged"
+meaning = "Not yet merged."
+
+[[accepted]]
+word = "unorchestrated"
+meaning = "Not coordinated by an orchestrator."
+
+[[accepted]]
+word = "unpadded"
+meaning = "Without padding."
+
+[[accepted]]
+word = "unpark"
+meaning = "To bring back into service something that was put on hold."
+
+[[accepted]]
+word = "unparseable"
+meaning = "Unable to be parsed, or not yet parsed."
+aliases = ["unparsed"]
+
+[[accepted]]
+word = "unpublish"
+meaning = "To withdraw something published."
+
+[[accepted]]
+word = "unredacted"
+meaning = "Not redacted."
+
+[[accepted]]
+word = "unregister"
+meaning = "To remove a registration."
+aliases = ["unregisters"]
+
+[[accepted]]
+word = "unrepresentable"
+meaning = "Impossible to represent."
+
+[[accepted]]
+word = "unselected"
+meaning = "Not selected."
+
+[[accepted]]
+word = "unstage"
+meaning = "To remove a change from Git's staging area."
+
+[[accepted]]
+word = "unsubscription"
+meaning = "The act of unsubscribing."
+
+[[accepted]]
+word = "unsuffixed"
+meaning = "Without a suffix."
+
+[[accepted]]
+word = "untagged"
+meaning = "Without a tag."
+
+[[accepted]]
+word = "untracked"
+meaning = "Not tracked by version control."
+
+[[accepted]]
+word = "untrusted"
+meaning = "Not trusted."
+
+[[accepted]]
+word = "untyped"
+meaning = "Without a declared type."
+
+[[accepted]]
+word = "unvalidated"
+meaning = "Not validated."
+
+[[accepted]]
+word = "unversioned"
+meaning = "Without a version."
+
+[[accepted]]
+word = "unwritable"
+meaning = "Unable to be written."
+
+[[accepted]]
+word = "updatable"
+meaning = "Able to be updated."
+
+[[accepted]]
+word = "upsert"
+meaning = "Insert a row, or update it if it already exists."
+
+[[accepted]]
+word = "URL"
+meaning = "Uniform Resource Locator, a web address."
+
+[[accepted]]
+word = "userinfo"
+meaning = "The user name and password part of a URL, or an OpenID Connect endpoint returning user claims."
+
+[[accepted]]
+word = "UUID"
+meaning = "Universally unique identifier."
+
+[[accepted]]
+word = "uv"
+meaning = "A fast Python package and project manager."
+
+[[accepted]]
+word = "uvicorn"
+meaning = "A Python ASGI server."
+
+[[accepted]]
+word = "uvloop"
+meaning = "A fast drop-in replacement for the asyncio event loop."
+
+[[accepted]]
+word = "UX"
+meaning = "User experience."
+
+[[accepted]]
+word = "validator"
+meaning = "A component that checks input against rules."
+aliases = ["validators"]
+
+[[accepted]]
+word = "Vanta"
+meaning = "A compliance automation platform."
+
+[[accepted]]
+word = "varchar"
+meaning = "The SQL variable-length character type."
+
+[[accepted]]
+word = "varlena"
+meaning = "PostgreSQL's variable-length datum format."
+
+[[accepted]]
+word = "VCA"
+meaning = "Voltage-controlled amplifier, or a VCA group fader controlling several channels' gain."
+
+[[accepted]]
+word = "VCS"
+meaning = "Version control system."
+
+[[accepted]]
+word = "VCSL"
+meaning = "The Versilian Community Sample Library, a free collection of instrument samples."
+
+[[accepted]]
+word = "vendored"
+meaning = "Copied into a project's own tree rather than fetched as a dependency."
+aliases = ["vendoring"]
+
+[[accepted]]
+word = "venv"
+meaning = "A Python virtual environment."
+aliases = ["venvs"]
+
+[[accepted]]
+word = "ver"
+meaning = "Short for version."
+
+[[accepted]]
+word = "vhost"
+meaning = "A virtual host."
+
+[[accepted]]
+word = "Vite"
+meaning = "A frontend build tool and development server."
+
+[[accepted]]
+word = "Vitest"
+meaning = "A test framework built on Vite."
+
+[[accepted]]
+word = "VM"
+meaning = "Virtual machine."
+
+[[accepted]]
+word = "vocoder"
+meaning = "An effect that imposes one signal's spectral envelope on another."
+
+[[accepted]]
+word = "von"
+meaning = "The name particle, as in John von Neumann."
+
+[[accepted]]
+word = "Vorbis"
+meaning = "An open lossy audio codec."
+
+[[accepted]]
+word = "Voxengo"
+meaning = "An audio plugin developer."
+
+[[accepted]]
+word = "VPC"
+meaning = "Virtual private cloud."
+
+[[accepted]]
+word = "VPS"
+meaning = "Virtual private server."
+
+[[accepted]]
+word = "Vue"
+meaning = "A JavaScript framework for building user interfaces."
+
+[[accepted]]
+word = "Vultr"
+meaning = "A cloud hosting provider."
+
+[[accepted]]
+word = "VUs"
+meaning = "Virtual users, the simulated users in a load test."
+
+[[accepted]]
+word = "WAF"
+meaning = "Web application firewall."
+
+[[accepted]]
+word = "wakeup"
+meaning = "Waking up from sleep or a wait."
+
+[[accepted]]
+word = "WAL"
+meaning = "Write-ahead log."
+
+[[accepted]]
+word = "WASAPI"
+meaning = "Windows Audio Session API."
+
+[[accepted]]
+word = "WASI"
+meaning = "The WebAssembly System Interface."
+
+[[accepted]]
+word = "WASM"
+meaning = "WebAssembly."
+
+[[accepted]]
+word = "wasmtime"
+meaning = "A standalone WebAssembly runtime."
+
+[[accepted]]
+word = "watchfiles"
+meaning = "A Python library for watching file changes."
+
+[[accepted]]
+word = "WAV"
+meaning = "The Waveform Audio File Format."
+
+[[accepted]]
+word = "waveshaper"
+meaning = "A distortion effect that maps input sample values through a transfer curve."
+aliases = ["waveshaping"]
+
+[[accepted]]
+word = "wavetable"
+meaning = "A table of stored single-cycle waveforms that an oscillator reads and scans through."
+aliases = ["wavetables"]
+
+[[accepted]]
+word = "wazero"
+meaning = "A zero-dependency WebAssembly runtime for Go."
+
+[[accepted]]
+word = "WCAG"
+meaning = "Web Content Accessibility Guidelines."
+
+[[accepted]]
+word = "webhook"
+meaning = "An HTTP callback sent when an event occurs."
+aliases = ["webhooks"]
+
+[[accepted]]
+word = "webpack"
+meaning = "A JavaScript module bundler."
+
+[[accepted]]
+word = "websocket"
+meaning = "A protocol for full-duplex communication over one TCP connection."
+aliases = ["websockets"]
+
+[[accepted]]
+word = "webview"
+meaning = "An embedded browser component inside a native app."
+aliases = ["webviews"]
+
+[[accepted]]
+word = "whl"
+meaning = "The Python wheel file extension."
+
+[[accepted]]
+word = "whois"
+meaning = "A protocol and tool for querying domain registration records."
+
+[[accepted]]
+word = "WhoisGuard"
+meaning = "Namecheap's domain privacy protection service."
+
+[[accepted]]
+word = "widenings"
+meaning = "Changes that widen a type or range, such as integer to bigint."
+
+[[accepted]]
+word = "WIP"
+meaning = "Work in progress."
+
+[[accepted]]
+word = "wirings"
+meaning = "Connections wiring components together."
+
+[[accepted]]
+word = "Wirth"
+meaning = "Niklaus Wirth, the computer scientist who designed Pascal."
+
+[[accepted]]
+word = "workstream"
+meaning = "A distinct line of work within a project."
+aliases = ["workstreams"]
+
+[[accepted]]
+word = "worktree"
+meaning = "A Git working tree; Git can attach several to one repository."
+aliases = ["worktrees"]
+
+[[accepted]]
+word = "WS"
+meaning = "WebSocket."
+
+[[accepted]]
+word = "WWW"
+meaning = "The World Wide Web."
+
+[[accepted]]
+word = "Xcode"
+meaning = "Apple's integrated development environment."
+
+[[accepted]]
+word = "xcodeproj"
+meaning = "The Xcode project bundle format."
+
+[[accepted]]
+word = "XDG"
+meaning = "The freedesktop.org base directory specification for config, data, and cache locations."
+
+[[accepted]]
+word = "xfail"
+meaning = "An expected failure: a test marked as expected to fail."
+
+[[accepted]]
+word = "XML"
+meaning = "Extensible Markup Language."
+
+[[accepted]]
+word = "XSD"
+meaning = "XML Schema Definition."
+
+[[accepted]]
+word = "Xsolla"
+meaning = "A video game payments and commerce platform."
+
+[[accepted]]
+word = "XSS"
+meaning = "Cross-site scripting."
+
+[[accepted]]
+word = "YAML"
+meaning = "A human-readable data serialization format."
+
+[[accepted]]
+word = "YC"
+meaning = "Y Combinator, a startup accelerator."
+
+[[accepted]]
+word = "yml"
+meaning = "The YAML file extension."
+
+[[accepted]]
+word = "YYYY"
+meaning = "A four-digit year in a date format."
+
+[[accepted]]
+word = "Zalando"
+meaning = "A European online retailer that publishes open-source software, such as a PostgreSQL operator."
+
+[[accepted]]
+word = "ZDF"
+meaning = "Zero-delay feedback, a digital filter design resolving the feedback loop without a unit delay."
+
+[[accepted]]
+word = "Zensical"
+meaning = "A static site generator for documentation, from the creators of Material for MkDocs."
+
+[[accepted]]
+word = "zeroes"
+meaning = "Plural of zero."
+
+[[accepted]]
+word = "Zipf"
+meaning = "As in Zipf's law, where frequency is inversely proportional to rank."
+
+[[accepted]]
+word = "zlib"
+meaning = "A compression library implementing DEFLATE."
+
+[[accepted]]
+word = "Zstandard"
+meaning = "Zstandard, a fast lossless compression algorithm."
+aliases = ["zstd"]

@@ -30,14 +30,33 @@ func readTerms(t *testing.T, dir string) string {
 	return testproject.ReadText(t, layout.Path(dir, layout.TermsRel))
 }
 
-func TestTheBaselineIsAValidEmptyList(t *testing.T) {
+// The baseline is held to the rules a project's terms file is held to: it
+// loads, each array is sorted by word, case-folded, and no spelling is
+// accepted twice. The spell check reads it in every project, so a defect here
+// is a defect everywhere.
+func TestTheBaselineIsAValidSortedList(t *testing.T) {
 	hygiene.Isolate(t)
 	baseline, err := LoadBaseline()
 	if err != nil {
 		t.Fatalf("the embedded baseline does not load: %v", err)
 	}
-	if len(baseline.Accepted) != 0 || len(baseline.Rejected) != 0 {
-		t.Errorf("baseline = %+v, want no entries", baseline)
+	if len(baseline.Accepted) == 0 {
+		t.Fatal("the embedded baseline accepts nothing")
+	}
+	if findings := UnsortedEntries(baseline, nil); len(findings) != 0 {
+		t.Errorf("the baseline is not sorted: %s", findings[0].Message)
+	}
+	seen := map[string]string{}
+	for _, entry := range baseline.Accepted {
+		if strings.TrimSpace(entry.Meaning) == "" {
+			t.Errorf("baseline entry %q has no meaning", entry.Word)
+		}
+		for _, written := range entry.Spellings() {
+			if first, dup := seen[Fold(written)]; dup {
+				t.Errorf("%q is accepted twice in the baseline: under %q and under %q", written, first, entry.Word)
+			}
+			seen[Fold(written)] = entry.Word
+		}
 	}
 }
 
@@ -235,7 +254,7 @@ reason = "Say use."
 	if _, err := Reject(effects.Unbound(), dir, "Leverage", KindWord, "r"); err == nil || !strings.Contains(err.Error(), "already rejected") {
 		t.Errorf("a duplicate rejection = %v", err)
 	}
-	_, err := Reject(effects.Unbound(), dir, "ish", KindSuffix, "r")
+	_, err := Reject(effects.Unbound(), dir, "dish", KindSuffix, "r")
 	if err == nil || !strings.Contains(err.Error(), "selfdoc vocabulary remove reddish") {
 		t.Fatalf("a rejection covering an accepted word = %v", err)
 	}
@@ -243,7 +262,7 @@ reason = "Say use."
 	if _, err := Remove(effects.Unbound(), dir, "reddish"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Reject(effects.Unbound(), dir, "ish", KindSuffix, "r"); err != nil {
+	if _, err := Reject(effects.Unbound(), dir, "dish", KindSuffix, "r"); err != nil {
 		t.Errorf("the rejection after the remedy = %v", err)
 	}
 	if _, err := Reject(effects.Unbound(), dir, "in order to", KindPhrase, "Say to."); err != nil {
