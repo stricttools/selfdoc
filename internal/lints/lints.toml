@@ -224,7 +224,7 @@ description = "stricttools/vocabulary/terms.toml accepts or rejects the same wor
 [[lints]]
 code = "VOCAB003"
 severity = "error"
-description = "An accepted word is covered by a rejected suffix or prefix, so the two lists disagree about it. Remove the entry that is wrong with `selfdoc vocabulary remove <word>`."
+description = "An accepted word is covered by a rejected suffix or prefix, so the two lists disagree about it. A word of selfdoc's built-in baseline is changed only in selfdoc itself, so the project narrows its pattern: `selfdoc vocabulary remove <pattern>`, then `selfdoc vocabulary reject <word> --kind word --reason <text>` for each word meant. A word the project accepts is resolved by removing it with `selfdoc vocabulary remove <word>`, or by narrowing the pattern."
 
 [[lints]]
 code = "VOCAB004"

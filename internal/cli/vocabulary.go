@@ -34,7 +34,7 @@ func (c *cli) registerVocabulary() {
 	)
 
 	group.Command("reject",
-		"Reject a term in "+layout.TermsRel+", in sorted position, with the reason: every page whose prose uses it then fails 'selfdoc check' (VOCAB004). Refuses a term already rejected, and one that would reject an accepted word",
+		"Reject a term in "+layout.TermsRel+", in sorted position, with the reason: every page whose prose uses it then fails 'selfdoc check' (VOCAB004). Refuses a term already rejected, and one that would reject an accepted word: a word of selfdoc's built-in baseline is changed only in selfdoc itself, so a pattern covering one is refused with every covered baseline word listed and must be narrowed to the specific words meant, while a pattern covering a word the project accepts is refused with the command that removes that word",
 		c.cmdVocabularyReject,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(

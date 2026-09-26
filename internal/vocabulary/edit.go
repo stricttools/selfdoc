@@ -94,7 +94,23 @@ func Reject(h *effects.Handle, baseDir, pattern, kind, reason string) (Edit, err
 		}
 	}
 	matcher := NewMatcher(Rejected{Pattern: pattern, Kind: kind})
-	for _, accepted := range vocab.AllAccepted() {
+	// Baseline words are checked first and all at once: removing a project
+	// word cannot clear a rejection that also covers a baseline word, so that
+	// refusal is the one that names a remedy which works.
+	var baselineCovered []string
+	for _, accepted := range vocab.Baseline.Accepted {
+		for _, written := range accepted.Spellings() {
+			if matcher.Covers(written) {
+				baselineCovered = append(baselineCovered, strconv.Quote(written))
+			}
+		}
+	}
+	if len(baselineCovered) > 0 {
+		return Edit{}, fmt.Errorf(
+			"rejecting %q as a %s would reject words %s accepts: %s. %s, so narrow the pattern until it covers none of them: %s",
+			pattern, kind, BaselineSource, strings.Join(baselineCovered, ", "), baselineIsSelfdocs, narrowingFix)
+	}
+	for _, accepted := range vocab.Project.Accepted {
 		for _, written := range accepted.Spellings() {
 			if matcher.Covers(written) {
 				return Edit{}, fmt.Errorf(
@@ -113,6 +129,14 @@ func Reject(h *effects.Handle, baseDir, pattern, kind, reason string) (Edit, err
 		Changes: []string{fmt.Sprintf("rejected %q as a %s in %s", pattern, kind, layout.TermsRel)},
 	}, nil
 }
+
+// baselineIsSelfdocs states why a project cannot resolve a disagreement with
+// a baseline word by changing the word.
+const baselineIsSelfdocs = "A word of " + BaselineSource + " is changed only in selfdoc itself, for every project, never by a project"
+
+// narrowingFix is how a project narrows a rejected pattern: it rejects the
+// specific words it meant, one entry each.
+const narrowingFix = "reject the specific words meant, one at a time, with 'selfdoc vocabulary reject <word> --kind word --reason <text>'"
 
 // Remove deletes every entry of the project's terms file whose word or
 // pattern is word, compared case-insensitively.

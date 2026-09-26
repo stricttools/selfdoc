@@ -207,6 +207,70 @@ reason = "Say the color."
 	noLint(t, root, "VOCAB003")
 }
 
+// The other remedy VOCAB003 names for a word the project accepts: narrow the
+// pattern, removing the rejection and rejecting the specific words meant.
+func TestVOCAB003NarrowingRemedyClearsForAProjectWord(t *testing.T) {
+	root := vocabularyProject(t, "The blue-ish part turns.", vocabulary.EmptyTerms+`
+[[accepted]]
+word = "blue-ish"
+meaning = "Somewhat blue."
+
+[[rejected]]
+pattern = "-ish"
+kind = "suffix"
+reason = "Say the color."
+`)
+	message := onlyLint(t, root, "VOCAB003")
+	if !strings.Contains(message, "selfdoc vocabulary reject <word> --kind word --reason <text>") {
+		t.Errorf("the remedy does not name narrowing the pattern: %s", message)
+	}
+	if _, err := vocabulary.Remove(effects.Unbound(), root, "-ish"); err != nil {
+		t.Fatalf("removing the rejection failed: %v", err)
+	}
+	if _, err := vocabulary.Reject(effects.Unbound(), root, "red-ish", vocabulary.KindWord, "Say the color."); err != nil {
+		t.Fatalf("the narrowed rejection failed: %v", err)
+	}
+	noLint(t, root, "VOCAB003")
+}
+
+// A rejected suffix covering words selfdoc's built-in baseline accepts can
+// only be resolved by narrowing the pattern: a project cannot remove a
+// baseline word, so VOCAB003 never names that.
+func TestVOCAB003ForABaselineWordNamesNarrowingAndItClears(t *testing.T) {
+	root := vocabularyProject(t, "The part turns.", vocabulary.EmptyTerms+`
+[[rejected]]
+pattern = "ish"
+kind = "suffix"
+reason = "Say what it is."
+`)
+	matching := withCode(checkFixture(t, root).Lints, "VOCAB003")
+	if len(matching) != 2 {
+		t.Fatalf("VOCAB003 = %v, want one finding each for treeish and unpublish", messagesOf(matching))
+	}
+	for _, finding := range matching {
+		message := finding.Message()
+		for _, want := range []string{
+			vocabulary.BaselineSource, "changed only in selfdoc itself",
+			"selfdoc vocabulary remove ish",
+			"selfdoc vocabulary reject <word> --kind word --reason <text>",
+		} {
+			if !strings.Contains(message, want) {
+				t.Errorf("the remedy does not carry %q: %s", want, message)
+			}
+		}
+		if strings.Contains(message, "remove treeish") || strings.Contains(message, "remove unpublish") {
+			t.Errorf("the remedy names removing a baseline word: %s", message)
+		}
+	}
+	if _, err := vocabulary.Remove(effects.Unbound(), root, "ish"); err != nil {
+		t.Fatalf("removing the rejection failed: %v", err)
+	}
+	if _, err := vocabulary.Reject(effects.Unbound(), root, "youngish", vocabulary.KindWord, "Say the age."); err != nil {
+		t.Fatalf("the narrowed rejection failed: %v", err)
+	}
+	noLint(t, root, "VOCAB003")
+}
+
 func TestARejectedTermInAPageIsReportedAndItsRemedyClears(t *testing.T) {
 	root := vocabularyProject(t, "We leverage the frobnitz, not `leverage` in code.", vocabulary.EmptyTerms+`
 [[accepted]]

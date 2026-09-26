@@ -160,6 +160,15 @@ selfdoc vocabulary reject <pattern> --kind <word|phrase|suffix|prefix> --reason 
 selfdoc vocabulary remove <word>
 ```
 
+A word of selfdoc's built-in baseline is changed only in selfdoc itself, for
+every project, never by a project. So `selfdoc vocabulary reject` refuses a
+pattern that covers any baseline word, listing every one it covers: narrow the
+pattern by rejecting the specific words meant instead, one entry each (for
+example `selfdoc vocabulary reject youngish --kind word --reason "<why>"` in
+place of the suffix `ish`, which would also reject the baseline's `treeish`). A
+pattern that covers a word the project itself accepts is refused with the
+command that removes that word.
+
 `stricttools/vocabulary/review.toml` holds words proposed for acceptance that
 nobody has reviewed yet, each with a guessed meaning, a confidence from 0 to 1,
 and the doc lines the guess came from:
@@ -186,7 +195,9 @@ selfdoc vocabulary drop <word>                           # delete the proposal
 The VOCAB lints hold the file to its purpose, each naming the command that
 clears it: an accepted word no page uses (VOCAB001), an entry accepted or
 rejected twice (VOCAB002), an accepted word a rejected suffix or prefix covers
-(VOCAB003), a page whose prose uses a rejected term (VOCAB004), and an array out
+(VOCAB003, resolved by narrowing the project's pattern when the word is the
+baseline's, and by removing the word or narrowing the pattern when it is the
+project's), a page whose prose uses a rejected term (VOCAB004), and an array out
 of order (VOCAB005).
 
 ### Suppressing rules

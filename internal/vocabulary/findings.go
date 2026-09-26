@@ -2,6 +2,7 @@ package vocabulary
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/stricttools/selfdoc/internal/layout"
 )
@@ -128,9 +129,10 @@ func CoveredAccepted(v *Vocabulary) []Finding {
 				findings = append(findings, Finding{
 					File: file, Line: line,
 					Message: fmt.Sprintf(
-						"%q is accepted (%s) and the %s %q rejects it (%s): %s. Remove the entry that is wrong: 'selfdoc vocabulary remove %s' removes the accepted word, 'selfdoc vocabulary remove %s' removes the rejection.",
+						"%q is accepted (%s) and the %s %q rejects it (%s): %s. %s",
 						written, Where(accepted.Source, accepted.Line), rejected.Kind, rejected.Pattern,
-						Where(rejected.Source, rejected.Line), rejected.Reason, accepted.Word, rejected.Pattern),
+						Where(rejected.Source, rejected.Line), strings.TrimSuffix(rejected.Reason, "."),
+						coveredRemedy(accepted, rejected)),
 				})
 				break
 			}
@@ -169,4 +171,22 @@ func usedAnywhere(entry Accepted, texts []string) bool {
 		}
 	}
 	return false
+}
+
+// coveredRemedy names what resolves an accepted word a rejected pattern
+// covers, offering only the entries the project owns: a baseline word is
+// resolved by narrowing the project's pattern, a word under a baseline pattern
+// by removing the project's word, and a disagreement between two project
+// entries by either.
+func coveredRemedy(accepted Accepted, rejected Rejected) string {
+	narrow := fmt.Sprintf("remove the rejection with 'selfdoc vocabulary remove %s', then %s", rejected.Pattern, narrowingFix)
+	removeWord := fmt.Sprintf("'selfdoc vocabulary remove %s' removes the accepted word", accepted.Word)
+	switch {
+	case accepted.Source == BaselineSource:
+		return fmt.Sprintf("%s, so narrow the pattern: %s.", baselineIsSelfdocs, narrow)
+	case rejected.Source == BaselineSource:
+		return fmt.Sprintf("A rejection of %s is changed only in selfdoc itself, for every project, never by a project, so resolve it on the project's side: %s.", BaselineSource, removeWord)
+	default:
+		return fmt.Sprintf("Resolve it on whichever side is wrong: %s; or narrow the pattern: %s.", removeWord, narrow)
+	}
 }

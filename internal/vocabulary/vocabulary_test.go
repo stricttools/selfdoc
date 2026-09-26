@@ -274,6 +274,36 @@ reason = "Say use."
 	}
 }
 
+// A rejection covering words the baseline accepts is refused with every
+// covered word listed, and with a remedy a project can perform: narrowing the
+// pattern to the words meant. Removing a baseline word is not one.
+func TestRejectCoveringBaselineWordsNamesNarrowingAndItClears(t *testing.T) {
+	dir := project(t, "")
+	_, err := Reject(effects.Unbound(), dir, "ish", KindSuffix, "Say what it is.")
+	if err == nil {
+		t.Fatal("a rejection covering baseline words was accepted")
+	}
+	for _, want := range []string{
+		`"treeish"`, `"unpublish"`, BaselineSource,
+		"selfdoc vocabulary reject <word> --kind word --reason <text>",
+		"changed only in selfdoc itself",
+	} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal does not carry %q: %v", want, err)
+		}
+	}
+	if strings.Contains(err.Error(), "selfdoc vocabulary remove") {
+		t.Errorf("the refusal names removing a baseline word, which a project cannot do: %v", err)
+	}
+	// The remedy: reject the specific word meant instead of the suffix.
+	if _, err := Reject(effects.Unbound(), dir, "youngish", KindWord, "Say the age."); err != nil {
+		t.Fatalf("the narrowed rejection = %v", err)
+	}
+	if got := readTerms(t, dir); !strings.Contains(got, `pattern = "youngish"`) {
+		t.Errorf("terms.toml after the narrowed rejection:\n%s", got)
+	}
+}
+
 func TestRemoveDeletesTheEntryAndRefusesWhatIsNotThere(t *testing.T) {
 	dir := project(t, EmptyTerms+`
 [[accepted]]
@@ -459,6 +489,44 @@ meaning = "a again"
 	}
 	if problems := DuplicateEntries(vocab); len(problems) != 0 {
 		t.Errorf("the remedy did not clear the duplicate: %+v", problems)
+	}
+}
+
+// An accepted word of the project covered by a rejected suffix of the baseline
+// can only be resolved on the project's side: the remedy names removing the
+// accepted word and never removing or narrowing the baseline's rejection.
+func TestCoveredAcceptedUnderABaselineRejectionNamesOnlyTheProjectEntry(t *testing.T) {
+	dir := project(t, EmptyTerms+`
+[[accepted]]
+word = "blue-ish"
+meaning = "Somewhat blue."
+`)
+	withBaselineRejection := func() *Vocabulary {
+		t.Helper()
+		vocab, err := Load(dir)
+		if err != nil {
+			t.Fatalf("Load: %v", err)
+		}
+		vocab.Baseline.Rejected = append(vocab.Baseline.Rejected, Rejected{
+			Pattern: "-ish", Kind: KindSuffix, Reason: "Say the color.", Source: BaselineSource,
+		})
+		return vocab
+	}
+	problems := CoveredAccepted(withBaselineRejection())
+	if len(problems) != 1 {
+		t.Fatalf("problems = %+v, want one", problems)
+	}
+	message := problems[0].Message
+	if !strings.Contains(message, "selfdoc vocabulary remove blue-ish") ||
+		strings.Contains(message, "selfdoc vocabulary remove -ish") ||
+		strings.Contains(message, "selfdoc vocabulary reject") {
+		t.Errorf("the remedy names more than removing the project's word: %s", message)
+	}
+	if _, err := Remove(effects.Unbound(), dir, "blue-ish"); err != nil {
+		t.Fatalf("the remedy failed: %v", err)
+	}
+	if problems := CoveredAccepted(withBaselineRejection()); len(problems) != 0 {
+		t.Errorf("the remedy did not clear the finding: %+v", problems)
 	}
 }
 
