@@ -2,11 +2,18 @@
 format_version = 1
 # Version bump type: patch, minor, major, infra, or prerelease
 #   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
-bump = ""
+bump = "minor"
 # Short description of this release (required)
-description = ""
+description = "selfdoc's per-repository directories move to a visible stricttools/ root, with generated directories behind a dot, and 'selfdoc layout migrate' moves a repository onto it. Each project now owns its spelling vocabulary: stricttools/vocabulary/terms.toml (accepted words with meanings, rejected terms with reasons) and review.toml (pending words), edited with 'selfdoc vocabulary' (accept, reject, remove, approve, drop). The spell check reads only selfdoc's built-in baseline, which now carries general technical vocabulary, and the project's terms.toml, never a file outside the repository."
 # Optional context explaining why these changes were made
-context = ""
+context = """
+The spell check used to read a machine-wide accept list outside every repository, so the same committed docs could pass on one machine and fail on another. Its general vocabulary now ships inside selfdoc as the baseline, and each project's own words live in its repository.
+
+Upgrading a repository:
+1. On the .stricttools/ layout, run 'selfdoc layout migrate --dry-run', read the plan, then run 'selfdoc layout migrate', which moves the directories and commits.
+2. On the older .selfdoc/ layout, follow the ordered procedure selfdoc's refusal prints: it fetches and runs move-to-stricttools-layout.py (--dry-run first), which moves the repository straight onto stricttools/.
+3. Run 'selfdoc check'. For each word SPELL001 flags that the project really uses, run 'selfdoc vocabulary accept <word> --meaning <text>'; fix the prose for a real misspelling. VOCAB002 reports a terms.toml entry the baseline already carries: remove it with 'selfdoc vocabulary remove <word>'.
+"""
 # Pre-release channel: alpha, beta, rc, or stable (ordered;
 # demotion is an error). With patch/minor/major it ENTERS the
 # channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
