@@ -88,7 +88,9 @@ adopt selfdoc and which writes the manifests of `stricttools/docs/`,
 one that names another tool); `selfdoc layout migrate`, which carries the
 manifests of the directories it moves and writes the vocabulary directory's
 when the repository had none, the previous manifests naming selfdoc being the
-grant; and the move script for the older `.selfdoc/` layout, which writes the
+grant, and writes the vocabulary directory's for a repository already on
+`stricttools/` that has none (what the move from the older `.selfdoc/` layout
+leaves); and the move script for the older `.selfdoc/` layout, which writes the
 manifests of the directories it moves content into.
 
 A manifest is also what makes a directory exist. git carries no empty
@@ -196,7 +198,11 @@ and every selfdoc command that reads one refuses it, naming
 keeping every field it carried and adding the vocabulary of the project's terms
 file, in the same commit as the move. A repository already on `stricttools/`
 whose manifests are on `schema_version` 1 -- one moved from `.selfdoc/`, or by
-an earlier selfdoc -- gets the conversion alone, as its own commit:
+an earlier selfdoc -- gets the conversion alone, as its own commit. One whose
+`stricttools/vocabulary/` carries no `manifest.toml` -- one moved from
+`.selfdoc/`, a layout that had no vocabulary directory -- also gets that
+directory's grant, and `stricttools/vocabulary/terms.toml` empty when the
+project has none, in the same commit:
 
 ```bash
 selfdoc layout migrate --dry-run
@@ -259,12 +265,15 @@ The dry run prints every manifest it would write, every move and every content
 rewrite, and changes nothing. The apply run writes the manifests and moves the
 tracked files as one commit -- a page carrying the generated marker into
 `stricttools/.docs-state/pages/`, every other page into `stricttools/docs/` --
-rewrites the paths the moved content names as a second commit, runs
-`selfdoc layout migrate` to convert the moved manifests (a third commit; see
-"Converting the manifests" above), and then builds the site and refuses to
-finish unless the URL set is identical to the one the last build before the move
-published. The selfdoc the script runs must therefore be one whose
-`layout migrate` converts manifests. Page addresses
+rewrites the paths the moved content names as a second commit, removes the
+directories the move emptied under `.selfdoc/` and `.selfdoc/` itself (a file
+still inside is named and left, and the script refuses), runs
+`selfdoc layout migrate` to convert the moved manifests and write the
+vocabulary directory the old layout never had (a third commit; see "Converting
+the manifests" above), and then builds the site and refuses to finish unless the
+URL set is identical to the one the last build before the move published. The
+selfdoc the script runs must therefore be one whose `layout migrate` converts
+manifests and writes a missing vocabulary directory. Page addresses
 come from the path relative to the docs root, so the move keeps every URL, and
 the comparison is what proves it.
 

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/testproject"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // `selfdoc layout migrate` also carries a repository's committed manifest from
@@ -167,5 +169,74 @@ func TestAnOutdatedManifestIsRefusedNamingMigrateAndMigrateConvertsIt(t *testing
 	again := run(t, dir, "layout", "migrate")
 	if again.ExitCode == 0 || !strings.Contains(again.Stderr, "Nothing to migrate") {
 		t.Errorf("a converted repository: exit %d\n%s", again.ExitCode, again.Stderr)
+	}
+}
+
+// withoutVocabulary removes the vocabulary directory from a project on this
+// layout and commits the removal: the state the .selfdoc/ move script leaves,
+// because the layout before .stricttools/ had no vocabulary directory to move.
+func withoutVocabulary(t *testing.T, dir string) {
+	t.Helper()
+	testproject.Git(t, dir, "rm", "-q", "-r", "--ignore-unmatch", layout.VocabularyRel)
+	if err := os.RemoveAll(layout.Path(dir, layout.VocabularyRel)); err != nil {
+		t.Fatal(err)
+	}
+	testproject.Git(t, dir, "commit", "-q", "--allow-empty", "-m", "no vocabulary directory")
+}
+
+// A repository on this layout with no vocabulary directory -- what the
+// .selfdoc/ move script leaves -- ends the way the .stricttools/ move ends it:
+// the vocabulary directory's grant and an empty terms file, committed, so
+// `selfdoc vocabulary accept` works afterwards. That holds whether or not its
+// manifests still need converting.
+func TestMigrateGivesAProjectWithNoVocabularyDirectoryOne(t *testing.T) {
+	for _, testCase := range []struct {
+		name     string
+		outdated bool
+	}{
+		{"with the manifests to convert", true},
+		{"with the manifests already converted", false},
+	} {
+		t.Run(testCase.name, func(t *testing.T) {
+			isolate(t)
+			var dir string
+			if testCase.outdated {
+				dir = outdatedCurrentLayoutProject(t)
+			} else {
+				dir = testproject.Make(t, nil)
+				testproject.Git(t, dir, "init", "-q")
+				testproject.Git(t, dir, "add", ".")
+				testproject.Git(t, dir, "commit", "-q", "-m", "on this layout")
+			}
+			withoutVocabulary(t, dir)
+			if result := run(t, dir, "vocabulary", "accept", "frobnitz", "--meaning", "The widget.", "--no-auto-commit"); result.ExitCode == 0 {
+				t.Fatalf("the fixture has a vocabulary directory selfdoc may write into:\n%s", result.Stdout)
+			}
+
+			dry := run(t, dir, "layout", "migrate", "--dry-run")
+			for _, want := range []string{
+				"write " + layout.DirectoryManifestRel(layout.VocabularyName),
+				"write " + layout.TermsRel,
+			} {
+				if dry.ExitCode != 0 || !strings.Contains(dry.Stdout, want) {
+					t.Errorf("the plan does not carry %q (exit %d):\n%s\n%s", want, dry.ExitCode, dry.Stdout, dry.Stderr)
+				}
+			}
+			if result := run(t, dir, "layout", "migrate"); result.ExitCode != 0 {
+				t.Fatalf("the migration failed:\n%s\n%s", result.Stdout, result.Stderr)
+			}
+			if got := gitOutput(t, dir, "show", "HEAD:"+layout.DirectoryManifestRel(layout.VocabularyName)); got != layout.DirectoryManifestContent(layout.Owner) {
+				t.Errorf("the committed vocabulary grant is %q", got)
+			}
+			if got := gitOutput(t, dir, "show", "HEAD:"+layout.TermsRel); got != vocabulary.EmptyTerms {
+				t.Errorf("the committed terms file is %q, want the empty vocabulary", got)
+			}
+			if status := gitOutput(t, dir, "status", "--porcelain"); strings.TrimSpace(status) != "" {
+				t.Errorf("the migration left uncommitted changes:\n%s", status)
+			}
+			if result := run(t, dir, "vocabulary", "accept", "frobnitz", "--meaning", "The widget.", "--no-auto-commit"); result.ExitCode != 0 {
+				t.Errorf("vocabulary accept still refuses after the migration:\n%s", result.Stderr)
+			}
+		})
 	}
 }

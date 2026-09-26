@@ -38,11 +38,13 @@ What it does, in order:
      repository that still has it. A file still inside it is not the script's
      to delete, so the script refuses instead, naming each one.
   6. Converts the moved manifests to the schema that records the project's
-     vocabulary, by running 'selfdoc layout migrate' with the binary resolved
-     before step 3, which commits the conversion as a THIRD commit. Every
-     selfdoc command refuses a manifest an older selfdoc wrote, the build in
-     step 7 included, so the conversion comes first. Skipped when no moved
-     manifest is outdated.
+     vocabulary, and writes the vocabulary directory the old layout never had
+     (its manifest.toml and an empty terms.toml), by running 'selfdoc layout
+     migrate' with the binary resolved before step 3, which commits both as a
+     THIRD commit. Every selfdoc command refuses a manifest an older selfdoc
+     wrote, the build in step 7 included, so the conversion comes first.
+     Skipped when no moved manifest is outdated and the vocabulary directory
+     already carries its manifest.
   7. Builds the site again with the same binary and refuses to finish unless
      the URL set is identical to the one captured in step 2. The commits stay
      in place; the difference is printed.
@@ -93,6 +95,7 @@ VERSIONS_REL = f"{DOCS_CACHE_REL}/versions"
 # whichever directories the planned moves carry content into.
 FUNCTION_ORDER = ["docs", ".docs-state", ".docs-cache", "posts", "vocabulary"]
 CACHE_FUNCTION = ".docs-cache"
+VOCABULARY_FUNCTION = "vocabulary"
 
 # The file the pre-move URL set is kept in, inside the uncommitted cache.
 SITEMAP_CAPTURE = f"{DOCS_CACHE_REL}/sitemap-before-move.xml"
@@ -731,18 +734,26 @@ def outdated_manifests(project: Path) -> list[str]:
 
 
 def convert_manifests(project: Path, selfdoc: str) -> None:
-    """Step 6: convert the moved manifests with 'selfdoc layout migrate'."""
-    outdated = outdated_manifests(project)
-    if not outdated:
+    """Step 6: convert the moved manifests, and write the vocabulary directory
+    the old layout never had, with 'selfdoc layout migrate'.
+
+    The command is the one writer of both; the script only decides whether
+    there is anything for it to do.
+    """
+    pending = outdated_manifests(project)
+    if not (project / manifest_rel(VOCABULARY_FUNCTION)).is_file():
+        pending.append(f"{VOCABULARY_REL}/ (no {MANIFEST_FILE})")
+    if not pending:
         return
-    print(f"converting {', '.join(outdated)} with 'selfdoc layout migrate':")
+    print(f"running 'selfdoc layout migrate' for {', '.join(pending)}:")
     result = run([selfdoc, "layout", "migrate"], project)
     sys.stdout.write(result.stdout)
     sys.stderr.write(result.stderr)
     if result.returncode != 0:
         raise Refusal(
-            "'selfdoc layout migrate' failed, so the manifests are still on the schema "
-            "before the vocabulary and the build would refuse them. The move and the "
+            "'selfdoc layout migrate' failed, so the manifests may still be on the schema "
+            "before the vocabulary, which the build refuses, and the vocabulary "
+            "directory may be missing its manifest. The move and the "
             "rewrite commits are in place; fix what it names and run "
             "'selfdoc layout migrate' in the repository, then build."
         )

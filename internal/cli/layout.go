@@ -34,7 +34,7 @@ func (c *cli) registerLayout() {
 	)
 
 	group.Command("migrate",
-		"Move this repository off the layout before this one: every directory under "+layout.PreviousRoot+"/ whose "+layout.ManifestFileName+" names selfdoc moves under "+layout.Root+"/, a generated one behind a dot ("+migrationExample()+"). It creates "+layout.Root+"/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from "+layout.PreviousRoot+"/"+layout.IgnoreFileName+" (the file and "+layout.PreviousRoot+"/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes "+layout.TermsRel+" empty when the project has none, converts the manifests ("+layout.ManifestRel+" and "+layout.PostManifestRel+") from schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" to "+strconv.Itoa(manifest.SchemaVersion)+", which records the project's accepted words and rejected patterns from "+layout.TermsRel+", and commits. A repository already on "+layout.Root+"/ whose manifests are on schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" gets the manifest conversion alone. Another tool's directories stay where they are. Refuses a repository already migrated with its manifests converted, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing",
+		"Move this repository off the layout before this one: every directory under "+layout.PreviousRoot+"/ whose "+layout.ManifestFileName+" names selfdoc moves under "+layout.Root+"/, a generated one behind a dot ("+migrationExample()+"). It creates "+layout.Root+"/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from "+layout.PreviousRoot+"/"+layout.IgnoreFileName+" (the file and "+layout.PreviousRoot+"/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes "+layout.TermsRel+" empty when the project has none, converts the manifests ("+layout.ManifestRel+" and "+layout.PostManifestRel+") from schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" to "+strconv.Itoa(manifest.SchemaVersion)+", which records the project's accepted words and rejected patterns from "+layout.TermsRel+", and commits. A repository already on "+layout.Root+"/ whose manifests are on schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" gets the manifest conversion alone, and one whose "+layout.VocabularyRel+"/ carries no "+layout.ManifestFileName+" -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and "+layout.TermsRel+" empty when the project has none. Another tool's directories stay where they are. Refuses a repository already migrated with its manifests converted and its vocabulary directory granted, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing",
 		c.cmdLayoutMigrate,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.LayoutMigrate()),
@@ -69,6 +69,8 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 			c.println("Dry run: the migration would take these steps, and nothing is changed:")
 		case len(plan.Moves) > 0:
 			c.println("Moving this repository onto the " + layout.Root + "/ layout:")
+		case len(plan.Writes) > 0:
+			c.println("Writing what this repository's " + layout.Root + "/ layout lacks:")
 		default:
 			c.printf("Converting this repository's manifests to schema_version %d:\n", manifest.SchemaVersion)
 		}
@@ -82,7 +84,13 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 	committed := false
 	if autoCommit {
 		message := "selfdoc layout migrate: move selfdoc's directories from " + layout.PreviousRoot + "/ to " + layout.Root + "/"
-		if len(plan.Moves) == 0 {
+		switch {
+		case len(plan.Moves) > 0:
+		case len(plan.Writes) > 0 && len(plan.Rewrites) > 0:
+			message = fmt.Sprintf("selfdoc layout migrate: write the vocabulary directory and convert the manifests to schema_version %d", manifest.SchemaVersion)
+		case len(plan.Writes) > 0:
+			message = "selfdoc layout migrate: write the vocabulary directory"
+		default:
 			message = fmt.Sprintf("selfdoc layout migrate: convert the manifests to schema_version %d", manifest.SchemaVersion)
 		}
 		committed, _, err = gitcommit.AutoCommit(plan.Commit, message, c.dir(), handle)
@@ -125,7 +133,7 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 		if len(plan.Moves) > 0 {
 			c.printf("Moved %d directories under %s/.", len(plan.Moves), layout.Root)
 		} else {
-			c.printf("Converted %d manifest(s).", len(plan.Rewrites))
+			c.printf("Wrote %d file(s) and converted %d manifest(s).", len(plan.Writes), len(plan.Rewrites))
 		}
 		if committed {
 			c.printf(" Committed.")

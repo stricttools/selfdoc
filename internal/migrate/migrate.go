@@ -15,7 +15,10 @@
 // The move also converts the repository's manifests -- the build manifest and
 // the post manifest -- from the schema before the vocabulary to the current
 // one, adding the vocabulary of the project's terms file. A repository already
-// on this layout whose manifests are outdated gets that conversion alone.
+// on this layout whose manifests are outdated gets that conversion alone, and
+// one whose vocabulary directory carries no grant -- a repository moved from
+// the older .selfdoc/ layout, which had no vocabulary directory -- gets the
+// grant and an empty terms file, as the move writes them.
 package migrate
 
 import (
@@ -167,15 +170,18 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 	switch {
 	case len(previous) == 0 && len(current) > 0:
 		var plan Plan
+		if err := plan.planMissingVocabulary(baseDir); err != nil {
+			return Plan{}, err
+		}
 		if err := plan.planManifests(baseDir, h, false, false); err != nil {
 			return Plan{}, err
 		}
-		if len(plan.Rewrites) > 0 {
+		if len(plan.Writes) > 0 || len(plan.Rewrites) > 0 {
 			return plan, nil
 		}
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
-			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), %s/ holds none, and the manifests are on schema_version %d.",
-			layout.Root, strings.Join(current, ", "), layout.PreviousRoot, manifest.SchemaVersion)}
+			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), %s/ holds none, %s carries its grant, and the manifests are on schema_version %d.",
+			layout.Root, strings.Join(current, ", "), layout.PreviousRoot, layout.VocabularyRel+"/", manifest.SchemaVersion)}
 	case len(previous) == 0:
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
 			"Nothing to migrate: this repository has no %s/ directory holding one whose %s names selfdoc. A repository that has not adopted selfdoc runs 'selfdoc init'.",
@@ -254,6 +260,39 @@ func (p *Plan) planVocabulary(baseDir string, moved map[string]bool) error {
 	if _, err := os.Stat(previousTerms); err == nil && moved[layout.VocabularyName] {
 		return nil
 	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	p.Writes = append(p.Writes, Write{
+		Path: layout.TermsRel, Why: "an empty vocabulary",
+		Content: []byte(vocabulary.EmptyTerms),
+	})
+	p.Commit = append(p.Commit, layout.TermsRel)
+	return nil
+}
+
+// planMissingVocabulary gives a repository already on this layout the
+// vocabulary directory it never had -- the grant and an empty terms file, as
+// the move off the previous root writes them -- when the directory carries no
+// grant. A repository moved onto this layout from the one before the previous
+// root is one: that layout had no vocabulary directory to move. A directory
+// that carries its grant is left as it stands, terms file or none.
+func (p *Plan) planMissingVocabulary(baseDir string) error {
+	_, err := layout.ReadDirectoryManifest(baseDir, layout.VocabularyName)
+	if err == nil {
+		return nil
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	manifestRel := layout.DirectoryManifestRel(layout.VocabularyName)
+	p.Writes = append(p.Writes, Write{
+		Path: manifestRel, Why: "the vocabulary directory's grant",
+		Content: []byte(layout.DirectoryManifestContent(layout.Owner)),
+	})
+	p.Commit = append(p.Commit, manifestRel)
+	if _, err := os.Stat(layout.Path(baseDir, layout.TermsRel)); err == nil {
+		return nil
+	} else if !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
 	p.Writes = append(p.Writes, Write{

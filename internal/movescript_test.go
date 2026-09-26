@@ -748,3 +748,33 @@ func TestTheMoveScriptRefusesWhatRemainsUnderTheOldRoot(t *testing.T) {
 		t.Errorf("selfdoc ran with .selfdoc/ still present: %q", got)
 	}
 }
+
+// The layout the move comes from had no vocabulary directory, and the move
+// writes none: 'selfdoc layout migrate' is the one writer of its manifest and
+// its empty terms file. So the script runs the command whenever the vocabulary
+// directory carries no manifest, even when every moved manifest is already on
+// the current schema.
+func TestTheMoveScriptRunsMigrateForTheMissingVocabularyDirectory(t *testing.T) {
+	requirePython3(t)
+	requireSafegit(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	testproject.WriteText(t, filepath.Join(dir, ".selfdoc", "manifest.json"),
+		"{\"schema_version\": 2, \"pages\": {}}\n")
+	testproject.Git(t, dir, "commit", "--quiet", "-am", "a manifest on the current schema")
+	makeToolRoot(t, dir)
+	stub := fakeSelfdoc(t, dir, sitemapXML("https://example.com/", "https://example.com/guide/"))
+
+	out, status := runMove(t, root, dir, "--apply", "--selfdoc", stub)
+	if status != 0 {
+		t.Fatalf("the move refused:\n%s", out)
+	}
+	want := []string{"layout migrate", "build --no-auto-commit"}
+	if got := stubInvocations(t, stub); strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Errorf("the script ran selfdoc as %q, want %q", got, want)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "stricttools", "vocabulary")); !os.IsNotExist(err) {
+		t.Errorf("the script wrote the vocabulary directory itself (stat err = %v); the migrate command is its one writer", err)
+	}
+}
