@@ -38,7 +38,7 @@ func (c *cli) registerVocabulary() {
 		c.cmdVocabularyReject,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
-			strictcli.NewArg("pattern", "The rejected text (e.g. 'leverage', 'blast radius', '-shaped'). Matched case-insensitively", strictcli.ArgRequired()),
+			strictcli.NewArg("pattern", "The rejected text (e.g. 'leverage', 'in order to', '-ish'). Matched case-insensitively", strictcli.ArgRequired()),
 		),
 		strictcli.WithFlags(
 			strictcli.StringFlag("kind", "How the pattern matches the text of a page, compared case-insensitively", strictcli.Required(), strictcli.Choices(

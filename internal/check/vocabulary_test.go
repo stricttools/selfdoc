@@ -185,23 +185,23 @@ meaning = "The same widget."
 }
 
 func TestAnAcceptedWordARejectedSuffixCoversIsReportedAndItsRemedyClears(t *testing.T) {
-	root := vocabularyProject(t, "The diamond-shaped part turns.", vocabulary.EmptyTerms+`
+	root := vocabularyProject(t, "The blue-ish part turns.", vocabulary.EmptyTerms+`
 [[accepted]]
-word = "diamond-shaped"
-meaning = "Shaped like a diamond."
+word = "blue-ish"
+meaning = "Somewhat blue."
 
 [[rejected]]
-pattern = "-shaped"
+pattern = "-ish"
 kind = "suffix"
-reason = "Say what the thing is."
+reason = "Say the color."
 `)
 	message := onlyLint(t, root, "VOCAB003")
-	for _, want := range []string{"selfdoc vocabulary remove diamond-shaped", "selfdoc vocabulary remove -shaped"} {
+	for _, want := range []string{"selfdoc vocabulary remove blue-ish", "selfdoc vocabulary remove -ish"} {
 		if !strings.Contains(message, want) {
 			t.Errorf("the remedy does not carry %q: %s", want, message)
 		}
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "diamond-shaped"); err != nil {
+	if _, err := vocabulary.Remove(effects.Unbound(), root, "blue-ish"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	noLint(t, root, "VOCAB003")

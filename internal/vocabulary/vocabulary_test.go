@@ -60,9 +60,9 @@ meaning = "The widget that frobs."
 aliases = ["frobnitzes"]
 
 [[rejected]]
-pattern = "blast radius"
+pattern = "in order to"
 kind = "phrase"
-reason = "Say what is affected."
+reason = "Say to."
 `)
 	vocab, err := Load(dir)
 	if err != nil {
@@ -206,14 +206,14 @@ meaning = "m"
 aliases = ["frobs"]
 
 [[rejected]]
-pattern = "-shaped"
+pattern = "-ish"
 kind = "suffix"
 reason = "Say what it is."
 `)
 	for word, want := range map[string]string{
-		"Frobnitz":       "already accepted",
-		"FROBS":          "already accepted",
-		"diamond-shaped": "rejected as a suffix",
+		"Frobnitz": "already accepted",
+		"FROBS":    "already accepted",
+		"blue-ish": "rejected as a suffix",
 	} {
 		if _, err := Accept(effects.Unbound(), dir, word, "m"); err == nil || !strings.Contains(err.Error(), want) {
 			t.Errorf("Accept(%q) = %v, want a refusal carrying %q", word, err, want)
@@ -224,7 +224,7 @@ reason = "Say what it is."
 func TestRejectRefusesDuplicatesAndConflicts(t *testing.T) {
 	dir := project(t, EmptyTerms+`
 [[accepted]]
-word = "misshaped"
+word = "reddish"
 meaning = "m"
 
 [[rejected]]
@@ -235,22 +235,22 @@ reason = "Say use."
 	if _, err := Reject(effects.Unbound(), dir, "Leverage", KindWord, "r"); err == nil || !strings.Contains(err.Error(), "already rejected") {
 		t.Errorf("a duplicate rejection = %v", err)
 	}
-	_, err := Reject(effects.Unbound(), dir, "shaped", KindSuffix, "r")
-	if err == nil || !strings.Contains(err.Error(), "selfdoc vocabulary remove misshaped") {
+	_, err := Reject(effects.Unbound(), dir, "ish", KindSuffix, "r")
+	if err == nil || !strings.Contains(err.Error(), "selfdoc vocabulary remove reddish") {
 		t.Fatalf("a rejection covering an accepted word = %v", err)
 	}
 	// The remedy the refusal names lets the rejection through.
-	if _, err := Remove(effects.Unbound(), dir, "misshaped"); err != nil {
+	if _, err := Remove(effects.Unbound(), dir, "reddish"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Reject(effects.Unbound(), dir, "shaped", KindSuffix, "r"); err != nil {
+	if _, err := Reject(effects.Unbound(), dir, "ish", KindSuffix, "r"); err != nil {
 		t.Errorf("the rejection after the remedy = %v", err)
 	}
-	if _, err := Reject(effects.Unbound(), dir, "blast radius", KindPhrase, "Say what is affected."); err != nil {
+	if _, err := Reject(effects.Unbound(), dir, "in order to", KindPhrase, "Say to."); err != nil {
 		t.Fatalf("Reject: %v", err)
 	}
 	got := readTerms(t, dir)
-	if strings.Index(got, `"blast radius"`) > strings.Index(got, `"leverage"`) {
+	if strings.Index(got, `"in order to"`) > strings.Index(got, `"leverage"`) {
 		t.Errorf("the new rejection is not in sorted position:\n%s", got)
 	}
 }
@@ -371,11 +371,11 @@ func TestMatcherKinds(t *testing.T) {
 	hygiene.Isolate(t)
 	for _, testCase := range []struct {
 		kind, pattern, text string
-		want             []string
+		want                []string
 	}{
 		{KindWord, "leverage", "We Leverage it; leveraged is fine.", []string{"Leverage"}},
-		{KindPhrase, "blast radius", "the blast\tradius and blast-radius", []string{"blast\tradius"}},
-		{KindSuffix, "-shaped", "diamond-shaped, -shaped alone", []string{"-shaped"}},
+		{KindPhrase, "in order to", "done in order\tto, not in-order-to", []string{"in order\tto"}},
+		{KindSuffix, "-ish", "blue-ish, -ish alone", []string{"-ish"}},
 		{KindPrefix, "pre", "prefix pre preamble", []string{"pre", "pre"}},
 	} {
 		matcher := NewMatcher(Rejected{Pattern: testCase.pattern, Kind: testCase.kind})

@@ -138,9 +138,9 @@ meaning = "This project: the code-aware static site generator."
 aliases = ["selfdoc's"]
 
 [[rejected]]
-pattern = "blast radius"
+pattern = "in order to"
 kind = "phrase"
-reason = "Say what is affected."
+reason = "Say to."
 ```
 
 A rejected term's `kind` is `word` (a whole word), `phrase` (a whole phrase,
