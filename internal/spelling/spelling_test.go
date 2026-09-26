@@ -1,32 +1,24 @@
-// The spelling engine, its vendored word list, and its accept list.
+// The spelling engine and its vendored word list.
 //
 // One engine serves the check command (SPELL001) and the spell-corpus
 // command, so everything asserted here holds for both. The tests are grouped
-// by the three things that can independently be wrong: what the word list
-// contains and whether it ships legally, how the accept list is read, and what
-// the scanner does and does not treat as a word.
+// by the things that can independently be wrong: what the word list contains
+// and whether it ships legally, how an accepted vocabulary is consulted, and
+// what the scanner does and does not treat as a word.
 package spelling
 
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/stricttools/testisolation/go/hygiene"
 )
 
 // words returns the unrecognized words found in text, as plain strings.
 func words(t *testing.T, text string, vocab Vocab, accepted Vocab) []string {
 	t.Helper()
-	found, err := CheckText(text, "p.md", vocab, accepted, 0, false)
-	if err != nil {
-		t.Fatalf("CheckText: %v", err)
-	}
+	found := CheckText(text, "p.md", vocab, accepted, 0, false)
 	out := make([]string, 0, len(found))
 	for _, miss := range found {
 		out = append(out, miss.Word)
@@ -34,14 +26,10 @@ func words(t *testing.T, text string, vocab Vocab, accepted Vocab) []string {
 	return out
 }
 
-// check runs CheckText with suggestions on and fails the test on an error.
+// check runs CheckText with suggestions on.
 func check(t *testing.T, text string, vocab Vocab, accepted Vocab) []Misspelling {
 	t.Helper()
-	found, err := CheckText(text, "p.md", vocab, accepted, 0, true)
-	if err != nil {
-		t.Fatalf("CheckText: %v", err)
-	}
-	return found
+	return CheckText(text, "p.md", vocab, accepted, 0, true)
 }
 
 // -- The vendored word list -------------------------------------------------
@@ -160,84 +148,7 @@ func TestSubSourceNoticeIsIncludedVerbatim(t *testing.T) {
 	}
 }
 
-// -- The accept list --------------------------------------------------------
-
-func TestAcceptListPathIsTheFixedSharedLocation(t *testing.T) {
-	// One list, outside every repo, shared by every project on the machine.
-	hygiene.Isolate(t)
-	path := AcceptListPath()
-	if filepath.Base(path) != "spelling-accept.txt" {
-		t.Errorf("accept list is named %q", filepath.Base(path))
-	}
-	if filepath.Base(filepath.Dir(path)) != "ark" {
-		t.Errorf("accept list sits in %q", filepath.Dir(path))
-	}
-}
-
-func TestMissingAcceptListIsAnEmptyList(t *testing.T) {
-	// A fresh machine has accepted nothing yet -- absence, not an error.
-	hygiene.Isolate(t)
-	accepted, err := LoadAcceptList(filepath.Join(t.TempDir(), "nope.txt"))
-	if err != nil {
-		t.Fatalf("LoadAcceptList: %v", err)
-	}
-	if len(accepted) != 0 {
-		t.Errorf("a missing accept list read as %v", accepted)
-	}
-}
-
-func TestAcceptListReadsWordsAndComments(t *testing.T) {
-	// One word per line; "#" starts a comment, whole-line or trailing.
-	hygiene.Isolate(t)
-	path := filepath.Join(t.TempDir(), "accept.txt")
-	body := "# project names\nselfdoc\n\nrlsbl  # the release orchestrator\n"
-	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	accepted, err := LoadAcceptList(path)
-	if err != nil {
-		t.Fatalf("LoadAcceptList: %v", err)
-	}
-	if len(accepted) != 2 || !accepted.Has("selfdoc") || !accepted.Has("rlsbl") {
-		t.Errorf("accept list read as %v", accepted)
-	}
-}
-
-func TestMalformedAcceptLineIsAHardError(t *testing.T) {
-	// A line the format cannot admit stops the run rather than being dropped.
-	hygiene.Isolate(t)
-	for _, line := range []string{"two words", "selfdoc-core", "utf8", "config.json"} {
-		path := filepath.Join(t.TempDir(), "accept.txt")
-		if err := os.WriteFile(path, []byte("selfdoc\n"+line+"\n"), 0o644); err != nil {
-			t.Fatal(err)
-		}
-		_, err := LoadAcceptList(path)
-		if err == nil {
-			t.Errorf("%q was accepted", line)
-			continue
-		}
-		if !strings.Contains(err.Error(), ":2:") {
-			t.Errorf("%q: error does not name line 2: %v", line, err)
-		}
-	}
-}
-
-func TestAcceptListErrorIsItsOwnType(t *testing.T) {
-	// A caller can recognize it without matching on the message.
-	hygiene.Isolate(t)
-	path := filepath.Join(t.TempDir(), "accept.txt")
-	if err := os.WriteFile(path, []byte("not a word\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	_, err := LoadAcceptList(path)
-	var acceptErr *AcceptListError
-	if !errors.As(err, &acceptErr) {
-		t.Fatalf("error is %T: %v", err, err)
-	}
-	if !strings.Contains(acceptErr.Message, "'not a word' is not a single word") {
-		t.Errorf("message is %q", acceptErr.Message)
-	}
-}
+// -- An accepted vocabulary -------------------------------------------------
 
 func TestAcceptedTermIsAcceptedInAnyStandardCasing(t *testing.T) {
 	// An accepted term is accepted everywhere, however the sentence cases it.
@@ -251,12 +162,12 @@ func TestAcceptedTermIsAcceptedInAnyStandardCasing(t *testing.T) {
 
 // -- The renderer vocabulary ------------------------------------------------
 
-func TestRendererVocabularyIsAcceptedWithNoAcceptList(t *testing.T) {
+func TestRendererVocabularyIsAcceptedWithNothingAccepted(t *testing.T) {
 	// A word selfdoc's own renderers emit is accepted by selfdoc's own check.
 	//
-	// The accept list belongs to the machine, so a consumer project's check
-	// has to pass on a machine that has never accepted anything. Fixed
-	// renderer vocabulary is therefore carried by the engine itself.
+	// A consumer project's check has to pass when the project has accepted
+	// nothing. Fixed renderer vocabulary is therefore carried by the engine
+	// itself.
 	vocab := LoadWordlist()
 	for _, text := range []string{
 		"- Clearable: the property that a run can empty.\n",
@@ -559,10 +470,7 @@ func TestColumnsSurviveAMaskedCodeSpan(t *testing.T) {
 
 func TestLineOffsetAccountsForFrontmatter(t *testing.T) {
 	// The body is scanned, but reported lines are the file's own.
-	found, err := CheckText("Body with recieve.\n", "p.md", LoadWordlist(), Vocab{}, 4, true)
-	if err != nil {
-		t.Fatal(err)
-	}
+	found := CheckText("Body with recieve.\n", "p.md", LoadWordlist(), Vocab{}, 4, true)
 	if len(found) != 1 || found[0].Line != 5 {
 		t.Fatalf("reported %v", found)
 	}
@@ -570,10 +478,7 @@ func TestLineOffsetAccountsForFrontmatter(t *testing.T) {
 
 func TestFileIsReportedVerbatim(t *testing.T) {
 	// Diagnostics name the path the caller gave, unchanged.
-	found, err := CheckText("recieve\n", "posts/2026-01-01-x.md", LoadWordlist(), Vocab{}, 0, true)
-	if err != nil {
-		t.Fatal(err)
-	}
+	found := CheckText("recieve\n", "posts/2026-01-01-x.md", LoadWordlist(), Vocab{}, 0, true)
 	if len(found) != 1 || found[0].File != "posts/2026-01-01-x.md" {
 		t.Fatalf("reported %v", found)
 	}

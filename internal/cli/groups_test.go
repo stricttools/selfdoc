@@ -27,8 +27,10 @@ func TestTheCommandTreeIsTheDeclaredOne(t *testing.T) {
 		"blog.post.publish", "blog.publish-docs",
 		"build", "check", "deploy",
 		"gen", "gen-data", "init",
-		"layout.dump", "layout.validate",
+		"layout.dump", "layout.migrate", "layout.validate",
 		"quality", "serve", "spell-corpus",
+		"vocabulary.accept", "vocabulary.approve", "vocabulary.drop",
+		"vocabulary.reject", "vocabulary.remove",
 	}
 	if strings.Join(registered, " ") != strings.Join(expected, " ") {
 		t.Errorf("the command tree is\n  %v\nwant\n  %v", registered, expected)

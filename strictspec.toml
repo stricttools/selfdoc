@@ -1,5 +1,5 @@
-# strictspec manifest -- the Go boundary validators for selfdoc's two declarative
-# documents: the built-in directive catalogue and the lint-code registry.
+# strictspec manifest -- the Go boundary validators for selfdoc's declarative
+# documents, one [[schemas]] entry each.
 #
 # Regenerate with: strictspec gen   (run from the repository root)
 # `strictspec check` verifies schema authoring validity and generated-code
@@ -8,7 +8,10 @@
 #
 # Each validator is generated INTO the package that loads the document it
 # governs, so the embedded document, its validator and its loader sit together
-# and nothing else can bind an unvalidated document.
+# and nothing else can bind an unvalidated document. The two vocabulary
+# documents are the exception: the generator emits the same package-level
+# identifiers for every schema, so two validators cannot share a package, and
+# each sits in its own subpackage of internal/vocabulary, which loads both.
 format_version = 1
 
 [[schemas]]
@@ -42,3 +45,19 @@ path = ".strictspec/directory-manifest.schema.toml"
   lang    = "go"
   output  = "internal/layout/selfdoc_directory_manifest_gen.go"
   package = "layout"
+
+[[schemas]]
+path = ".strictspec/vocabulary-terms.schema.toml"
+
+  [[schemas.targets]]
+  lang    = "go"
+  output  = "internal/vocabulary/termsschema/selfdoc_vocabulary_terms_gen.go"
+  package = "termsschema"
+
+[[schemas]]
+path = ".strictspec/vocabulary-review.schema.toml"
+
+  [[schemas.targets]]
+  lang    = "go"
+  output  = "internal/vocabulary/reviewschema/selfdoc_vocabulary_review_gen.go"
+  package = "reviewschema"

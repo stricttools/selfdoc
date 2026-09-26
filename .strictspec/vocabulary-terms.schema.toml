@@ -1,0 +1,102 @@
+# strictspec schema -- a project's vocabulary: the words its pages may use that
+# the English word list does not carry, and the terms its pages may not use.
+#
+# Governs stricttools/vocabulary/terms.toml, and the baseline of the same shape
+# embedded in the selfdoc binary (internal/vocabulary/baseline.toml). The
+# generated validator (internal/vocabulary/termsschema/selfdoc_vocabulary_terms_gen.go) is
+# what vocabulary.Load validates each file against, so a list that reaches the
+# spell check has already been through here.
+#
+# THE KEY REGISTRY. A record is closed: a key not declared here is refused
+# rather than silently ignored. Both arrays are optional, so a file carrying
+# only the format-version gate is a valid, empty vocabulary.
+#
+# SCOPE (honest subset): this schema owns each file's DOCUMENT SHAPE -- the key
+# registry, the required fields, the kind enum and the lexeme class of a word.
+# It does not own the order of the entries, duplicates, a word both accepted
+# and rejected (within one file or across the baseline and the project), or
+# whether any page uses an accepted word; those are selfdoc-native, because
+# they span entries, files or pages: a load-time refusal for the conflict, and
+# the VOCAB lints for the rest.
+
+name = "selfdoc-vocabulary-terms"
+meta_version = 1
+format_version = 1
+document_syntax = "toml"
+role = "schema"
+root = "Terms"
+description = "A project's vocabulary: the accepted words, each with its meaning, and the rejected terms, each with the reason."
+
+[types.Terms]
+type = "record"
+description = "One vocabulary file."
+
+[types.Terms.fields.format_version]
+type = "integer"
+required = true
+description = "Document format-version gate. v1 files carry 1."
+
+[types.Terms.fields.accepted]
+type = "array"
+required = false
+description = "The accepted words, kept sorted by word."
+[types.Terms.fields.accepted.item]
+type = "AcceptedTerm"
+
+[types.Terms.fields.rejected]
+type = "array"
+required = false
+description = "The rejected terms, kept sorted by pattern."
+[types.Terms.fields.rejected.item]
+type = "RejectedTerm"
+
+# --- named types ---
+
+[types.Term]
+type = "string"
+non_empty = true
+regex = '^\S(?:.*\S)?$'
+description = "A word, a phrase or a pattern: non-empty, with no whitespace at either end."
+
+[types.AcceptedTerm]
+type = "record"
+description = "One word the project's pages may use."
+
+[types.AcceptedTerm.fields.word]
+type = "Term"
+required = true
+description = "The word, as the project spells it. Matched case-insensitively."
+
+[types.AcceptedTerm.fields.meaning]
+type = "string"
+required = true
+non_empty = true
+description = "What the word means in this project, in one sentence."
+
+[types.AcceptedTerm.fields.aliases]
+type = "array"
+required = false
+description = "Other spellings of the same word, accepted with it."
+[types.AcceptedTerm.fields.aliases.item]
+type = "Term"
+
+[types.RejectedTerm]
+type = "record"
+description = "One term the project's pages may not use."
+
+[types.RejectedTerm.fields.pattern]
+type = "Term"
+required = true
+description = "The rejected text. Matched case-insensitively on word boundaries."
+
+[types.RejectedTerm.fields.kind]
+type = "enum"
+required = true
+values = ["word", "phrase", "suffix", "prefix"]
+description = "How the pattern matches: a whole word, a whole phrase, the end of a word, or the start of a word."
+
+[types.RejectedTerm.fields.reason]
+type = "string"
+required = true
+non_empty = true
+description = "Why the term is rejected, shown beside every place a page uses it."

@@ -13,6 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/spelling"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // What the editor can say about a buffer that was never saved.
@@ -22,8 +23,9 @@ import (
 //
 //   - spelling -- [github.com/stricttools/selfdoc/internal/spelling], the same
 //     engine the check runs (SPELL001) and the corpus sweep runs over the
-//     fleet: the same masks, the same vendored word list, the same
-//     machine-local accept list. Its coordinates are line and column, because
+//     fleet: the same masks, the same vendored word list, the same project
+//     vocabulary (selfdoc's built-in baseline and the repository's own
+//     stricttools/vocabulary/terms.toml). Its coordinates are line and column, because
 //     that is what a diagnostic in a terminal needs; the editor's decoration
 //     interface takes flat character offsets over the buffer, so the one
 //     thing this adds is that mapping.
@@ -96,8 +98,9 @@ func lineStarts(text []rune) []int {
 // SpellingFindings returns every unrecognized word in content, as editor
 // decoration spans.
 //
-// content is the buffer, frontmatter included, and file is the name the
-// engine puts on each diagnostic.
+// content is the buffer, frontmatter included, file is the name the engine
+// puts on each diagnostic, and accepted is the repository's accepted
+// vocabulary, case-folded.
 //
 // Offsets are character offsets, not byte offsets: the editor holds the
 // buffer as text and paints over character positions, and the engine's
@@ -106,7 +109,7 @@ func lineStarts(text []rune) []int {
 // It is an error when a reported word is not at the offset the mapping
 // computes. That is a defect in this mapping or in the engine's columns, and
 // painting a mark over the wrong word is worse than saying so.
-func SpellingFindings(content, file string) ([]SpellingFinding, error) {
+func SpellingFindings(content, file string, accepted spelling.Vocab) ([]SpellingFinding, error) {
 	body, err := util.StripFrontmatter(content, file)
 	if err != nil {
 		return nil, err
@@ -115,10 +118,7 @@ func SpellingFindings(content, file string) ([]SpellingFinding, error) {
 
 	runes := []rune(content)
 	starts := lineStarts(runes)
-	misspellings, err := spelling.CheckText(body, file, nil, nil, frontmatterLines, true)
-	if err != nil {
-		return nil, err
-	}
+	misspellings := spelling.CheckText(body, file, nil, accepted, frontmatterLines, true)
 
 	findings := make([]SpellingFinding, 0, len(misspellings))
 	for _, miss := range misspellings {
@@ -222,7 +222,8 @@ func AnalyzeBuffer(
 	entry registry.Entry, rel, content string,
 	cfg config.Config, handle *effects.Handle,
 ) (Analysis, error) {
-	if _, err := RequireLocal(entry); err != nil {
+	localPath, err := RequireLocal(entry)
+	if err != nil {
 		return Analysis{}, err
 	}
 	if cfg == nil {
@@ -232,7 +233,11 @@ func AnalyzeBuffer(
 		}
 		cfg = loaded
 	}
-	spellingFindings, err := SpellingFindings(content, rel)
+	repoVocabulary, err := vocabulary.Load(localPath)
+	if err != nil {
+		return Analysis{}, err
+	}
+	spellingFindings, err := SpellingFindings(content, rel, repoVocabulary.SpellVocab())
 	if err != nil {
 		return Analysis{}, err
 	}

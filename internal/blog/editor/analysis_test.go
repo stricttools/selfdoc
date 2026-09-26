@@ -65,7 +65,7 @@ var cleanPost = analysisPost("# Hello World\n\n" + analysisBody + "\n")
 // spellingOf runs the spelling lane, failing on a refusal.
 func spellingOf(t *testing.T, content string) []SpellingFinding {
 	t.Helper()
-	findings, err := SpellingFindings(content, "buffer.md")
+	findings, err := SpellingFindings(content, "buffer.md", spelling.Vocab{})
 	if err != nil {
 		t.Fatalf("SpellingFindings: %v", err)
 	}
@@ -233,20 +233,16 @@ func TestSpellingIsTheSharedEngine(t *testing.T) {
 		}
 	})
 
-	t.Run("the machine-local accept list is consulted", func(t *testing.T) {
+	t.Run("the given accepted vocabulary is consulted", func(t *testing.T) {
 		content := analysisPost("# Hello World\n\nThe frobnitz editor runs here.\n")
 		if words := wordsOf(spellingOf(t, content)); strings.Join(words, ",") != "frobnitz" {
 			t.Errorf("words = %v, want only frobnitz", words)
 		}
-
-		accept := spelling.AcceptListPath()
-		if err := os.MkdirAll(filepath.Dir(accept), 0o755); err != nil {
-			t.Fatalf("mkdir: %v", err)
+		findings, err := SpellingFindings(content, "buffer.md", spelling.Vocab{"frobnitz": {}})
+		if err != nil {
+			t.Fatalf("SpellingFindings: %v", err)
 		}
-		if err := os.WriteFile(accept, []byte("frobnitz\n"), 0o644); err != nil {
-			t.Fatalf("writing the accept list: %v", err)
-		}
-		if words := wordsOf(spellingOf(t, content)); len(words) != 0 {
+		if words := wordsOf(findings); len(words) != 0 {
 			t.Errorf("words = %v, want none once the word is accepted", words)
 		}
 	})
@@ -430,6 +426,43 @@ func TestAnalyzeBuffer(t *testing.T) {
 		}
 		if !hasCode(findings.Lints, "SEO001") {
 			t.Errorf("lints = %v", codesOf(findings.Lints))
+		}
+	})
+
+	t.Run("the repository's vocabulary is read, and no machine-wide list", func(t *testing.T) {
+		content := analysisPost("# Hello World\n\nThe frobnitz editor runs here.\n")
+		home, err := os.UserHomeDir()
+		if err != nil {
+			t.Fatal(err)
+		}
+		machineList := filepath.Join(home, "Projects", "ark", "spelling-accept.txt")
+		if err := os.MkdirAll(filepath.Dir(machineList), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(machineList, []byte("frobnitz\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		findings, err := AnalyzeBuffer(entry, postHelloName, content, nil, effects.Unbound())
+		if err != nil {
+			t.Fatalf("AnalyzeBuffer: %v", err)
+		}
+		if words := wordsOf(findings.Spelling); strings.Join(words, ",") != "frobnitz" {
+			t.Errorf("words = %v, want frobnitz, which only a machine-wide list accepts", words)
+		}
+
+		terms := filepath.Join(project, "stricttools", "vocabulary", "terms.toml")
+		if err := os.MkdirAll(filepath.Dir(terms), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(terms, []byte("format_version = 1\n\n[[accepted]]\nword = \"frobnitz\"\nmeaning = \"The widget.\"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		findings, err = AnalyzeBuffer(entry, postHelloName, content, nil, effects.Unbound())
+		if err != nil {
+			t.Fatalf("AnalyzeBuffer: %v", err)
+		}
+		if words := wordsOf(findings.Spelling); len(words) != 0 {
+			t.Errorf("words = %v, want none once the repository accepts the word", words)
 		}
 	})
 

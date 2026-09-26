@@ -18,11 +18,12 @@ import (
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/resolver"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // defaultPostsDirRel is where a project keeps its posts when it declares no
 // "posts" block: the convention every post surface reads.
-const defaultPostsDirRel = layout.PostsDefault
+var defaultPostsDirRel = layout.PostsDefault
 
 // postsDirRel reads the configured posts directory, relative to the project
 // root.
@@ -328,7 +329,11 @@ func LintPostBuffer(
 	docsDir := filepath.Join(
 		dirPath, strings.TrimRight(configString(projectConfig, "docs", layout.DocsDefault), "/"),
 	)
-	produced, err := runLints(postDocs, dirPath, docsDir, projectConfig, nil, handle)
+	vocab, err := vocabulary.Load(dirPath)
+	if err != nil {
+		return nil, err
+	}
+	produced, err := runLints(postDocs, dirPath, docsDir, projectConfig, nil, vocab, handle)
 	if err != nil {
 		return nil, err
 	}

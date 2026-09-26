@@ -18,8 +18,8 @@ package payloadschemas
 import (
 	"sort"
 
-	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // merge folds every fragment into one schema object, later keys winning.
@@ -148,26 +148,26 @@ func SpellCorpus() map[string]any {
 
 	project := strictcli.SchemaObject(
 		map[string]any{
-			"project":      strictcli.SchemaType("string"),
-			"pages":        strictcli.SchemaType("integer"),
-			"error":        strictcli.SchemaType("string", "null"),
-			"misspellings": strictcli.SchemaArray(misspelling),
+			"project":        strictcli.SchemaType("string"),
+			"pages":          strictcli.SchemaType("integer"),
+			"accepted_terms": strictcli.SchemaType("integer"),
+			"error":          strictcli.SchemaType("string", "null"),
+			"misspellings":   strictcli.SchemaArray(misspelling),
 		},
-		[]string{"project", "pages", "error", "misspellings"},
+		[]string{"project", "pages", "accepted_terms", "error", "misspellings"},
 		false,
 	)
 
 	return strictcli.SchemaObject(
 		map[string]any{
 			"root":           strictcli.SchemaType("string"),
-			"accept_list":    strictcli.SchemaType("string"),
-			"accepted_terms": strictcli.SchemaType("integer"),
+			"baseline_terms": strictcli.SchemaType("integer"),
 			"wordlist_words": strictcli.SchemaType("integer"),
 			"projects":       strictcli.SchemaArray(project),
 			"total":          strictcli.SchemaType("integer"),
 		},
 		[]string{
-			"root", "accept_list", "accepted_terms", "wordlist_words",
+			"root", "baseline_terms", "wordlist_words",
 			"projects", "total",
 		},
 		false,
@@ -257,6 +257,42 @@ func LayoutDump() map[string]any {
 			"directories":   strictcli.SchemaArray(directory),
 		},
 		[]string{"tool", "root", "manifest_file", "ignore_file", "directories"},
+		false,
+	)
+}
+
+// LayoutMigrate is the payload of `selfdoc layout migrate`: every step of the
+// move, whether a dry run recorded it or a live run performed it, and whether
+// the move was committed.
+func LayoutMigrate() map[string]any {
+	move := strictcli.SchemaObject(
+		map[string]any{
+			"from": strictcli.SchemaType("string"),
+			"to":   strictcli.SchemaType("string"),
+		},
+		[]string{"from", "to"},
+		false,
+	)
+	rewrite := strictcli.SchemaObject(
+		map[string]any{
+			"path":    strictcli.SchemaType("string"),
+			"changes": strictcli.SchemaArray(strictcli.SchemaType("string")),
+		},
+		[]string{"path", "changes"},
+		false,
+	)
+	return strictcli.SchemaObject(
+		map[string]any{
+			"previous_root":         strictcli.SchemaType("string"),
+			"root":                  strictcli.SchemaType("string"),
+			"moves":                 strictcli.SchemaArray(move),
+			"writes":                strictcli.SchemaArray(strictcli.SchemaType("string")),
+			"rewrites":              strictcli.SchemaArray(rewrite),
+			"deletes":               strictcli.SchemaArray(strictcli.SchemaType("string")),
+			"removed_previous_root": strictcli.SchemaType("boolean"),
+			"committed":             strictcli.SchemaType("boolean"),
+		},
+		[]string{"previous_root", "root", "moves", "writes", "rewrites", "deletes", "removed_previous_root", "committed"},
 		false,
 	)
 }

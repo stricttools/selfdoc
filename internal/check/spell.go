@@ -7,8 +7,11 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/stricttools/selfdoc/internal/docs"
+	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/spelling"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // directiveDataFiles returns the documents the content rendered onto one page
@@ -156,7 +159,8 @@ func spellRenderedDirectives(
 	pageDirectives []ResolvedDirective,
 	docsDocuments []string,
 	projectRoot string,
-	vocab, accepted spelling.Vocab,
+	words, accepted spelling.Vocab,
+	vocab *vocabulary.Vocabulary,
 ) ([]lints.LintResult, error) {
 	if resolved == "" || resolved == bodyContent {
 		return nil, nil
@@ -172,10 +176,7 @@ func spellRenderedDirectives(
 
 	var results []lints.LintResult
 	seen := map[string]bool{}
-	misspellings, err := spelling.CheckText(resolved, relPath, vocab, accepted, 0, true)
-	if err != nil {
-		return nil, err
-	}
+	misspellings := spelling.CheckText(resolved, relPath, words, accepted, 0, true)
 	for _, miss := range misspellings {
 		if already[miss.Word] || seen[miss.Word] {
 			continue
@@ -193,11 +194,92 @@ func spellRenderedDirectives(
 			results = append(results, lints.MustLintResult(
 				location.File, lineOf(location.Line), "SPELL001",
 				fmt.Sprintf(
-					"Unrecognized word '%s' (col %d)%s -- rendered into %s",
+					"Unrecognized word '%s' (col %d)%s -- rendered into %s.%s",
 					miss.Word, location.Column, suffix, relPath,
+					spellRemedy(miss.Word, vocab),
 				),
 			))
 		}
 	}
 	return results, nil
+}
+
+// spellRemedy is the sentence a SPELL001 message closes with: how to resolve
+// the word when it is genuine. A word pending review is resolved by the review
+// commands; any other by accepting it.
+func spellRemedy(word string, vocab *vocabulary.Vocabulary) string {
+	if pending, isPending := vocab.PendingWord(word); isPending {
+		return fmt.Sprintf(
+			" It is pending review in %s, proposed as %q: approve it with 'selfdoc vocabulary approve %s', approve it with a corrected meaning with 'selfdoc vocabulary approve %s --meaning <text>', or drop the proposal with 'selfdoc vocabulary drop %s' and fix the spelling.",
+			vocabulary.Where(layout.ReviewRel, pending.Line), pending.Meaning,
+			pending.Word, pending.Word, pending.Word)
+	}
+	return fmt.Sprintf(
+		" If it is a genuine term, accept it into %s with 'selfdoc vocabulary accept %s --meaning <text>'.",
+		layout.TermsRel, word)
+}
+
+// rejectedTermLints reports every rejected term on the prose lines of one
+// page body (VOCAB004). fmOffset turns a body line into a file line.
+func rejectedTermLints(
+	relPath, body string, fmOffset int, matchers []vocabulary.Matcher,
+) []lints.LintResult {
+	if len(matchers) == 0 {
+		return nil
+	}
+	var results []lints.LintResult
+	for _, line := range spelling.ProseLines(body) {
+		for _, matcher := range matchers {
+			for _, match := range matcher.Find(line.Masked) {
+				// Masking keeps byte offsets and blanks only what is not
+				// prose, so the matched text is the page's own.
+				rejected := matcher.Rejected
+				message := fmt.Sprintf(
+					"'%s' (col %d) is rejected as a %s (%s): %s. Rewrite the passage without it.",
+					match.Text, match.Offset+1, rejected.Kind,
+					vocabulary.Where(rejected.Source, rejected.Line), rejected.Reason)
+				if rejected.Source != vocabulary.BaselineSource {
+					message += fmt.Sprintf(
+						" If the project no longer rejects it, remove the rejection with 'selfdoc vocabulary remove %s'.",
+						rejected.Pattern)
+				}
+				results = append(results, lints.MustLintResult(
+					relPath, lineOf(line.Number+fmOffset), "VOCAB004", message,
+				))
+			}
+		}
+	}
+	return results
+}
+
+// vocabularyLints are the lints about the project's vocabulary files rather
+// than about one page: unused, duplicated, disagreeing and unsorted entries
+// (VOCAB001, VOCAB002, VOCAB003, VOCAB005). pages are every page the run
+// checks, whose raw and resolved text decide whether an accepted word is used.
+func vocabularyLints(vocab *vocabulary.Vocabulary, pages map[string]docs.Doc) []lints.LintResult {
+	texts := make([]string, 0, 2*len(pages))
+	for _, relPath := range sortedKeys(pages) {
+		texts = append(texts, pages[relPath].Raw, pages[relPath].Resolved)
+	}
+	var results []lints.LintResult
+	for _, group := range []struct {
+		code     string
+		findings []vocabulary.Finding
+	}{
+		{"VOCAB001", vocabulary.UnusedAccepted(vocab.Project, texts)},
+		{"VOCAB002", vocabulary.DuplicateEntries(vocab)},
+		{"VOCAB003", vocabulary.CoveredAccepted(vocab)},
+		{"VOCAB005", vocabulary.UnsortedEntries(vocab.Project, vocab.Pending)},
+	} {
+		for _, finding := range group.findings {
+			var line *int
+			if finding.Line > 0 {
+				line = lineOf(finding.Line)
+			}
+			results = append(results, lints.MustLintResult(
+				finding.File, line, group.code, finding.Message,
+			))
+		}
+	}
+	return results
 }

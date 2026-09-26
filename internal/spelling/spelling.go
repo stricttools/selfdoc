@@ -3,9 +3,8 @@
 //
 // The check command runs it over a project's docs and posts (SPELL001), and
 // the spell-corpus command runs the same engine over every sibling project on
-// the machine. There is one engine and one accept list; a surface that wants
-// spelling asks this package, and no surface carries a second opinion about
-// what a word is.
+// the machine. There is one engine; a surface that wants spelling asks this
+// package, and no surface carries a second opinion about what a word is.
 //
 // # Vendored word list and its licence obligations
 //
@@ -36,43 +35,31 @@
 // unfiltered scrape: it accepts enough garbage to be worthless as an
 // acceptance oracle, which is the one job here.
 //
-// # The accept list
+// # The project's vocabulary
 //
 // Genuine terms the general English list cannot know -- project names, tool
-// names, technical vocabulary -- live in a single plain-text file at
-// [AcceptListPath] (~/Projects/ark/spelling-accept.txt). One word per line,
-// "#" starts a comment, and a word on the list is accepted everywhere,
-// permanently.
-//
-// That location is outside every repository, so the list has no version
-// history and no backup. This was chosen deliberately: the list is
-// cross-project by nature and belongs to the machine rather than to any one
-// repo, and losing it costs a re-triage, not correctness.
-//
-// A missing file means an empty list, not an error. A fresh machine has simply
-// never accepted anything yet; that is genuine absence, not a degraded mode,
-// and the check behaves identically before and after the file appears -- it
-// just has fewer accepted terms. A file that exists and is malformed is a hard
-// error: it was written by someone who meant something by it, and guessing at
-// their intent would silently drop accepted terms.
+// names, technical vocabulary -- are accepted by the project's vocabulary: the
+// baseline embedded in the binary and the project's own
+// stricttools/vocabulary/terms.toml, both loaded by package vocabulary and
+// handed to [CheckText] as one set. This package reads no file outside the
+// binary: the caller decides the vocabulary, so the same committed docs get
+// the same verdict on every machine.
 //
 // # The renderer vocabulary
 //
-// The accept list cannot carry a word selfdoc itself writes. selfdoc renders
-// reference pages into a consumer's docs tree and then spell-checks them, so a
-// heading a renderer invents becomes an error-severity lint in that consumer's
-// project -- text they did not write, on a page they cannot edit, against a
-// machine list they should not have to populate. Fixed renderer vocabulary is
-// therefore carried by the engine, in [RendererVocabulary], and consulted on
-// every run regardless of what the machine has accepted.
+// A project's vocabulary cannot be asked to carry a word selfdoc itself
+// writes. selfdoc renders reference pages into a consumer's docs tree and then
+// spell-checks them, so a heading a renderer invents becomes an error-severity
+// lint in that consumer's project -- text they did not write, on a page they
+// cannot edit, against a list they should not have to populate. Fixed renderer
+// vocabulary is therefore carried by the engine, in [RendererVocabulary], and
+// consulted on every run regardless of what the project has accepted.
 package spelling
 
 import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -92,14 +79,11 @@ import (
 //go:embed wordlist/words.txt wordlist/SOURCE.json wordlist/COPYRIGHT.txt
 var wordlistFS embed.FS
 
-// acceptListFilename is the name of the one shared accept list.
-const acceptListFilename = "spelling-accept.txt"
-
 // Lookup answers whether a vocabulary accepts a word as written.
 //
 // It exists so a check run can consult the vendored list, the renderer
-// vocabulary and the accept list as one vocabulary without copying 170,000
-// entries into a fresh map per document. [Vocab] satisfies it, so every call
+// vocabulary and the project's accepted words as one vocabulary without
+// copying 170,000 entries into a fresh map per document. [Vocab] satisfies it, so every call
 // site that holds one set passes it directly.
 type Lookup interface {
 	// Has reports whether the vocabulary carries word, spelled as given.
@@ -129,20 +113,6 @@ func (l layered) Has(word string) bool {
 	}
 	return false
 }
-
-// AcceptListError reports that the accept list exists but cannot be read as
-// written.
-//
-// It is never returned for a missing file -- absence is an empty list. It is
-// returned for a line the format does not admit, naming the file, the line
-// number and what was wrong with it.
-type AcceptListError struct {
-	// Message is the whole diagnostic, already naming file and line.
-	Message string
-}
-
-// Error renders the diagnostic.
-func (e *AcceptListError) Error() string { return e.Message }
 
 // Misspelling is one unrecognized word, located precisely enough to open and
 // fix.
@@ -244,73 +214,6 @@ func WordlistCopyright() string {
 	return string(raw)
 }
 
-// AcceptListPath returns the one accept list's path,
-// ~/Projects/ark/spelling-accept.txt.
-//
-// The home directory is resolved per call rather than once at load, so a
-// process that changes HOME -- an isolated test run, a sandboxed corpus sweep
-// -- reads the list its own environment names.
-func AcceptListPath() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		// With no home directory there is no shared list; the relative path
-		// then simply does not exist, which is an empty accept list.
-		return filepath.Join("Projects", "ark", acceptListFilename)
-	}
-	return filepath.Join(home, "Projects", "ark", acceptListFilename)
-}
-
-// acceptEntryRe is the grammar of an accept-list entry: a single word,
-// letters, with apostrophes allowed inside contractions and possessives.
-// Nothing else, because nothing else could ever be consulted -- the checker
-// splits hyphenated compounds into their parts and skips any token carrying a
-// digit, so a hyphenated or numeric entry would sit on the list accepting
-// nothing.
-var acceptEntryRe = regexp.MustCompile(`^` + letterClass + `+(?:['’]` + letterClass + `+)*$`)
-
-// LoadAcceptList reads the accept list at path, or the one [AcceptListPath]
-// names when path is empty.
-//
-// A file that does not exist is an empty list, not an error: a fresh machine
-// has simply accepted nothing yet. A file that exists and carries a line the
-// format does not admit is an [AcceptListError] naming the line number and the
-// reason.
-func LoadAcceptList(path string) (Vocab, error) {
-	target := path
-	if target == "" {
-		target = AcceptListPath()
-	}
-	info, err := os.Stat(target)
-	if err != nil || !info.Mode().IsRegular() {
-		return Vocab{}, nil
-	}
-	raw, err := os.ReadFile(target)
-	if err != nil {
-		return nil, &AcceptListError{
-			Message: fmt.Sprintf("%s: %s", target, err),
-		}
-	}
-	accepted := Vocab{}
-	for index, line := range strings.Split(string(raw), "\n") {
-		entry := strings.TrimSpace(strings.SplitN(line, "#", 2)[0])
-		if entry == "" {
-			continue
-		}
-		if !acceptEntryRe.MatchString(entry) {
-			return nil, &AcceptListError{Message: fmt.Sprintf(
-				"%s:%d: %s is not a single word. An accept-list line holds "+
-					"one word (letters, with apostrophes allowed inside it) "+
-					"or a '#' comment. Split a hyphenated compound into its "+
-					"parts and give each its own line -- the checker checks "+
-					"the parts, so a hyphenated entry would accept nothing.",
-				target, index+1, util.PythonRepr(entry),
-			)}
-		}
-		accepted[entry] = struct{}{}
-	}
-	return accepted, nil
-}
-
 // -- The renderer vocabulary ------------------------------------------------
 
 // RendererVocabulary is the fixed vocabulary selfdoc's own renderers write
@@ -319,11 +222,9 @@ func LoadAcceptList(path string) (Vocab, error) {
 // A generated page is checked by the same SPELL001 that checks an authored
 // one, so a heading, a column header or a type word a renderer invents is
 // judged against this engine in every project that renders one. The consumer
-// cannot fix such a finding: the text is not theirs, and the accept list that
-// could silence it belongs to one machine while the rendered page ships
-// everywhere. Fixed renderer vocabulary is therefore carried by the engine
-// itself and accepted unconditionally, on every machine, with or without an
-// accept list.
+// cannot fix such a finding: the text is not theirs. Fixed renderer vocabulary
+// is therefore carried by the engine itself and accepted unconditionally, in
+// every project, whatever its own vocabulary accepts.
 //
 // Seeded from the strictcli reference renderer: the "Clearable" heading a
 // sparse update publishes its unset tokens under, the "Env" column of the flag
@@ -652,7 +553,11 @@ func SuggestionsFor(word string, vocab Lookup, limit int) []string {
 // Markers, code spans, URLs and directive syntax are blanked before scanning,
 // and machine tokens are skipped whole.
 func IterUnknownWords(line string, vocab Lookup) []UnknownWord {
-	masked := blank(line)
+	return iterUnknownInMasked(line, blank(line), vocab)
+}
+
+// iterUnknownInMasked is [IterUnknownWords] over a line already masked.
+func iterUnknownInMasked(line, masked string, vocab Lookup) []UnknownWord {
 	var found []UnknownWord
 	for _, chunkLocation := range chunkRe.FindAllStringIndex(masked, -1) {
 		chunk := masked[chunkLocation[0]:chunkLocation[1]]
@@ -687,14 +592,13 @@ func IterUnknownWords(line string, vocab Lookup) []UnknownWord {
 //
 // content is a Markdown body with its frontmatter already removed, and file is
 // the path to name in each diagnostic. A nil vocab means the vendored word
-// list; a nil accepted means the list [AcceptListPath] names, which is where
-// the only error this can return comes from. lineOffset is added to every
-// reported line, for a body whose frontmatter was stripped. suggest decides
-// whether edit-distance-1 suggestions are computed.
+// list. accepted is the project's accepted vocabulary, case-folded; nil
+// accepts nothing beyond the word lists. lineOffset is added to every reported
+// line, for a body whose frontmatter was stripped. suggest decides whether
+// edit-distance-1 suggestions are computed.
 //
-// The renderer vocabulary is not optional and not machine-local: a page
-// selfdoc rendered is checked on machines that have accepted nothing, so it is
-// consulted on every run.
+// The renderer vocabulary is not optional: a page selfdoc rendered is checked
+// in projects that have accepted nothing, so it is consulted on every run.
 func CheckText(
 	content string,
 	file string,
@@ -702,26 +606,54 @@ func CheckText(
 	accepted Vocab,
 	lineOffset int,
 	suggest bool,
-) ([]Misspelling, error) {
+) []Misspelling {
 	words := Lookup(vocab)
 	if vocab == nil {
 		words = LoadWordlist()
 	}
-	accept := accepted
-	if accepted == nil {
-		loaded, err := LoadAcceptList("")
-		if err != nil {
-			return nil, err
-		}
-		accept = loaded
-	}
 	known := layered{words, RendererVocabulary}
-	if len(accept) > 0 {
-		known = append(known, accept)
+	if len(accepted) > 0 {
+		known = append(known, accepted)
 	}
 
-	lines := strings.Split(content, "\n")
 	var results []Misspelling
+	for _, line := range ProseLines(content) {
+		for _, unknown := range iterUnknownInMasked(line.Raw, line.Masked, known) {
+			var suggestions []string
+			if suggest {
+				suggestions = SuggestionsFor(unknown.Word, known, 3)
+			}
+			results = append(results, Misspelling{
+				File:        file,
+				Line:        line.Number + lineOffset,
+				Column:      unknown.Column + 1,
+				Word:        unknown.Word,
+				Suggestions: suggestions,
+			})
+		}
+	}
+	return results
+}
+
+// ProseLine is one source line of prose, as the spell check sees it.
+type ProseLine struct {
+	// Number is the 1-based line number in the content.
+	Number int
+	// Raw is the line as written.
+	Raw string
+	// Masked is the line with every non-prose construct blanked -- code spans,
+	// link targets, tags, URLs, directive markers -- to spaces of the same
+	// byte length, so every surviving character keeps its column.
+	Masked string
+}
+
+// ProseLines returns the lines of Markdown content the spell check scans:
+// every line of every text-bearing token, raw and masked. A surface that
+// judges prose -- the rejected-term lint -- reads the same lines the spell
+// check does.
+func ProseLines(content string) []ProseLine {
+	lines := strings.Split(content, "\n")
+	var prose []ProseLine
 	for _, token := range tokenizer.Tokenize(content) {
 		if !tokenizer.IsTextBearing(token) {
 			continue
@@ -731,20 +663,8 @@ func CheckText(
 				continue
 			}
 			raw := lines[lineNumber-1]
-			for _, unknown := range IterUnknownWords(raw, known) {
-				var suggestions []string
-				if suggest {
-					suggestions = SuggestionsFor(unknown.Word, known, 3)
-				}
-				results = append(results, Misspelling{
-					File:        file,
-					Line:        lineNumber + lineOffset,
-					Column:      unknown.Column + 1,
-					Word:        unknown.Word,
-					Suggestions: suggestions,
-				})
-			}
+			prose = append(prose, ProseLine{Number: lineNumber, Raw: raw, Masked: blank(raw)})
 		}
 	}
-	return results, nil
+	return prose
 }

@@ -2,10 +2,10 @@
 // sibling project.
 //
 // `selfdoc check` spell-checks the project it is run in. This runs the
-// identical engine over every selfdoc project that lives beside it, which is
-// how the shared accept list gets populated: one sweep surfaces the technical
-// vocabulary the whole fleet uses, and the terms that are genuine get added
-// once, for everyone.
+// identical engine over every selfdoc project that lives beside it, each
+// against its own vocabulary -- selfdoc's built-in baseline and the project's
+// stricttools/vocabulary/terms.toml -- so one sweep shows what every project's
+// check would report.
 //
 // Strictly read-only over the projects it visits. Directives are not resolved
 // -- resolution runs a project's extractors over its source, and a survey has
@@ -13,8 +13,8 @@
 // the raw Markdown body of every docs template and every post. Posts are read
 // straight off disk rather than through post discovery, which means drafts are
 // surveyed too: a draft's prose is still prose, and a term it introduces
-// belongs on the accept list before the draft ships. A project whose config
-// cannot be loaded is reported and skipped, never fatal.
+// belongs in the project's vocabulary before the draft ships. A project whose
+// config or vocabulary cannot be loaded is reported and skipped, never fatal.
 package spellcorpus
 
 import (
@@ -28,6 +28,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/spelling"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // ProjectSpellReport is what the sweep found in one project.
@@ -39,6 +40,8 @@ type ProjectSpellReport struct {
 	// Pages is how many documents were scanned -- docs templates plus
 	// posts.
 	Pages int
+	// AcceptedTerms is how many words the project's own terms file accepts.
+	AcceptedTerms int
 	// Misspellings are the unknown words, in document order.
 	Misspellings []spelling.Misspelling
 	// Error is why the project could not be read, empty when it was.
@@ -93,10 +96,9 @@ func uniqueWords(misspellings []spelling.Misspelling) []WordCount {
 type CorpusDocument struct {
 	// Root is the absolute directory whose subdirectories were searched.
 	Root string
-	// AcceptListPath is where the accept list was read from.
-	AcceptListPath string
-	// AcceptedTerms is how many terms the accept list carries.
-	AcceptedTerms int
+	// BaselineTerms is how many words selfdoc's built-in baseline accepts,
+	// on top of which each project accepts its own.
+	BaselineTerms int
 	// WordlistWords is how many words the vendored list carries.
 	WordlistWords int
 	// Projects are the per-project reports, in discovery order.
@@ -128,35 +130,40 @@ func (d CorpusDocument) Payload() map[string]any {
 			errorValue = report.Error
 		}
 		projects = append(projects, map[string]any{
-			"project":      report.Name,
-			"pages":        report.Pages,
-			"error":        errorValue,
-			"misspellings": misspellings,
+			"project":        report.Name,
+			"pages":          report.Pages,
+			"accepted_terms": report.AcceptedTerms,
+			"error":          errorValue,
+			"misspellings":   misspellings,
 		})
 	}
 	return map[string]any{
 		"root":           d.Root,
-		"accept_list":    d.AcceptListPath,
-		"accepted_terms": d.AcceptedTerms,
+		"baseline_terms": d.BaselineTerms,
 		"wordlist_words": d.WordlistWords,
 		"projects":       projects,
 		"total":          d.Total,
 	}
 }
 
-// ScanProject spell-checks one project's docs tree and its posts.
+// ScanProject spell-checks one project's docs tree and its posts, against the
+// word list and the project's own vocabulary.
 //
-// vocab is the word list to accept against and accepted is the accept list.
-// The report's Error is set instead of results when the project could not be
-// read.
-func ScanProject(
-	project fleet.FleetProject, vocab, accepted spelling.Vocab,
-) (ProjectSpellReport, error) {
+// words is the word list to accept against. The report's Error is set instead
+// of results when the project, or its vocabulary, could not be read.
+func ScanProject(project fleet.FleetProject, words spelling.Vocab) (ProjectSpellReport, error) {
 	if !project.Loaded() {
 		return ProjectSpellReport{
 			Name: project.Name, Path: project.Path, Error: project.Error,
 		}, nil
 	}
+	projectVocabulary, err := vocabulary.Load(project.Path)
+	if err != nil {
+		return ProjectSpellReport{
+			Name: project.Name, Path: project.Path, Error: err.Error(),
+		}, nil
+	}
+	accepted := projectVocabulary.SpellVocab()
 
 	declaredDocs := util.PythonStrOrEmpty(project.Config["docs"])
 	if declaredDocs == "" {
@@ -211,6 +218,7 @@ func ScanProject(
 
 	report := ProjectSpellReport{
 		Name: project.Name, Path: project.Path, Pages: len(slice),
+		AcceptedTerms: len(projectVocabulary.Project.Accepted),
 	}
 	relPaths := make([]string, 0, len(slice))
 	for relPath := range slice {
@@ -219,13 +227,10 @@ func ScanProject(
 	sort.Strings(relPaths)
 	for _, relPath := range relPaths {
 		payload := slice[relPath]
-		found, err := spelling.CheckText(
-			payload.Body, relPath, vocab, accepted,
+		found := spelling.CheckText(
+			payload.Body, relPath, words, accepted,
 			payload.FrontmatterLines, true,
 		)
-		if err != nil {
-			return ProjectSpellReport{}, err
-		}
 		report.Misspellings = append(report.Misspellings, found...)
 	}
 	return report, nil
@@ -236,12 +241,12 @@ func ScanProject(
 //
 // root is the directory whose immediate subdirectories are searched for a
 // selfdoc.json. The exit code is 1 when any unknown word was found -- a
-// misspelling is an error, and the accept list is the sanctioned answer for a
-// genuine term -- and 0 on a clean sweep. A project that could not be read is
+// misspelling is an error, and the project's vocabulary is the sanctioned
+// answer for a genuine term -- and 0 on a clean sweep. A project that could not be read is
 // reported but does not by itself fail the sweep.
 func RunSpellCorpus(root string, handle *effects.Handle) (CorpusDocument, int, error) {
-	vocab := spelling.LoadWordlist()
-	accepted, err := spelling.LoadAcceptList("")
+	words := spelling.LoadWordlist()
+	baseline, err := vocabulary.LoadBaseline()
 	if err != nil {
 		return CorpusDocument{}, 0, err
 	}
@@ -254,7 +259,7 @@ func RunSpellCorpus(root string, handle *effects.Handle) (CorpusDocument, int, e
 	reports := make([]ProjectSpellReport, 0, len(projects))
 	total := 0
 	for _, project := range projects {
-		report, err := ScanProject(project, vocab, accepted)
+		report, err := ScanProject(project, words)
 		if err != nil {
 			return CorpusDocument{}, 0, err
 		}
@@ -268,12 +273,11 @@ func RunSpellCorpus(root string, handle *effects.Handle) (CorpusDocument, int, e
 	}
 
 	document := CorpusDocument{
-		Root:           absoluteRoot,
-		AcceptListPath: spelling.AcceptListPath(),
-		AcceptedTerms:  len(accepted),
-		WordlistWords:  len(vocab),
-		Projects:       reports,
-		Total:          total,
+		Root:          absoluteRoot,
+		BaselineTerms: len(baseline.Accepted),
+		WordlistWords: len(words),
+		Projects:      reports,
+		Total:         total,
 	}
 	exitCode := 0
 	if total > 0 {
@@ -289,23 +293,23 @@ func RunSpellCorpus(root string, handle *effects.Handle) (CorpusDocument, int, e
 func RenderCorpusText(document CorpusDocument, detail bool) string {
 	lines := []string{
 		fmt.Sprintf(
-			"Word list: %d words. Accept list: %d terms (%s).",
-			document.WordlistWords, document.AcceptedTerms, document.AcceptListPath,
+			"Word list: %d words. Baseline: %d accepted terms, and each project's own %s.",
+			document.WordlistWords, document.BaselineTerms, layout.TermsRel,
 		),
 		"",
-		fmt.Sprintf("%-28s %5s %8s %7s", "project", "pages", "flagged", "unique"),
+		fmt.Sprintf("%-28s %5s %8s %8s %7s", "project", "pages", "accepted", "flagged", "unique"),
 	}
 	for _, project := range document.Projects {
 		if project.Error != "" {
 			lines = append(lines, fmt.Sprintf(
-				"%-28s %5s %8s %7s  %s",
-				project.Name, "-", "-", "-", project.Error,
+				"%-28s %5s %8s %8s %7s  %s",
+				project.Name, "-", "-", "-", "-", project.Error,
 			))
 			continue
 		}
 		lines = append(lines, fmt.Sprintf(
-			"%-28s %5d %8d %7d",
-			project.Name, project.Pages,
+			"%-28s %5d %8d %8d %7d",
+			project.Name, project.Pages, project.AcceptedTerms,
 			len(project.Misspellings), len(project.UniqueWords()),
 		))
 	}

@@ -1,0 +1,75 @@
+# strictspec schema -- a project's vocabulary review list: words proposed for
+# acceptance that nobody has approved yet.
+#
+# Governs stricttools/vocabulary/review.toml. The generated validator
+# (internal/vocabulary/reviewschema/selfdoc_vocabulary_review_gen.go) is what
+# vocabulary.Load validates the file against. A pending word is NOT accepted:
+# the spell check treats it as unknown until `selfdoc vocabulary approve` moves
+# it into the accepted list or `selfdoc vocabulary drop` deletes it.
+#
+# SCOPE (honest subset): this schema owns the file's DOCUMENT SHAPE. The order
+# of the entries, and a pending word that is already accepted or rejected, are
+# selfdoc-native checks.
+
+name = "selfdoc-vocabulary-review"
+meta_version = 1
+format_version = 1
+document_syntax = "toml"
+role = "schema"
+root = "Review"
+description = "A project's vocabulary review list: each pending word with a guessed meaning, the confidence of the guess, and the lines it came from."
+
+[types.Review]
+type = "record"
+description = "One review list."
+
+[types.Review.fields.format_version]
+type = "integer"
+required = true
+description = "Document format-version gate. v1 files carry 1."
+
+[types.Review.fields.pending]
+type = "array"
+required = false
+description = "The words awaiting review, kept sorted by word."
+[types.Review.fields.pending.item]
+type = "PendingTerm"
+
+# --- named types ---
+
+[types.PendingWord]
+type = "string"
+non_empty = true
+regex = '^\S(?:.*\S)?$'
+description = "A word: non-empty, with no whitespace at either end."
+
+[types.PendingTerm]
+type = "record"
+description = "One word proposed for acceptance."
+
+[types.PendingTerm.fields.word]
+type = "PendingWord"
+required = true
+description = "The word, as the pages spell it."
+
+[types.PendingTerm.fields.meaning]
+type = "string"
+required = true
+non_empty = true
+description = "The guessed meaning, which approving the word accepts as written unless a corrected one is given."
+
+[types.PendingTerm.fields.confidence]
+type = "number"
+required = true
+min = 0
+max = 1
+description = "How sure the guess is, from 0 to 1."
+
+[types.PendingTerm.fields.evidence]
+type = "array"
+required = true
+min_len = 1
+description = "The doc lines the guess came from, each as 'path:line: text'."
+[types.PendingTerm.fields.evidence.item]
+type = "string"
+non_empty = true

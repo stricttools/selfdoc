@@ -207,7 +207,34 @@ description = "A generated root file that embeds `project.version` does not cont
 [[lints]]
 code = "SPELL001"
 severity = "error"
-description = "A word in page prose is in neither the vendored English word list nor the accept list. Fix the misspelling, or add the term to ~/Projects/ark/spelling-accept.txt if it is genuine."
+description = "A word in page prose is in neither the vendored English word list nor the project's accepted vocabulary (selfdoc's built-in baseline and stricttools/vocabulary/terms.toml). Fix the misspelling, or accept a genuine term with `selfdoc vocabulary accept <word> --meaning <text>`; a word pending in stricttools/vocabulary/review.toml is resolved with `selfdoc vocabulary approve <word>` or `selfdoc vocabulary drop <word>`."
+
+# -- Vocabulary ---------------------------------------------------------------
+
+[[lints]]
+code = "VOCAB001"
+severity = "error"
+description = "A word stricttools/vocabulary/terms.toml accepts is used by no page, as itself or as an alias. Remove it with `selfdoc vocabulary remove <word>`."
+
+[[lints]]
+code = "VOCAB002"
+severity = "error"
+description = "stricttools/vocabulary/terms.toml accepts or rejects the same word twice, in the file or on top of selfdoc's built-in baseline. Remove the project's entries with `selfdoc vocabulary remove <word>` and add the one that is needed back."
+
+[[lints]]
+code = "VOCAB003"
+severity = "error"
+description = "An accepted word is covered by a rejected suffix or prefix, so the two lists disagree about it. Remove the entry that is wrong with `selfdoc vocabulary remove <word>`."
+
+[[lints]]
+code = "VOCAB004"
+severity = "error"
+description = "A page's prose uses a rejected term. Rewrite the passage without it; a rejection the project declared and no longer wants is removed with `selfdoc vocabulary remove <pattern>`."
+
+[[lints]]
+code = "VOCAB005"
+severity = "error"
+description = "An array in stricttools/vocabulary/terms.toml or review.toml is not sorted by word, case-folded. Move the named entry to its place."
 
 # -- Blog posts --------------------------------------------------------------
 

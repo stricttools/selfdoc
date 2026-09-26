@@ -39,6 +39,16 @@ var commandEffects = map[string]string{
 	"layout.dump": "read_only",
 	// reads the repository's tool-state directory and reports on it
 	"layout.validate": "read_only",
+	// moves selfdoc's directories off the previous root, writes the derived
+	// ignore file and an empty vocabulary, rewrites selfdoc.json and the
+	// generated root files' headers, then auto-commits
+	"layout.migrate": "mutating",
+	// each edits the project's terms file or review list, then auto-commits
+	"vocabulary.accept":  "mutating",
+	"vocabulary.reject":  "mutating",
+	"vocabulary.remove":  "mutating",
+	"vocabulary.approve": "mutating",
+	"vocabulary.drop":    "mutating",
 	// writes the whole site output tree and the content-hash store, then
 	// auto-commits the store
 	"build": "mutating",

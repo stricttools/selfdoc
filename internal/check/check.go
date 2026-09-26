@@ -21,6 +21,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/resolver"
 	"github.com/stricttools/selfdoc/internal/staleness"
 	"github.com/stricttools/selfdoc/internal/strictclisupport"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // pagefindProbeTimeout bounds each of the two probes SEARCH001 makes for the
@@ -77,6 +78,15 @@ func CheckDocs(
 		return nil, err
 	}
 	result := &CheckResult{}
+
+	// The project's vocabulary, read once: the baseline embedded in the
+	// binary and the project's own files, and nothing outside the
+	// repository. Archived versions are judged against it too -- it is the
+	// project's word list, not a property of one tag.
+	vocab, err := vocabulary.Load(dirPath)
+	if err != nil {
+		return nil, err
+	}
 
 	validNames, err := docs.ValidNames(projectConfig)
 	if err != nil {
@@ -189,11 +199,12 @@ func CheckDocs(
 		lintSlice[key] = doc
 	}
 	result.Lints, err = runLints(
-		lintSlice, dirPath, docsDir, projectConfig, resolvedDirectives, handle,
+		lintSlice, dirPath, docsDir, projectConfig, resolvedDirectives, vocab, handle,
 	)
 	if err != nil {
 		return nil, err
 	}
+	result.Lints = append(result.Lints, vocabularyLints(vocab, lintSlice)...)
 
 	// SEARCH001: the indexer every build runs has to be on this machine.
 	// Pagefind is the engine, so the check is unconditional -- a build with
@@ -406,7 +417,7 @@ func CheckDocs(
 				continue
 			}
 			versionLints, err := runLints(
-				versionDocs, cacheDir, versionDocsDir, projectConfig, versionResolved, handle,
+				versionDocs, cacheDir, versionDocsDir, projectConfig, versionResolved, vocab, handle,
 			)
 			if err != nil {
 				return nil, err

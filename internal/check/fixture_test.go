@@ -22,6 +22,7 @@ import (
 	_ "github.com/stricttools/selfdoc/internal/extractors/golang"
 	_ "github.com/stricttools/selfdoc/internal/extractors/python"
 	_ "github.com/stricttools/selfdoc/internal/extractors/typescript"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // isolate binds the test-environment isolation floor: a throwaway HOME (so the
@@ -85,8 +86,8 @@ func configForSource(entries ...map[string]any) map[string]any {
 	return map[string]any{
 		"version":       "1.0.0",
 		"source":        source,
-		"docs":          ".stricttools/docs/",
-		"output":        ".stricttools/docs-cache/build/",
+		"docs":          "stricttools/docs/",
+		"output":        "stricttools/.docs-cache/build/",
 		"base_url":      "https://example.com",
 		"author":        map[string]any{"name": "Test Author", "url": "https://author.example"},
 		"search_engine": "pagefind",
@@ -127,7 +128,7 @@ def helper():
     """Help."""
     pass
 `)
-	if err := os.MkdirAll(filepath.Join(root, ".stricttools", "docs"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(root, "stricttools", "docs"), 0o755); err != nil {
 		t.Fatalf("mkdir docs: %v", err)
 	}
 	return root
@@ -149,7 +150,7 @@ func lintProject(t *testing.T) lintFixture {
 	t.Helper()
 	isolate(t)
 	root := t.TempDir()
-	docsDir := filepath.Join(root, ".stricttools", "docs")
+	docsDir := filepath.Join(root, "stricttools", "docs")
 	if err := os.MkdirAll(docsDir, 0o755); err != nil {
 		t.Fatalf("mkdir docs: %v", err)
 	}
@@ -201,9 +202,13 @@ func buildAllDocs(t *testing.T, docsDir string) map[string]docs.Doc {
 // runLintsOn runs the lint rules over a fixture's docs directory.
 func runLintsOn(t *testing.T, fixture lintFixture, resolved []ResolvedDirective) []lints.LintResult {
 	t.Helper()
+	vocab, err := vocabulary.Load(fixture.Root)
+	if err != nil {
+		t.Fatalf("vocabulary.Load: %v", err)
+	}
 	results, err := runLints(
 		buildAllDocs(t, fixture.DocsDir), fixture.Root, fixture.DocsDir,
-		fixture.Config, resolved, handle(),
+		fixture.Config, resolved, vocab, handle(),
 	)
 	if err != nil {
 		t.Fatalf("runLints: %v", err)

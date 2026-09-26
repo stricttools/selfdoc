@@ -16,9 +16,8 @@ import (
 	"github.com/stricttools/testisolation/go/hygiene"
 )
 
-// isolate binds the test-environment isolation floor. It also points the
-// spelling engine's accept list at a throwaway HOME, so a term this machine
-// happens to have accepted cannot change a verdict here.
+// isolate binds the test-environment isolation floor: a throwaway HOME, so
+// nothing on this machine outside the fixture can change a verdict here.
 func isolate(t *testing.T) {
 	t.Helper()
 	hygiene.Isolate(t)
@@ -58,8 +57,8 @@ func corpusProject(t *testing.T, root, name string, pages map[string]string) str
 		"locales":       []any{map[string]any{"code": "en", "label": "English", "default": true}},
 		"search_engine": "pagefind",
 		"author":        map[string]any{"name": "Test Author", "url": "https://author.example"},
-		"docs":          ".stricttools/docs/",
-		"output":        ".stricttools/docs-cache/build/",
+		"docs":          "stricttools/docs/",
+		"output":        "stricttools/.docs-cache/build/",
 	}
 	encoded, err := json.Marshal(projectConfig)
 	if err != nil {
@@ -67,9 +66,9 @@ func corpusProject(t *testing.T, root, name string, pages map[string]string) str
 	}
 	write(t, filepath.Join(projectDir, "selfdoc.json"), string(encoded))
 	write(t, filepath.Join(projectDir, "src", "__init__.py"), `"""Example package."""`+"\n")
-	write(t, filepath.Join(projectDir, ".stricttools", "docs", ".keep"), "")
+	write(t, filepath.Join(projectDir, "stricttools", "docs", ".keep"), "")
 	for relPath, content := range pages {
-		write(t, filepath.Join(projectDir, ".stricttools", "docs", relPath), content)
+		write(t, filepath.Join(projectDir, "stricttools", "docs", relPath), content)
 	}
 	return projectDir
 }
@@ -88,7 +87,7 @@ func TestScanProjectReportsPerProjectFindings(t *testing.T) {
 	if len(found) != 1 {
 		t.Fatalf("projects = %d, want 1", len(found))
 	}
-	report, err := ScanProject(found[0], spelling.LoadWordlist(), spelling.Vocab{})
+	report, err := ScanProject(found[0], spelling.LoadWordlist())
 	if err != nil {
 		t.Fatalf("ScanProject: %v", err)
 	}
@@ -116,7 +115,7 @@ func TestScanProjectReportsAnUnreadableProjectWithoutFailing(t *testing.T) {
 	if len(found) != 1 {
 		t.Fatalf("projects = %d, want 1", len(found))
 	}
-	report, err := ScanProject(found[0], spelling.LoadWordlist(), spelling.Vocab{})
+	report, err := ScanProject(found[0], spelling.LoadWordlist())
 	if err != nil {
 		t.Fatalf("ScanProject: %v", err)
 	}
@@ -132,7 +131,7 @@ func TestScanProjectReportsAMissingDocsDirectory(t *testing.T) {
 	isolate(t)
 	root := t.TempDir()
 	projectDir := corpusProject(t, root, "alpha", nil)
-	if err := os.RemoveAll(filepath.Join(projectDir, ".stricttools", "docs")); err != nil {
+	if err := os.RemoveAll(filepath.Join(projectDir, "stricttools", "docs")); err != nil {
 		t.Fatalf("remove the docs tree: %v", err)
 	}
 
@@ -140,7 +139,7 @@ func TestScanProjectReportsAMissingDocsDirectory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DiscoverFleet: %v", err)
 	}
-	report, err := ScanProject(found[0], spelling.LoadWordlist(), spelling.Vocab{})
+	report, err := ScanProject(found[0], spelling.LoadWordlist())
 	if err != nil {
 		t.Fatalf("ScanProject: %v", err)
 	}
@@ -154,8 +153,9 @@ func TestScanProjectSurveysPostsAtTheirOwnPaths(t *testing.T) {
 	root := t.TempDir()
 	projectDir := corpusProject(t, root, "alpha", map[string]string{"index.md": cleanPage})
 	// A draft is surveyed too: a draft's prose is still prose, and a term
-	// it introduces belongs on the accept list before the draft ships.
-	write(t, filepath.Join(projectDir, ".stricttools", "posts", "hello.md"),
+	// it introduces belongs in the project's vocabulary before the draft
+	// ships.
+	write(t, filepath.Join(projectDir, "stricttools", "posts", "hello.md"),
 		"+++\ntitle = \"Hello\"\ndate = 2024-01-15\ndraft = true\ndirectives = false\n+++\n"+
 			"This post says correclty.\n")
 
@@ -163,7 +163,7 @@ func TestScanProjectSurveysPostsAtTheirOwnPaths(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DiscoverFleet: %v", err)
 	}
-	report, err := ScanProject(found[0], spelling.LoadWordlist(), spelling.Vocab{})
+	report, err := ScanProject(found[0], spelling.LoadWordlist())
 	if err != nil {
 		t.Fatalf("ScanProject: %v", err)
 	}
@@ -173,7 +173,7 @@ func TestScanProjectSurveysPostsAtTheirOwnPaths(t *testing.T) {
 	if len(report.Misspellings) != 1 {
 		t.Fatalf("misspellings = %v, want one", report.Misspellings)
 	}
-	want := filepath.Join(".stricttools", "posts", "hello.md")
+	want := filepath.Join("stricttools", "posts", "hello.md")
 	if report.Misspellings[0].File != want {
 		t.Errorf("file = %q, want %q", report.Misspellings[0].File, want)
 	}
@@ -302,12 +302,11 @@ func TestCorpusTextRenderingReadsTheSameDocument(t *testing.T) {
 
 func TestCorpusReportRowShape(t *testing.T) {
 	document := CorpusDocument{
-		Root:           "/root",
-		AcceptListPath: "/accept.txt",
-		AcceptedTerms:  3,
-		WordlistWords:  170000,
+		Root:          "/root",
+		BaselineTerms: 3,
+		WordlistWords: 170000,
 		Projects: []ProjectSpellReport{
-			{Name: "alpha", Pages: 4, Misspellings: []spelling.Misspelling{
+			{Name: "alpha", Pages: 4, AcceptedTerms: 7, Misspellings: []spelling.Misspelling{
 				{File: "a.md", Line: 2, Column: 5, Word: "teh",
 					Suggestions: []string{"the", "ten"}},
 				{File: "b.md", Line: 9, Column: 1, Word: "teh"},
@@ -319,11 +318,11 @@ func TestCorpusReportRowShape(t *testing.T) {
 
 	lines := strings.Split(RenderCorpusText(document, true), "\n")
 	want := []string{
-		"Word list: 170000 words. Accept list: 3 terms (/accept.txt).",
+		"Word list: 170000 words. Baseline: 3 accepted terms, and each project's own stricttools/vocabulary/terms.toml.",
 		"",
-		"project                      pages  flagged  unique",
-		"alpha                            4        2       1",
-		"broken                           -        -       -  could not be read",
+		"project                      pages accepted  flagged  unique",
+		"alpha                            4        7        2       1",
+		"broken                           -        -        -       -  could not be read",
 		"",
 		"total flagged: 2",
 		"",
@@ -422,7 +421,7 @@ func TestScanProjectFallsBackToTheLayoutDocsRoot(t *testing.T) {
 			"source": []any{map[string]any{"path": "src/", "language": "python"}},
 		},
 	}
-	report, err := ScanProject(undeclared, spelling.LoadWordlist(), spelling.Vocab{})
+	report, err := ScanProject(undeclared, spelling.LoadWordlist())
 	if err != nil {
 		t.Fatalf("ScanProject: %v", err)
 	}
@@ -431,5 +430,34 @@ func TestScanProjectFallsBackToTheLayoutDocsRoot(t *testing.T) {
 	}
 	if report.Pages != 1 {
 		t.Errorf("pages = %d, want 1", report.Pages)
+	}
+}
+
+// Each project is judged against its own vocabulary: a word one project
+// accepts is not accepted in its sibling, and no machine-wide list is read.
+func TestEachProjectIsJudgedAgainstItsOwnVocabulary(t *testing.T) {
+	isolate(t)
+	root := t.TempDir()
+	page := strings.ReplaceAll(cleanPage, "spelled correctly", "spelled by the frobnitz")
+	alpha := corpusProject(t, root, "alpha", map[string]string{"index.md": page})
+	corpusProject(t, root, "beta", map[string]string{"index.md": page})
+	write(t, filepath.Join(alpha, "stricttools", "vocabulary", "terms.toml"),
+		"format_version = 1\n\n[[accepted]]\nword = \"frobnitz\"\nmeaning = \"The widget.\"\n")
+	home, err := os.UserHomeDir()
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, filepath.Join(home, "Projects", "ark", "spelling-accept.txt"), "frobnitz\n")
+
+	document, _, err := RunSpellCorpus(root, handle())
+	if err != nil {
+		t.Fatalf("RunSpellCorpus: %v", err)
+	}
+	flagged := map[string]int{}
+	for _, report := range document.Projects {
+		flagged[report.Name] = len(report.Misspellings)
+	}
+	if flagged["alpha"] != 0 || flagged["beta"] != 1 {
+		t.Errorf("flagged = %v, want alpha clean and beta reporting frobnitz", flagged)
 	}
 }

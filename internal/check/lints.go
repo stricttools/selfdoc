@@ -17,6 +17,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/spelling"
 	"github.com/stricttools/selfdoc/internal/tokenizer"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // directiveMarkers are the six marker spellings a directive can open with. A
@@ -132,6 +133,7 @@ func runLints(
 	docsDir string,
 	config map[string]any,
 	resolvedDirectives []ResolvedDirective,
+	vocab *vocabulary.Vocabulary,
 	handle *effects.Handle,
 ) ([]lints.LintResult, error) {
 	var results []lints.LintResult
@@ -163,14 +165,14 @@ func runLints(
 		knownPages[relPath] = true
 	}
 
-	// SPELL001 -- the vocabulary is loaded once for the whole run, not once
-	// per page. A malformed accept list fails here, before any page is
-	// judged, so the run stops on the bad list rather than reporting
-	// misspellings a fixed list would have accepted.
+	// SPELL001 and VOCAB004 -- the vocabulary is the caller's, loaded once
+	// for the whole run, so a malformed list stops the run before any page
+	// is judged rather than reporting what a fixed list would have accepted.
 	spellVocab := spelling.LoadWordlist()
-	spellAccepted, err := spelling.LoadAcceptList("")
-	if err != nil {
-		return nil, err
+	spellAccepted := vocab.SpellVocab()
+	rejectedMatchers := make([]vocabulary.Matcher, 0, len(vocab.AllRejected()))
+	for _, rejected := range vocab.AllRejected() {
+		rejectedMatchers = append(rejectedMatchers, vocabulary.NewMatcher(rejected))
 	}
 	// The authored documents a directive can render prose out of, walked
 	// once for the whole run rather than once per page.
@@ -743,17 +745,21 @@ func runLints(
 		// corpus-wide sweep: this surface only turns its findings into
 		// diagnostics. Posts are in allDocs by the time the rules run,
 		// so they are checked on the same terms as documentation pages.
-		rawMisspellings, err := spelling.CheckText(
+		rawMisspellings := spelling.CheckText(
 			bodyContent, relPath, spellVocab, spellAccepted, fmOffset, true,
 		)
-		if err != nil {
-			return nil, err
-		}
 		for _, miss := range rawMisspellings {
 			results = append(results, lints.MustLintResult(
-				relPath, lineOf(miss.Line), "SPELL001", miss.Describe(),
+				relPath, lineOf(miss.Line), "SPELL001",
+				miss.Describe()+"."+spellRemedy(miss.Word, vocab),
 			))
 		}
+
+		// VOCAB004 -- a rejected term in the page's prose, on the lines
+		// the spell check reads.
+		results = append(results, rejectedTermLints(
+			relPath, bodyContent, fmOffset, rejectedMatchers,
+		)...)
 
 		// SPELL001 over what a directive rendered. The raw body carries
 		// a marker where the reader sees text, so prose that came out
@@ -765,7 +771,7 @@ func runLints(
 		rendered, err := spellRenderedDirectives(
 			relPath, bodyContent, doc.Resolved, rawMisspellings,
 			pageDirectives[relPath], spellDocuments, projectRoot,
-			spellVocab, spellAccepted,
+			spellVocab, spellAccepted, vocab,
 		)
 		if err != nil {
 			return nil, err

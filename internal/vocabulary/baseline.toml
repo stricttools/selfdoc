@@ -1,0 +1,5 @@
+# selfdoc's built-in vocabulary baseline: the accepted and rejected terms every
+# project's spell check reads beside the project's own
+# stricttools/vocabulary/terms.toml. Same format as that file, validated by the
+# same schema (.strictspec/vocabulary-terms.schema.toml).
+format_version = 1
