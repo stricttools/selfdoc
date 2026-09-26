@@ -1037,7 +1037,7 @@
           "flags": [
             {
               "name": "kind",
-              "help": "How the pattern matches",
+              "help": "How the pattern matches the text of a page, compared case-insensitively",
               "value_schema": {
                 "type": "string",
                 "enum": [
@@ -1114,7 +1114,7 @@
           "args": [
             {
               "name": "word",
-              "help": "The accepted word or rejected pattern to remove",
+              "help": "The accepted word or rejected pattern to remove, compared case-insensitively",
               "value_schema": {
                 "type": "string"
               },
@@ -1148,7 +1148,7 @@
           "args": [
             {
               "name": "word",
-              "help": "The pending word, compared case-insensitively",
+              "help": "The pending word, as review.toml spells it, compared case-insensitively",
               "value_schema": {
                 "type": "string"
               },
@@ -1174,7 +1174,7 @@
           "args": [
             {
               "name": "word",
-              "help": "The pending word, compared case-insensitively",
+              "help": "The pending word, as review.toml spells it, compared case-insensitively",
               "value_schema": {
                 "type": "string"
               },
