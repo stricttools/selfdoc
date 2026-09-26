@@ -93,7 +93,7 @@
     "description": "a88fdbfd865bb583c35a594a76b0fd7c9f861cd6fd9c0ec5c29a23c60d80da52"
   },
   "en/check-guide.md": {
-    "content": "fa3305085fdb5160e4f367530f428c1e13d6555b6a655e8280ec0afca0eea587",
+    "content": "5b71db757ab3582b93bc4713b247bca3c9816bd28ffea07f3413354b6b058c88",
     "description": "695eef39f1d6f5b685e2dfb6573d648e25604bf5d356dfab5124a81fe20ed1c3"
   },
   "en/cli-assembly.md": {
@@ -188,9 +188,9 @@
     "schema_hash": "838e040e56e31f9bdee8f1c5e1a741fc224e59f6e919f06016325c94b3462fb6"
   },
   "en/cli-vocabulary.md": {
-    "content": "0b3a1223cb3aaf913a9b0a5e1fcd4eb7067e9cefc4654b4827db242a3c50fcc2",
+    "content": "d4d08be5d27d64f551e1c099218e9890fa1d36f3fc4d684f3bb5740d5b17a2fe",
     "description": "bf857cdfd5363b8f8003cd07ddf330858e9f1a965970181a728a052cca367c39",
-    "schema_hash": "d7d2ac6236db73aba30436863c3af9ae2b5c80739442031fa18271c5fb841940"
+    "schema_hash": "7e838cac1de7beecfcf06daf2e76903cc8544367f07cc505964aae4c2dca4ff6"
   },
   "en/cmd-selfdoc.md": {
     "content": "71de616eb0be1e9d0885ebf89597750b011b6fc3db20fc8af27cd46de9f3a41f",
