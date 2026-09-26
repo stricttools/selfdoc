@@ -87,7 +87,7 @@
   "commands": {
     "init": {
       "name": "init",
-      "help": "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page",
+      "help": "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of stricttools/docs, stricttools/.docs-state, stricttools/.docs-cache, stricttools/vocabulary, and a starter docs page",
       "effect": "mutating",
       "flags": [
         {
@@ -235,7 +235,7 @@
     },
     "check": {
       "name": "check",
-      "help": "Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .stricttools/docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one",
+      "help": "Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in stricttools/.docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one",
       "effect": "mutating",
       "payload_schema": {
         "additionalProperties": false,
@@ -376,6 +376,11 @@
                     "VER002",
                     "VER003",
                     "VER004",
+                    "VOCAB001",
+                    "VOCAB002",
+                    "VOCAB003",
+                    "VOCAB004",
+                    "VOCAB005",
                     "XREF001",
                     "XREF002"
                   ],
@@ -432,7 +437,7 @@
         },
         {
           "name": "auto-commit",
-          "help": "Automatically commit .stricttools/docs-state/hashes/hashes.json, the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way",
+          "help": "Automatically commit stricttools/.docs-state/hashes/hashes.json, the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way",
           "value_schema": {
             "type": "boolean"
           },
@@ -491,21 +496,21 @@
     },
     "spell-corpus": {
       "name": "spell-corpus",
-      "help": "Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits",
+      "help": "Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001), each project against its own vocabulary: selfdoc's built-in baseline and the project's stricttools/vocabulary/terms.toml. Read-only over every project it visits",
       "effect": "read_only",
       "payload_schema": {
         "additionalProperties": false,
         "properties": {
-          "accept_list": {
-            "type": "string"
-          },
-          "accepted_terms": {
+          "baseline_terms": {
             "type": "integer"
           },
           "projects": {
             "items": {
               "additionalProperties": false,
               "properties": {
+                "accepted_terms": {
+                  "type": "integer"
+                },
                 "error": {
                   "type": [
                     "string",
@@ -556,6 +561,7 @@
               "required": [
                 "project",
                 "pages",
+                "accepted_terms",
                 "error",
                 "misspellings"
               ],
@@ -575,8 +581,7 @@
         },
         "required": [
           "root",
-          "accept_list",
-          "accepted_terms",
+          "baseline_terms",
           "wordlist_words",
           "projects",
           "total"
@@ -755,7 +760,7 @@
     },
     "layout": {
       "name": "layout",
-      "help": "Inspect and check the per-repository directories selfdoc owns under .stricttools/",
+      "help": "Inspect, check and migrate the per-repository directories selfdoc owns under stricttools/",
       "commands": {
         "dump": {
           "name": "dump",
@@ -843,7 +848,7 @@
         },
         "validate": {
           "name": "validate",
-          "help": "Check this repository's .stricttools/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, every directory selfdoc owns holds only what its side allows, nothing inside starts with a dot except the derived ignore file, and that ignore file is what selfdoc's declaration renders",
+          "help": "Check this repository's stricttools/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, and the derived ignore file is what selfdoc's declaration renders",
           "effect": "read_only",
           "payload_schema": {
             "additionalProperties": false,
@@ -887,6 +892,295 @@
             ],
             "type": "object"
           }
+        },
+        "migrate": {
+          "name": "migrate",
+          "help": "Move this repository off the layout before this one: every directory under .stricttools/ whose manifest.toml names selfdoc moves under stricttools/, a generated one behind a dot (.stricttools/docs -> stricttools/docs, .stricttools/docs-state -> stricttools/.docs-state, .stricttools/docs-cache -> stricttools/.docs-cache, .stricttools/posts -> stricttools/posts, .stricttools/vocabulary -> stricttools/vocabulary). It creates stricttools/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from .stricttools/.gitignore (the file and .stricttools/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes stricttools/vocabulary/terms.toml empty when the project has none, and commits. Another tool's directories stay where they are. Refuses a repository already migrated, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing",
+          "effect": "mutating",
+          "payload_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "committed": {
+                "type": "boolean"
+              },
+              "deletes": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "moves": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "previous_root": {
+                "type": "string"
+              },
+              "removed_previous_root": {
+                "type": "boolean"
+              },
+              "rewrites": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "changes": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "changes"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "root": {
+                "type": "string"
+              },
+              "writes": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "previous_root",
+              "root",
+              "moves",
+              "writes",
+              "rewrites",
+              "deletes",
+              "removed_previous_root",
+              "committed"
+            ],
+            "type": "object"
+          },
+          "flags": [
+            {
+              "name": "auto-commit",
+              "help": "Commit the move and every file it wrote or rewrote. Omitted, it commits; pass --no-auto-commit to leave the move uncommitted",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ]
+        }
+      }
+    },
+    "vocabulary": {
+      "name": "vocabulary",
+      "help": "Edit this project's vocabulary: the words its pages may use that the English word list does not carry, the terms they may not use (stricttools/vocabulary/terms.toml), and the words proposed for acceptance awaiting review (stricttools/vocabulary/review.toml). The spell check reads selfdoc's built-in baseline and these files, and nothing outside the repository",
+      "commands": {
+        "accept": {
+          "name": "accept",
+          "help": "Accept a word into stricttools/vocabulary/terms.toml, in sorted position, with its meaning. Matching is case-insensitive, so one entry accepts every casing. Refuses a word already accepted (as a word or an alias, in the project or selfdoc's built-in baseline), a word a rejected term covers, and a word pending review, which 'selfdoc vocabulary approve' resolves instead",
+          "effect": "mutating",
+          "flags": [
+            {
+              "name": "meaning",
+              "help": "What the word means in this project, in one sentence. Required: an accepted word without a meaning is a word nobody can check",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            },
+            {
+              "name": "auto-commit",
+              "help": "Commit the vocabulary file the command edited. Omitted, it commits; pass --no-auto-commit to leave the edit uncommitted",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ],
+          "args": [
+            {
+              "name": "word",
+              "help": "The word to accept, spelled as the project spells it (e.g. 'selfdoc')",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            }
+          ]
+        },
+        "reject": {
+          "name": "reject",
+          "help": "Reject a term in stricttools/vocabulary/terms.toml, in sorted position, with the reason: every page whose prose uses it then fails 'selfdoc check' (VOCAB004). Refuses a term already rejected, and one that would reject an accepted word",
+          "effect": "mutating",
+          "flags": [
+            {
+              "name": "kind",
+              "help": "How the pattern matches",
+              "value_schema": {
+                "type": "string",
+                "enum": [
+                  "word",
+                  "phrase",
+                  "suffix",
+                  "prefix"
+                ]
+              },
+              "presence": "required",
+              "choices": [
+                {
+                  "value": "word",
+                  "help": "a whole word, with a word boundary on both sides"
+                },
+                {
+                  "value": "phrase",
+                  "help": "a whole phrase, its words separated by any whitespace"
+                },
+                {
+                  "value": "suffix",
+                  "help": "the end of a longer word"
+                },
+                {
+                  "value": "prefix",
+                  "help": "the start of a longer word"
+                }
+              ]
+            },
+            {
+              "name": "reason",
+              "help": "Why the term is rejected, shown beside every place a page uses it",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            },
+            {
+              "name": "auto-commit",
+              "help": "Commit the vocabulary file the command edited. Omitted, it commits; pass --no-auto-commit to leave the edit uncommitted",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ],
+          "args": [
+            {
+              "name": "pattern",
+              "help": "The rejected text (e.g. 'leverage', 'blast radius', '-shaped'). Matched case-insensitively",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            }
+          ]
+        },
+        "remove": {
+          "name": "remove",
+          "help": "Remove every entry of stricttools/vocabulary/terms.toml whose word or pattern is the given one, compared case-insensitively: an accepted word, a rejected term, or both. It is also how a word both accepted and rejected is resolved: remove it, then accept or reject it again. An entry of selfdoc's built-in baseline is not the project's to remove, and is refused",
+          "effect": "mutating",
+          "flags": [
+            {
+              "name": "auto-commit",
+              "help": "Commit the vocabulary file the command edited. Omitted, it commits; pass --no-auto-commit to leave the edit uncommitted",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ],
+          "args": [
+            {
+              "name": "word",
+              "help": "The accepted word or rejected pattern to remove",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            }
+          ]
+        },
+        "approve": {
+          "name": "approve",
+          "help": "Approve a word pending review: move its entry from stricttools/vocabulary/review.toml into the accepted words of stricttools/vocabulary/terms.toml, with the proposed meaning or, with --meaning, a corrected one. Refuses a word that is not pending",
+          "effect": "mutating",
+          "flags": [
+            {
+              "name": "meaning",
+              "help": "A corrected meaning, accepted instead of the proposed one. Omitted, the proposed meaning is accepted as written",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "optional"
+            },
+            {
+              "name": "auto-commit",
+              "help": "Commit the vocabulary file the command edited. Omitted, it commits; pass --no-auto-commit to leave the edit uncommitted",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ],
+          "args": [
+            {
+              "name": "word",
+              "help": "The pending word, compared case-insensitively",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            }
+          ]
+        },
+        "drop": {
+          "name": "drop",
+          "help": "Drop a word pending review: delete its entry from stricttools/vocabulary/review.toml without accepting it, so pages using it keep failing the spell check until the spelling is fixed. Refuses a word that is not pending",
+          "effect": "mutating",
+          "flags": [
+            {
+              "name": "auto-commit",
+              "help": "Commit the vocabulary file the command edited. Omitted, it commits; pass --no-auto-commit to leave the edit uncommitted",
+              "value_schema": {
+                "type": "boolean"
+              },
+              "presence": "optional",
+              "negatable": true
+            }
+          ],
+          "args": [
+            {
+              "name": "word",
+              "help": "The pending word, compared case-insensitively",
+              "value_schema": {
+                "type": "string"
+              },
+              "presence": "required"
+            }
+          ]
         }
       }
     },
