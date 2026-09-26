@@ -436,3 +436,22 @@ func TestThePayloadOfAProjectWithoutSelfdocCarriesOneFlag(t *testing.T) {
 		t.Errorf("next_step = %v, want the tier 0 action", payload["next_step"])
 	}
 }
+
+func TestCountersStepOverTheScratchDirectoriesAtTheRoot(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "tests/test_own.py", "a\n")
+	writeFile(t, root, "experiments/tests/test_probe.py", "a\nb\nc\n")
+	writeFile(t, root, "screenshots/notes_test.go", "a\nb\n")
+	writeFile(t, root, "guide.md", "one\n")
+	writeFile(t, root, "experiments/findings.md", "a\nb\nc\n")
+	writeFile(t, root, "screenshots/notes.md", "a\nb\n")
+	// A directory of the same name below the root is part of the project.
+	writeFile(t, root, "lib/experiments/tests/test_lib.py", "a\n")
+
+	if got := TestLOC(root, SubmodulePaths(root)); got != 2 {
+		t.Errorf("TestLOC = %d, want 2 -- scratch directories are not the project's tests", got)
+	}
+	if lines, files := MarkdownLOC(root, SubmodulePaths(root), nil); lines != 1 || files != 1 {
+		t.Errorf("MarkdownLOC = %d lines in %d files, want 1 in 1 -- scratch directories are not documentation", lines, files)
+	}
+}

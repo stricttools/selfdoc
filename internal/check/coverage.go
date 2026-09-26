@@ -97,7 +97,7 @@ func computeCoverage(
 			if !isDir(srcDir) {
 				continue
 			}
-			files, err := walkSourceFiles(srcDir, extensions, group.language)
+			files, err := walkSourceFiles(absBaseDir, srcDir, extensions, group.language)
 			if err != nil {
 				return nil, err
 			}
@@ -270,14 +270,15 @@ func computeCoverage(
 // in walk order with each directory's files sorted.
 //
 // The exclusions are structural rather than configured: environment and build
-// directories are pruned, and a test file is not part of a project's public
+// directories are pruned, as are the scratch directories at projectRoot's top
+// level, and a test file is not part of a project's public
 // surface. Go names one "*_test.go", TypeScript and JavaScript name one
 // "*.test.*" or "*.spec.*", Python names one "test_*.py" or "conftest.py", and
 // any language puts them in a tests, test or __tests__ directory. For Go the
 // toolchain's own ignored directories are pruned too -- a package under
 // testdata, vendor, or a "." or "_" prefixed directory is not built, not
 // documented by a generated page, and therefore not a surface to measure.
-func walkSourceFiles(srcDir string, extensions []string, language string) ([]string, error) {
+func walkSourceFiles(projectRoot, srcDir string, extensions []string, language string) ([]string, error) {
 	var files []string
 	err := filepath.WalkDir(srcDir, func(walked string, entry fs.DirEntry, err error) error {
 		if err != nil {
@@ -289,7 +290,8 @@ func walkSourceFiles(srcDir string, extensions []string, language string) ([]str
 		if !entry.IsDir() {
 			return nil
 		}
-		if walked != srcDir && excludes.ShouldSkipDir(entry.Name()) {
+		if walked != srcDir && (excludes.ShouldSkipDir(entry.Name()) ||
+			excludes.IsScratchDir(projectRoot, walked)) {
 			return fs.SkipDir
 		}
 		if walked != srcDir && language == "go" && excludes.GoToolchainIgnoresDir(entry.Name()) {

@@ -379,3 +379,27 @@ func TestIsTestFile(t *testing.T) {
 		}
 	}
 }
+
+func TestListModulesSkipsTheScratchDirectoriesAtTheProjectRoot(t *testing.T) {
+	// experiments/ and screenshots/ at the project root hold throwaway
+	// probes, never the project's source; a directory of the same name
+	// deeper down is ordinary source.
+	isolate(t)
+	base := t.TempDir()
+	write(t, filepath.Join(base, "engine", "engine.go"),
+		"// Package engine renders things.\npackage engine\n")
+	write(t, filepath.Join(base, "engine", "experiments", "experiments.go"),
+		"// Package experiments runs trials.\npackage experiments\n")
+	write(t, filepath.Join(base, "experiments", "probe", "probe.go"),
+		"// Package probe is a throwaway probe.\npackage probe\n")
+	write(t, filepath.Join(base, "screenshots", "shot.go"),
+		"// Package shot is a throwaway probe.\npackage shot\n")
+
+	config := map[string]any{
+		"source": []any{map[string]any{"path": ".", "language": "go"}},
+	}
+	rendered, _ := resolve(t, "list-modules",
+		map[string]string{"path": "."}, nil, base, config)
+	wants(t, rendered, "**engine**", "**engine/experiments**")
+	rejects(t, rendered, "probe", "shot", "screenshots")
+}

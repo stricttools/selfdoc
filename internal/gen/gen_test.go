@@ -1627,3 +1627,60 @@ func TestGoToolchainIgnoredDirectoriesProduceNoPages(t *testing.T) {
 		t.Errorf("a real package lost its page: %v", result.Written)
 	}
 }
+
+func TestScratchDirectoriesAtTheProjectRootProduceNoPages(t *testing.T) {
+	// experiments/ and screenshots/ at a project's root hold throwaway
+	// probes, each with its own go.mod so the Go toolchain treats it as a
+	// separate module. None of it is the project's source.
+	isolate(t)
+	dir, cfg := goProject(t)
+	write(t, filepath.Join(dir, "experiments", "go.mod"), "module experiments\n\ngo 1.21\n")
+	write(t, filepath.Join(dir, "experiments", "probe.go"),
+		"// Package probe is a throwaway probe.\npackage probe\n\nfunc Probe() {}\n")
+	write(t, filepath.Join(dir, "experiments", "deeper", "deeper.go"),
+		"// Package deeper is a throwaway probe.\npackage deeper\n\nfunc Deeper() {}\n")
+	write(t, filepath.Join(dir, "screenshots", "go.mod"), "module screenshots\n\ngo 1.21\n")
+	write(t, filepath.Join(dir, "screenshots", "shot.go"),
+		"// Package shot is a throwaway probe.\npackage shot\n\nfunc Shot() {}\n")
+	// A directory of the same name below the root is ordinary source.
+	write(t, filepath.Join(dir, "internal", "experiments", "experiments.go"),
+		"// Package experiments runs A/B experiments.\npackage experiments\n\nfunc Run() {}\n")
+
+	result := generate(t, cfg, dir)
+
+	written := names(result.Written)
+	for name := range written {
+		if strings.HasPrefix(name, "experiments") || strings.HasPrefix(name, "screenshots") {
+			t.Errorf("a scratch directory produced a page: %s", name)
+		}
+	}
+	if !written["internal-experiments.md"] {
+		t.Errorf("a package named experiments below the root lost its page: %v", result.Written)
+	}
+}
+
+func TestScratchDirectoriesProduceNoPagesForPerFileLanguages(t *testing.T) {
+	isolate(t)
+	dir, cfg := pythonProject(t)
+	cfg = writeConfig(t, dir, map[string]any{
+		"source":        []any{map[string]any{"path": ".", "language": "python"}},
+		"docs":          "stricttools/docs/",
+		"output":        "stricttools/.docs-cache/build/",
+		"base_url":      "https://example.com",
+		"search_engine": "pagefind",
+	})
+	write(t, filepath.Join(dir, "experiments", "probe.py"), `"""A throwaway probe."""`+"\ndef probe(): pass\n")
+	write(t, filepath.Join(dir, "screenshots", "shot.py"), `"""A throwaway probe."""`+"\ndef shot(): pass\n")
+
+	result := generate(t, cfg, dir)
+
+	for _, name := range result.Written {
+		if strings.Contains(name, "experiments") || strings.Contains(name, "screenshots") ||
+			strings.Contains(name, "probe") || strings.Contains(name, "shot") {
+			t.Errorf("a scratch directory produced a page: %s", name)
+		}
+	}
+	if !names(result.Written)["mylib-core.md"] {
+		t.Errorf("a real module lost its page: %v", result.Written)
+	}
+}

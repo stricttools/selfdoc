@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/stricttools/selfdoc/internal/excludes"
 	"github.com/stricttools/selfdoc/internal/layout"
 )
 
@@ -15,7 +16,8 @@ import (
 // It walks projectPath counting lines in every .md file, skipping:
 //
 //   - the directories in [SkipDirs] plus todo/ (planning notes are not
-//     documentation) and every directory in submodulePaths;
+//     documentation), every directory in submodulePaths, and the scratch
+//     directories at the project root (experiments/, screenshots/);
 //   - the filenames in [SkipMarkdownFiles] (generated changelogs);
 //   - every path in rootFileTemplates -- the docs/_README.md style templates
 //     named by root_files in selfdoc.json. Their generated output (README.md,
@@ -67,8 +69,8 @@ var testFileSuffixes = []string{
 
 // TestLOC returns the total line count of the project's test code.
 //
-// It walks projectPath (skipping [SkipDirs], todo/ and every directory in
-// submodulePaths) and counts lines in files that have a [CodeExtensions]
+// It walks projectPath (skipping [SkipDirs], todo/, every directory in
+// submodulePaths and the root's scratch directories) and counts lines in files that have a [CodeExtensions]
 // extension AND look like tests -- meaning they sit under a
 // tests/test/__tests__/testing directory at any depth, or are named
 // conftest.py, test_*.py, *_test.py, *_test.go, or *.test./*.spec. for
@@ -273,7 +275,8 @@ func submoduleSet(projectPath string, submodulePaths []string) map[string]bool {
 }
 
 // walk visits every file under root, stepping over the skipped directory
-// names, todo/ and the submodule directories. The visitor receives the
+// names, todo/, the submodule directories and the scratch directories at the
+// root's top level. The visitor receives the
 // holding directory, the filename and the full path.
 func walk(root string, submoduleDirs map[string]bool, visit func(dir, name, full string)) {
 	var descend func(dir string)
@@ -285,7 +288,8 @@ func walk(root string, submoduleDirs map[string]bool, visit func(dir, name, full
 		for _, entry := range entries {
 			full := filepath.Join(dir, entry.Name())
 			if entry.IsDir() {
-				if SkipDirs[entry.Name()] || entry.Name() == "todo" || submoduleDirs[full] {
+				if SkipDirs[entry.Name()] || entry.Name() == "todo" || submoduleDirs[full] ||
+					excludes.IsScratchDir(root, full) {
 					continue
 				}
 				descend(full)

@@ -405,3 +405,49 @@ func TestSkeletonOnlySymbolsNameThePageAndTheSeededDescription(t *testing.T) {
 		}
 	}
 }
+
+func TestCoverageSkipsTheScratchDirectoriesAtTheProjectRoot(t *testing.T) {
+	// experiments/ and screenshots/ at the project root hold throwaway
+	// probes: their exported names are not a surface the docs owe.
+	isolate(t)
+	root := t.TempDir()
+	writeConfig(t, root, configForSource(
+		map[string]any{"path": ".", "language": "go"},
+	))
+	write(t, filepath.Join(root, "go.mod"), "module example.com/app\n\ngo 1.21\n")
+	write(t, filepath.Join(root, "pkg", "handler.go"),
+		`// Package pkg handles things.
+package pkg
+
+// Handle handles one thing.
+func Handle(name string) string { return name }
+`)
+	write(t, filepath.Join(root, "experiments", "probe", "probe.go"),
+		`// Package probe is a throwaway probe.
+package probe
+
+// Probe is not a public symbol of this project.
+func Probe() {}
+`)
+	write(t, filepath.Join(root, "screenshots", "shot.go"),
+		`// Package shot is a throwaway probe.
+package shot
+
+// Shot is not a public symbol of this project.
+func Shot() {}
+`)
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
+		"+++\ndescription = \"Every exported name of the handler package, in one page.\"\n+++\n"+
+			"# API\n\n:-: ref path=\"pkg\"\n")
+
+	result := checkFixture(t, root)
+
+	if result.Coverage == nil {
+		t.Fatal("coverage was not measured")
+	}
+	if result.Coverage.Total != 1 {
+		t.Errorf("total = %d, want 1 (Handle alone): referenced %v, unreferenced %v",
+			result.Coverage.Total, result.Coverage.ReferencedSymbols,
+			result.Coverage.UnreferencedSymbols)
+	}
+}

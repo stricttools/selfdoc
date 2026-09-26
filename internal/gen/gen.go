@@ -369,7 +369,7 @@ func generateDocsForDir(
 			if !isDir(sourceRoot) {
 				continue
 			}
-			err := walkSourceDirs(sourceRoot, func(dirPath string, fileNames []string) error {
+			err := walkSourceDirs(baseDir, sourceRoot, func(dirPath string, fileNames []string) error {
 				for _, fname := range fileNames {
 					if _, ext := splitExt(fname); !extensions[ext] {
 						continue
@@ -996,7 +996,7 @@ func collectGoPackages(sourcePaths []string, baseDir string, excludePatterns []s
 			spPrefix = ""
 		}
 
-		err := walkSourceDirs(sourceRoot, func(dirPath string, fileNames []string) error {
+		err := walkSourceDirs(baseDir, sourceRoot, func(dirPath string, fileNames []string) error {
 			// A directory the Go toolchain ignores holds no package: a
 			// page for it would document code "go build ./..." never
 			// compiles.
@@ -1118,8 +1118,9 @@ func readGoModuleName(baseDir string) string {
 //
 // The directories a source walk must never descend into -- a virtual
 // environment, node_modules, a build tree -- are pruned, which is the
-// in-place dirnames edit the os.walk loops this ports performed.
-func walkSourceDirs(root string, visit func(dirPath string, fileNames []string) error) error {
+// in-place dirnames edit the os.walk loops this ports performed. The scratch
+// directories at projectRoot's top level are pruned too.
+func walkSourceDirs(projectRoot, root string, visit func(dirPath string, fileNames []string) error) error {
 	entries, err := os.ReadDir(root)
 	if err != nil {
 		// An unreadable directory holds no documentable source, which is
@@ -1131,7 +1132,8 @@ func walkSourceDirs(root string, visit func(dirPath string, fileNames []string) 
 	var subdirs []string
 	for _, entry := range entries {
 		if entry.IsDir() {
-			if excludes.ShouldSkipDir(entry.Name()) {
+			if excludes.ShouldSkipDir(entry.Name()) ||
+				excludes.IsScratchDir(projectRoot, filepath.Join(root, entry.Name())) {
 				continue
 			}
 			subdirs = append(subdirs, entry.Name())
@@ -1145,7 +1147,7 @@ func walkSourceDirs(root string, visit func(dirPath string, fileNames []string) 
 	}
 	sort.Strings(subdirs)
 	for _, name := range subdirs {
-		if err := walkSourceDirs(filepath.Join(root, name), visit); err != nil {
+		if err := walkSourceDirs(projectRoot, filepath.Join(root, name), visit); err != nil {
 			return err
 		}
 	}

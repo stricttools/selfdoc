@@ -10,7 +10,8 @@
 // The inputs are two: [DefaultExcludes], applied everywhere, and the
 // gen.exclude list from selfdoc.json, which a project adds to it. [SkipDirs]
 // is separate and unconditional: environment and build directories that are
-// never source, pruned from a walk before any pattern is tested.
+// never source, pruned from a walk before any pattern is tested. [ScratchDirs]
+// are pruned the same way, at the project root only.
 package excludes
 
 import (
@@ -46,6 +47,31 @@ func ShouldSkipDir(dirname string) bool {
 	}
 	// Also skip directories ending in .egg-info (mylib.egg-info, say)
 	return strings.HasSuffix(dirname, ".egg-info")
+}
+
+// ScratchDirs are the scratch directories a project keeps at its root:
+// experiments/ for throwaway probes and screenshots/ for images taken while
+// verifying work. Nothing in them is the project's source, so every walk of
+// a project's tree prunes them -- but only at the project root, because a
+// directory of the same name deeper down is ordinary source.
+var ScratchDirs = map[string]bool{"experiments": true, "screenshots": true}
+
+// IsScratchDir reports whether dir is one of [ScratchDirs] directly inside
+// projectRoot. Both paths are compared absolute and cleaned, so a walk rooted
+// at a relative path answers the same as one rooted at an absolute one.
+func IsScratchDir(projectRoot, dir string) bool {
+	if !ScratchDirs[filepath.Base(dir)] {
+		return false
+	}
+	root, err := filepath.Abs(projectRoot)
+	if err != nil {
+		return false
+	}
+	absolute, err := filepath.Abs(dir)
+	if err != nil {
+		return false
+	}
+	return filepath.Dir(absolute) == root
 }
 
 // GoToolchainIgnoresDir reports whether the Go toolchain ignores a directory

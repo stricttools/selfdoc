@@ -198,7 +198,7 @@ func collectModules(
 	}
 
 	var modules []module
-	err := walkSource(root, func(dirPath string, entries []fs.DirEntry) error {
+	err := walkSource(baseDir, root, func(dirPath string, entries []fs.DirEntry) error {
 		for _, entry := range entries {
 			name := entry.Name()
 			if skipTests && isTestFile(name, language) {
@@ -292,7 +292,7 @@ func listModulesByPackage(
 	}
 
 	var packageDirs []string
-	err := walkSource(root, func(dirPath string, entries []fs.DirEntry) error {
+	err := walkSource(baseDir, root, func(dirPath string, entries []fs.DirEntry) error {
 		relDir := relativeTo(root, dirPath)
 		if relDir != "." && excludes.IsExcluded(relDir, excludePatterns) {
 			return nil
@@ -427,9 +427,10 @@ func fileToModuleName(relPath, language string) (string, bool) {
 // that directory's file entries, and pruning the directories no source walk
 // descends into.
 //
-// The root itself is never pruned: a directive may legitimately point at a
-// directory whose name would be skipped as a child.
-func walkSource(root string, visit func(dirPath string, files []fs.DirEntry) error) error {
+// The scratch directories at projectRoot's top level are pruned too. The root
+// itself is never pruned: a directive may legitimately point at a directory
+// whose name would be skipped as a child.
+func walkSource(projectRoot, root string, visit func(dirPath string, files []fs.DirEntry) error) error {
 	return filepath.WalkDir(root, func(dirPath string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -437,7 +438,8 @@ func walkSource(root string, visit func(dirPath string, files []fs.DirEntry) err
 		if !entry.IsDir() {
 			return nil
 		}
-		if dirPath != root && excludes.ShouldSkipDir(entry.Name()) {
+		if dirPath != root && (excludes.ShouldSkipDir(entry.Name()) ||
+			excludes.IsScratchDir(projectRoot, dirPath)) {
 			return fs.SkipDir
 		}
 		children, err := os.ReadDir(dirPath)

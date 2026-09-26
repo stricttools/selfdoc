@@ -25,6 +25,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/stricttools/selfdoc/internal/excludes"
 	"github.com/stricttools/selfdoc/internal/extractors"
 	"github.com/stricttools/selfdoc/internal/util"
 )
@@ -116,7 +117,8 @@ func DiscoverSchemaDirs(baseDir string) []string {
 		}
 		if path != root {
 			name := entry.Name()
-			if schemaDiscoveryExcludes[name] || strings.HasPrefix(name, ".") {
+			if schemaDiscoveryExcludes[name] || strings.HasPrefix(name, ".") ||
+				excludes.IsScratchDir(root, path) {
 				return fs.SkipDir
 			}
 		}

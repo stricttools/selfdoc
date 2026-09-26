@@ -290,6 +290,11 @@ func TestDiscoverSchemaDirs(t *testing.T) {
 			[]string{"node_modules/pkg", "dist", ".venv/lib", "real"},
 			[]string{"real"},
 		},
+		{
+			"excludes the scratch directories at the root only",
+			[]string{"experiments", "screenshots/probe", "lib/experiments"},
+			[]string{"lib/experiments"},
+		},
 	}
 	for _, testCase := range cases {
 		t.Run(testCase.name, func(t *testing.T) {
