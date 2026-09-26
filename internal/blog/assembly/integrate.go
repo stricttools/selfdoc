@@ -12,6 +12,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/blog/verify"
 	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/util"
 )
 
@@ -329,6 +330,26 @@ func IntegrateProject(opts IntegrateOptions, h *effects.Handle) (*IntegrateSumma
 				util.PythonRepr(opts.Slug), site.RosterPath,
 				util.PythonRepr(opts.Slug),
 			)
+		}
+		// A full deploy replaces the project's manifest, and with it the
+		// vocabulary the site holds for it. The site's other projects'
+		// vocabularies are read after the re-sync, and a disagreement is
+		// refused before the checkout is touched.
+		if scope == "full" {
+			documents, err := site.LoadAssemblyManifests(manifestsDir)
+			if err != nil {
+				return nil, err
+			}
+			peers, err := PublishedVocabularies(documents, opts.Slug)
+			if err != nil {
+				return nil, err
+			}
+			if err := checkIncomingVocabulary(
+				layout.Path(sourceDir, layout.ManifestRel), opts.Slug, peers,
+				"deploying "+util.PythonRepr(opts.Slug)+" into the assembly",
+			); err != nil {
+				return nil, err
+			}
 		}
 		reconciled, err := site.ReconcileMembership(assemblyDir, roster, h)
 		if err != nil {

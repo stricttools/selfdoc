@@ -93,7 +93,7 @@ func TestTheManifestTravelsWithThePages(t *testing.T) {
 	gh := publishFixture(t, nil)
 	manifest := filepath.Join(t.TempDir(), "manifest.json")
 	if err := os.WriteFile(manifest,
-		[]byte(`{"slug": "alpha", "version": "1.0.0"}`), 0o644); err != nil {
+		[]byte(`{"schema_version": 2, "slug": "alpha", "version": "1.0.0"}`), 0o644); err != nil {
 		t.Fatalf("writing the manifest: %v", err)
 	}
 	if _, err := publishAlpha(t, buildTree(t), manifest); err != nil {

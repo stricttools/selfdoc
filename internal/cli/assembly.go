@@ -154,7 +154,7 @@ func (c *cli) registerAssembly() {
 	)
 
 	group.Command("integrate",
-		"Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. This is the whole body of the generated deploy workflow.",
+		"Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. A full-scope deploy first checks the vocabulary the project's manifest records against every other project's manifest on the site and selfdoc's built-in baseline, and refuses before touching the checkout when one project's rejected pattern covers a word another accepts, naming both projects, the word, the pattern and the fix. This is the whole body of the generated deploy workflow.",
 		c.cmdAssemblyIntegrate,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Deliberately NOT consequential: it runs unattended inside the

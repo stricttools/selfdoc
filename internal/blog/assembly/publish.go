@@ -9,6 +9,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // PublishSummary is what one [PublishProjectDocs] call did.
@@ -48,6 +49,11 @@ type PublishOptions struct {
 	// SourceDir is the project's checkout, read for the one file only the
 	// home project has: its curated listing. Empty publishes none.
 	SourceDir string
+	// Peers are the vocabularies of the site's other projects, which the
+	// vocabulary of the manifest at ManifestPath is checked against before
+	// anything is written. The caller reads them: from the site's manifests
+	// for one project's publish, from the checkouts for a publish of them all.
+	Peers []vocabulary.Published
 }
 
 // PublishProjectDocs pushes a locally built documentation site into the
@@ -61,7 +67,9 @@ type PublishOptions struct {
 // so a page removed locally disappears remotely.
 //
 // It cannot create membership: publishing into a slug the roster does not
-// declare is a hard error naming the block that would have to exist.
+// declare is a hard error naming the block that would have to exist. Nor can
+// it put a vocabulary on the site that disagrees with [PublishOptions.Peers]
+// or selfdoc's baseline: that is refused before anything is written.
 func PublishProjectDocs(opts PublishOptions, h *effects.Handle) (*PublishSummary, error) {
 	branch := opts.Branch
 	if branch == "" {
@@ -85,6 +93,11 @@ func PublishProjectDocs(opts PublishOptions, h *effects.Handle) (*PublishSummary
 			util.PythonRepr(opts.Slug), site.RosterPath, opts.Repo,
 			util.PythonRepr(opts.Slug), declared,
 		)
+	}
+
+	if err := checkIncomingVocabulary(opts.ManifestPath, opts.Slug, opts.Peers,
+		"publishing "+util.PythonRepr(opts.Slug)+" documentation to "+opts.Repo); err != nil {
+		return nil, err
 	}
 
 	buildRels, err := site.BuildOutputPaths(opts.OutputDir, true)

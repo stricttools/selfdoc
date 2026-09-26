@@ -17,7 +17,7 @@ import (
 
 func (c *cli) registerPublishDocs(group *strictcli.Group) {
 	group.Command("publish-docs",
-		"Publish this project's documentation to the assembly without a release. Builds the docs locally, pushes the built site, its manifest and its membership record into the assembly repo via the Git Data API -- deleting the pages this project published before and no longer produces -- then dispatches a shared-only workflow to regenerate cross-project elements.",
+		"Publish this project's documentation to the assembly without a release. Builds the docs locally, pushes the built site, its manifest and its membership record into the assembly repo via the Git Data API -- deleting the pages this project published before and no longer produces -- then dispatches a shared-only workflow to regenerate cross-project elements. Refuses before pushing anything when the vocabulary this project's manifest records and another project's on the assembly disagree about a word -- one's rejected pattern covering a word the other, or selfdoc's built-in baseline, accepts -- naming both projects, the word, the pattern and the fix.",
 		c.cmdPublishDocs,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential for the same reason `blog post publish` is:
@@ -69,15 +69,22 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 	}
 	home := slug == roster.Home
 
+	// The assembly's manifests are read off the repository, since this
+	// publisher never clones it. The build reads them, and so does the publish:
+	// the other projects' vocabularies this project's is checked against.
+	manifests, err := assembly.FetchRemoteManifests(handle, repo, "")
+	if err != nil {
+		return c.fail(err)
+	}
+	peers, err := assembly.PublishedVocabularies(manifests, slug)
+	if err != nil {
+		return c.fail(err)
+	}
+
 	// The same build the deploy runs on a cloned checkout, run here on the
 	// working tree. The home project builds through the one build that can
-	// resolve a site-level directive, against the assembly's own manifests --
-	// read off the repository, since this publisher never clones it.
+	// resolve a site-level directive, against the assembly's own manifests.
 	if home {
-		manifests, err := assembly.FetchRemoteManifests(handle, repo, "")
-		if err != nil {
-			return c.fail(err)
-		}
 		context, err := sitedirectives.HomeContext(dir, cfg, manifests)
 		if err != nil {
 			return c.fail(err)
@@ -89,13 +96,8 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 		}
 	} else {
 		// The sibling block every assembled page ends with is read off the
-		// assembly's manifests, which this publisher fetches rather than
-		// clones. A publish that skipped them would push pages missing a
-		// section every other project's pages carry.
-		manifests, err := assembly.FetchRemoteManifests(handle, repo, "")
-		if err != nil {
-			return c.fail(err)
-		}
+		// assembly's manifests. A publish that skipped them would push pages
+		// missing a section every other project's pages carry.
 		if err := assembly.BuildSourceProject(assembly.BuildOptions{
 			SourceDir: dir,
 			Scope:     "full",
@@ -123,6 +125,7 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 		ManifestPath: layout.Path(dir, layout.ManifestRel),
 		Home:         home,
 		SourceDir:    dir,
+		Peers:        peers,
 	}, handle)
 	if err != nil {
 		return c.fail(err)

@@ -508,6 +508,28 @@ selfdoc blog publish-docs    # the project's documentation
 
 Both commands are consequential -- they make locally-authored writing publicly readable -- so they prompt unless `--approve-consequential` is passed. Neither can create membership: publishing into a slug `roster.toml` does not declare is a hard error naming the block that would have to exist.
 
+### One vocabulary per site
+
+Each project's manifest records its vocabulary: the words its
+`stricttools/vocabulary/terms.toml` accepts, with their aliases, and the
+patterns it rejects, with their kinds. The projects on one site share readers,
+so their vocabularies must agree. A full-scope `selfdoc assembly integrate` and
+`blog publish-docs` check the arriving project's vocabulary against every other
+project's manifest on the site and against selfdoc's built-in baseline, and
+refuse before writing anything when:
+
+- the arriving project rejects a pattern that covers a word another project, or
+  the baseline, accepts; or
+- another project rejects a pattern that covers a word the arriving project
+  accepts.
+
+The refusal names both projects, the word, the pattern and the fix: narrow the
+pattern in the rejecting project (`selfdoc vocabulary remove <pattern>`, then
+`selfdoc vocabulary reject <word> --kind word --reason <text>` for each specific
+word meant), or remove the word in the accepting project
+(`selfdoc vocabulary remove <word>`). A word of the baseline changes only in
+selfdoc itself, so a pattern covering one is narrowed.
+
 ### What a build owns
 
 A full build used to replace `site/{slug}/` wholesale, which meant a release destroyed anything published into that subtree since the last one. It prunes to its own output instead.
