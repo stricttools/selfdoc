@@ -101,12 +101,15 @@ func grantTo(t *testing.T, dir, name, owner string) {
 
 // fakeSelfdoc installs a stub binary that writes the given sitemap where a
 // build would, so the script's URL comparison is exercised without a real
-// build. The real build is what this repository's own move ran.
+// build. The real build is what this repository's own move ran. Like every real
+// selfdoc command, the stub refuses a repository that still has a .selfdoc/
+// directory, so a move that leaves one behind fails here as it does for real.
 func fakeSelfdoc(t *testing.T, dir, sitemap string) string {
 	t.Helper()
 	stubDir := t.TempDir()
 	path := filepath.Join(stubDir, "fake-selfdoc")
 	script := "#!/bin/sh\n" +
+		"if [ -e .selfdoc ]; then echo \"refused: this repository still has a .selfdoc/ directory\" >&2; exit 1; fi\n" +
 		"echo \"$*\" >> " + filepath.Join(stubDir, "invocations.log") + "\n" +
 		"mkdir -p stricttools/.docs-cache/build\n" +
 		"cat > stricttools/.docs-cache/build/sitemap.xml <<'SITEMAP'\n" +
@@ -681,5 +684,67 @@ func TestTheMoveScriptConvertsTheManifestBeforeItsBuild(t *testing.T) {
 	want := []string{"layout migrate", "build --no-auto-commit"}
 	if got := stubInvocations(t, stub); strings.Join(got, "|") != strings.Join(want, "|") {
 		t.Errorf("the script ran selfdoc as %q, want %q", got, want)
+	}
+}
+
+// The move empties .selfdoc/ -- hashes/ and posts/ included -- and every selfdoc
+// command refuses a repository that still has the directory, 'selfdoc layout
+// migrate' among them. So the script removes each directory the move emptied,
+// and .selfdoc/ itself, before it runs selfdoc.
+func TestTheMoveScriptRemovesTheDirectoriesItEmptied(t *testing.T) {
+	requirePython3(t)
+	requireSafegit(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	makeToolRoot(t, dir)
+	stub := fakeSelfdoc(t, dir, sitemapXML("https://example.com/", "https://example.com/guide/"))
+
+	out, status := runMove(t, root, dir, "--apply", "--selfdoc", stub)
+	if status != 0 {
+		t.Fatalf("the move refused:\n%s", out)
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".selfdoc")); !os.IsNotExist(err) {
+		t.Errorf(".selfdoc/ is still there after the move (stat err = %v)", err)
+	}
+	if got := stubInvocations(t, stub); len(got) == 0 || got[0] != "layout migrate" {
+		t.Errorf("'selfdoc layout migrate' did not run first; the stub ran %q", got)
+	}
+}
+
+// Anything left under .selfdoc/ after the moves is not the script's to delete:
+// it refuses, names what is there, and leaves it in place. The one file the
+// up-front untracked-file refusal lets through is build output declared under
+// .selfdoc/.
+func TestTheMoveScriptRefusesWhatRemainsUnderTheOldRoot(t *testing.T) {
+	requirePython3(t)
+	requireSafegit(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	config := filepath.Join(dir, "selfdoc.json")
+	text := strings.Replace(testproject.ReadText(t, config), `"docs/_build/"`, `".selfdoc/_build/"`, 1)
+	testproject.WriteText(t, config, text)
+	testproject.Git(t, dir, "commit", "--quiet", "-am", "build output under .selfdoc/")
+	if err := os.RemoveAll(filepath.Join(dir, "docs", "_build")); err != nil {
+		t.Fatalf("removing the build output the config no longer declares: %v", err)
+	}
+	leftover := filepath.Join(dir, ".selfdoc", "_build", "sitemap.xml")
+	testproject.WriteText(t, leftover, sitemapXML("https://example.com/", "https://example.com/guide/"))
+	makeToolRoot(t, dir)
+	stub := fakeSelfdoc(t, dir, sitemapXML("https://example.com/", "https://example.com/guide/"))
+
+	out, status := runMove(t, root, dir, "--apply", "--selfdoc", stub)
+	if status == 0 {
+		t.Fatalf("the move finished with a file left under .selfdoc/:\n%s", out)
+	}
+	if !strings.Contains(out, ".selfdoc/_build/sitemap.xml") {
+		t.Errorf("the refusal does not name what remains:\n%s", out)
+	}
+	if _, err := os.Stat(leftover); err != nil {
+		t.Errorf("the script deleted what remained: %v", err)
+	}
+	if got := stubInvocations(t, stub); len(got) != 0 {
+		t.Errorf("selfdoc ran with .selfdoc/ still present: %q", got)
 	}
 }

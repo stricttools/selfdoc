@@ -33,13 +33,17 @@ What it does, in order:
   4. Rewrites the paths the moved content names -- the config keys, the root
      ignore file, and the old paths spelled inside pages, posts and templates
      -- as a SECOND commit through 'safegit commit'.
-  5. Converts the moved manifests to the schema that records the project's
+  5. Removes every directory the moves emptied under the old tool-state
+     directory, and that directory itself: every selfdoc command refuses a
+     repository that still has it. A file still inside it is not the script's
+     to delete, so the script refuses instead, naming each one.
+  6. Converts the moved manifests to the schema that records the project's
      vocabulary, by running 'selfdoc layout migrate' with the binary resolved
-     in step 0, which commits the conversion as a THIRD commit. Every selfdoc
-     command refuses a manifest an older selfdoc wrote, the build in step 6
-     included, so the conversion comes first. Skipped when no moved manifest
-     is outdated.
-  6. Builds the site again with the same binary and refuses to finish unless
+     before step 3, which commits the conversion as a THIRD commit. Every
+     selfdoc command refuses a manifest an older selfdoc wrote, the build in
+     step 7 included, so the conversion comes first. Skipped when no moved
+     manifest is outdated.
+  7. Builds the site again with the same binary and refuses to finish unless
      the URL set is identical to the one captured in step 2. The commits stay
      in place; the difference is printed.
 
@@ -571,6 +575,7 @@ def move(project: Path, args) -> int:
     if moves or manifests:
         perform_moves(project, moves, manifests)
     perform_rewrites(project, rewrites, output_rel)
+    remove_emptied_root(project)
     convert_manifests(project, selfdoc)
     return verify_urls(project, selfdoc, urls_before)
 
@@ -666,7 +671,40 @@ def print_followups(project: Path) -> None:
           f"safegit commit -m \"layout: the derived ignore file\" -- {ROOT_DIR}/.gitignore")
     print("  delete what the old layout left behind (build output, caches), for example:")
     print("    saferm delete -r --on-error abort --description \"superseded by the "
-          "stricttools layout\" docs/_build .selfdoc")
+          "stricttools layout\" docs/_build")
+
+
+def remove_emptied_root(project: Path) -> None:
+    """Step 5: remove the old tool-state directory the moves emptied.
+
+    The moves carry files out and leave their directories behind, and every
+    selfdoc command -- 'selfdoc layout migrate' first -- refuses a repository
+    that still has the directory at all. Only empty directories are removed;
+    a file still inside is named and left where it is.
+    """
+    root = project / DEPRECATED_ROOT
+    if not root.exists():
+        return
+    remaining = sorted(
+        path.relative_to(project).as_posix()
+        for path in root.rglob("*")
+        if not path.is_dir() or path.is_symlink()
+    )
+    if remaining:
+        listed = "\n  ".join(remaining)
+        raise Refusal(
+            f"the move left these under {DEPRECATED_ROOT}/, and every selfdoc command "
+            f"refuses a repository that still has that directory:\n  {listed}\n"
+            "The move and the rewrite commits are in place. Delete what is regenerable "
+            "with 'saferm delete -r --on-error abort --description \"superseded by the "
+            f"stricttools layout\" <path>', or commit what is not, remove the emptied "
+            f"{DEPRECATED_ROOT}/, then run 'selfdoc layout migrate' in the repository, "
+            "then build."
+        )
+    # Deepest first, so each directory is empty by the time it is removed.
+    for path in sorted(root.rglob("*"), key=lambda entry: len(entry.parts), reverse=True):
+        path.rmdir()
+    root.rmdir()
 
 
 # The manifests the move carries, and the schema_version that records the
@@ -693,7 +731,7 @@ def outdated_manifests(project: Path) -> list[str]:
 
 
 def convert_manifests(project: Path, selfdoc: str) -> None:
-    """Step 5: convert the moved manifests with 'selfdoc layout migrate'."""
+    """Step 6: convert the moved manifests with 'selfdoc layout migrate'."""
     outdated = outdated_manifests(project)
     if not outdated:
         return
