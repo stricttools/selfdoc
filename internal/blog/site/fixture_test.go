@@ -86,7 +86,7 @@ func manifestDoc(slug, name, version string, posts []any) map[string]any {
 		posts = []any{}
 	}
 	return map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           name,
 		"slug":           slug,
 		"version":        version,

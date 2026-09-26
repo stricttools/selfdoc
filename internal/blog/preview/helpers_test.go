@@ -92,7 +92,7 @@ func fixtureManifest(slug, name, version string, pages []fixturePage, posts []fi
 		})
 	}
 	return map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           name,
 		"slug":           slug,
 		"version":        version,

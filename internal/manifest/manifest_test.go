@@ -4,11 +4,14 @@
 //
 // The bytes in testdata were written by the Python implementation itself,
 // through scripts/record_staleness_manifest_bytes.py, over the same input the
-// byte-parity test below rebuilds in Go.
+// byte-parity test below rebuilds in Go, and then carried to the current
+// schema by hand: schema_version 2 and the vocabulary object at the end, which
+// the Python never wrote.
 package manifest
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,6 +22,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 	"github.com/stricttools/testisolation/go/hygiene"
 )
 
@@ -153,8 +157,8 @@ func TestExtractTitle(t *testing.T) {
 func TestGenerateRecordsTheProjectsFacts(t *testing.T) {
 	base := testproject.Dir(t)
 	manifest := generate(t, baseConfig(), basePages(), nil, base)
-	if manifest.SchemaVersion != 1 {
-		t.Errorf("schema version %d, want 1", manifest.SchemaVersion)
+	if manifest.SchemaVersion != 2 {
+		t.Errorf("schema version %d, want 2", manifest.SchemaVersion)
 	}
 	if manifest.Version != "1.0.0" {
 		t.Errorf("version %q, want 1.0.0", manifest.Version)
@@ -265,7 +269,7 @@ func TestGenerateWritesTheFile(t *testing.T) {
 	base := testproject.Dir(t)
 	generate(t, baseConfig(), basePages(), nil, base)
 	document := readDocument(t, base)
-	if document["schema_version"] != float64(1) {
+	if document["schema_version"] != float64(2) {
 		t.Errorf("schema_version is %v", document["schema_version"])
 	}
 	if document["version"] != "1.0.0" {
@@ -350,7 +354,7 @@ func TestPagesCarryTheirHeadingAnchors(t *testing.T) {
 	}
 	// The schema version does not move: headings are an additive field, which
 	// the tolerant reader contract already covers.
-	if readDocument(t, base)["schema_version"] != float64(1) {
+	if readDocument(t, base)["schema_version"] != float64(2) {
 		t.Error("an additive field moved the schema version")
 	}
 }
@@ -407,7 +411,7 @@ func TestTheManifestsBytesAreThePythonsBytes(t *testing.T) {
 	}
 
 	manifest := &Manifest{
-		SchemaVersion: 1,
+		SchemaVersion: 2,
 		Name:          "Récord Project",
 		Slug:          "record-project",
 		Version:       "1.2.3",
@@ -433,8 +437,9 @@ func TestTheManifestsBytesAreThePythonsBytes(t *testing.T) {
 				Slug: "bare", Tags: []string{},
 			},
 		},
-		LastGen: lastGen,
-		Theme:   "brutalist",
+		LastGen:    lastGen,
+		Theme:      "brutalist",
+		Vocabulary: Vocabulary{Accepted: []AcceptedWord{}, Rejected: []RejectedPattern{}},
 	}
 	if got := string(encode(manifest.document())); got != string(recorded) {
 		t.Errorf("encoded\n%s\nwant\n%s", got, recorded)
@@ -502,7 +507,7 @@ func withoutTimestamp(document string) string {
 
 func TestCompatIgnoresUnknownKeys(t *testing.T) {
 	manifest, err := Compat(map[string]any{
-		"schema_version":  int64(1),
+		"schema_version":  int64(2),
 		"name":            "compat-test",
 		"future_field":    "should be ignored",
 		"another_unknown": []any{int64(1), int64(2), int64(3)},
@@ -510,7 +515,7 @@ func TestCompatIgnoresUnknownKeys(t *testing.T) {
 	if err != nil {
 		t.Fatalf("reading a document with unknown keys: %v", err)
 	}
-	if manifest.Name != "compat-test" || manifest.SchemaVersion != 1 {
+	if manifest.Name != "compat-test" || manifest.SchemaVersion != 2 {
 		t.Errorf("read %+v", manifest)
 	}
 }
@@ -520,8 +525,7 @@ func TestCompatDefaults(t *testing.T) {
 		name string
 		data map[string]any
 	}{
-		{name: "only a schema version", data: map[string]any{"schema_version": int64(1)}},
-		{name: "an empty document", data: map[string]any{}},
+		{name: "only a schema version", data: map[string]any{"schema_version": int64(2)}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -529,8 +533,8 @@ func TestCompatDefaults(t *testing.T) {
 			if err != nil {
 				t.Fatalf("reading a minimal document: %v", err)
 			}
-			if manifest.SchemaVersion != 1 {
-				t.Errorf("schema version %d, want the default 1", manifest.SchemaVersion)
+			if manifest.SchemaVersion != 2 {
+				t.Errorf("schema version %d, want 2", manifest.SchemaVersion)
 			}
 			for field, got := range map[string]string{
 				"name": manifest.Name, "slug": manifest.Slug, "version": manifest.Version,
@@ -545,6 +549,9 @@ func TestCompatDefaults(t *testing.T) {
 			if len(manifest.Pages) != 0 || len(manifest.Posts) != 0 {
 				t.Errorf("pages %v, posts %v", manifest.Pages, manifest.Posts)
 			}
+			if len(manifest.Vocabulary.Accepted) != 0 || len(manifest.Vocabulary.Rejected) != 0 {
+				t.Errorf("vocabulary %+v", manifest.Vocabulary)
+			}
 		})
 	}
 }
@@ -557,17 +564,17 @@ func TestCompatRefusesAFutureSchema(t *testing.T) {
 	}{
 		{
 			name: "with no source named",
-			want: "Unsupported manifest schema_version 2 (max supported: 1)",
+			want: "Unsupported manifest schema_version 3 (max supported: 2)",
 		},
 		{
 			name:   "with a source named",
 			source: "git HEAD",
-			want:   "Unsupported manifest schema_version 2 in git HEAD (max supported: 1)",
+			want:   "Unsupported manifest schema_version 3 in git HEAD (max supported: 2)",
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			_, err := Compat(map[string]any{"schema_version": int64(2)}, test.source)
+			_, err := Compat(map[string]any{"schema_version": int64(3)}, test.source)
 			if err == nil {
 				t.Fatal("a future schema version was accepted")
 			}
@@ -580,7 +587,7 @@ func TestCompatRefusesAFutureSchema(t *testing.T) {
 
 func TestCompatReadsEveryField(t *testing.T) {
 	manifest, err := Compat(map[string]any{
-		"schema_version": int64(1),
+		"schema_version": int64(2),
 		"name":           "full",
 		"slug":           "full-slug",
 		"version":        "2.0.0",
@@ -591,17 +598,25 @@ func TestCompatReadsEveryField(t *testing.T) {
 		"posts":          []any{map[string]any{"slug": "hello"}},
 		"last_gen":       "2026-07-05T00:00:00Z",
 		"theme":          "dark",
+		"vocabulary": map[string]any{
+			"accepted": []any{map[string]any{"word": "treeish", "aliases": []any{"tree-ish"}}},
+			"rejected": []any{map[string]any{"pattern": "ish", "kind": "suffix"}},
+		},
 	}, "")
 	if err != nil {
 		t.Fatalf("reading a full document: %v", err)
 	}
 	want := &Manifest{
-		SchemaVersion: 1, Name: "full", Slug: "full-slug", Version: "2.0.0",
+		SchemaVersion: 2, Name: "full", Slug: "full-slug", Version: "2.0.0",
 		Description: "Full test", Language: "go", BaseURL: "https://full.test",
 		Pages:   []Page{{Path: "index.md", Headings: []Heading{}}},
 		Posts:   []Post{{Slug: "hello", Tags: []string{}}},
 		LastGen: "2026-07-05T00:00:00Z",
 		Theme:   "dark",
+		Vocabulary: Vocabulary{
+			Accepted: []AcceptedWord{{Word: "treeish", Aliases: []string{"tree-ish"}}},
+			Rejected: []RejectedPattern{{Pattern: "ish", Kind: "suffix"}},
+		},
 	}
 	if !reflect.DeepEqual(manifest, want) {
 		t.Errorf("read %+v, want %+v", manifest, want)
@@ -623,7 +638,7 @@ func TestLoad(t *testing.T) {
 
 	t.Run("a full manifest", func(t *testing.T) {
 		path := write("full.json", `{
-			"schema_version": 1, "name": "test-project", "slug": "test-project",
+			"schema_version": 2, "name": "test-project", "slug": "test-project",
 			"version": "2.0.0", "description": "A test", "language": "python",
 			"base_url": "https://test.com",
 			"pages": [{"path": "index.md", "title": "Home", "type": "doc"}],
@@ -653,7 +668,7 @@ func TestLoad(t *testing.T) {
 	})
 
 	t.Run("a document carrying unknown keys", func(t *testing.T) {
-		path := write("unknown.json", `{"schema_version": 1, "name": "x",
+		path := write("unknown.json", `{"schema_version": 2, "name": "x",
 			"totally_unknown_key": "value", "nested_unknown": {"deep": {"value": 42}}}`)
 		manifest, err := Load(path)
 		if err != nil {
@@ -664,24 +679,30 @@ func TestLoad(t *testing.T) {
 		}
 	})
 
-	t.Run("a schema version below the supported one is accepted", func(t *testing.T) {
-		path := write("legacy.json", `{"schema_version": 0, "name": "legacy"}`)
-		manifest, err := Load(path)
-		if err != nil {
-			t.Fatalf("loading a v0 manifest: %v", err)
-		}
-		if manifest == nil || manifest.SchemaVersion != 0 {
-			t.Errorf("loaded %+v", manifest)
+	t.Run("a schema version below the supported one is refused, naming the conversion", func(t *testing.T) {
+		for name, document := range map[string]string{
+			"legacy.json":   `{"schema_version": 1, "name": "legacy"}`,
+			"unmarked.json": `{"name": "unmarked"}`,
+		} {
+			path := write(name, document)
+			_, err := Load(path)
+			var outdated *OutdatedError
+			if !errors.As(err, &outdated) {
+				t.Fatalf("%s: loaded without the outdated refusal: %v", name, err)
+			}
+			if !strings.Contains(err.Error(), "'selfdoc layout migrate'") || !strings.Contains(err.Error(), path) {
+				t.Errorf("%s: refused with %q", name, err)
+			}
 		}
 	})
 
 	t.Run("a future schema version is refused", func(t *testing.T) {
-		path := write("future.json", `{"schema_version": 2, "name": "future"}`)
+		path := write("future.json", `{"schema_version": 3, "name": "future"}`)
 		_, err := Load(path)
 		if err == nil {
 			t.Fatal("a future schema version was accepted")
 		}
-		if !strings.Contains(err.Error(), "Unsupported manifest schema_version 2") {
+		if !strings.Contains(err.Error(), "Unsupported manifest schema_version 3") {
 			t.Errorf("refused with %q", err)
 		}
 	})
@@ -740,7 +761,7 @@ func TestLoadFromGit(t *testing.T) {
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			t.Fatalf("creating .selfdoc: %v", err)
 		}
-		committed := `{"schema_version": 1, "name": "committed",
+		committed := `{"schema_version": 2, "name": "committed",
 			"posts": [{"path": "posts/hello.md", "slug": "hello-world"}]}`
 		if err := os.WriteFile(path, []byte(committed), 0o644); err != nil {
 			t.Fatalf("writing the manifest: %v", err)
@@ -750,7 +771,7 @@ func TestLoadFromGit(t *testing.T) {
 
 		// gen has since rewritten the working-tree copy with a new slug; the
 		// read must report what was published, not what is on disk.
-		rewritten := `{"schema_version": 1, "name": "rewritten",
+		rewritten := `{"schema_version": 2, "name": "rewritten",
 			"posts": [{"path": "posts/hello.md", "slug": "hello-world-renamed"}]}`
 		if err := os.WriteFile(path, []byte(rewritten), 0o644); err != nil {
 			t.Fatalf("rewriting the manifest: %v", err)
@@ -787,5 +808,110 @@ func run(t *testing.T, dir string, argv ...string) {
 	command.Dir = dir
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("%v: %v\n%s", argv, err, output)
+	}
+}
+
+// -- Vocabulary ---------------------------------------------------------------
+
+// writeTerms writes a project's terms file.
+func writeTerms(t *testing.T, base, content string) {
+	t.Helper()
+	path := filepath.Join(base, "stricttools", "vocabulary", "terms.toml")
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("making the vocabulary directory: %v", err)
+	}
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("writing the terms file: %v", err)
+	}
+}
+
+const sampleTerms = `format_version = 1
+
+[[accepted]]
+word = "gizmo"
+meaning = "a widget"
+aliases = ["gizmos"]
+
+[[rejected]]
+pattern = "whilst"
+kind = "word"
+reason = "US English"
+`
+
+func TestGenerateRecordsTheProjectsVocabulary(t *testing.T) {
+	base := testproject.Dir(t)
+	writeTerms(t, base, sampleTerms)
+	generate(t, baseConfig(), basePages(), nil, base)
+	vocabularyDocument, ok := readDocument(t, base)["vocabulary"].(map[string]any)
+	if !ok {
+		t.Fatalf("the manifest carries no vocabulary object")
+	}
+	want := map[string]any{
+		"accepted": []any{map[string]any{"word": "gizmo", "aliases": []any{"gizmos"}}},
+		"rejected": []any{map[string]any{"pattern": "whilst", "kind": "word"}},
+	}
+	if !reflect.DeepEqual(vocabularyDocument, want) {
+		t.Errorf("recorded %v, want %v", vocabularyDocument, want)
+	}
+}
+
+func TestConvertAddsTheVocabularyAndKeepsEveryField(t *testing.T) {
+	previous := []byte(`{"schema_version": 1, "name": "old", "slug": "old", "version": "0.1.0",
+		"pages": [{"path": "index.md", "title": "Home", "type": "doc", "headings": []}],
+		"posts": [], "last_gen": "2026-01-01T00:00:00+00:00", "theme": "minimal"}`)
+	base := testproject.Dir(t)
+	writeTerms(t, base, sampleTerms)
+	terms, err := vocabulary.LoadProject(base)
+	if err != nil {
+		t.Fatalf("loading the terms: %v", err)
+	}
+	converted, err := Convert(previous, terms, "manifest.json")
+	if err != nil {
+		t.Fatalf("converting: %v", err)
+	}
+	var data map[string]any
+	if err := json.Unmarshal(converted, &data); err != nil {
+		t.Fatalf("the converted manifest is not JSON: %v", err)
+	}
+	manifest, err := Compat(data, "converted")
+	if err != nil {
+		t.Fatalf("the converted manifest does not read: %v", err)
+	}
+	if manifest.SchemaVersion != 2 || manifest.Name != "old" || manifest.LastGen != "2026-01-01T00:00:00+00:00" ||
+		len(manifest.Pages) != 1 || manifest.Theme != "minimal" {
+		t.Errorf("converted to %+v", manifest)
+	}
+	if len(manifest.Vocabulary.Accepted) != 1 || manifest.Vocabulary.Accepted[0].Aliases[0] != "gizmos" ||
+		len(manifest.Vocabulary.Rejected) != 1 || manifest.Vocabulary.Rejected[0].Kind != "word" {
+		t.Errorf("converted vocabulary %+v", manifest.Vocabulary)
+	}
+	if _, err := Convert(converted, terms, "manifest.json"); err == nil {
+		t.Error("a manifest already on schema 2 was converted again")
+	}
+}
+
+func TestLoadFromGitRefusesAnOutdatedCommittedManifest(t *testing.T) {
+	requireGit(t)
+	hygiene.Isolate(t)
+	base := testproject.Dir(t)
+	run(t, base, "git", "init", "--quiet")
+	path := filepath.Join(base, "stricttools", ".docs-state", DefaultOutputName)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("making the state directory: %v", err)
+	}
+	if err := os.WriteFile(path, []byte(`{"schema_version": 1, "name": "old"}`), 0o644); err != nil {
+		t.Fatalf("writing the manifest: %v", err)
+	}
+	run(t, base, "git", "add", filepath.Join("stricttools", ".docs-state", DefaultOutputName))
+	run(t, base, "git", "commit", "--quiet", "-m", "manifest")
+	_, err := LoadFromGit(base, effects.Unbound())
+	var outdated *OutdatedError
+	if !errors.As(err, &outdated) {
+		t.Fatalf("read without the outdated refusal: %v", err)
+	}
+	for _, want := range []string{"stricttools/.docs-state/manifest.json at git HEAD", "schema_version 1", "'selfdoc layout migrate'"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal %q does not name %q", err, want)
+		}
 	}
 }

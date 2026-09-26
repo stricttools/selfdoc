@@ -104,8 +104,10 @@ func grantTo(t *testing.T, dir, name, owner string) {
 // build. The real build is what this repository's own move ran.
 func fakeSelfdoc(t *testing.T, dir, sitemap string) string {
 	t.Helper()
-	path := filepath.Join(t.TempDir(), "fake-selfdoc")
+	stubDir := t.TempDir()
+	path := filepath.Join(stubDir, "fake-selfdoc")
 	script := "#!/bin/sh\n" +
+		"echo \"$*\" >> " + filepath.Join(stubDir, "invocations.log") + "\n" +
 		"mkdir -p stricttools/.docs-cache/build\n" +
 		"cat > stricttools/.docs-cache/build/sitemap.xml <<'SITEMAP'\n" +
 		sitemap +
@@ -114,6 +116,17 @@ func fakeSelfdoc(t *testing.T, dir, sitemap string) string {
 		t.Fatalf("writing the stub: %v", err)
 	}
 	return path
+}
+
+// stubInvocations are the argument lists the stub made by fakeSelfdoc was run
+// with, in order.
+func stubInvocations(t *testing.T, stub string) []string {
+	t.Helper()
+	raw, err := os.ReadFile(filepath.Join(filepath.Dir(stub), "invocations.log"))
+	if err != nil {
+		return nil
+	}
+	return strings.Split(strings.TrimSpace(string(raw)), "\n")
 }
 
 // runMove runs the move script over dir and returns its output and status.
@@ -355,7 +368,7 @@ func TestTheMoveScriptRefusesAChangedURLSet(t *testing.T) {
 		"lost: https://example.com/guide/",
 		"new:  https://example.com/moved/",
 		"the move changed the site's URL set",
-		"The two commits are in place",
+		"The commits are in place",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("the refusal does not carry %q:\n%s", want, out)
@@ -646,5 +659,27 @@ func TestTheMoveScriptDryRunNeedsNoBinary(t *testing.T) {
 	}
 	if !strings.Contains(out, "--selfdoc") {
 		t.Errorf("the dry run does not say that apply will need a binary named with --selfdoc:\n%s", out)
+	}
+}
+
+// A manifest moved from .selfdoc/ is on the schema before the vocabulary, and
+// every selfdoc command that reads it refuses it, the build included. The
+// script converts it with 'selfdoc layout migrate' before the build it holds
+// the URL set to.
+func TestTheMoveScriptConvertsTheManifestBeforeItsBuild(t *testing.T) {
+	requirePython3(t)
+	requireSafegit(t)
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	makeToolRoot(t, dir)
+	stub := fakeSelfdoc(t, dir, sitemapXML("https://example.com/", "https://example.com/guide/"))
+	out, status := runMove(t, root, dir, "--apply", "--selfdoc", stub)
+	if status != 0 {
+		t.Fatalf("the move refused:\n%s", out)
+	}
+	want := []string{"layout migrate", "build --no-auto-commit"}
+	if got := stubInvocations(t, stub); strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Errorf("the script ran selfdoc as %q, want %q", got, want)
 	}
 }

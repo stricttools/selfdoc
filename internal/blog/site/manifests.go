@@ -1,6 +1,8 @@
 package site
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -132,6 +134,10 @@ func ManifestsFromDocuments(
 			return nil, errorf("%s must contain a JSON object", where)
 		}
 		if _, err := manifest.Compat(data, where); err != nil {
+			var outdated *manifest.OutdatedError
+			if errors.As(err, &outdated) {
+				return nil, &OutdatedManifestError{Outdated: outdated, Project: manifestProject(name, data)}
+			}
 			return nil, err
 		}
 		if strings.HasSuffix(name, "-posts.json") {
@@ -161,6 +167,36 @@ func ManifestsFromDocuments(
 	}
 
 	return baseManifests, nil
+}
+
+// OutdatedManifestError is a manifest on the assembly that an older selfdoc
+// published: a schema before the current one, with no vocabulary.
+//
+// The assembly holds no checkout to convert it from, so the fix is on the
+// project's side: convert its committed manifest, then publish every project
+// again in one pass.
+type OutdatedManifestError struct {
+	// Outdated is the reader's own refusal, naming the document and what it
+	// declared.
+	Outdated *manifest.OutdatedError
+	// Project is the slug the document belongs to.
+	Project string
+}
+
+func (e *OutdatedManifestError) Error() string {
+	return fmt.Sprintf(
+		"%s %s, and this selfdoc reads manifest schema_version %d only: project %s was published by an older selfdoc, and its manifest carries no vocabulary. Convert the project's committed manifest with 'selfdoc layout migrate' in its checkout, as every other project's, then publish them all once with 'selfdoc assembly republish-all --home <home checkout> --repo <checkout> --repo <checkout> ...', which replaces every project's manifest on the site.",
+		e.Outdated.Source, e.Outdated.Declares(), manifest.SchemaVersion, util.PythonRepr(e.Project))
+}
+
+// manifestProject is the project a manifest document belongs to: the slug it
+// declares, else its file name's stem without a kind suffix.
+func manifestProject(name string, data map[string]any) string {
+	if slug := util.PythonStrOrEmpty(data["slug"]); slug != "" {
+		return slug
+	}
+	stem := strings.TrimSuffix(name, ".json")
+	return strings.TrimSuffix(stem, "-posts")
 }
 
 // ListingSidecarPath is where the assembly keeps the home project's curated

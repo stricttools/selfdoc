@@ -37,7 +37,7 @@ const retireMembership = `{
 // read.
 func projectManifest(slug, name string) []byte {
 	document := map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           name,
 		"slug":           slug,
 		"version":        "1.0.0",

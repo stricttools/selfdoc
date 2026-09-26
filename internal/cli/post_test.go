@@ -301,7 +301,7 @@ func writeManifest(t *testing.T, dir, version string, posts []any) {
 		posts = []any{}
 	}
 	testproject.WriteJSON(t, filepath.Join(dir, "stricttools", ".docs-state", "manifest.json"), map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           "test",
 		"slug":           "test",
 		"version":        version,

@@ -171,13 +171,37 @@ creates `stricttools/` -- the manifests naming selfdoc are the grant -- and then
   `root_files`, a custom directive's script) and the header line of every
   generated root file;
 - writes an empty `stricttools/vocabulary/terms.toml` when the project has none;
+- converts the manifests (see below);
 - commits the whole move, unless `--no-auto-commit` is passed.
 
 Only selfdoc's directories move: another tool's directory under `.stricttools/`
 stays where it is, with its lines of the ignore file. A repository already on
-this layout, one part-way through a move (selfdoc's directories under both
-roots, with the `git mv` commands that put them back), and one that never used
-the previous layout are each refused with what to do instead.
+this layout with its manifests converted, one part-way through a move
+(selfdoc's directories under both roots, with the `git mv` commands that put
+them back), and one that never used the previous layout are each refused with
+what to do instead.
+
+### Converting the manifests
+
+A project's manifests -- `stricttools/.docs-state/manifest.json`, and the
+posts-only `post-manifest.json` beside it -- record the project's vocabulary:
+every word `stricttools/vocabulary/terms.toml` accepts with its aliases, and
+every pattern it rejects with its kind. That is manifest `schema_version` 2.
+A manifest an older selfdoc wrote is on `schema_version` 1 and records none,
+and every selfdoc command that reads one refuses it, naming
+`selfdoc layout migrate`: reading it would pass off "no vocabulary recorded" as
+"a project that accepts and rejects nothing".
+
+`selfdoc layout migrate` converts each manifest on `schema_version` 1 to 2,
+keeping every field it carried and adding the vocabulary of the project's terms
+file, in the same commit as the move. A repository already on `stricttools/`
+whose manifests are on `schema_version` 1 -- one moved from `.selfdoc/`, or by
+an earlier selfdoc -- gets the conversion alone, as its own commit:
+
+```bash
+selfdoc layout migrate --dry-run
+selfdoc layout migrate
+```
 
 ## Moving a repository from the `.selfdoc/` layout
 
@@ -235,9 +259,12 @@ The dry run prints every manifest it would write, every move and every content
 rewrite, and changes nothing. The apply run writes the manifests and moves the
 tracked files as one commit -- a page carrying the generated marker into
 `stricttools/.docs-state/pages/`, every other page into `stricttools/docs/` --
-rewrites the paths the moved content names as a second commit, and then builds
-the site and refuses to finish unless the URL set
-is identical to the one the last build before the move published. Page addresses
+rewrites the paths the moved content names as a second commit, runs
+`selfdoc layout migrate` to convert the moved manifests (a third commit; see
+"Converting the manifests" above), and then builds the site and refuses to
+finish unless the URL set is identical to the one the last build before the move
+published. The selfdoc the script runs must therefore be one whose
+`layout migrate` converts manifests. Page addresses
 come from the path relative to the docs root, so the move keeps every URL, and
 the comparison is what proves it.
 

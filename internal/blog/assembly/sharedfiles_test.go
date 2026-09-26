@@ -24,7 +24,7 @@ func sharedManifest(slug, name, description string, pages, posts []any, theme st
 		pages = []any{map[string]any{"path": "index.md", "title": "Home"}}
 	}
 	manifest := map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           name,
 		"slug":           slug,
 		"version":        "1.0.0",

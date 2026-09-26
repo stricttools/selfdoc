@@ -33,9 +33,15 @@ What it does, in order:
   4. Rewrites the paths the moved content names -- the config keys, the root
      ignore file, and the old paths spelled inside pages, posts and templates
      -- as a SECOND commit through 'safegit commit'.
-  5. Builds the site again with the selfdoc binary resolved in step 0 and
-     refuses to finish unless the URL set is identical to the one captured in
-     step 2. The commits stay in place; the difference is printed.
+  5. Converts the moved manifests to the schema that records the project's
+     vocabulary, by running 'selfdoc layout migrate' with the binary resolved
+     in step 0, which commits the conversion as a THIRD commit. Every selfdoc
+     command refuses a manifest an older selfdoc wrote, the build in step 6
+     included, so the conversion comes first. Skipped when no moved manifest
+     is outdated.
+  6. Builds the site again with the same binary and refuses to finish unless
+     the URL set is identical to the one captured in step 2. The commits stay
+     in place; the difference is printed.
 
 The binary that build runs is resolved BEFORE step 3, so a machine with no
 selfdoc is refused while the repository is still untouched: --selfdoc when it
@@ -406,7 +412,8 @@ def main() -> int:
     mode.add_argument("--dry-run", action="store_true",
                       help="print every move and every rewrite, and change nothing")
     mode.add_argument("--apply", action="store_true",
-                      help="perform the moves and the rewrites, as two commits")
+                      help="perform the moves and the rewrites as two commits, then convert the "
+                           "manifests with 'selfdoc layout migrate', which commits a third")
     parser.add_argument("--project", default=".",
                         help="the repository to move; defaults to the working directory")
     parser.add_argument("--selfdoc", default=None,
@@ -564,6 +571,7 @@ def move(project: Path, args) -> int:
     if moves or manifests:
         perform_moves(project, moves, manifests)
     perform_rewrites(project, rewrites, output_rel)
+    convert_manifests(project, selfdoc)
     return verify_urls(project, selfdoc, urls_before)
 
 
@@ -661,20 +669,61 @@ def print_followups(project: Path) -> None:
           "stricttools layout\" docs/_build .selfdoc")
 
 
+# The manifests the move carries, and the schema_version that records the
+# project's vocabulary. A manifest declaring less, or nothing, is converted.
+MOVED_MANIFESTS = (f"{DOCS_STATE_REL}/manifest.json", f"{DOCS_STATE_REL}/post-manifest.json")
+VOCABULARY_SCHEMA_VERSION = 2
+
+
+def outdated_manifests(project: Path) -> list[str]:
+    """The moved manifests on a schema before the vocabulary's."""
+    outdated = []
+    for relative in MOVED_MANIFESTS:
+        path = project / relative
+        if not path.is_file():
+            continue
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise Refusal(f"{relative} is not a readable JSON document: {error}")
+        declared = document.get("schema_version", 1) if isinstance(document, dict) else 1
+        if not isinstance(declared, int) or declared < VOCABULARY_SCHEMA_VERSION:
+            outdated.append(relative)
+    return outdated
+
+
+def convert_manifests(project: Path, selfdoc: str) -> None:
+    """Step 5: convert the moved manifests with 'selfdoc layout migrate'."""
+    outdated = outdated_manifests(project)
+    if not outdated:
+        return
+    print(f"converting {', '.join(outdated)} with 'selfdoc layout migrate':")
+    result = run([selfdoc, "layout", "migrate"], project)
+    sys.stdout.write(result.stdout)
+    sys.stderr.write(result.stderr)
+    if result.returncode != 0:
+        raise Refusal(
+            "'selfdoc layout migrate' failed, so the manifests are still on the schema "
+            "before the vocabulary and the build would refuse them. The move and the "
+            "rewrite commits are in place; fix what it names and run "
+            "'selfdoc layout migrate' in the repository, then build."
+        )
+
+
 def verify_urls(project: Path, selfdoc: str, urls_before: set[str]) -> int:
     result = run([selfdoc, "build", "--no-auto-commit"], project)
     sys.stdout.write(result.stdout[-4000:])
     sys.stderr.write(result.stderr[-4000:])
     if result.returncode != 0:
         raise Refusal(
-            "the build after the move failed. The two commits are in place; fix the "
+            "the build after the move failed. The commits are in place; fix the "
             "build and compare the sitemap yourself."
         )
     built = project / OUTPUT_REL / "sitemap.xml"
     if not built.is_file():
         raise Refusal(
             f"the build wrote no {OUTPUT_REL}/sitemap.xml, so the URL set cannot be "
-            "compared. The two commits are in place."
+            "compared. The commits are in place."
         )
     urls_after = sitemap_urls(built)
     if urls_after == urls_before:
@@ -686,7 +735,7 @@ def verify_urls(project: Path, selfdoc: str, urls_before: set[str]) -> int:
     for url in sorted(urls_after - urls_before):
         print(f"  new:  {url}")
     raise Refusal(
-        "the move changed the site's URL set. The two commits are in place; the "
+        "the move changed the site's URL set. The commits are in place; the "
         "differences are listed above."
     )
 

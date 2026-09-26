@@ -1,6 +1,7 @@
 package check
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -25,8 +26,15 @@ func checkManifestFreshness(config map[string]any, dirPath string) ([]lints.Lint
 	}
 
 	record, err := manifest.Load(manifestPath)
+	var outdated *manifest.OutdatedError
+	if errors.As(err, &outdated) {
+		// A manifest an older selfdoc wrote has one fix, and the refusal
+		// names it: reading past it would check freshness against a document
+		// the rest of selfdoc refuses.
+		return nil, err
+	}
 	if err != nil || record == nil {
-		// A manifest this reader cannot claim to understand is not a
+		// Any other manifest this reader cannot claim to understand is not a
 		// freshness finding: the tolerant reader's own refusal is the
 		// answer, and the Python's loader answered absence the same way.
 		return nil, nil

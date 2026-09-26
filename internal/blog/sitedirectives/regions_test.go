@@ -23,7 +23,7 @@ func manifest(slug, name, version string, posts ...map[string]any) map[string]an
 		entries = append(entries, post)
 	}
 	return map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           name,
 		"slug":           slug,
 		"version":        version,

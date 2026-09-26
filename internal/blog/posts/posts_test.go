@@ -67,7 +67,7 @@ func writeManifest(t *testing.T, dirPath string, posts string) string {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatalf("mkdir %s: %v", filepath.Dir(path), err)
 	}
-	document := `{"schema_version": 1, "name": "test", "slug": "test",
+	document := `{"schema_version": 2, "name": "test", "slug": "test",
 		"version": "1.0.0", "description": "", "language": "python",
 		"base_url": "", "pages": [], "posts": [` + posts + `],
 		"last_gen": ""}`

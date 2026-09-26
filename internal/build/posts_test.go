@@ -369,8 +369,8 @@ func TestBuildTargetPosts(t *testing.T) {
 		if err := json.Unmarshal([]byte(raw), &manifest); err != nil {
 			t.Fatalf("decoding the post manifest: %v", err)
 		}
-		if manifest.SchemaVersion != 1 {
-			t.Errorf("the manifest declares schema version %d, want 1", manifest.SchemaVersion)
+		if manifest.SchemaVersion != 2 {
+			t.Errorf("the manifest declares schema version %d, want 2", manifest.SchemaVersion)
 		}
 		if len(manifest.Pages) != 0 {
 			t.Errorf("a posts-only manifest records %d pages, want none", len(manifest.Pages))

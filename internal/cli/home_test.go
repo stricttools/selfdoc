@@ -66,7 +66,7 @@ func assemblyReplies(t *testing.T, home string) []toolReply {
 		{Slug: "alpha", Repo: "owner/alpha"},
 	}, home)
 	alpha := map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           "Alpha",
 		"slug":           "alpha",
 		"version":        "1.0.0",

@@ -15,7 +15,7 @@ func writeManifest(t *testing.T, path string, pages, posts []any) {
 		posts = []any{}
 	}
 	document := map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           "test",
 		"slug":           "test",
 		"version":        "1.0.0",
@@ -163,5 +163,21 @@ func TestManifestFreshness(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// A manifest an older selfdoc wrote is not a freshness finding and not an
+// absence either: the check refuses it, naming the conversion. The CLI suite
+// performs the conversion and runs the check again.
+func TestManifestFreshnessRefusesAnOutdatedManifest(t *testing.T) {
+	isolate(t)
+	root := t.TempDir()
+	write(t, filepath.Join(root, "stricttools", "docs", "index.md"), "# Page\n")
+	path := filepath.Join(root, "stricttools", ".docs-state", "manifest.json")
+	write(t, path, `{"schema_version": 1, "name": "test", "pages": [{"path": "index.md", "title": "Index", "type": "doc"}], "posts": []}`)
+	projectConfig := map[string]any{"docs": "stricttools/docs/"}
+	_, err := checkManifestFreshness(projectConfig, root)
+	if err == nil || !strings.Contains(err.Error(), "'selfdoc layout migrate'") {
+		t.Fatalf("err = %v, want the outdated-manifest refusal naming the conversion", err)
 	}
 }

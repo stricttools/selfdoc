@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "name": "R\u00e9cord Project",
   "slug": "record-project",
   "version": "1.2.3",
@@ -61,5 +61,9 @@
     }
   ],
   "last_gen": "2026-09-12T16:39:00.245843+00:00",
-  "theme": "brutalist"
+  "theme": "brutalist",
+  "vocabulary": {
+    "accepted": [],
+    "rejected": []
+  }
 }

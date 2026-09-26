@@ -3,13 +3,19 @@
 // function name, onto the visible stricttools/ root, where a generated
 // directory's name starts with a dot.
 //
-// It is the engine of `selfdoc layout migrate`. [Plan] reads the repository
-// and returns every step the move takes, or refuses; [Apply] performs the plan
-// through an effects handle, so a dry run records the same steps it prints.
+// It is the engine of `selfdoc layout migrate`. [PlanMigration] reads the
+// repository and returns every step the move takes, or refuses; [Apply]
+// performs the plan through an effects handle, so a dry run records the same
+// steps it prints.
 //
 // Only the directories whose manifest names selfdoc move. Another tool's
 // directory under .stricttools/ stays where it is, and so does the rest of
 // that directory's ignore file.
+//
+// The move also converts the repository's manifests -- the build manifest and
+// the post manifest -- from the schema before the vocabulary to the current
+// one, adding the vocabulary of the project's terms file. A repository already
+// on this layout whose manifests are outdated gets that conversion alone.
 package migrate
 
 import (
@@ -25,6 +31,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/gen"
 	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/manifest"
 	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
@@ -85,7 +92,9 @@ type Plan struct {
 // Lines renders the plan one path per line, the way the command prints it.
 func (p Plan) Lines() []string {
 	var lines []string
-	lines = append(lines, "create "+layout.Root+"/")
+	if len(p.Moves) > 0 {
+		lines = append(lines, "create "+layout.Root+"/")
+	}
 	for _, move := range p.Moves {
 		lines = append(lines, fmt.Sprintf("move %s/ -> %s/", move.From, move.To))
 	}
@@ -157,9 +166,16 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 	}
 	switch {
 	case len(previous) == 0 && len(current) > 0:
+		var plan Plan
+		if err := plan.planManifests(baseDir, h, false, false); err != nil {
+			return Plan{}, err
+		}
+		if len(plan.Rewrites) > 0 {
+			return plan, nil
+		}
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
-			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), and %s/ holds none.",
-			layout.Root, strings.Join(current, ", "), layout.PreviousRoot)}
+			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), %s/ holds none, and the manifests are on schema_version %d.",
+			layout.Root, strings.Join(current, ", "), layout.PreviousRoot, manifest.SchemaVersion)}
 	case len(previous) == 0:
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
 			"Nothing to migrate: this repository has no %s/ directory holding one whose %s names selfdoc. A repository that has not adopted selfdoc runs 'selfdoc init'.",
@@ -205,6 +221,9 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 	if err := plan.planVocabulary(baseDir, moved); err != nil {
 		return Plan{}, err
 	}
+	if err := plan.planManifests(baseDir, h, moved[layout.DocsStateName], moved[layout.VocabularyName]); err != nil {
+		return Plan{}, err
+	}
 	if err := plan.planPreviousIgnore(baseDir, moved); err != nil {
 		return Plan{}, err
 	}
@@ -243,6 +262,104 @@ func (p *Plan) planVocabulary(baseDir string, moved map[string]bool) error {
 	})
 	p.Commit = append(p.Commit, layout.TermsRel)
 	return nil
+}
+
+// convertedManifests are the manifest documents the conversion covers, by
+// their path on this layout.
+var convertedManifests = []string{layout.ManifestRel, layout.PostManifestRel}
+
+// planManifests converts every manifest of the previous schema to the current
+// one, with the vocabulary of the project's terms file. stateMoves and
+// vocabularyMoves say whether the generated-state and vocabulary directories
+// move in this plan, which decides where each file is read from now; the
+// rewrite is written where the file sits once the move is done.
+//
+// A manifest already on the current schema on disk whose committed copy is
+// not gets committed as it is: the committed copy is what every reader of the
+// project's history reads.
+func (p *Plan) planManifests(baseDir string, h *effects.Handle, stateMoves, vocabularyMoves bool) error {
+	termsRel := layout.TermsRel
+	if vocabularyMoves {
+		termsRel = layout.PreviousRoot + "/" + layout.VocabularyName + "/" + filepath.Base(layout.TermsRel)
+	}
+	var terms *vocabulary.List
+	for _, rel := range convertedManifests {
+		readRel := rel
+		if stateMoves {
+			readRel = layout.PreviousRoot + "/" + layout.DocsStateName + strings.TrimPrefix(rel, layout.DocsStateRel)
+		}
+		readPath := filepath.Join(baseDir, filepath.FromSlash(readRel))
+		raw, err := os.ReadFile(readPath)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return err
+		}
+		info, err := os.Stat(readPath)
+		if err != nil {
+			return err
+		}
+		declared, err := manifest.DeclaredSchema(raw, readRel)
+		if err != nil {
+			return err
+		}
+		switch {
+		case declared == manifest.PreviousSchemaVersion:
+			if terms == nil {
+				loaded, err := vocabulary.LoadTermsAt(filepath.Join(baseDir, filepath.FromSlash(termsRel)), termsRel)
+				if err != nil {
+					return err
+				}
+				terms = &loaded
+			}
+			converted, err := manifest.Convert(raw, *terms, readRel)
+			if err != nil {
+				return err
+			}
+			p.Rewrites = append(p.Rewrites, Rewrite{
+				Path: rel,
+				Changes: []string{fmt.Sprintf("schema_version %d -> %d, with the vocabulary of %s",
+					manifest.PreviousSchemaVersion, manifest.SchemaVersion, layout.TermsRel)},
+				Content: converted, Mode: info.Mode().Perm(),
+			})
+			p.Commit = append(p.Commit, rel)
+		case declared == manifest.SchemaVersion && !stateMoves:
+			committed, found := committedSchema(baseDir, rel, h)
+			if found && committed != manifest.SchemaVersion {
+				p.Rewrites = append(p.Rewrites, Rewrite{
+					Path: rel,
+					Changes: []string{fmt.Sprintf("schema_version %d on disk and %d at git HEAD: committed as it is",
+						manifest.SchemaVersion, committed)},
+					Content: raw, Mode: info.Mode().Perm(),
+				})
+				p.Commit = append(p.Commit, rel)
+			}
+		case declared != manifest.SchemaVersion:
+			return fmt.Errorf(
+				"%s declares schema_version %d, which this selfdoc neither reads nor converts: it reads %d and converts %d",
+				readRel, declared, manifest.SchemaVersion, manifest.PreviousSchemaVersion)
+		}
+	}
+	return nil
+}
+
+// committedSchema answers the schema_version of the copy of rel committed at
+// HEAD, and false when there is no such copy or it does not parse.
+func committedSchema(baseDir, rel string, h *effects.Handle) (int64, bool) {
+	result, err := h.Run(
+		[]string{"git", "show", "HEAD:" + rel},
+		effects.Cwd(baseDir), effects.CaptureOutput(),
+		effects.Timeout(gitTimeout), effects.Read(),
+	)
+	if err != nil || result.ExitCode != 0 {
+		return 0, false
+	}
+	declared, err := manifest.DeclaredSchema(result.Stdout, "HEAD:"+rel)
+	if err != nil {
+		return 0, false
+	}
+	return declared, true
 }
 
 // planPreviousIgnore removes selfdoc's block from the previous root's ignore
@@ -446,12 +563,14 @@ func trackedFiles(baseDir, rel string, h *effects.Handle) ([]string, error) {
 	return files, nil
 }
 
-// Apply performs a plan: creates the new root, moves the directories, writes,
-// rewrites and deletes the files, and removes the previous root when nothing
+// Apply performs a plan: creates the new root when directories move, moves
+// them, writes, rewrites and deletes the files, and removes the previous root when nothing
 // is left in it. Under a dry-run handle every step is recorded instead.
 func Apply(h *effects.Handle, baseDir string, plan Plan) error {
-	if err := h.MkdirAll(filepath.Join(baseDir, layout.Root)); err != nil {
-		return err
+	if len(plan.Moves) > 0 {
+		if err := h.MkdirAll(filepath.Join(baseDir, layout.Root)); err != nil {
+			return err
+		}
 	}
 	created := map[string]bool{filepath.Join(baseDir, layout.Root): true}
 	for _, move := range plan.Moves {

@@ -17,13 +17,15 @@
 // committed manifest on its first run. A write is skipped entirely when
 // nothing but the generation timestamp would change.
 //
-// # The reader is tolerant
+// # The reader is tolerant, and reads one schema
 //
 // Compat is the one door every read path goes through. It takes the fields it
-// knows and ignores every other key, so a manifest written by a later selfdoc
-// still reads here; a schema_version above the supported one is the single
-// hard refusal, because that declares a document this reader cannot claim to
-// understand.
+// knows and ignores every other key, so a later selfdoc can add a field without
+// breaking this reader. It refuses every schema_version but [SchemaVersion]: a
+// higher one declares a document this reader cannot claim to understand, and
+// a lower one -- or none -- carries no vocabulary, so reading it would pass off
+// "no vocabulary recorded" as "a project that accepts and rejects nothing".
+// [Convert] turns a document of the previous schema into this one.
 package manifest
 
 import (
@@ -43,6 +45,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/tokenizer"
 	"github.com/stricttools/selfdoc/internal/util"
+	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
 // DefaultTheme is the theme a project's manifest records when its config
@@ -51,10 +54,14 @@ import (
 // reference.
 const DefaultTheme = "minimal"
 
-// SchemaVersion is the manifest format this package writes, and the highest
-// it reads. A document declaring more is refused rather than read on this
+// SchemaVersion is the manifest format this package writes, and the only one
+// it reads. A document declaring another is refused rather than read on this
 // version's terms.
-const SchemaVersion = 1
+const SchemaVersion = 2
+
+// PreviousSchemaVersion is the format before this one: the same document
+// without the vocabulary. [Convert] reads it; nothing else does.
+const PreviousSchemaVersion = 1
 
 // DefaultOutputName is the filename a project's manifest is written under
 // inside selfdoc's generated-state directory.
@@ -100,6 +107,64 @@ type Post struct {
 	Tags []string
 }
 
+// AcceptedWord is one word the project's vocabulary accepts, as the manifest
+// records it: the word and its aliases, without the meaning.
+type AcceptedWord struct {
+	// Word is the word as the project's terms file spells it.
+	Word string
+	// Aliases are other spellings accepted with it.
+	Aliases []string
+}
+
+// RejectedPattern is one pattern the project's vocabulary rejects, as the
+// manifest records it: the pattern and how it matches, without the reason.
+type RejectedPattern struct {
+	// Pattern is the rejected text.
+	Pattern string
+	// Kind is how the pattern matches: one of [vocabulary.Kinds].
+	Kind string
+}
+
+// Vocabulary is the project's own vocabulary as the manifest records it,
+// generated from the project's terms file and nothing else. The site it is
+// published to reads it to refuse two projects that disagree about a word.
+type Vocabulary struct {
+	// Accepted are the accepted words, in the terms file's order.
+	Accepted []AcceptedWord
+	// Rejected are the rejected patterns, in the terms file's order.
+	Rejected []RejectedPattern
+}
+
+// VocabularyOf is what a manifest records of a project's terms file.
+func VocabularyOf(terms vocabulary.List) Vocabulary {
+	recorded := Vocabulary{Accepted: []AcceptedWord{}, Rejected: []RejectedPattern{}}
+	for _, entry := range terms.Accepted {
+		aliases := append([]string{}, entry.Aliases...)
+		recorded.Accepted = append(recorded.Accepted, AcceptedWord{Word: entry.Word, Aliases: aliases})
+	}
+	for _, entry := range terms.Rejected {
+		recorded.Rejected = append(recorded.Rejected, RejectedPattern{Pattern: entry.Pattern, Kind: entry.Kind})
+	}
+	return recorded
+}
+
+// Published is the recorded vocabulary in the shape the cross-project check
+// reads, under the project's slug.
+func (v Vocabulary) Published(slug string) vocabulary.Published {
+	published := vocabulary.Published{Project: slug}
+	for _, entry := range v.Accepted {
+		published.Accepted = append(published.Accepted, vocabulary.Accepted{
+			Word: entry.Word, Aliases: append([]string(nil), entry.Aliases...), Source: slug,
+		})
+	}
+	for _, entry := range v.Rejected {
+		published.Rejected = append(published.Rejected, vocabulary.Rejected{
+			Pattern: entry.Pattern, Kind: entry.Kind, Source: slug,
+		})
+	}
+	return published
+}
+
 // Manifest is a project's published record.
 type Manifest struct {
 	// SchemaVersion is the format the document declared.
@@ -129,6 +194,8 @@ type Manifest struct {
 	// carry one leaves every page referencing the default theme's
 	// stylesheet regardless of what its project configured.
 	Theme string
+	// Vocabulary is the project's own accepted words and rejected patterns.
+	Vocabulary Vocabulary
 }
 
 // Doc is one resolved docs page in the shape this package reads it.
@@ -286,6 +353,11 @@ func Generate(
 		recorded = append(recorded, post)
 	}
 
+	terms, err := vocabulary.LoadProject(dirPath)
+	if err != nil {
+		return nil, err
+	}
+
 	manifest := &Manifest{
 		SchemaVersion: SchemaVersion,
 		Name:          name,
@@ -298,6 +370,7 @@ func Generate(
 		Posts:         recorded,
 		LastGen:       isoUTC(time.Now()),
 		Theme:         theme,
+		Vocabulary:    VocabularyOf(terms),
 	}
 
 	if err := layout.EnsureDir(handle, dirPath, layout.DocsStateRel); err != nil {
@@ -387,7 +460,25 @@ func (m *Manifest) document() object {
 		{"posts", posts},
 		{"last_gen", m.LastGen},
 		{"theme", m.Theme},
+		{"vocabulary", m.Vocabulary.document()},
 	}
+}
+
+// document renders the vocabulary as the object the file carries.
+func (v Vocabulary) document() object {
+	accepted := make([]any, 0, len(v.Accepted))
+	for _, entry := range v.Accepted {
+		aliases := make([]any, 0, len(entry.Aliases))
+		for _, alias := range entry.Aliases {
+			aliases = append(aliases, alias)
+		}
+		accepted = append(accepted, object{{"word", entry.Word}, {"aliases", aliases}})
+	}
+	rejected := make([]any, 0, len(v.Rejected))
+	for _, entry := range v.Rejected {
+		rejected = append(rejected, object{{"pattern", entry.Pattern}, {"kind", entry.Kind}})
+	}
+	return object{{"accepted", accepted}, {"rejected", rejected}}
 }
 
 // Compat builds a Manifest from a parsed manifest document.
@@ -400,17 +491,14 @@ func (m *Manifest) document() object {
 // source names where the document came from, for the error message; pass ""
 // when there is nothing useful to name. A schema_version above SchemaVersion
 // is an error: this reader cannot honestly read a document whose format it
-// does not know.
+// does not know. One below it, or none at all, is an [*OutdatedError].
 func Compat(data map[string]any, source string) (*Manifest, error) {
-	declared := any(int64(SchemaVersion))
-	if raw, ok := data["schema_version"]; ok {
-		declared = raw
-	}
-	above, err := aboveSupportedVersion(declared)
+	declared, err := declaredVersion(data)
 	if err != nil {
 		return nil, err
 	}
-	if above {
+	switch {
+	case intOf(declared) > SchemaVersion:
 		context := ""
 		if source != "" {
 			context = " in " + source
@@ -418,7 +506,69 @@ func Compat(data map[string]any, source string) (*Manifest, error) {
 		return nil, fmt.Errorf(
 			"Unsupported manifest schema_version %s%s (max supported: %d)",
 			numberText(declared), context, SchemaVersion)
+	case intOf(declared) < SchemaVersion:
+		_, present := data["schema_version"]
+		return nil, &OutdatedError{Declared: intOf(declared), Absent: !present, Source: source}
 	}
+	return fromData(data), nil
+}
+
+// OutdatedError is a manifest of a schema before [SchemaVersion]: written by an
+// older selfdoc, and carrying no vocabulary.
+//
+// Its message is the one a project's own reader gives, naming the command that
+// converts the project's committed manifest. The assembly's reader words its
+// own, since there the fix is republishing the project rather than converting
+// a file this machine holds.
+type OutdatedError struct {
+	// Declared is the schema_version the document declared, 1 when it
+	// declared none.
+	Declared int64
+	// Absent reports that the document declared no schema_version at all.
+	Absent bool
+	// Source names where the document came from.
+	Source string
+}
+
+func (e *OutdatedError) Error() string {
+	where := "The manifest"
+	if e.Source != "" {
+		where = e.Source
+	}
+	return fmt.Sprintf(
+		"%s %s, and this selfdoc reads manifest schema_version %d only: that version records the project's vocabulary, which an older manifest does not. Convert it with 'selfdoc layout migrate', which rewrites the manifest with the vocabulary of %s and commits it.",
+		where, e.Declares(), SchemaVersion, layout.TermsRel)
+}
+
+// Declares words what the document declared, for a message.
+func (e *OutdatedError) Declares() string {
+	if e.Absent {
+		return fmt.Sprintf("declares no schema_version, which reads as %d", PreviousSchemaVersion)
+	}
+	return fmt.Sprintf("declares schema_version %d", e.Declared)
+}
+
+// declaredVersion is the document's schema_version, the previous version when
+// it declares none. A value that is not a number at all is an error: the
+// document declares a format in a spelling no reader can compare.
+func declaredVersion(data map[string]any) (any, error) {
+	raw, ok := data["schema_version"]
+	if !ok {
+		return int64(PreviousSchemaVersion), nil
+	}
+	switch raw.(type) {
+	case int64, int, float64:
+		return raw, nil
+	default:
+		return nil, fmt.Errorf(
+			"Unsupported manifest schema_version %v (not a number)", raw)
+	}
+}
+
+// fromData reads every field the manifest carries, without looking at the
+// declared schema.
+func fromData(data map[string]any) *Manifest {
+	declared, _ := declaredVersion(data)
 	return &Manifest{
 		SchemaVersion: intOf(declared),
 		Name:          stringOf(data["name"]),
@@ -431,7 +581,61 @@ func Compat(data map[string]any, source string) (*Manifest, error) {
 		Posts:         postsOf(data["posts"]),
 		LastGen:       stringOf(data["last_gen"]),
 		Theme:         util.PythonStrOrEmpty(data["theme"]),
-	}, nil
+		Vocabulary:    vocabularyOf(data["vocabulary"]),
+	}
+}
+
+// Convert rewrites a manifest document of [PreviousSchemaVersion] as one of
+// [SchemaVersion]: every field it carried, unchanged, plus the vocabulary of
+// terms. The generation timestamp is kept, since nothing was generated.
+//
+// A document of any other schema is refused: this is the one conversion there
+// is, and a document already on this schema has nothing to convert.
+func Convert(raw []byte, terms vocabulary.List, source string) ([]byte, error) {
+	data, err := decodeObject(raw, source)
+	if err != nil {
+		return nil, err
+	}
+	declared, err := declaredVersion(data)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", source, err)
+	}
+	if intOf(declared) != PreviousSchemaVersion {
+		return nil, fmt.Errorf(
+			"%s declares schema_version %s, and only a manifest of schema_version %d is converted",
+			source, numberText(declared), PreviousSchemaVersion)
+	}
+	converted := fromData(data)
+	converted.SchemaVersion = SchemaVersion
+	converted.Vocabulary = VocabularyOf(terms)
+	return encode(converted.document()), nil
+}
+
+// DeclaredSchema answers the schema_version a manifest document declares, the
+// previous version when it declares none.
+func DeclaredSchema(raw []byte, source string) (int64, error) {
+	data, err := decodeObject(raw, source)
+	if err != nil {
+		return 0, err
+	}
+	declared, err := declaredVersion(data)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", source, err)
+	}
+	return intOf(declared), nil
+}
+
+// decodeObject decodes a manifest document that must be a JSON object.
+func decodeObject(raw []byte, source string) (map[string]any, error) {
+	decoded, err := config.DecodeDocument(raw)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", source, err)
+	}
+	data, ok := decoded.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%s: the manifest is not a JSON object", source)
+	}
+	return data, nil
 }
 
 // Load reads a manifest file and returns what it records.
@@ -447,13 +651,9 @@ func Load(path string) (*Manifest, error) {
 	if err != nil {
 		return nil, err
 	}
-	decoded, err := config.DecodeDocument(content)
+	data, err := decodeObject(content, path)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", path, err)
-	}
-	data, ok := decoded.(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("%s: the manifest is not a JSON object", path)
+		return nil, err
 	}
 	return Compat(data, path)
 }
@@ -507,15 +707,12 @@ func LoadFromGit(dirPath string, handle *effects.Handle) (*Manifest, error) {
 		return nil, fmt.Errorf("Failed to read manifest from git: %s",
 			strings.TrimSpace(string(contents.Stderr)))
 	}
-	decoded, err := config.DecodeDocument(contents.Stdout)
+	source := layout.ManifestRel + " at git HEAD"
+	data, err := decodeObject(contents.Stdout, source)
 	if err != nil {
-		return nil, fmt.Errorf("git HEAD: %w", err)
+		return nil, err
 	}
-	data, ok := decoded.(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("git HEAD: the manifest is not a JSON object")
-	}
-	return Compat(data, "git HEAD")
+	return Compat(data, source)
 }
 
 // -- The document's bytes ---------------------------------------------------
@@ -624,23 +821,6 @@ func plain(value any) any {
 
 // -- Value readings ---------------------------------------------------------
 
-// aboveSupportedVersion reports whether a declared schema_version is beyond
-// what this reader supports. A value that is not a number at all is an error:
-// the document declares a format in a spelling no reader can compare.
-func aboveSupportedVersion(declared any) (bool, error) {
-	switch typed := declared.(type) {
-	case int64:
-		return typed > SchemaVersion, nil
-	case int:
-		return int64(typed) > SchemaVersion, nil
-	case float64:
-		return typed > SchemaVersion, nil
-	default:
-		return false, fmt.Errorf(
-			"Unsupported manifest schema_version %v (not a number)", declared)
-	}
-}
-
 // numberText renders a declared version the way the Python's message did.
 func numberText(declared any) string {
 	switch typed := declared.(type) {
@@ -744,7 +924,35 @@ func postsOf(value any) []Post {
 	return posts
 }
 
-// tagsOf reads a decoded tags list.
+// vocabularyOf reads a decoded vocabulary object.
+func vocabularyOf(value any) Vocabulary {
+	recorded := Vocabulary{Accepted: []AcceptedWord{}, Rejected: []RejectedPattern{}}
+	table, ok := value.(map[string]any)
+	if !ok {
+		return recorded
+	}
+	if items, ok := table["accepted"].([]any); ok {
+		for _, item := range items {
+			if entry, ok := item.(map[string]any); ok {
+				recorded.Accepted = append(recorded.Accepted, AcceptedWord{
+					Word: stringOf(entry["word"]), Aliases: tagsOf(entry["aliases"]),
+				})
+			}
+		}
+	}
+	if items, ok := table["rejected"].([]any); ok {
+		for _, item := range items {
+			if entry, ok := item.(map[string]any); ok {
+				recorded.Rejected = append(recorded.Rejected, RejectedPattern{
+					Pattern: stringOf(entry["pattern"]), Kind: stringOf(entry["kind"]),
+				})
+			}
+		}
+	}
+	return recorded
+}
+
+// tagsOf reads a decoded list of strings: a post's tags, a word's aliases.
 func tagsOf(value any) []string {
 	tags := []string{}
 	items, ok := value.([]any)

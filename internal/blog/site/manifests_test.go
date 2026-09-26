@@ -105,6 +105,25 @@ func TestLoadAssemblyManifestsRefusesAnUnknownSchemaVersion(t *testing.T) {
 	}
 }
 
+// A manifest an older selfdoc published carries no vocabulary. The assembly
+// cannot convert it -- the project's checkout is where the vocabulary lives --
+// so the refusal names the project and the republish that replaces it.
+func TestLoadAssemblyManifestsRefusesAnOutdatedManifestNamingTheRepublish(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := filepath.Join(t.TempDir(), "manifests")
+	writeJSON(t, filepath.Join(dir, "alpha.json"), map[string]any{"schema_version": 2, "slug": "alpha"})
+	writeJSON(t, filepath.Join(dir, "beta-posts.json"), map[string]any{"schema_version": 1, "slug": "beta"})
+	_, err := LoadAssemblyManifests(dir)
+	if err == nil {
+		t.Fatal("an outdated manifest was read")
+	}
+	for _, want := range []string{"beta-posts.json", "project 'beta'", "selfdoc assembly republish-all", "selfdoc layout migrate"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal %q does not name %q", err, want)
+		}
+	}
+}
+
 // -- the home project's curated listing --------------------------------------
 
 func TestListingSidecarPath(t *testing.T) {

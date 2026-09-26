@@ -82,7 +82,7 @@ func siblingBlock(siteHop string, slugs ...string) string {
 // integrateManifest is one project's manifest in the assembly.
 func integrateManifest(slug, name, version string, posts []any) map[string]any {
 	return map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
 		"name":           name,
 		"slug":           slug,
 		"version":        version,
