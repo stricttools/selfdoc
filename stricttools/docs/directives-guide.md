@@ -467,7 +467,7 @@ type = "cv"
 description = "Curriculum vitae of ..."
 +++
 
-:-: cv path=".stricttools/docs/cv.toml"
+:-: cv path="stricttools/docs/cv.toml"
 ```
 
 The document declares eight sections, all required and non-empty -- an absent one would render as a heading over nothing:

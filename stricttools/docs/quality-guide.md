@@ -22,8 +22,8 @@ Tiers are progressive milestones. Each tier requires everything from the tier be
 | 0 | None | No markdown documentation at all |
 | 1 | Basic | At least one `.md` file exists in the project |
 | 2 | Selfdoc | `selfdoc.json` is present and parseable |
-| 3 | Templates | Root files are auto-generated (`.stricttools/docs/_README.md` configured in `root_files`) |
-| 4 | Directives | At least one `:-:`, `:<:`, or `:>:` directive appears in `.stricttools/docs/` templates |
+| 3 | Templates | Root files are auto-generated (`stricttools/docs/_README.md` configured in `root_files`) |
+| 4 | Directives | At least one `:-:`, `:<:`, or `:>:` directive appears in `stricttools/docs/` templates |
 | 5 | Advanced | Custom directives are defined in `selfdoc.json`, or blog posts are configured |
 
 Each tier after 0 builds on the previous one. A project cannot reach tier 4 without first having `selfdoc.json` (tier 2) and a root file template (tier 3).
@@ -32,7 +32,7 @@ Each tier after 0 builds on the previous one. A project cannot reach tier 4 with
 
 - **Tier 0** -- The project has no markdown files. Start by creating a `README.md`.
 - **Tier 1** -- Documentation exists but is entirely manual. Running `selfdoc init` will move you to tier 2.
-- **Tier 2** -- selfdoc is configured but not yet generating root files. Add `.stricttools/docs/_README.md` to the `root_files` array in `selfdoc.json` and run `selfdoc gen`.
+- **Tier 2** -- selfdoc is configured but not yet generating root files. Add `stricttools/docs/_README.md` to the `root_files` array in `selfdoc.json` and run `selfdoc gen`.
 - **Tier 3** -- Root files are auto-generated, but docs are not connected to source code. Add directives like `:-: ref path="mypackage" lang="python"` to your templates.
 - **Tier 4** -- Directives link documentation to source code. Define custom directives in `selfdoc.json` or configure blog posts to reach tier 5.
 - **Tier 5** -- All selfdoc features are in use.
@@ -126,7 +126,7 @@ Stdout then carries exactly one document -- the strictcli envelope -- and the sc
 ## Using quality to find improvement areas
 
 1. **Low tier, any grade** -- Focus on tier progression. Follow the `next_step` suggestion in the output. Each tier unlocks a selfdoc capability.
-2. **High tier, low grade** -- The tooling is set up but documentation is thin. Write more prose in your `.stricttools/docs/` templates. Add explanatory pages, guides, and examples.
+2. **High tier, low grade** -- The tooling is set up but documentation is thin. Write more prose in your `stricttools/docs/` templates. Add explanatory pages, guides, and examples.
 3. **Grade D or F** -- The project has very little documentation relative to its size. Prioritize a getting-started guide and API reference pages.
 4. **Tier 3 but no directives** -- Templates exist but are not connected to source code. Adding `:-: ref` directives ensures documentation stays in sync with the codebase.
 

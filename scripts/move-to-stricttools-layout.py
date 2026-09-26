@@ -130,7 +130,7 @@ def declared_paths(config: dict) -> tuple[str, str, str]:
 
 
 def require_tool_root(project: Path) -> None:
-    """Refuse a repository that has not made the hidden directory itself."""
+    """Refuse a repository that has not made the root directory itself."""
     root = project / ROOT_DIR
     if not root.is_dir():
         raise Refusal(

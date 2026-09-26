@@ -36,7 +36,7 @@ Add a `gen_data` section to your `selfdoc.json` with a `scripts` array. Each scr
 | Field | Description |
 | --- | --- |
 | `command` | The shell command to run inside the sandbox |
-| `output` | Filename written to `.stricttools/docs-state/data/` (must be JSON or CSV) |
+| `output` | Filename written to `stricttools/.docs-state/data/` (must be JSON or CSV) |
 | `mounts` | List of directories to mount read-only inside the sandbox |
 
 All three fields are required for each script declaration.
@@ -47,7 +47,7 @@ selfdoc uses [bubblewrap](https://github.com/containers/bubblewrap) (`bwrap`) on
 
 - **Read-only mounts**: directories listed in `mounts` are mounted read-only. The script can read your source code but cannot modify it.
 - **System binaries**: `/usr`, `/lib`, `/bin`, and similar system paths are mounted read-only so the script can use standard tools (Python, bash, etc.).
-- **Write access**: only the `.stricttools/docs-state/data/` output directory is writable.
+- **Write access**: only the `stricttools/.docs-state/data/` output directory is writable.
 - **No network**: `--unshare-all` isolates the process from the network and other namespaces.
 - **Clean environment**: `--clearenv` starts with no environment variables.
 - **Timeout**: scripts are killed after 60 seconds.
@@ -63,11 +63,11 @@ After a script finishes, selfdoc validates its output file against 2 supported f
 
 If validation fails, `selfdoc gen-data` reports the error and stops. This catches scripts that produce malformed output before it reaches your documentation.
 
-Output files are written to `.stricttools/docs-state/data/`. Your documentation pages can then reference this data via custom directives or by reading the files at build time.
+Output files are written to `stricttools/.docs-state/data/`. Your documentation pages can then reference this data via custom directives or by reading the files at build time.
 
 ## Running It
 
-Run data generation before building your documentation site. The `gen-data` command executes each configured script in the bubblewrap sandbox, validates output files, and writes results to `.stricttools/docs-state/data/`. You can run it standalone or let `selfdoc build` handle it automatically:
+Run data generation before building your documentation site. The `gen-data` command executes each configured script in the bubblewrap sandbox, validates output files, and writes results to `stricttools/.docs-state/data/`. You can run it standalone or let `selfdoc build` handle it automatically:
 
 ```bash
 selfdoc gen-data
@@ -113,7 +113,7 @@ docs pages then render:
 ```
 
 The script is mounted read-only alongside the project root, writes its JSON to
-standard output, and selfdoc records it at `.stricttools/docs-state/data/dependencies.json`.
+standard output, and selfdoc records it at `stricttools/.docs-state/data/dependencies.json`.
 Keep such a script to the standard library: the sandbox runs with `--clearenv`
 and no `PYTHONPATH`, so nothing outside the mounts is importable. That
 restriction is the point -- a data script cannot reach the network, the

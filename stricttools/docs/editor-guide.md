@@ -174,7 +174,7 @@ A second request rides the same pause in typing, 450 milliseconds after the last
 
 ### Spelling
 
-Unrecognized words are marked in the text itself. The engine is the one `selfdoc check` runs for SPELL001 and `selfdoc spell-corpus` runs over every sibling project: the same vendored word list, the same machine-local accept list, the same masks that keep code spans, fenced blocks, link targets and directive markers out of the prose. A word accepted anywhere is accepted here.
+Unrecognized words are marked in the text itself. The engine is the one `selfdoc check` runs for SPELL001 and `selfdoc spell-corpus` runs over every sibling project: the same vendored word list, the same project vocabulary (selfdoc's built-in baseline and the repository's own `stricttools/vocabulary/terms.toml`), the same masks that keep code spans, fenced blocks, link targets and directive markers out of the prose. A word the repository accepts is accepted here, and nothing outside the repository is read.
 
 ### Lint marks
 
@@ -186,7 +186,7 @@ The rules are the project's own. The buffer is overlaid on the saved post set ex
 
 ### Cross-project links
 
-Type `](` inside a Markdown link and a completion popup offers every page and every section heading of every repository the registry declares, read from each one's `.stricttools/docs-state/manifest.json`. Up and down move, Enter accepts, Escape dismisses.
+Type `](` inside a Markdown link and a completion popup offers every page and every section heading of every repository the registry declares, read from each one's `stricttools/.docs-state/manifest.json`. Up and down move, Enter accepts, Escape dismisses.
 
 What is inserted is the address that resolves **from a post**. Posts are site citizens, served from `blog/<slug>/` at the site root, while a project's documentation is served under that project's own slug -- so a link to a project page is the project-mounted address reached from two directories down, and a section link carries the anchor the manifest recorded:
 

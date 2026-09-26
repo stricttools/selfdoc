@@ -118,7 +118,7 @@ Minimal uses these via CSS fallbacks (e.g., `var(--radius, 4px)`) so they can st
 
 ## Custom Styles
 
-Create a `.stricttools/docs/custom.css` file in your project to override any CSS custom property or add your own styling rules. selfdoc automatically detects this file during build and injects it after the theme stylesheet, so your rules take precedence over the built-in theme values.
+Create a `stricttools/docs/custom.css` file in your project to override any CSS custom property or add your own styling rules. selfdoc automatically detects this file during build and injects it after the theme stylesheet, so your rules take precedence over the built-in theme values.
 
 Example -- change the accent color and body font:
 
@@ -229,7 +229,7 @@ Click the gear icon in the topbar to open the panel. It provides 16 knobs organi
 
 ### Exporting settings
 
-After adjusting the design knobs to your liking, click **Copy CSS to clipboard** to export your changes. The tool generates a `custom.css` snippet containing only the CSS custom properties you modified, ready to paste into your project's `.stricttools/docs/custom.css` file.
+After adjusting the design knobs to your liking, click **Copy CSS to clipboard** to export your changes. The tool generates a `custom.css` snippet containing only the CSS custom properties you modified, ready to paste into your project's `stricttools/docs/custom.css` file.
 
 You can also click **Copy link** to get a URL that encodes all current settings, making it easy to share a design with collaborators.
 

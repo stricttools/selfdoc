@@ -11,10 +11,10 @@ This page explains how selfdoc works at a high level -- what happens when you ru
 
 ## Build Pipeline Overview
 
-The build transforms your `.stricttools/docs/` Markdown templates into a deployable static HTML site through 7 stages. Each stage receives the output of the previous one and produces a deterministic result:
+The build transforms your `stricttools/docs/` Markdown templates into a deployable static HTML site through 7 stages. Each stage receives the output of the previous one and produces a deterministic result:
 
-1. **Scan** -- walk both docs roots, the handwritten `.stricttools/docs/` and the
-   generated `.stricttools/docs-state/pages/`, for `.md` files, parse frontmatter
+1. **Scan** -- walk both docs roots, the handwritten `stricttools/docs/` and the
+   generated `stricttools/.docs-state/pages/`, for `.md` files, parse frontmatter
 2. **Resolve directives** -- replace directive markers with generated Markdown content (from source code or content transforms)
 3. **Tokenize** -- split the resolved Markdown into typed block tokens
 4. **Render** -- dispatch each token to a block-level HTML renderer
@@ -54,7 +54,7 @@ The theme system works in layers:
 
 - **Theme CSS** defines all custom properties in `:root` -- colors, fonts, spacing, shadows
 - **Dark mode** uses a dual-selector strategy: `@media (prefers-color-scheme: dark)` for automatic OS detection, plus `[data-theme="dark"]` for manual toggle
-- **Custom overrides** via `.stricttools/docs/custom.css` are injected after the theme, so your rules always win
+- **Custom overrides** via `stricttools/docs/custom.css` are injected after the theme, so your rules always win
 - **High contrast** responds to `prefers-contrast: more` with stronger borders and text
 
 See the [Theming](../theming/) page for the full property reference and design tool.

@@ -7,7 +7,7 @@ nav_order = 5
 
 # Frontmatter
 
-Every page under `.stricttools/docs/` and every post under the posts directory opens with a
+Every page under `stricttools/docs/` and every post under the posts directory opens with a
 frontmatter block: TOML between `+++` fences.
 
 ```markdown

@@ -89,7 +89,7 @@ The glossary feature is controlled by a single boolean in `selfdoc.json`. When e
 
 - Define terms close to where they are first explained. Readers who follow the auto-link land right in context.
 - Use `list-glossary` for a curated reference section. Use inline `<dfn>` for terms introduced naturally in prose.
-- The glossary page filename is based on whether you have a `glossary-terms.md` template in `.stricttools/docs/`. If you do, its content is used as the page body above the auto-generated term list.
+- The glossary page filename is based on whether you have a `glossary-terms.md` template in `stricttools/docs/`. If you do, its content is used as the page body above the auto-generated term list.
 - In unified (multi-project) builds, terms from all projects are merged into a single glossary with project attribution.
 
 Next: [Multi-Language Support](../multi-language/) -->

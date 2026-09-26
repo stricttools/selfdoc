@@ -11,7 +11,7 @@ selfdoc builds documentation websites from your Markdown files and source code. 
 
 ### 1. Write Markdown with directives
 
-Create a Markdown file in your `.stricttools/docs/` folder. Use directive markers to reference modules, functions, classes, schemas, and CLI definitions in your source code. selfdoc resolves each directive at build time, extracting live content so your documentation always matches the actual implementation:
+Create a Markdown file in your `stricttools/docs/` folder. Use directive markers to reference modules, functions, classes, schemas, and CLI definitions in your source code. selfdoc resolves each directive at build time, extracting live content so your documentation always matches the actual implementation:
 
 ```markdown
 # API Reference
@@ -33,8 +33,8 @@ A config file tells selfdoc which directories hold source code and in what langu
   "author": {"name": "Jane Doe", "url": "https://janedoe.example"},
   "versions": [{"version": "1.0.0"}],
   "locales": [{"code": "en", "label": "English", "default": true}],
-  "docs": ".stricttools/docs/",
-  "output": ".stricttools/docs-cache/build/"
+  "docs": "stricttools/docs/",
+  "output": "stricttools/.docs-cache/build/"
 }
 ```
 

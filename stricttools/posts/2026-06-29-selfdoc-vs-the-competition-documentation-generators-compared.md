@@ -59,7 +59,7 @@ selfdoc occupies a different niche than the tools above. Rather than being a gen
 
 **Code-aware directives.** selfdoc's directive system extracts content directly from source files -- function signatures, docstrings, type definitions, struct schemas -- across Python, Go, TypeScript, JavaScript, Dart, Kotlin, Swift, Svelte, Zig, and SQL. Documentation stays synchronized with code because it is derived from code, not duplicated alongside it.
 
-**Root file generation.** Templates in `.stricttools/docs/` generate project root files like `README.md` and `CLAUDE.md` using the same directive system. One source of truth produces both the documentation site and the files developers encounter first.
+**Root file generation.** Templates in `stricttools/docs/` generate project root files like `README.md` and `CLAUDE.md` using the same directive system. One source of truth produces both the documentation site and the files developers encounter first.
 
 **Assembly system.** The unified builder composes documentation from multiple projects into a single site with shared navigation, search, and theming. This is purpose-built for monorepos and multi-package ecosystems.
 

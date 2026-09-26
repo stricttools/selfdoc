@@ -97,7 +97,7 @@ description = "Page content changed but frontmatter description was not updated.
 [[lints]]
 code = "STALE002"
 severity = "warning"
-description = "Manifest and disk disagree: a page or post exists on disk but is missing from `.stricttools/docs-state/manifest.json`, or the manifest lists one that is gone. Run `selfdoc gen`."
+description = "Manifest and disk disagree: a page or post exists on disk but is missing from `stricttools/.docs-state/manifest.json`, or the manifest lists one that is gone. Run `selfdoc gen`."
 
 [[lints]]
 code = "DRIFT001"

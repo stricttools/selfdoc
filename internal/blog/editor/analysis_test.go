@@ -18,7 +18,7 @@ import (
 //
 // Two properties carry everything here. The first is that neither lane is a
 // second opinion: the words come from the shared spelling engine (same masks,
-// same vendored list, same machine-local accept list) and the marks come from
+// same vendored list, same repository vocabulary) and the marks come from
 // the project's real lint rules over the check's own post slice, so a finding
 // on screen is a finding the check reports. The second is the coordinate
 // change -- the engines answer in lines and columns, the editor paints flat

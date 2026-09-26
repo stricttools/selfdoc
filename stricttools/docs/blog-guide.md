@@ -18,13 +18,13 @@ Blog posts require a `posts` section in your `selfdoc.json`:
 ```json
 {
   "posts": {
-    "dir": ".stricttools/posts/",
+    "dir": "stricttools/posts/",
     "repo": "owner/posts-archive"
   }
 }
 ```
 
-- `dir` -- directory where post Markdown files live (defaults to `.stricttools/posts/` if omitted)
+- `dir` -- directory where post Markdown files live (defaults to `stricttools/posts/` if omitted)
 - `repo` -- optional GitHub repository for archiving resolved post content
 
 You also need `topology.slug` configured so that posts are attributed to your project in the unified site:
@@ -50,7 +50,7 @@ Use `selfdoc blog post new` to scaffold a new post file:
 selfdoc blog post new --title "My First Post"
 ```
 
-This creates a file like `.stricttools/posts/2026-07-29-my-first-post.md` with a frontmatter template:
+This creates a file like `stricttools/posts/2026-07-29-my-first-post.md` with a frontmatter template:
 
 ```toml
 +++
@@ -100,7 +100,7 @@ Every post requires a frontmatter block -- TOML between `+++` fences, validated 
 
 A post is authored content that may or may not embed code-extracted material, and a post *about* directive syntax reads exactly like a post that uses it. So the author declares which it is rather than the reader guessing. Declaring `directives = false` and then writing a marker raises `POST007`, naming the marker and the line it sits on -- markers inside fenced code blocks and backtick code spans are examples of the syntax, not uses of it, and are never counted. Declaring `directives = true` resolves the post's directives exactly as a documentation page's are resolved.
 
-Documentation pages carry no such key. The whole `.stricttools/docs/` tree is directive territory by construction; only posts declare.
+Documentation pages carry no such key. The whole `stricttools/docs/` tree is directive territory by construction; only posts declare.
 
 ### Optional fields
 
@@ -168,7 +168,7 @@ Publishing is separate from a full documentation release. You can publish new po
 
 ## Revision Tracking
 
-selfdoc tracks content revisions for blog posts via a sidecar file at `.stricttools/docs-state/revisions.json`. Revision tracking is automatic -- it happens during `selfdoc blog post publish`.
+selfdoc tracks content revisions for blog posts via a sidecar file at `stricttools/.docs-state/revisions.json`. Revision tracking is automatic -- it happens during `selfdoc blog post publish`.
 
 ### How it works
 
@@ -443,10 +443,10 @@ preview shows the pages with the canonical links, sitemap entries and
 cross-project links they would ship with, and verifies those.
 `--build` / `--no-build` has no default because the choice is the point:
 `--build` is the honest preview of what would ship, `--no-build`
-re-assembles whatever each checkout already has in `.stricttools/docs-cache/build`, which is
+re-assembles whatever each checkout already has in `stricttools/.docs-cache/build`, which is
 how you iterate after one edit without rebuilding every project.
 
-Curation cuts both ways here: the home project's `.stricttools/docs/projects.toml`
+Curation cuts both ways here: the home project's `stricttools/docs/projects.toml`
 names the projects the front page lists, and **a listed slug with no
 manifest is a hard error**. So a preview has to include every non-external
 project the listing names, not just the ones being changed. Leaving a
@@ -578,7 +578,7 @@ The site-wide artifacts the home project's own build writes for standalone hosti
 
 #### The curated listing
 
-The home project declares which projects the site shows, and how, in `.stricttools/docs/projects.toml`:
+The home project declares which projects the site shows, and how, in `stricttools/docs/projects.toml`:
 
 ```toml
 [[category]]
@@ -641,4 +641,4 @@ selfdoc build --target posts
 selfdoc build --target posts --drafts
 ```
 
-Built HTML is written to the configured output directory: each post at `.stricttools/docs-cache/build/blog/{post-slug}/`, plus a listing page at `.stricttools/docs-cache/build/blog/` for the project's own standalone site.
+Built HTML is written to the configured output directory: each post at `stricttools/.docs-cache/build/blog/{post-slug}/`, plus a listing page at `stricttools/.docs-cache/build/blog/` for the project's own standalone site.

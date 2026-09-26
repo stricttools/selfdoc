@@ -13,7 +13,7 @@ nav_order = 10
 
 A single `selfdoc check` run performs three categories of analysis that together cover directive correctness, API documentation coverage, and SEO best practices. Each category produces structured output with file paths, line numbers, and actionable messages:
 
-1. **Directive validation** -- resolves every directive marker in your `.stricttools/docs/` templates and reports whether each one succeeds or fails.
+1. **Directive validation** -- resolves every directive marker in your `stricttools/docs/` templates and reports whether each one succeeds or fails.
 2. **Coverage analysis** -- counts public/exported symbols in your source code and checks how many are referenced by directives.
 3. **SEO linting** -- scans templates for heading structure, meta description, alt text, contrast ratio, and other best practices.
 
@@ -50,7 +50,7 @@ Skeleton-only symbols:
   rewriting them changes nothing here: edit each page's frontmatter
   description instead.
   Pages whose description to edit:
-    .stricttools/docs-state/pages/mypackage-core.md
+    stricttools/.docs-state/pages/mypackage-core.md
   Symbols they leave undocumented:
   mypackage/core.py: Pipeline
 ```
@@ -106,22 +106,88 @@ possessive is accepted from its base word. Each finding names the file, the
 line, the column, and an edit-distance-one suggestion when one exists.
 
 Genuine terms the general word list cannot know -- project names, tool names,
-technical vocabulary -- belong on the accept list at
-`~/Projects/ark/spelling-accept.txt`: one lowercase word per line, `#` starts
-a comment, and a word there is accepted in any casing, everywhere. A missing
-file simply means nothing has been accepted yet. A file that exists but holds
-a line that is not a bare word is a hard error, so a malformed list is never
-read as a shorter one.
+technical vocabulary -- belong in the project's vocabulary. The spell check
+accepts a word when selfdoc's built-in baseline or the project's own
+`stricttools/vocabulary/terms.toml` accepts it, in any casing, and reads no
+file outside the repository: the same committed docs get the same verdict on
+every machine.
 
 SPELL001 is error severity and cannot be suppressed. Fixing the prose or
 accepting the term are the two available answers, which is the point: a
-misspelling on a published page is a defect, and the accept list records the
-deliberate decision that a word is not one.
+misspelling on a published page is a defect, and the vocabulary records the
+deliberate decision that a word is not one. Each finding names the command
+that accepts the word.
 
-To seed the accept list across a machine, `selfdoc spell-corpus` runs the same
-engine over every selfdoc project sitting beside this one and prints each
-project's unknown words with a first location. It is strictly read-only over
-the projects it visits.
+`selfdoc spell-corpus` runs the same engine over every selfdoc project sitting
+beside this one, each against its own vocabulary, and prints each project's
+unknown words with a first location. It is strictly read-only over the
+projects it visits.
+
+### The vocabulary (VOCAB)
+
+`stricttools/vocabulary/terms.toml` holds the words the project's pages may use
+and the terms they may not. Each accepted word carries its meaning; each
+rejected term carries how it matches and why it is rejected:
+
+```toml
+format_version = 1
+
+[[accepted]]
+word = "selfdoc"
+meaning = "This project: the code-aware static site generator."
+aliases = ["selfdoc's"]
+
+[[rejected]]
+pattern = "blast radius"
+kind = "phrase"
+reason = "Say what is affected."
+```
+
+A rejected term's `kind` is `word` (a whole word), `phrase` (a whole phrase,
+its words separated by any whitespace), `suffix` (the end of a longer word) or
+`prefix` (the start of one). Every comparison is case-insensitive. Each array is
+kept sorted by word, case-folded. The file is validated against a schema, so a
+missing meaning, an unknown kind or an unknown key is refused with the file
+named, and a word both accepted and rejected -- in the project's file, or across
+it and the baseline -- stops the check before any page is judged.
+
+Edit the file with the vocabulary commands rather than by hand; each one keeps
+the file's comments and order and refuses duplicates and conflicts:
+
+```bash
+selfdoc vocabulary accept <word> --meaning "<what it means here>"
+selfdoc vocabulary reject <pattern> --kind <word|phrase|suffix|prefix> --reason "<why>"
+selfdoc vocabulary remove <word>
+```
+
+`stricttools/vocabulary/review.toml` holds words proposed for acceptance that
+nobody has reviewed yet, each with a guessed meaning, a confidence from 0 to 1,
+and the doc lines the guess came from:
+
+```toml
+format_version = 1
+
+[[pending]]
+word = "frobnitz"
+meaning = "The widget the release pipeline turns."
+confidence = 0.8
+evidence = ["stricttools/docs/index.md:12: The frobnitz turns once per release."]
+```
+
+A pending word is not accepted: the spell check reports it like any unknown
+word, and the finding names the commands that resolve it:
+
+```bash
+selfdoc vocabulary approve <word>                        # accept it with the proposed meaning
+selfdoc vocabulary approve <word> --meaning "<corrected>"  # accept it with a corrected one
+selfdoc vocabulary drop <word>                           # delete the proposal
+```
+
+The VOCAB lints hold the file to its purpose, each naming the command that
+clears it: an accepted word no page uses (VOCAB001), an entry accepted or
+rejected twice (VOCAB002), an accepted word a rejected suffix or prefix covers
+(VOCAB003), a page whose prose uses a rejected term (VOCAB004), and an array out
+of order (VOCAB005).
 
 ### Suppressing rules
 
@@ -147,7 +213,7 @@ Suppression reaches warning-severity codes only. Naming an error-severity code -
 
 selfdoc tracks SHA-256 hashes of each page's raw template body (directives unresolved) and its frontmatter description. When the content changes but the description stays the same, it raises a STALE001 error. This catches the common case where you update a page's content but forget to revise the description that feeds into meta tags and search results.
 
-Hashes are stored in `.stricttools/docs-state/hashes/hashes.json` and auto-committed after each check (unless you pass `--no-auto-commit` or `--dry-run`).
+Hashes are stored in `stricttools/.docs-state/hashes/hashes.json` and auto-committed after each check (unless you pass `--no-auto-commit` or `--dry-run`).
 
 ## Example Validation
 

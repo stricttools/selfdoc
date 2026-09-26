@@ -139,7 +139,7 @@ HTTPS and HSTS are handled by the GitHub Pages platform itself -- no configurati
 
 ## Directory-Index URLs
 
-selfdoc generates directory-index URLs for all pages by default, which produces clean URLs without file extensions and avoids trailing-slash redirect chains. For example, a page at `.stricttools/docs/guide.md` becomes `guide/index.html` in the output, which is served as `/guide/` by any standard web server.
+selfdoc generates directory-index URLs for all pages by default, which produces clean URLs without file extensions and avoids trailing-slash redirect chains. For example, a page at `stricttools/docs/guide.md` becomes `guide/index.html` in the output, which is served as `/guide/` by any standard web server.
 
 This approach:
 

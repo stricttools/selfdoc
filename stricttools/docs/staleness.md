@@ -17,7 +17,7 @@ This is easy to miss during normal editing. You change the content, the page loo
 
 ## How It Works
 
-selfdoc maintains a hash store at `.stricttools/docs-state/hashes/hashes.json` that tracks each page's content and description independently. By comparing current hashes against stored baselines on every `selfdoc check` run, it detects when content has drifted from its description. For each documentation page with a frontmatter description, it tracks two SHA-256 hashes:
+selfdoc maintains a hash store at `stricttools/.docs-state/hashes/hashes.json` that tracks each page's content and description independently. By comparing current hashes against stored baselines on every `selfdoc check` run, it detects when content has drifted from its description. For each documentation page with a frontmatter description, it tracks two SHA-256 hashes:
 
 - **Content hash** -- computed from the page's raw template body: frontmatter stripped, directives left unresolved, and each directive marker's attribute values canonicalized. A directive whose output changes (a version bump, a renamed symbol) therefore does not trip staleness, and neither does a mechanical `path="x"` -> `path="y"` rename
 - **Description hash** -- computed from the frontmatter `description` string
@@ -74,11 +74,11 @@ Acceptance is intentionally per-page and unforgiving:
 - The two courses are alternatives, not steps. Editing the description clears the finding on its own, so a page whose description was just rewritten is already cleared and accepting it afterwards is the "nothing to accept" error. Accept is for the other course: the description was reviewed against the change and deliberately left as it is.
 - The same guardrails apply to DRIFT001 (source-docstring and CLI-schema drift); accepting advances every tracked hash for the page.
 
-Like `selfdoc check`, the command commits the updated `.stricttools/docs-state/hashes/hashes.json` by default; pass `--no-auto-commit` to stage the change for a larger manual commit.
+Like `selfdoc check`, the command commits the updated `stricttools/.docs-state/hashes/hashes.json` by default; pass `--no-auto-commit` to stage the change for a larger manual commit.
 
 ## Hash Storage
 
-Hashes are stored in `.stricttools/docs-state/hashes/hashes.json`, a JSON file mapping each page path to its content and description SHA-256 hashes. The file is written atomically -- to a temporary file, then renamed over the old one -- so an interrupted run cannot leave a half-written store. Commit it: it is the baseline for future comparisons.
+Hashes are stored in `stricttools/.docs-state/hashes/hashes.json`, a JSON file mapping each page path to its content and description SHA-256 hashes. The file is written atomically -- to a temporary file, then renamed over the old one -- so an interrupted run cannot leave a half-written store. Commit it: it is the baseline for future comparisons.
 
 ```json
 {
@@ -120,13 +120,13 @@ This is what lets `selfdoc gen` safely regenerate: a description is reseeded onl
 
 ## Dry Run Mode
 
-To preview staleness results without updating the hash file on disk, use the `--dry-run` flag. This computes all hashes, compares them against the stored baselines, and reports any stale pages but does not write changes to `.stricttools/docs-state/hashes/hashes.json`. Useful for previewing what would be flagged:
+To preview staleness results without updating the hash file on disk, use the `--dry-run` flag. This computes all hashes, compares them against the stored baselines, and reports any stale pages but does not write changes to `stricttools/.docs-state/hashes/hashes.json`. Useful for previewing what would be flagged:
 
 ```bash
 selfdoc check --dry-run
 ```
 
-This computes all hashes and reports stale pages but does not write to `.stricttools/docs-state/hashes/hashes.json`. Useful for seeing what would be flagged without changing state.
+This computes all hashes and reports stale pages but does not write to `stricttools/.docs-state/hashes/hashes.json`. Useful for seeing what would be flagged without changing state.
 
 ## The `--no-auto-commit` Flag
 

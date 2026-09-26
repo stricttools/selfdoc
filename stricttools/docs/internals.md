@@ -165,7 +165,8 @@ Codes are grouped by prefix, and a family's members share a subject:
 | `LANG` | Source entries and their declared languages |
 | `SEARCH` | The search index and its configuration |
 | `VER` | Version-bearing generated content |
-| `SPELL` | Spelling, against the vendored word list and the accept list |
+| `SPELL` | Spelling, against the vendored word list and the project's accepted vocabulary |
+| `VOCAB` | The project's vocabulary files, and rejected terms in page prose |
 | `POST` | Blog post frontmatter and layout |
 | `LINK` | Internal links that resolve nowhere |
 | `UNIFIED` | The unified multi-project build |

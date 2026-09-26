@@ -26,7 +26,7 @@ selfdoc init --base-url https://myproject.pages.dev
 # Auto-generate API and CLI reference pages
 selfdoc gen
 
-# Edit .stricttools/docs/ pages -- add directives referencing your code
+# Edit stricttools/docs/ pages -- add directives referencing your code
 
 # Build HTML output
 selfdoc build
@@ -141,8 +141,8 @@ Dispatch order is content directives, then custom directives, then the language 
 ```json
 {
   "source": [{"path": "internal/", "language": "go"}],
-  "docs": ".stricttools/docs/",
-  "output": ".stricttools/docs-cache/build/",
+  "docs": "stricttools/docs/",
+  "output": "stricttools/.docs-cache/build/",
   "base_url": "https://my-project.example.com",
   "versions": [{"version": "1.0.0"}],
   "locales": [{"code": "en", "label": "English", "default": true}],

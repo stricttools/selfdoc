@@ -25,9 +25,9 @@ import (
 	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
-// isolate binds the test-environment isolation floor: a throwaway HOME (so the
-// machine's accept list cannot change a spelling verdict), an isolated git
-// identity, and no ambient credentials.
+// isolate binds the test-environment isolation floor: a throwaway HOME (so
+// nothing outside the fixture can change a verdict), an isolated git identity,
+// and no ambient credentials.
 func isolate(t *testing.T) {
 	t.Helper()
 	hygiene.Isolate(t)

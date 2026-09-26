@@ -130,8 +130,9 @@ func Check() map[string]any {
 }
 
 // SpellCorpus is the payload of `selfdoc spell-corpus`: the sweep's inputs
-// (which accept list, and how many terms and words it holds), one entry per
-// project visited, and the corpus-wide flagged total. "error" is set instead
+// (how many words the vendored list and selfdoc's built-in baseline hold), one
+// entry per project visited with how many words its own vocabulary accepts,
+// and the corpus-wide flagged total. "error" is set instead
 // of results for a project that could not be read.
 func SpellCorpus() map[string]any {
 	misspelling := strictcli.SchemaObject(

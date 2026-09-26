@@ -11,7 +11,7 @@ import (
 
 func (c *cli) registerSpellCorpus() {
 	c.app.Command("spell-corpus",
-		"Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits",
+		"Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001), each project against its own vocabulary: selfdoc's built-in baseline and the project's stricttools/vocabulary/terms.toml. Read-only over every project it visits",
 		c.cmdSpellCorpus,
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.PayloadSchema(payloadschemas.SpellCorpus()),
