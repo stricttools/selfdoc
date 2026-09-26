@@ -85,8 +85,8 @@
     "description": "1ee13e582c9284732da29c0074d4ca4314922dfcd10408571d770a2159971fb9"
   },
   "en/blog-guide.md": {
-    "content": "4bad9ddc054f4d884a51b535222c4a7c6d95e5be9ec3ac7bfa15e41d61ef4913",
-    "description": "da5e696cb7cfa14507c0e08db1ad866230e25e4b74cbc7c29247b7d71ca42d06"
+    "content": "08c828bc1fb4622f2b082a47683b303db4ac0ad41a13ef41e5ad0fbe6cebfa46",
+    "description": "f6137a0de25b9402d21c36861e939970b492cc952a669d0d46043326b16c5bd3"
   },
   "en/blog/selfdoc-vs-the-competition-documentation-generators-compared.md": {
     "content": "c25c2417c6524d0e16a73c7a1655ef888c96902c9751d25dec542bb4159c3309",
@@ -97,9 +97,9 @@
     "description": "695eef39f1d6f5b685e2dfb6573d648e25604bf5d356dfab5124a81fe20ed1c3"
   },
   "en/cli-assembly.md": {
-    "content": "4837aa933a360885feb77273bfe487e8959f4687d7bfa4e9932f5a1b671cf033",
+    "content": "dc313e7f9cd952f3078a76c3ef53b59147ca3a4486dfb423de0651cb3cb3fe77",
     "description": "c5eee38c282ee28795a6abad2c5c68e590dc64732a326a3e837ffa8ac6ebf2fe",
-    "schema_hash": "862300196eff29d354de457c25b27c8a0d3850d1fab66005357233a72ef5f1ed",
+    "schema_hash": "5f801135c106d3afe1a3d6acf6f0d5bfef8cbe7df0512358df6bbbc56dbd79d4",
     "seed_hash": "c5eee38c282ee28795a6abad2c5c68e590dc64732a326a3e837ffa8ac6ebf2fe"
   },
   "en/cli-baseline.md": {
@@ -109,9 +109,9 @@
     "seed_hash": "23dacc6a507ddbae1b28943eaa285afc7b6bc28370eeda974843a76a4194da1a"
   },
   "en/cli-blog.md": {
-    "content": "6bb6d3a4d69f57cfb15bb6f4c9ad7cefa4efbe8d3e4fe90b7a4f1e8f163f6fa3",
+    "content": "812631b931d8b170405923b0993be54d9768fcf681842d9b5a67c46e7d7ae226",
     "description": "648bda44bb9968432c2880b596964dd427405c9e36c554d39b3e2659acd7ee46",
-    "schema_hash": "19bff4896d240dd8f37ec335795b04bfe521d424318dbbf44d26b8f01097f864",
+    "schema_hash": "9a8a66de2ff277b25063820379664f96668606162dd90b8f6795ac45dddb376d",
     "seed_hash": "648bda44bb9968432c2880b596964dd427405c9e36c554d39b3e2659acd7ee46"
   },
   "en/cli-build.md": {
@@ -161,9 +161,9 @@
     "schema_hash": "f9757121e5fbd053ce15261535a2b16d6bd2c7fc6a29f8c19bfbbd720e7b36ba"
   },
   "en/cli-layout.md": {
-    "content": "166ed710a9769e25c0b63c3c7777e497b25d0d2793fed14cf386e1c980524cc8",
-    "description": "ef03249c5a8dea0cac6c19c7cb7f7fb66429d7a5526bd968b5d93437858e00e6",
-    "schema_hash": "2003ab224c65a050063ca327ba050b3cc45eaf6a5f17fda0c83fd64275f005de"
+    "content": "9baee01a41f00200ec84949ed9c0db9cef14bed04afef687f770874ef1f5275d",
+    "description": "8c0273ccd58c3a5722b31a78a1255077d5aaf815ffb40a3892fd113bb7b4445d",
+    "schema_hash": "b31cc5640e244b50f783dcf47c11a54faa02d73451e5550dd8ab950323ea0574"
   },
   "en/cli-post.md": {
     "content": "86fe01520f627c2342a68880aa7adc42438729597461260c9693e5c99cff1a15",
@@ -415,7 +415,7 @@
   "en/internal-excludes.md": {
     "content": "4c1433ae8b878a7d4231da55d74257994e953fc5695fa4b26a4fdaac4892aa6a",
     "description": "771699c2fcbd68e232a5b3d2c565fc54d77a00691af2ccdf0b0752748827ada8",
-    "source_docstring": "985381900902a14e5eef358c51a60b1083b9150803c6899e2f37e83b264b0e65"
+    "source_docstring": "59df6afb72d5f67f3837552ad2b7a54b1dc0cceedc6b2377dce91890544d219b"
   },
   "en/internal-extractors-dart.md": {
     "content": "52448657ce49c14a47f9a25a595fd23a7bacdedeb166a81655c52d14f80e275e",
@@ -539,13 +539,13 @@
   },
   "en/internal-manifest.md": {
     "content": "d7667a632c3fc2b01763e3801c5e5f476fbd89fb9274c76729f3c275c05ba61d",
-    "description": "b3e424b57dad7017cccad5baa78479bd345234b885cd0dfe8fc04fda0c0cd049",
-    "source_docstring": "760b21eb1097348bc1a41fe9b75430698a2d68a1a432cc9338297368979637c8"
+    "description": "3fb51cab8def87ef210b4e870c95610565ac07c5ca6b682ff1f4a342c2ddd41f",
+    "source_docstring": "a7b9c2dd47f4b77af767eb26b28dae5f62f23037a6defa2bf813155a5ed8918b"
   },
   "en/internal-migrate.md": {
     "content": "fa922969a57523d1c0fe70a3d1832d544144b4e968a71be2390f11f8f966d524",
-    "description": "98723047da55dcbc4874cb527bc033c8f96f0df51dbbf3de1b6426afd93c9a7e",
-    "source_docstring": "f0255c806c78ff43466c0ffde7dc8b188f0791ab0cd2901fa7f28ac75300e704"
+    "description": "90dbd8da9b94bd99cb206fa412f12abf6af2747e7b6ab2da2e76e474072cddda",
+    "source_docstring": "91c0536f5850f7dedb6b3cb5c85ff80523b503dc625db3cadeec375efcff29b6"
   },
   "en/internal-ownership.md": {
     "content": "bbf6559f35ab251e4033f07de1139db21b724b293062c770a5bde8f73b314824",
@@ -667,8 +667,8 @@
     "description": "368283e2ae5434b431437461e25c722f4ddc31083b2720fe7794ada67c517418"
   },
   "en/layout.md": {
-    "content": "fea3a1d3ac06724b981bec4dfe3dcbca1328247c7a9a06b8aed618043dfa4f69",
-    "description": "50debafa3a424e73c5b7c0d10a6ba690ac859aaaf25663c681402e9bbb4ea7e0"
+    "content": "a476391069fc6057d73d0452df306d20bbe68231e589664ddc3624e98042dde6",
+    "description": "79c235a8f384b3f30c9dfe4a19b0797b7bbca92e427278282b2464f688ab2f3d"
   },
   "en/llms-txt.md": {
     "content": "f2b2dbaace9656c8aa7445983484cdd8cd142c49cbe289301dc23871d641d7aa",
