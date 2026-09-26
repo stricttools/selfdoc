@@ -1088,7 +1088,7 @@
           "args": [
             {
               "name": "pattern",
-              "help": "The rejected text (e.g. 'leverage', 'blast radius', '-shaped'). Matched case-insensitively",
+              "help": "The rejected text (e.g. 'leverage', 'in order to', '-ish'). Matched case-insensitively",
               "value_schema": {
                 "type": "string"
               },
