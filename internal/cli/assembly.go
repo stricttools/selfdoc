@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,8 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/verify"
 	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/selfdoc/internal/layout"
+	"github.com/stricttools/selfdoc/internal/manifest"
 	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
@@ -194,6 +197,22 @@ func (c *cli) registerAssembly() {
 		strictcli.WithFlags(
 			strictcli.StringFlag("assembly-dir", "Path to the assembly repository checkout to verify", strictcli.Default(".")),
 			strictcli.StringFlag("canonical-base", "Absolute canonical base URL of the assembly site, from topology.docs_base. Required: it is what tells this site's absolute URLs from everybody else's, and without it half the assertions would pass by not looking.", strictcli.Required()),
+		),
+	)
+
+	group.Command("republish-all",
+		"Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version "+strconv.Itoa(manifest.SchemaVersion)+", which records each project's vocabulary. Before building anything it refuses a checkout not on the "+layout.Root+"/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project), and sends one shared-only deploy request. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.",
+		c.cmdAssemblyRepublishAll,
+		strictcli.WithEffect(strictcli.EffectMutating),
+		// Consequential for the reason `blog publish-docs` is, for every
+		// project at once: locally built content becomes publicly readable,
+		// and each publish deletes the pages its project no longer builds.
+		strictcli.WithConsequential(),
+		strictcli.WithGrants(assemblyDispatchGrant),
+		strictcli.WithFlags(
+			strictcli.StringFlag("repo", "Path to the checkout of one project on the roster other than the home project. Repeat once per project: together with --home, the checkouts must declare the roster's slugs exactly.",
+				strictcli.Repeatable(), strictcli.Unique(true), strictcli.Default([]any{})),
+			strictcli.StringFlag("home", "Path to the checkout of the roster's home project, the one served at the site root. Required: a republish of the whole site publishes its front page too.", strictcli.Required()),
 		),
 	)
 
@@ -702,6 +721,40 @@ func (c *cli) cmdAssemblyVerify(ctx *strictcli.Context, kwargs map[string]any) s
 
 	c.printf("The assembled tree at %s passed %d of %d check(s).\n",
 		assemblyDir, len(report.Ran), len(verify.Checks))
+	return strictcli.Exit(0)
+}
+
+func (c *cli) cmdAssemblyRepublishAll(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
+	handle := effects.FromContext(ctx)
+	summary, err := assembly.RepublishAll(assembly.RepublishOptions{
+		HomeDir:     strictcli.Get[string](kwargs, "home"),
+		ProjectDirs: stringList(kwargs, "repo"),
+		Running:     c.opts.Version,
+	}, handle)
+	if err != nil {
+		return c.fail(err)
+	}
+	if !summary.Published {
+		c.printf("Dry run: the checks passed and every project built. Would publish to %s (its deploy workflow pins selfdoc %s):\n", summary.Repo, summary.Pin)
+	} else {
+		c.printf("Republished every project to %s (its deploy workflow pins selfdoc %s):\n", summary.Repo, summary.Pin)
+	}
+	for _, project := range summary.Projects {
+		role := ""
+		if project.Home {
+			role = ", the home project"
+		}
+		line := fmt.Sprintf("  %s %s%s: %d file(s) and its manifest", project.Slug, project.Version, role, len(project.Files))
+		if project.Commit != "" {
+			line += ", commit " + project.Commit
+		}
+		c.println(line)
+	}
+	if !summary.Published {
+		c.println("then one shared-only deploy request. Nothing was published.")
+	} else {
+		c.println("Sent one shared-only deploy request; the shared elements will regenerate.")
+	}
 	return strictcli.Exit(0)
 }
 

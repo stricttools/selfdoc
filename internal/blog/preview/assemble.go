@@ -33,13 +33,6 @@ type Summary struct {
 	Report *verify.VerifyReport
 }
 
-// orderedCheckout is one checkout in the order it is built and grafted.
-type orderedCheckout struct {
-	slug      string
-	sourceDir string
-	home      bool
-}
-
 // PreviewAssembly assembles every named checkout into outDir and verifies the
 // result.
 //
@@ -98,38 +91,21 @@ func PreviewAssembly(
 	siteDir := filepath.Join(outDir, "site")
 	manifestsDir := filepath.Join(outDir, "manifests")
 
-	homeDir, err = filepath.Abs(homeDir)
-	if err != nil {
-		return nil, err
-	}
-	homeSlug, err := ReadSlug(homeDir)
-	if err != nil {
-		return nil, err
-	}
-	checkouts := map[string]string{homeSlug: homeDir}
 	// The home project builds LAST: its front page renders every other
 	// project's live version out of the manifests beside it, so the others
 	// have to be grafted before it is built.
-	var ordered []orderedCheckout
-	for _, raw := range projectDirs {
-		sourceDir, absErr := filepath.Abs(raw)
-		if absErr != nil {
-			return nil, absErr
-		}
-		slug, slugErr := ReadSlug(sourceDir)
-		if slugErr != nil {
-			return nil, slugErr
-		}
-		if existing, taken := checkouts[slug]; taken {
-			return nil, errorf(
-				"two checkouts declare the slug %s: %s and %s. One slug is one "+
-					"project's section of the site, so the preview cannot serve "+
-					"both.", util.PythonRepr(slug), existing, sourceDir)
-		}
-		checkouts[slug] = sourceDir
-		ordered = append(ordered, orderedCheckout{slug: slug, sourceDir: sourceDir})
+	ordered, err := site.ResolveCheckouts(homeDir, projectDirs)
+	if err != nil {
+		return nil, err
 	}
-	ordered = append(ordered, orderedCheckout{slug: homeSlug, sourceDir: homeDir, home: true})
+	checkouts := map[string]string{}
+	homeSlug := ""
+	for _, item := range ordered {
+		checkouts[item.Slug] = item.SourceDir
+		if item.Home {
+			homeSlug = item.Slug
+		}
+	}
 
 	slugs := make([]string, 0, len(checkouts))
 	for slug := range checkouts {
@@ -209,7 +185,7 @@ func PreviewAssembly(
 			// sibling block a deploy writes, read off the manifests written
 			// so far.
 			siblings, siblingsErr := assembly.SiblingsFor(
-				manifestsDir, outDir, item.slug,
+				manifestsDir, outDir, item.Slug,
 			)
 			if siblingsErr != nil {
 				return nil, siblingsErr
@@ -221,9 +197,9 @@ func PreviewAssembly(
 				return nil, siteNameErr
 			}
 			if buildErr := assembly.BuildSourceProject(assembly.BuildOptions{
-				SourceDir:    item.sourceDir,
+				SourceDir:    item.SourceDir,
 				Scope:        "full",
-				Home:         item.home,
+				Home:         item.Home,
 				ManifestsDir: manifestsDir,
 				Theme:        theme,
 				Siblings:     siblings,
@@ -234,19 +210,19 @@ func PreviewAssembly(
 		}
 		if _, graftErr := assembly.ApplyProjectFiles(assembly.GraftOptions{
 			AssemblyDir: outDir,
-			SourceDir:   item.sourceDir,
-			Slug:        item.slug,
+			SourceDir:   item.SourceDir,
+			Slug:        item.Slug,
 			Scope:       "full",
-			Home:        item.home,
+			Home:        item.Home,
 		}, handle); graftErr != nil {
 			return nil, graftErr
 		}
-		version, versionErr := site.DetectLatestVersion(item.sourceDir)
+		version, versionErr := site.DetectLatestVersion(item.SourceDir)
 		if versionErr != nil {
 			return nil, versionErr
 		}
 		if _, recordErr := site.RecordMembership(
-			projectsJSON, membership, item.slug, "", "local", version, handle,
+			projectsJSON, membership, item.Slug, "", "local", version, handle,
 		); recordErr != nil {
 			return nil, recordErr
 		}

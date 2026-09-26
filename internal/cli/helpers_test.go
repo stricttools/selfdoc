@@ -21,6 +21,10 @@ import (
 // under each tool's own name by the tests that need it.
 var fakeToolBinary string
 
+// fakeRepoGHBinary is the assembly suite's stateful fake gh, built once by
+// TestMain.
+var fakeRepoGHBinary string
+
 // TestMain builds the fake external tool before any test runs.
 //
 // Every command that reaches GitHub or Cloudflare does it by running "gh" or
@@ -47,6 +51,18 @@ func TestMain(m *testing.M) {
 	build.Stderr = os.Stderr
 	if err := build.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "building the fake tool: %v\n", err)
+		os.RemoveAll(dir)
+		os.Exit(1)
+	}
+	// The assembly suite's fake gh keeps a repository's state across calls,
+	// which is what a run publishing several projects and reading back what it
+	// wrote needs.
+	fakeRepoGHBinary = filepath.Join(dir, "fakegh")
+	build = exec.Command("go", "build", "-o", fakeRepoGHBinary,
+		"github.com/stricttools/selfdoc/internal/blog/assembly/fakeghcmd")
+	build.Stderr = os.Stderr
+	if err := build.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "building the fake gh: %v\n", err)
 		os.RemoveAll(dir)
 		os.Exit(1)
 	}

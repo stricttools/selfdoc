@@ -530,6 +530,41 @@ word meant), or remove the word in the accepting project
 (`selfdoc vocabulary remove <word>`). A word of the baseline changes only in
 selfdoc itself, so a pattern covering one is narrowed.
 
+### Republishing every project
+
+A manifest an older selfdoc published is on manifest `schema_version` 1 and
+records no vocabulary, and the site's reader refuses it, naming the project and
+`selfdoc assembly republish-all`. That command publishes every project on the
+roster again, from local checkouts, in one pass:
+
+```bash
+selfdoc assembly republish-all --home ../mysite --repo ../myproject --repo ../otherproject --dry-run
+selfdoc assembly republish-all --home ../mysite --repo ../myproject --repo ../otherproject
+```
+
+`--home` is the checkout of the roster's home project and each `--repo` the
+checkout of one other project; together they must declare the roster's slugs,
+exactly, and every checkout's `selfdoc.json` must name the same
+`assembly.repo`. Before building anything it refuses:
+
+- a checkout not on the `stricttools/` layout, or whose manifest is missing or
+  on `schema_version` 1 -- every such checkout listed, each with its fix
+  (`selfdoc layout migrate`, or `selfdoc gen` for a missing manifest);
+- checkouts that are not the roster's projects, or a `--home` that is not the
+  roster's home project;
+- an assembly deploy workflow pinning a selfdoc older than the one running,
+  whose deploys would refuse what this publishes: move the pin first with
+  `selfdoc assembly sync-workflow --pin-selfdoc <version>`;
+- any two projects' vocabularies, or one and selfdoc's built-in baseline, that
+  disagree about a word -- every conflict listed, in one pass.
+
+Then it builds every project locally, the home project last, against the
+checkouts' own manifests (the site's are what it replaces), publishes each one
+the way `blog publish-docs` does -- one assembly commit per project -- and sends
+one shared-only deploy request. `--dry-run` runs every check and every local
+build, which write only each checkout's build output, and prints what it would
+publish, without publishing anything.
+
 ### What a build owns
 
 A full build used to replace `site/{slug}/` wholesale, which meant a release destroyed anything published into that subtree since the last one. It prunes to its own output instead.
@@ -649,7 +684,7 @@ Every deploy reconciles the tree to the declaration. A project that is no longer
 selfdoc assembly retire --slug oldproject
 ```
 
-One operation: the `[[project]]` block leaves the roster and, in the same commit, every path the project owns is deleted; the shared-only dispatch that follows regenerates the listing, blog index, feed, sitemap and search index without it. It is consequential -- the only command in either CLI that removes published content -- and retiring a slug the roster does not declare is a hard error naming the ones it does.
+One operation: the `[[project]]` block leaves the roster and, in the same commit, every path the project owns is deleted; the shared-only dispatch that follows regenerates the listing, blog index, feed, sitemap and search index without it. It is consequential -- it removes a project's whole published content -- and retiring a slug the roster does not declare is a hard error naming the ones it does.
 
 ## Building Posts Locally
 

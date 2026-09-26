@@ -25,7 +25,7 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 - top level: `init`, `build`, `serve`, `deploy`, `check`, `gen`, `gen-data`, `spell-corpus`, `quality`
 - `baseline` -- accept the content and description hash baselines that drive STALE001 and DRIFT001
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
-- `assembly` -- initialize, push, inspect, rebuild, retire and verify the unified multi-project site
+- `assembly` -- initialize, push, inspect, rebuild, republish, retire, and verify the unified multi-project site
 - `layout` -- dump selfdoc's claim on the `stricttools/` directory, validate a repository against it, and migrate a repository off the previous `.stricttools/` layout
 - `vocabulary` -- accept, reject and remove words in the project's `stricttools/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
 

@@ -165,13 +165,7 @@ func (c *cli) buildSite(
 // outputDirOf is the output directory a build reports writing to, exactly as
 // the config spells it.
 func outputDirOf(cfg config.Config) string {
-	if cfg == nil {
-		return layout.OutputDefault
-	}
-	if out, ok := cfg["output"].(string); ok {
-		return out
-	}
-	return layout.OutputDefault
+	return config.OutputRel(cfg)
 }
 
 // formatLint renders one diagnostic in the compiler-style form both the build

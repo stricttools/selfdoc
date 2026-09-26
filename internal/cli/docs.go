@@ -6,12 +6,8 @@ import (
 	"strings"
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
-	"github.com/stricttools/selfdoc/internal/blog/sitedirectives"
-	"github.com/stricttools/selfdoc/internal/build"
-	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/layout"
-	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/smm-h/strictcli/go/strictcli"
 )
 
@@ -49,14 +45,7 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 		return c.failf("Error: topology.slug not configured in selfdoc.json.")
 	}
 
-	version, _ := cfg["version"].(string)
-	if version == "" {
-		if config.IsUnversioned(cfg) {
-			version = config.UnversionedVersion
-		} else {
-			version = util.DetectProjectVersion(dir, "0.0.0")
-		}
-	}
+	version := assembly.PublishVersion(dir, cfg)
 
 	// Whether this project is the assembly's home project decides both how it
 	// is built and where its pages land, so the roster is read before either.
@@ -82,32 +71,12 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 	}
 
 	// The same build the deploy runs on a cloned checkout, run here on the
-	// working tree. The home project builds through the one build that can
-	// resolve a site-level directive, against the assembly's own manifests.
-	if home {
-		context, err := sitedirectives.HomeContext(dir, cfg, manifests)
-		if err != nil {
-			return c.fail(err)
-		}
-		if _, err := sitedirectives.BuildHome(
-			dir, cfg, context, "", false, handle,
-		); err != nil {
-			return c.fail(err)
-		}
-	} else {
-		// The sibling block every assembled page ends with is read off the
-		// assembly's manifests. A publish that skipped them would push pages
-		// missing a section every other project's pages carry.
-		if err := assembly.BuildSourceProject(assembly.BuildOptions{
-			SourceDir: dir,
-			Scope:     "full",
-			Siblings: build.SiblingsFromManifests(
-				manifests, roster.Home, slug,
-			),
-			SiteName: assembly.SiteName(manifests, roster.Home),
-		}, handle); err != nil {
-			return c.fail(err)
-		}
+	// working tree.
+	if err := assembly.BuildForPublish(assembly.PublishBuildOptions{
+		SourceDir: dir, Config: cfg, Slug: slug, Home: home,
+		HomeSlug: roster.Home, Manifests: manifests,
+	}, handle); err != nil {
+		return c.fail(err)
 	}
 
 	outputRel := strings.TrimRight(outputDirOf(cfg), "/")

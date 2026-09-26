@@ -19,7 +19,7 @@ func TestTheCommandTreeIsTheDeclaredOne(t *testing.T) {
 	expected := []string{
 		"assembly.generate-shared", "assembly.init", "assembly.integrate",
 		"assembly.preview", "assembly.push", "assembly.rebuild",
-		"assembly.redirects", "assembly.retire", "assembly.status",
+		"assembly.redirects", "assembly.republish-all", "assembly.retire", "assembly.status",
 		"assembly.sync-workflow", "assembly.verify",
 		"baseline.accept",
 		"blog.editor.list-repos", "blog.editor.serve",

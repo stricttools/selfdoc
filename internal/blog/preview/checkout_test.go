@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/stricttools/selfdoc/internal/themes"
@@ -23,7 +24,7 @@ func TestTheCheckouts(t *testing.T) {
 	t.Run("a checkout with no config is refused", func(t *testing.T) {
 		empty := filepath.Join(t.TempDir(), "empty")
 		testproject.MkdirAll(t, empty)
-		_, err := ReadSlug(empty)
+		_, err := site.ReadSlug(empty)
 		if err == nil || !strings.Contains(err.Error(), "no selfdoc.json") {
 			t.Fatalf("ReadSlug = %v, want the refusal", err)
 		}
@@ -39,7 +40,7 @@ func TestTheCheckouts(t *testing.T) {
 			"author":        map[string]any{"name": "Test Author", "url": "https://author.example"},
 			"locales":       []any{map[string]any{"code": "en", "label": "English", "default": true}},
 		})
-		_, err := ReadSlug(root)
+		_, err := site.ReadSlug(root)
 		if err == nil || !strings.Contains(err.Error(), "no topology.slug") {
 			t.Fatalf("ReadSlug = %v, want the refusal", err)
 		}
@@ -47,7 +48,7 @@ func TestTheCheckouts(t *testing.T) {
 
 	t.Run("a declared slug is read back", func(t *testing.T) {
 		root := homeCheckout(t, filepath.Join(t.TempDir(), "home"))
-		slug, err := ReadSlug(root)
+		slug, err := site.ReadSlug(root)
 		if err != nil {
 			t.Fatalf("ReadSlug: %v", err)
 		}

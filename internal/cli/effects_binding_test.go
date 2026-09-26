@@ -18,10 +18,10 @@ import (
 //     performs no user-visible or consequential mutation: it may read the
 //     filesystem and shell out to declared reads, and nothing else.
 //
-//  2. Exactly five commands are consequential. The framework prompts for
-//     those and no others; mutating does not imply a prompt. The set below is
-//     pinned in both directions, so adding a sixth is a deliberate edit to
-//     this file rather than a passing thought at a registration site.
+//  2. The consequential commands are a reviewed set. The framework prompts
+//     for those and no others; mutating does not imply a prompt. The set below
+//     is pinned in both directions, so adding one is a deliberate edit to this
+//     file rather than a passing thought at a registration site.
 //
 //  3. No command redeclares a framework-reserved flag name.
 //
@@ -113,6 +113,7 @@ var commandEffects = map[string]string{
 	"assembly.verify": "read_only",
 	// commits the regenerated deploy workflow to the assembly repo
 	"assembly.sync-workflow": "mutating",
+	"assembly.republish-all": "mutating",
 	// reads the editor registry and prints one line per entry
 	"blog.editor.list-repos": "read_only",
 	// serves the authoring app on loopback, whose PUT writes an edited post
@@ -144,6 +145,10 @@ var consequentialCommands = map[string]bool{
 	// between, and it also deletes -- a page the project no longer builds
 	// disappears for readers in the same commit.
 	"blog.publish-docs": true,
+	// `blog publish-docs` for every project on the roster in one pass: every
+	// checkout's working tree becomes publicly readable, and each publish
+	// deletes the pages its project no longer builds.
+	"assembly.republish-all": true,
 	// Creates a GitHub repository, claims a *.pages.dev subdomain, and writes
 	// deployment credentials into repo secrets -- three named external
 	// resources, none of them un-created by a rerun.

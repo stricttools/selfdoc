@@ -539,25 +539,8 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 // dispatchSharedRebuild fires the shared-only rebuild that regenerates the
 // assembly's cross-project elements, which three commands do identically.
 func (c *cli) dispatchSharedRebuild(handle *effects.Handle, repo string) (strictcli.Outcome, bool) {
-	dispatch := assembly.SharedOnlyDispatch(repo)
-	payload, err := dispatch.PayloadJSON()
-	if err != nil {
-		return c.fail(err), false
-	}
-	result, err := handle.Run(
-		[]string{"gh", "api", "--method", "POST", dispatch.Endpoint, "--input", "-"},
-		effects.Stdin(payload),
-		effects.CaptureOutput(),
-		effects.Timeout(30*time.Second),
-		effects.Resource("dispatch:"+repo),
-		effects.Grant("assembly-dispatch"),
-	)
-	if err != nil {
-		return c.fail(err), false
-	}
-	if !result.Unsettled && result.ExitCode != 0 {
-		return c.failf("Error: Failed to dispatch shared rebuild: %s",
-			strings.TrimSpace(result.StderrString())), false
+	if err := assembly.DispatchSharedRebuild(handle, repo); err != nil {
+		return c.failf("Error: %v", err), false
 	}
 	return strictcli.Exit(0), true
 }

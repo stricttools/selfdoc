@@ -581,3 +581,12 @@ func IsUnversioned(config map[string]any) bool {
 	declared, isBool := config["unversioned"].(bool)
 	return isBool && declared
 }
+
+// OutputRel is the build output directory a project's config declares,
+// relative to the project root, or the layout's default when it declares none.
+func OutputRel(cfg Config) string {
+	if out, ok := cfg["output"].(string); ok {
+		return out
+	}
+	return layout.OutputDefault
+}

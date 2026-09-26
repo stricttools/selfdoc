@@ -5,34 +5,10 @@ import (
 	"path/filepath"
 
 	"github.com/stricttools/selfdoc/internal/build"
-	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/html"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/themes"
-	"github.com/stricttools/selfdoc/internal/util"
 )
-
-// ReadSlug returns the assembly slug the project at sourceDir declares.
-func ReadSlug(sourceDir string) (string, error) {
-	cfg, err := config.Load(sourceDir)
-	if err != nil {
-		return "", err
-	}
-	if cfg == nil {
-		return "", errorf(
-			"%s carries no selfdoc.json, so it is not a project the assembly "+
-				"can serve.", sourceDir)
-	}
-	topology, _ := cfg["topology"].(map[string]any)
-	slug := util.PythonStrip(util.PythonStrOrEmpty(topology["slug"]))
-	if slug == "" {
-		return "", errorf(
-			"%s/selfdoc.json declares no topology.slug, so there is no address "+
-				"to publish it at. The slug is the project's path segment on "+
-				"the assembled site.", sourceDir)
-	}
-	return slug, nil
-}
 
 // ExpectedStylesheet is the stylesheet "selfdoc build" writes for theme, byte
 // for byte.
