@@ -48,7 +48,7 @@ Reject a term in stricttools/vocabulary/terms.toml, in sorted position, with the
 
 | Name | Type | Presence | Description |
 | --- | --- | --- | --- |
-| `pattern` | str | required | The rejected text (e.g. 'leverage', 'blast radius', '-shaped'). Matched case-insensitively |
+| `pattern` | str | required | The rejected text (e.g. 'leverage', 'in order to', '-ish'). Matched case-insensitively |
 
 ## vocabulary remove
 
