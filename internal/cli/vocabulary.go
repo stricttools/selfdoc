@@ -41,7 +41,7 @@ func (c *cli) registerVocabulary() {
 			strictcli.NewArg("pattern", "The rejected text (e.g. 'leverage', 'blast radius', '-shaped'). Matched case-insensitively", strictcli.ArgRequired()),
 		),
 		strictcli.WithFlags(
-			strictcli.StringFlag("kind", "How the pattern matches", strictcli.Required(), strictcli.Choices(
+			strictcli.StringFlag("kind", "How the pattern matches the text of a page, compared case-insensitively", strictcli.Required(), strictcli.Choices(
 				strictcli.Ch(vocabulary.KindWord, "a whole word, with a word boundary on both sides"),
 				strictcli.Ch(vocabulary.KindPhrase, "a whole phrase, its words separated by any whitespace"),
 				strictcli.Ch(vocabulary.KindSuffix, "the end of a longer word"),
@@ -57,7 +57,7 @@ func (c *cli) registerVocabulary() {
 		c.cmdVocabularyRemove,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
-			strictcli.NewArg("word", "The accepted word or rejected pattern to remove", strictcli.ArgRequired()),
+			strictcli.NewArg("word", "The accepted word or rejected pattern to remove, compared case-insensitively", strictcli.ArgRequired()),
 		),
 		strictcli.WithFlags(vocabularyAutoCommit()),
 	)
@@ -67,7 +67,7 @@ func (c *cli) registerVocabulary() {
 		c.cmdVocabularyApprove,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
-			strictcli.NewArg("word", "The pending word, compared case-insensitively", strictcli.ArgRequired()),
+			strictcli.NewArg("word", "The pending word, as review.toml spells it, compared case-insensitively", strictcli.ArgRequired()),
 		),
 		strictcli.WithFlags(
 			strictcli.StringFlag("meaning", "A corrected meaning, accepted instead of the proposed one. Omitted, the proposed meaning is accepted as written", strictcli.Optional()),
@@ -80,7 +80,7 @@ func (c *cli) registerVocabulary() {
 		c.cmdVocabularyDrop,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
-			strictcli.NewArg("word", "The pending word, compared case-insensitively", strictcli.ArgRequired()),
+			strictcli.NewArg("word", "The pending word, as review.toml spells it, compared case-insensitively", strictcli.ArgRequired()),
 		),
 		strictcli.WithFlags(vocabularyAutoCommit()),
 	)
