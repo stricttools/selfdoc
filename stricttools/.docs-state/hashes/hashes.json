@@ -93,7 +93,7 @@
     "description": "a88fdbfd865bb583c35a594a76b0fd7c9f861cd6fd9c0ec5c29a23c60d80da52"
   },
   "en/check-guide.md": {
-    "content": "2fb1178a1792a6e5112dd2f6f2becb0ad71dc886522f464512b5db91a2f28cab",
+    "content": "fa3305085fdb5160e4f367530f428c1e13d6555b6a655e8280ec0afca0eea587",
     "description": "695eef39f1d6f5b685e2dfb6573d648e25604bf5d356dfab5124a81fe20ed1c3"
   },
   "en/cli-assembly.md": {
@@ -188,9 +188,9 @@
     "schema_hash": "838e040e56e31f9bdee8f1c5e1a741fc224e59f6e919f06016325c94b3462fb6"
   },
   "en/cli-vocabulary.md": {
-    "content": "c85f6f044a2f1bb590c5b36dc6c8797f45e57789b1e7c133f00cba1123a11e61",
+    "content": "0b3a1223cb3aaf913a9b0a5e1fcd4eb7067e9cefc4654b4827db242a3c50fcc2",
     "description": "bf857cdfd5363b8f8003cd07ddf330858e9f1a965970181a728a052cca367c39",
-    "schema_hash": "ff2aea22b8ca12f43443226951860f4bb07ee7d2dd034354111d4813f437b55a"
+    "schema_hash": "d7d2ac6236db73aba30436863c3af9ae2b5c80739442031fa18271c5fb841940"
   },
   "en/cmd-selfdoc.md": {
     "content": "71de616eb0be1e9d0885ebf89597750b011b6fc3db20fc8af27cd46de9f3a41f",
@@ -530,7 +530,7 @@
   "en/internal-layout.md": {
     "content": "52f92ef04414261f2f49481d476762ebd38a5b6a8947ed602f3b647d8d28bdd8",
     "description": "fd15c2ddda3ced8da30881714748cb9a9a4d95cb0cb4f34d60085dc48fc09641",
-    "source_docstring": "ff9c55451f3bc30ae69df221923abadea0db82a85951ac079b3e57ccff402821"
+    "source_docstring": "9aedc57ec465489a071b57347ee4f1af26e2f76e68f138f0ba8abc1b34fb2e15"
   },
   "en/internal-lints.md": {
     "content": "7911da93c39e1c1946c429f921a8ec87c3f58e00e93165f136b092d3ae5aa2e4",
