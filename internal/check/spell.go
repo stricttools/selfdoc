@@ -194,14 +194,29 @@ func spellRenderedDirectives(
 			results = append(results, lints.MustLintResult(
 				location.File, lineOf(location.Line), "SPELL001",
 				fmt.Sprintf(
-					"Unrecognized word '%s' (col %d)%s -- rendered into %s.%s",
+					"Unrecognized word '%s' (col %d)%s -- rendered into %s%s",
 					miss.Word, location.Column, suffix, relPath,
-					spellRemedy(miss.Word, vocab),
+					"."+spellRemedy(miss.Word, vocab),
 				),
 			))
 		}
 	}
 	return results, nil
+}
+
+// withRemedy closes a finding's text with its remedy sentence, ending the
+// finding with a full stop unless it already ends with its own punctuation.
+func withRemedy(finding, remedy string) string {
+	return finding + sentenceEnd(finding, remedy)
+}
+
+// sentenceEnd is what joins text to the remedy sentence after it: nothing
+// more when the text already ends with a question mark, a full stop otherwise.
+func sentenceEnd(text, remedy string) string {
+	if strings.HasSuffix(text, "?") {
+		return remedy
+	}
+	return "." + remedy
 }
 
 // spellRemedy is the sentence a SPELL001 message closes with: how to resolve

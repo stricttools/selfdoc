@@ -751,7 +751,7 @@ func runLints(
 		for _, miss := range rawMisspellings {
 			results = append(results, lints.MustLintResult(
 				relPath, lineOf(miss.Line), "SPELL001",
-				miss.Describe()+"."+spellRemedy(miss.Word, vocab),
+				withRemedy(miss.Describe(), spellRemedy(miss.Word, vocab)),
 			))
 		}
 
