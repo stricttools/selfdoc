@@ -23,3 +23,7 @@ Upgrading, in this order:
 # blog = false
 include = ["go"]
 exclude = []
+candidate_sha = "04ffd701206873cf4107f84fcfeb1766e872e8af"
+
+[tree_hashes]
+"." = "9d1775c0d30c000edf94603412bdcbd43870df6b"
