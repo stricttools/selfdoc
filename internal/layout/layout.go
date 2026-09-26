@@ -24,10 +24,12 @@
 // Every directory under [Root] has exactly one owner tool, declared in the
 // [ManifestFileName] the directory itself carries. The manifest is the
 // permission to write: [EnsureDir] refuses a directory whose manifest does not
-// name selfdoc, printing the file and the line to put in it. The one command
-// that writes manifests is `selfdoc init`, the repository's deliberate act of
-// adopting selfdoc ([GrantInit]). A manifest is also what makes a directory with no content
-// yet exist in git. Reading and writing are open to anyone; the owner decides
+// name selfdoc, printing the file and the line to put in it. Manifests are
+// written by the repository's deliberate acts only: adopting selfdoc with
+// `selfdoc init` ([GrantInit]), and moving off the previous layout with
+// `selfdoc layout migrate`, where the previous manifests naming selfdoc are the
+// grant. A manifest is also what makes a directory with no content yet exist
+// in git. Reading and writing are open to anyone; the owner decides
 // whether what was written is acceptable, which is what [Validate] answers.
 //
 // # Sides
@@ -490,8 +492,8 @@ var InitDirectories = []string{DocsName, DocsStateName, DocsCacheName, Vocabular
 // missing, naming selfdoc, and refreshes the derived ignore file. It returns
 // the slash-form relative paths it wrote.
 //
-// It is the adopting act a repository performs by running `selfdoc init`, the
-// one command that writes manifests. A manifest already naming selfdoc is kept
+// It is the adopting act a repository performs by running `selfdoc init`. A
+// manifest already naming selfdoc is kept
 // as it stands, and one naming another tool refuses the whole grant before
 // anything is written: that directory is the other tool's.
 func GrantInit(h *effects.Handle, baseDir string) ([]string, error) {

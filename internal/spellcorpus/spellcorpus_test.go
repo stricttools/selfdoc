@@ -406,7 +406,7 @@ func TestUniqueWordsOrdering(t *testing.T) {
 // TestScanProjectFallsBackToTheLayoutDocsRoot pins the docs root a project
 // that declares no "docs" key is surveyed at: the layout's own default, the
 // same directory every other reader falls back to, not the path selfdoc used
-// before the layout moved under one hidden directory.
+// before the layout moved under one directory.
 func TestScanProjectFallsBackToTheLayoutDocsRoot(t *testing.T) {
 	isolate(t)
 	root := t.TempDir()
