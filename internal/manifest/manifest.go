@@ -592,6 +592,13 @@ func fromData(data map[string]any) *Manifest {
 // A document of any other schema is refused: this is the one conversion there
 // is, and a document already on this schema has nothing to convert.
 func Convert(raw []byte, terms vocabulary.List, source string) ([]byte, error) {
+	return ConvertWith(raw, VocabularyOf(terms), source)
+}
+
+// ConvertWith is [Convert] with the vocabulary already in the shape a manifest
+// records it: what converting a document on the assembly takes, where the
+// project's vocabulary is read from its own manifest.
+func ConvertWith(raw []byte, recorded Vocabulary, source string) ([]byte, error) {
 	data, err := decodeObject(raw, source)
 	if err != nil {
 		return nil, err
@@ -607,7 +614,7 @@ func Convert(raw []byte, terms vocabulary.List, source string) ([]byte, error) {
 	}
 	converted := fromData(data)
 	converted.SchemaVersion = SchemaVersion
-	converted.Vocabulary = VocabularyOf(terms)
+	converted.Vocabulary = recorded
 	return encode(converted.document()), nil
 }
 

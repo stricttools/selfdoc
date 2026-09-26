@@ -201,7 +201,7 @@ func (c *cli) registerAssembly() {
 	)
 
 	group.Command("republish-all",
-		"Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version "+strconv.Itoa(manifest.SchemaVersion)+", which records each project's vocabulary. Before building anything it refuses a checkout not on the "+layout.Root+"/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project), and sends one shared-only deploy request. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.",
+		"Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version "+strconv.Itoa(manifest.SchemaVersion)+", which records each project's vocabulary. Before building anything it refuses a checkout not on the "+layout.Root+"/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project, which also converts the project's post overlay on the site, manifests/<slug>-posts.json, when an older selfdoc wrote it, keeping its posts and adding the vocabulary of the checkout's manifest), and sends one shared-only deploy request. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.",
 		c.cmdAssemblyRepublishAll,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential for the reason `blog publish-docs` is, for every
@@ -745,6 +745,9 @@ func (c *cli) cmdAssemblyRepublishAll(ctx *strictcli.Context, kwargs map[string]
 			role = ", the home project"
 		}
 		line := fmt.Sprintf("  %s %s%s: %d file(s) and its manifest", project.Slug, project.Version, role, len(project.Files))
+		if project.Overlay != "" {
+			line += "; converts " + project.Overlay + " to schema_version " + strconv.Itoa(manifest.SchemaVersion)
+		}
 		if project.Commit != "" {
 			line += ", commit " + project.Commit
 		}

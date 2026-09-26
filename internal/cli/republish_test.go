@@ -380,3 +380,42 @@ reason = "Say tree-like."
 		t.Errorf("the dry run after the fix failed:\n%s", result.Stderr)
 	}
 }
+
+// A post overlay an older selfdoc published is a manifest on schema 1 too, and
+// no documentation publish writes one. The republish converts it on the site in
+// the project's own commit, keeping its posts exactly.
+func TestRepublishAllConvertsThePostOverlayOnTheSite(t *testing.T) {
+	s := newRepublishSite(t, testVersion, nil)
+	s.seed(map[string]string{
+		"manifests/alpha-posts.json": `{"schema_version": 1.0, "slug": "alpha", "name": "Alpha", "posts": [{"slug": "between-releases", "title": "Between releases", "date": "2026-02-01", "path": "between.md", "tags": []}]}`,
+	})
+
+	dry := s.republish("--dry-run")
+	if dry.ExitCode != 0 || !strings.Contains(dry.Stdout, "converts manifests/alpha-posts.json to schema_version 2") {
+		t.Fatalf("the dry run does not list the overlay it would convert: exit %d\n%s\n%s", dry.ExitCode, dry.Stdout, dry.Stderr)
+	}
+	if result := s.republish(); result.ExitCode != 0 {
+		t.Fatalf("the republish failed: exit %d\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
+	}
+	if err := s.siteManifests(); err != nil {
+		t.Fatalf("the site's reader still refuses after the republish: %v", err)
+	}
+	raw, err := base64.StdEncoding.DecodeString(s.blobs()["manifests/alpha-posts.json"])
+	if err != nil {
+		t.Fatalf("decoding the overlay: %v", err)
+	}
+	var overlay map[string]any
+	if err := json.Unmarshal(raw, &overlay); err != nil {
+		t.Fatalf("the converted overlay is not JSON: %v", err)
+	}
+	posts, _ := overlay["posts"].([]any)
+	if overlay["schema_version"] != float64(2) || len(posts) != 1 {
+		t.Errorf("the converted overlay is %v", overlay)
+	}
+	if _, ok := overlay["vocabulary"].(map[string]any); !ok {
+		t.Errorf("the converted overlay carries no vocabulary: %v", overlay)
+	}
+	if got := s.count("--method PATCH /repos/owner/assembly/git/refs/heads/main"); got != 2 {
+		t.Errorf("the overlay did not ride its project's commit: %d commits", got)
+	}
+}

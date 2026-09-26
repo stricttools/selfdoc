@@ -48,6 +48,11 @@ type RepublishedProject struct {
 	Files []string
 	// Commit is the assembly commit that carried it, empty in a dry run.
 	Commit string
+	// Overlay is the post overlay on the site the same commit converts to the
+	// current manifest schema, empty when the site holds none to convert.
+	Overlay string
+	// overlayContent is the converted overlay.
+	overlayContent []byte
 }
 
 // RepublishSummary is what one [RepublishAll] did.
@@ -151,9 +156,14 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 			files = append(files, siteRel)
 		}
 		sort.Strings(files)
+		overlay, content, err := convertedOverlay(h, repo, checkout.Slug, manifests)
+		if err != nil {
+			return nil, err
+		}
 		summary.Projects = append(summary.Projects, RepublishedProject{
 			Slug: checkout.Slug, Home: checkout.Home,
 			Version: PublishVersion(checkout.SourceDir, cfg), Files: files,
+			Overlay: overlay, overlayContent: content,
 		})
 	}
 	if h.Previewing() {
@@ -168,6 +178,10 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 			}
 		}
 		cfg := configs[checkout.SourceDir]
+		var extra map[string][]byte
+		if project := summary.Projects[index]; project.Overlay != "" {
+			extra = map[string][]byte{project.Overlay: project.overlayContent}
+		}
 		result, err := PublishProjectDocs(PublishOptions{
 			Repo:         repo,
 			Slug:         checkout.Slug,
@@ -177,6 +191,7 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 			Home:         checkout.Home,
 			SourceDir:    checkout.SourceDir,
 			Peers:        peers,
+			Extra:        extra,
 		}, h)
 		if err != nil {
 			return nil, fmt.Errorf("publishing %s (after %d of %d project(s) were published): %w",
@@ -188,6 +203,45 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 		return nil, err
 	}
 	return summary, nil
+}
+
+// convertedOverlay reads the project's post overlay on the site and, when an
+// older selfdoc wrote it, converts it to the current manifest schema with the
+// vocabulary of the project's checkout manifest, keeping its posts exactly.
+// No documentation publish writes an overlay, so without this the site would
+// keep refusing it after every project was republished. It answers "" when the
+// site holds no overlay for the project, or one already converted.
+func convertedOverlay(h *effects.Handle, repo, slug string, manifests []map[string]any) (string, []byte, error) {
+	path := "manifests/" + slug + "-posts.json"
+	text, err := FetchRemoteText(h, repo, path, true, "read "+util.PythonRepr(slug)+"'s post overlay")
+	if err != nil {
+		return "", nil, err
+	}
+	if strings.TrimSpace(text) == "" {
+		return "", nil, nil
+	}
+	declared, err := manifest.DeclaredSchema([]byte(text), repo+":"+path)
+	if err != nil {
+		return "", nil, err
+	}
+	if declared == manifest.SchemaVersion {
+		return "", nil, nil
+	}
+	var recorded manifest.Vocabulary
+	for _, document := range manifests {
+		if util.PythonStrOrEmpty(document["slug"]) == slug {
+			record, err := manifest.Compat(document, slug)
+			if err != nil {
+				return "", nil, err
+			}
+			recorded = record.Vocabulary
+		}
+	}
+	converted, err := manifest.ConvertWith([]byte(text), recorded, repo+":"+path)
+	if err != nil {
+		return "", nil, err
+	}
+	return path, converted, nil
 }
 
 // refuseUnpublishable reads every checkout's config and manifest and refuses,

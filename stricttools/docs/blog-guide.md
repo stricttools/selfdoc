@@ -561,7 +561,11 @@ exactly, and every checkout's `selfdoc.json` must name the same
 Then it builds every project locally, the home project last, against the
 checkouts' own manifests (the site's are what it replaces), publishes each one
 the way `blog publish-docs` does -- one assembly commit per project -- and sends
-one shared-only deploy request. `--dry-run` runs every check and every local
+one shared-only deploy request. A project's post overlay on the site
+(`manifests/<slug>-posts.json`) is a manifest too, and no documentation publish
+writes one, so the project's commit also converts an overlay an older selfdoc
+wrote: its posts kept exactly, the vocabulary of the checkout's manifest added.
+The dry run lists every overlay it would convert. `--dry-run` runs every check and every local
 build, which write only each checkout's build output, and prints what it would
 publish, without publishing anything.
 

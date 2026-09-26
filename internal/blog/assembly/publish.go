@@ -54,6 +54,9 @@ type PublishOptions struct {
 	// anything is written. The caller reads them: from the site's manifests
 	// for one project's publish, from the checkouts for a publish of them all.
 	Peers []vocabulary.Published
+	// Extra are further files, by repository path, the same commit carries:
+	// what a publish of every project converts on the site beside each one.
+	Extra map[string][]byte
 }
 
 // PublishProjectDocs pushes a locally built documentation site into the
@@ -171,6 +174,10 @@ func PublishProjectDocs(opts PublishOptions, h *effects.Handle) (*PublishSummary
 			return nil, err
 		}
 		files["manifests/"+opts.Slug+".json"] = manifest
+	}
+
+	for path, content := range opts.Extra {
+		files[path] = content
 	}
 
 	// An assembly with no membership record at all is a real state; a failed
