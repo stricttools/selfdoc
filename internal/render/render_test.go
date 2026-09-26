@@ -38,11 +38,11 @@ const (
 // its root.
 func makeProject(t *testing.T, posts map[string]string) string {
 	t.Helper()
-	dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-	testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+	testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"# Test Project\n\nWelcome.\n")
 	for name, content := range posts {
-		testproject.WriteText(t, filepath.Join(dir, ".stricttools", "posts", name), content)
+		testproject.WriteText(t, filepath.Join(dir, "stricttools", "posts", name), content)
 	}
 	return dir
 }
@@ -125,7 +125,7 @@ func assertUnchanged(t *testing.T, root, before string, beforeEntries []treeEntr
 // builtPost reads the file a posts-target build wrote for one slug.
 func builtPost(t *testing.T, dir, slug string) string {
 	t.Helper()
-	path := filepath.Join(dir, ".stricttools", "docs-cache", "build", "blog", slug, "index.html")
+	path := filepath.Join(dir, "stricttools", ".docs-cache", "build", "blog", slug, "index.html")
 	content, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("reading %s: %v", path, err)
@@ -219,8 +219,8 @@ func TestRenderWritesNothing(t *testing.T) {
 		}
 		assertUnchanged(t, dir, before, beforeEntries)
 		for _, absent := range []string{
-			filepath.Join(dir, ".stricttools", "docs", "blog"),
-			filepath.Join(dir, ".stricttools", "docs-state", "hashes"),
+			filepath.Join(dir, "stricttools", "docs", "blog"),
+			filepath.Join(dir, "stricttools", ".docs-state", "hashes"),
 		} {
 			if info, err := os.Stat(absent); err == nil && info.IsDir() {
 				t.Errorf("%s was created", absent)
@@ -254,7 +254,7 @@ func TestBuildSingleWriteContract(t *testing.T) {
 	// else. Both directions are pinned here so the claim stays honest.
 	t.Run("the baselines are advanced by default", func(t *testing.T) {
 		dir := makeProject(t, nil)
-		hashes := filepath.Join(dir, ".stricttools", "docs-state", "hashes")
+		hashes := filepath.Join(dir, "stricttools", ".docs-state", "hashes")
 		if info, err := os.Stat(hashes); err == nil && info.IsDir() {
 			t.Fatal("the fixture already carries a hash store")
 		}

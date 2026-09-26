@@ -56,7 +56,7 @@ body = "Write to ada@example.org."
 const cvPage = "+++\ntitle = \"CV\"\ntype = \"cv\"\ndescription = \"" +
 	"The curriculum vitae of Ada Lovelace, analyst, with her skills, " +
 	"projects, interests, education, work and languages.\"\n+++\n\n" +
-	":-: cv path=\".stricttools/docs/cv.toml\"\n"
+	":-: cv path=\"stricttools/docs/cv.toml\"\n"
 
 // spellProject writes a minimal project whose docs tree holds the given pages.
 func spellProject(t *testing.T, pages map[string]string) string {
@@ -67,9 +67,9 @@ func spellProject(t *testing.T, pages map[string]string) string {
 		map[string]any{"path": "src/", "language": "python"},
 	))
 	write(t, filepath.Join(root, "src", "__init__.py"), `"""Example package."""`+"\n")
-	write(t, filepath.Join(root, ".stricttools", "docs", ".keep"), "")
+	write(t, filepath.Join(root, "stricttools", "docs", ".keep"), "")
 	for relPath, content := range pages {
-		write(t, filepath.Join(root, ".stricttools", "docs", relPath), content)
+		write(t, filepath.Join(root, "stricttools", "docs", relPath), content)
 	}
 	return root
 }
@@ -79,7 +79,7 @@ func spellProject(t *testing.T, pages map[string]string) string {
 func cvProject(t *testing.T, document string) string {
 	t.Helper()
 	root := spellProject(t, map[string]string{"cv.md": cvPage})
-	write(t, filepath.Join(root, ".stricttools", "docs", "cv.toml"), document)
+	write(t, filepath.Join(root, "stricttools", "docs", "cv.toml"), document)
 	return root
 }
 
@@ -143,10 +143,10 @@ func TestAMisspellingInTheCVDocumentIsReported(t *testing.T) {
 	}
 	// The diagnostic names the document a reader edits, at the line the
 	// word is written on, and says which page rendered it.
-	if matching[0].File() != ".stricttools/docs/cv.toml" {
-		t.Errorf("file = %q, want .stricttools/docs/cv.toml", matching[0].File())
+	if matching[0].File() != "stricttools/docs/cv.toml" {
+		t.Errorf("file = %q, want stricttools/docs/cv.toml", matching[0].File())
 	}
-	raw, err := os.ReadFile(filepath.Join(root, ".stricttools", "docs", "cv.toml"))
+	raw, err := os.ReadFile(filepath.Join(root, "stricttools", "docs", "cv.toml"))
 	if err != nil {
 		t.Fatalf("read the document: %v", err)
 	}
@@ -175,7 +175,7 @@ func TestACleanCVDocumentProducesNoSpellingDiagnostic(t *testing.T) {
 }
 
 func TestADocumentIsReportedOnceHoweverItWasFound(t *testing.T) {
-	// The docs walk finds .stricttools/docs/cv.toml, and the directive's own path names
+	// The docs walk finds stricttools/docs/cv.toml, and the directive's own path names
 	// the same file: a document reached both ways is held once.
 	document := strings.ReplaceAll(cvDocument, "Analyst", "Analsyt")
 	root := cvProject(t, document)
@@ -196,7 +196,7 @@ func TestACopyInTheBuildOutputIsNotReported(t *testing.T) {
 	root := cvProject(t, document)
 	// A generated copy is overwritten by the next build; it is not a source
 	// anyone can fix.
-	write(t, filepath.Join(root, ".stricttools", "docs-cache", "build", "cv.toml"), document)
+	write(t, filepath.Join(root, "stricttools", ".docs-cache", "build", "cv.toml"), document)
 
 	result := checkFixture(t, root)
 
@@ -204,8 +204,8 @@ func TestACopyInTheBuildOutputIsNotReported(t *testing.T) {
 	for _, diagnostic := range withCode(result.Lints, "SPELL001") {
 		files = append(files, diagnostic.File())
 	}
-	if len(files) != 1 || files[0] != ".stricttools/docs/cv.toml" {
-		t.Errorf("files = %v, want only .stricttools/docs/cv.toml", files)
+	if len(files) != 1 || files[0] != "stricttools/docs/cv.toml" {
+		t.Errorf("files = %v, want only stricttools/docs/cv.toml", files)
 	}
 }
 
@@ -216,7 +216,7 @@ func TestASymbolNameADirectiveExtractedIsNotAMisspelling(t *testing.T) {
 			"exports for callers to use.\"\n+++\n\n# API\n\n" +
 			":-: ref path=\"src\"\n",
 	})
-	write(t, filepath.Join(root, ".stricttools", "docs", "notes.toml"),
+	write(t, filepath.Join(root, "stricttools", "docs", "notes.toml"),
 		"# an authored document that holds none of those names\n")
 
 	result := checkFixture(t, root)
@@ -229,10 +229,10 @@ func TestASymbolNameADirectiveExtractedIsNotAMisspelling(t *testing.T) {
 
 func TestThePagesOwnProseIsNotReportedTwice(t *testing.T) {
 	page := strings.ReplaceAll(cvPage,
-		":-: cv path=\".stricttools/docs/cv.toml\"",
-		"The page says recieve.\n\n:-: cv path=\".stricttools/docs/cv.toml\"")
+		":-: cv path=\"stricttools/docs/cv.toml\"",
+		"The page says recieve.\n\n:-: cv path=\"stricttools/docs/cv.toml\"")
 	root := spellProject(t, map[string]string{"cv.md": page})
-	write(t, filepath.Join(root, ".stricttools", "docs", "cv.toml"), cvDocument)
+	write(t, filepath.Join(root, "stricttools", "docs", "cv.toml"), cvDocument)
 
 	result := checkFixture(t, root)
 

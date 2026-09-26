@@ -31,7 +31,7 @@ func buildUnifiedFixture(
 	if _, err := BuildUnified(docsSiteDir, nil, "", false, effects.Unbound()); err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	return docsSiteDir, filepath.Join(docsSiteDir, ".stricttools", "docs-cache", "build")
+	return docsSiteDir, filepath.Join(docsSiteDir, "stricttools", ".docs-cache", "build")
 }
 
 // readFile reads a built file, failing the test when it is missing.
@@ -468,7 +468,7 @@ func TestBuildUnifiedReportsEveryPathItWrote(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 	for _, rel := range []string{
 		"index.html", "_redirects", "style.css",
 		filepath.Join("common", "index.html"),
@@ -560,11 +560,11 @@ func TestBuildUnifiedRefusals(t *testing.T) {
 
 	t.Run("a docs directory that is missing", func(t *testing.T) {
 		docsSite := testproject.MakeUnified(t, oneProject, nil)
-		if err := os.RemoveAll(filepath.Join(docsSite, ".stricttools", "docs")); err != nil {
+		if err := os.RemoveAll(filepath.Join(docsSite, "stricttools", "docs")); err != nil {
 			t.Fatalf("removing the docs tree: %v", err)
 		}
 		_, err := BuildUnified(docsSite, nil, "", false, effects.Unbound())
-		if err == nil || !strings.Contains(err.Error(), "Docs directory '.stricttools/docs' not found") {
+		if err == nil || !strings.Contains(err.Error(), "Docs directory 'stricttools/docs' not found") {
 			t.Fatalf("err = %v, want it to name the missing docs directory", err)
 		}
 	})
@@ -609,15 +609,15 @@ func TestBuildUnifiedEmitsVersionFreePagesOnceAtTheirOwnMount(t *testing.T) {
 		},
 	})
 	testproject.WriteText(t,
-		filepath.Join(projectDirOf(docsSite, "core"), ".stricttools", "docs", "about.md"),
+		filepath.Join(projectDirOf(docsSite, "core"), "stricttools", "docs", "about.md"),
 		"+++\nversioned = false\n+++\n\n# About Core\n\nThe same at every version.\n")
-	testproject.WriteText(t, filepath.Join(docsSite, ".stricttools", "docs", "policy.md"),
+	testproject.WriteText(t, filepath.Join(docsSite, "stricttools", "docs", "policy.md"),
 		"+++\nversioned = false\n+++\n\n# Policy\n\nThe site's own persistent page.\n")
 
 	if _, err := BuildUnified(docsSite, nil, "", false, effects.Unbound()); err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 
 	requireFile(t, filepath.Join(output, "core", "about", "index.html"))
 	requireFile(t, filepath.Join(output, "common", "policy", "index.html"))
@@ -639,7 +639,7 @@ func TestBuildUnifiedThemeOverrideDecidesTheSharedStylesheet(t *testing.T) {
 	if _, err := BuildUnified(docsSite, nil, "clean", false, effects.Unbound()); err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 
 	stylesheet := readFile(t, filepath.Join(output, "style.css"))
 	if !strings.Contains(stylesheet, ".project-grid") {

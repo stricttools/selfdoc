@@ -56,6 +56,12 @@ func Load(dir string) (Config, error) {
 	if err != nil || !info.Mode().IsRegular() {
 		return nil, nil
 	}
+	// A repository still on the layout before this one is refused before its
+	// config is judged: the one command that reads it is the move, and a
+	// config defect found first would hide the move the repository needs.
+	if err := layout.RefuseUnmigrated(dir); err != nil {
+		return nil, err
+	}
 
 	data, err := os.ReadFile(configPath)
 	if err != nil {
@@ -76,7 +82,7 @@ func Load(dir string) (Config, error) {
 }
 
 // refuseOldLayout is where every command that reads project state meets the
-// repository that has not been moved to the .stricttools/ layout yet.
+// repository that has not been moved to the stricttools/ layout yet.
 //
 // The check sits in the loader because the loader is what every such command
 // runs first, and because the paths it judges are the config's own. There is

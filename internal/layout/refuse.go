@@ -1,17 +1,126 @@
 package layout
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/stricttools/selfdoc/internal/scripts"
 )
 
-// DeprecatedRoot is the directory selfdoc kept a repository's state in before
-// this layout. Its presence is what a refusal recognizes: nothing reads it.
+// DeprecatedRoot is the directory selfdoc kept a repository's state in two
+// layouts ago. Its presence is what a refusal recognizes: nothing reads it.
 const DeprecatedRoot = ".selfdoc"
+
+// PreviousRoot is the hidden directory the layout before this one kept every
+// function directory in, each under its bare function name. Nothing reads it:
+// `selfdoc layout migrate` moves a repository off it, and every other command
+// refuses a repository still on it.
+const PreviousRoot = ".stricttools"
+
+// MigrateCommand is the command that moves a repository off [PreviousRoot].
+const MigrateCommand = "selfdoc layout migrate"
+
+// UnmigratedError is a repository refused for still keeping selfdoc's
+// directories under [PreviousRoot].
+type UnmigratedError struct {
+	// Found are the directories under [PreviousRoot] whose manifest names
+	// selfdoc, as paths relative to the repository root.
+	Found []string
+}
+
+func (e *UnmigratedError) Error() string {
+	return fmt.Sprintf(
+		"This repository keeps selfdoc's directories under %s/ (%s), the layout before this one, which selfdoc no longer reads. selfdoc keeps them under %s/ now, and a generated directory's name starts with a dot there. Run '%s', which moves them, rewrites the paths selfdoc.json and the generated root files name, and commits the move; '%s --dry-run' prints the plan first.",
+		PreviousRoot, strings.Join(e.Found, ", "), Root, MigrateCommand, MigrateCommand)
+}
+
+// PreviousSelfdocEntries returns the directories under [PreviousRoot] whose
+// manifest names selfdoc, by name, sorted. A directory with no manifest, or one
+// naming another tool, is not selfdoc's to move and is not returned.
+func PreviousSelfdocEntries(baseDir string) ([]string, error) {
+	entries, err := os.ReadDir(filepath.Join(baseDir, PreviousRoot))
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	var found []string
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		manifestPath := filepath.Join(baseDir, PreviousRoot, entry.Name(), ManifestFileName)
+		manifest, readErr := readManifestFile(manifestPath)
+		if errors.Is(readErr, os.ErrNotExist) {
+			continue
+		}
+		if readErr != nil {
+			return nil, readErr
+		}
+		if manifest.Owner == Owner {
+			found = append(found, entry.Name())
+		}
+	}
+	sort.Strings(found)
+	return found, nil
+}
+
+// CurrentSelfdocEntries returns the entries under [Root] that are one of the
+// directories selfdoc claims, by the name each carries on disk, sorted. An
+// entry whose dot disagrees with its side still counts: it is the claimed
+// directory, misnamed.
+func CurrentSelfdocEntries(baseDir string) ([]string, error) {
+	entries, err := os.ReadDir(Path(baseDir, Root))
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	var found []string
+	for _, entry := range entries {
+		if _, claimed := LookupFunction(entry.Name()); claimed && entry.IsDir() {
+			found = append(found, entry.Name())
+		}
+	}
+	sort.Strings(found)
+	return found, nil
+}
+
+// RefuseUnmigrated returns an [UnmigratedError] when a repository still keeps
+// selfdoc's directories under [PreviousRoot] and none under [Root]: the
+// repository `selfdoc layout migrate` is for.
+//
+// A repository holding selfdoc's directories in both places is part-way
+// through a move, which only the migrate command judges; every other command
+// reads the new layout alone.
+func RefuseUnmigrated(baseDir string) error {
+	previous, err := PreviousSelfdocEntries(baseDir)
+	if err != nil {
+		return err
+	}
+	if len(previous) == 0 {
+		return nil
+	}
+	current, err := CurrentSelfdocEntries(baseDir)
+	if err != nil {
+		return err
+	}
+	if len(current) > 0 {
+		return nil
+	}
+	found := make([]string, 0, len(previous))
+	for _, name := range previous {
+		found = append(found, PreviousRoot+"/"+name)
+	}
+	return &UnmigratedError{Found: found}
+}
 
 // OldLayoutError is a repository refused for still being laid out the way
 // selfdoc used to lay one out.
@@ -92,6 +201,9 @@ func MigrationProcedure() string {
 // config keys that name a layout directory; an empty one is taken as undeclared
 // and therefore already the default, which is inside [Root].
 func RefuseOldLayout(baseDir, docsDeclared, outputDeclared, postsDeclared string) error {
+	if err := RefuseUnmigrated(baseDir); err != nil {
+		return err
+	}
 	if _, err := os.Stat(filepath.Join(baseDir, DeprecatedRoot)); err == nil {
 		return &OldLayoutError{
 			Found:       DeprecatedRoot + "/",
@@ -107,6 +219,12 @@ func RefuseOldLayout(baseDir, docsDeclared, outputDeclared, postsDeclared string
 		if strings.TrimSpace(declaredKey.value) == "" || UnderRoot(declaredKey.value) {
 			continue
 		}
+		if underPreviousRoot(declaredKey.value) {
+			return fmt.Errorf(
+				"selfdoc.json declares %q: %q, which is under %s/, the layout before this one. Declare %q: %q instead.",
+				declaredKey.key, declaredKey.value, PreviousRoot,
+				declaredKey.key, MigratedPath(declaredKey.value))
+		}
 		return &OldLayoutError{
 			Found:       fmt.Sprintf("the %q key's %q", declaredKey.key, declaredKey.value),
 			Replacement: fmt.Sprintf("%q", declaredKey.replacement),
@@ -116,4 +234,32 @@ func RefuseOldLayout(baseDir, docsDeclared, outputDeclared, postsDeclared string
 		}
 	}
 	return nil
+}
+
+// underPreviousRoot reports whether a declared path names something inside
+// [PreviousRoot].
+func underPreviousRoot(declaredPath string) bool {
+	clean := path.Clean(strings.TrimRight(filepath.ToSlash(declaredPath), "/"))
+	return clean == PreviousRoot || strings.HasPrefix(clean, PreviousRoot+"/")
+}
+
+// MigratedPath maps a path under [PreviousRoot] onto this layout: a directory
+// selfdoc claims moves under [Root] with the name its side calls for, and the
+// rest of the path is kept, trailing slash included. A path that is not inside
+// one of selfdoc's directories under [PreviousRoot] is returned unchanged.
+func MigratedPath(previous string) string {
+	slashed := filepath.ToSlash(previous)
+	rest, found := strings.CutPrefix(slashed, PreviousRoot+"/")
+	if !found {
+		return previous
+	}
+	head, tail, hasTail := strings.Cut(rest, "/")
+	dir, claimed := Lookup(head)
+	if !claimed {
+		return previous
+	}
+	if hasTail {
+		return dir.Rel() + "/" + tail
+	}
+	return dir.Rel()
 }

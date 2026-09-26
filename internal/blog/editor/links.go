@@ -58,7 +58,7 @@ var PostDepth = len(strings.Split(shared.TargetOutputPath(shared.PostTarget("slu
 var ToSiteRoot = strings.Repeat("../", PostDepth)
 
 // ManifestRel is where a project keeps the manifest the editor reads.
-const ManifestRel = layout.ManifestRel
+var ManifestRel = layout.ManifestRel
 
 // ManifestError reports that a manifest exists but cannot be read, and the
 // message says how.

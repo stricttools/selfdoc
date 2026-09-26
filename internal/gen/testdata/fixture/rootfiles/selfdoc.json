@@ -5,12 +5,12 @@
       "language": "python"
     }
   ],
-  "docs": ".stricttools/docs/",
-  "output": ".stricttools/docs-cache/build/",
+  "docs": "stricttools/docs/",
+  "output": "stricttools/.docs-cache/build/",
   "base_url": "https://example.com",
   "search_engine": "pagefind",
   "root_files": [
-    ".stricttools/docs/_TEST.md"
+    "stricttools/docs/_TEST.md"
   ],
   "topology": {
     "docs_base": "https://docs.example.dev",

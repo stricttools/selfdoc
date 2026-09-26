@@ -17,7 +17,7 @@ import (
 )
 
 // defaultPostsDir is where a project keeps its posts when it declares nothing.
-const defaultPostsDir = layout.PostsDefault
+var defaultPostsDir = layout.PostsDefault
 
 // postsDirOf is the posts directory the config declares, relative to the
 // project root.

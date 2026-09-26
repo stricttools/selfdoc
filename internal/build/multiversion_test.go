@@ -18,7 +18,7 @@ import (
 func buildVersioned(t *testing.T, versions []string, apply func(*Options)) site {
 	t.Helper()
 	dir := testproject.MakeVersioned(t, versions, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
 	opts := Options{DirPath: dir, Stdout: &discard{}}
 	if apply != nil {
@@ -30,7 +30,7 @@ func buildVersioned(t *testing.T, versions []string, apply func(*Options)) site 
 	}
 	return site{
 		dir:     dir,
-		output:  filepath.Join(dir, ".stricttools", "docs-cache", "build"),
+		output:  filepath.Join(dir, "stricttools", ".docs-cache", "build"),
 		written: written,
 	}
 }
@@ -102,7 +102,7 @@ func TestBuildMultipleVersions(t *testing.T) {
 	})
 
 	t.Run("each extracted version has a cache entry, and the cache is ignored", func(t *testing.T) {
-		cacheDir := filepath.Join(built.dir, ".stricttools", "docs-cache", "versions")
+		cacheDir := filepath.Join(built.dir, "stricttools", ".docs-cache", "versions")
 		if !isDir(cacheDir) {
 			t.Fatal("the cache directory was not created")
 		}
@@ -115,7 +115,7 @@ func TestBuildMultipleVersions(t *testing.T) {
 		// The cache is kept out of the repository by the one derived
 		// ignore file inside the tool-state directory, not by an ignore
 		// file of its own.
-		gitignore := readFile(t, filepath.Join(built.dir, ".stricttools", ".gitignore"))
+		gitignore := readFile(t, filepath.Join(built.dir, "stricttools", ".gitignore"))
 		if !strings.Contains(gitignore, "docs-cache/") {
 			t.Errorf("the derived ignore file is %q, want it ignoring the cache directory", gitignore)
 		}
@@ -180,7 +180,7 @@ func TestExtractVersionContent(t *testing.T) {
 	hygiene.Isolate(t)
 
 	dir := testproject.MakeVersioned(t, []string{"0.1.0"}, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
 	cfg, err := config.Load(dir)
 	if err != nil {
@@ -195,7 +195,7 @@ func TestExtractVersionContent(t *testing.T) {
 		if !isDir(cacheDir) {
 			t.Fatalf("%s is not a directory", cacheDir)
 		}
-		content := readFile(t, filepath.Join(cacheDir, ".stricttools", "docs", "index.md"))
+		content := readFile(t, filepath.Join(cacheDir, "stricttools", "docs", "index.md"))
 		if !strings.Contains(content, "0.1.0") {
 			t.Errorf("the extracted page is %q, want the tag's own content", content)
 		}

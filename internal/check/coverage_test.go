@@ -32,7 +32,7 @@ def helper():
     """Help."""
     pass
 `)
-	write(t, filepath.Join(root, ".stricttools", "docs", ".keep"), "")
+	write(t, filepath.Join(root, "stricttools", "docs", ".keep"), "")
 	return root
 }
 
@@ -94,7 +94,7 @@ func TestTwoTierCoverage(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			root := twoTierProject(t)
 			for relPath, content := range testCase.pages {
-				write(t, filepath.Join(root, ".stricttools", "docs", relPath), content)
+				write(t, filepath.Join(root, "stricttools", "docs", relPath), content)
 			}
 			result := checkFixture(t, root)
 			if result.Coverage == nil {
@@ -204,7 +204,7 @@ type Widget struct{}
 // TestHandle is a test and is not part of the public surface.
 func TestHandle(t *testing.T) {}
 `)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"+++\ndescription = \"Every exported name of the handler package, in one page.\"\n+++\n"+
 			"# API\n\n:-: ref path=\"pkg\"\n")
 
@@ -254,7 +254,7 @@ package dep
 // Dep is not a public symbol of this project.
 func Dep() {}
 `)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"+++\ndescription = \"Every exported name of the handler package, in one page.\"\n+++\n"+
 			"# API\n\n:-: ref path=\"pkg\"\n")
 
@@ -289,7 +289,7 @@ export class Widget {}
 	write(t, filepath.Join(root, "src", "index.test.ts"),
 		`export function testHelper(): void {}
 `)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"+++\ndescription = \"Every exported name of the source module, in one page.\"\n+++\n"+
 			"# API\n\n:-: ref path=\"src/index\"\n")
 
@@ -311,7 +311,7 @@ func TestLANG001ForUnsupportedLanguage(t *testing.T) {
 		map[string]any{"path": "src/", "language": "cobol"},
 	))
 	write(t, filepath.Join(root, "src", ".keep"), "")
-	write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 		"+++\ndescription = \"A guide covering everything the project does for a reader.\"\n+++\n"+
 			"# Guide\n\nText.\n")
 
@@ -328,7 +328,7 @@ func TestLANG001ForUnsupportedLanguage(t *testing.T) {
 
 func TestSupportedLanguageHasNoLANG001(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 		"+++\ndescription = \"A guide covering everything the project does for a reader.\"\n+++\n"+
 			"# Guide\n\nText.\n")
 
@@ -341,7 +341,7 @@ func TestSupportedLanguageHasNoLANG001(t *testing.T) {
 
 func TestXREF002MissingSourceFile(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"+++\ndescription = \"Every public function of the library, with its signature.\"\n+++\n"+
 			"# API\n\n:-: ref path=\"mylib\"\n")
 
@@ -365,9 +365,9 @@ func TestXREF002MissingSourceFile(t *testing.T) {
 // doc comments that were already complete.
 func TestSkeletonOnlySymbolsNameThePageAndTheSeededDescription(t *testing.T) {
 	root := twoTierProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "mylib.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "mylib.md"),
 		skeletonPage("mylib", "mylib"))
-	write(t, filepath.Join(root, ".stricttools", "docs", "mylib-utils.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "mylib-utils.md"),
 		skeletonPage("mylib.utils", "mylib.utils"))
 	result := checkFixture(t, root)
 	if result.Coverage == nil {

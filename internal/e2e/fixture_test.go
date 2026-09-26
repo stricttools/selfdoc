@@ -105,8 +105,8 @@ func projectConfig(slug, name string, overrides map[string]any) map[string]any {
 	cfg := map[string]any{
 		"name":          name,
 		"description":   name + ", a fixture project.",
-		"docs":          ".stricttools/docs/",
-		"output":        ".stricttools/docs-cache/build/",
+		"docs":          "stricttools/docs/",
+		"output":        "stricttools/.docs-cache/build/",
 		"base_url":      CanonicalBase + "/" + slug,
 		"search_engine": "pagefind",
 		"author":        author(),
@@ -172,7 +172,7 @@ func writeSource(t *testing.T, root, name string) {
 			"    return f\"hello {who}\"\n", name))
 }
 
-// writeManifest writes the checkout's .stricttools/docs-state/manifest.json, the way gen does.
+// writeManifest writes the checkout's stricttools/.docs-state/manifest.json, the way gen does.
 //
 // A real checkout carries a committed manifest: "selfdoc gen" writes it during
 // a release, and the assembly reads it for the version badge, the project
@@ -197,7 +197,7 @@ func writeManifest(t *testing.T, root string) {
 		manifestDocs[path] = doc.ManifestDoc()
 	}
 
-	postsRel := ".stricttools/posts/"
+	postsRel := "stricttools/posts/"
 	if postsConfig, ok := cfg["posts"].(map[string]any); ok {
 		if dir, ok := postsConfig["dir"].(string); ok && dir != "" {
 			postsRel = dir
@@ -293,7 +293,7 @@ func writeHomeCheckout(t *testing.T, root string) string {
 		"posts":       map[string]any{"repo": "testauthor/posts"},
 	}))
 
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\n"+
 			"title = \"The Fixture Site\"\n"+
 			"description = \"Front page of the fixture assembly.\"\n"+
@@ -318,7 +318,7 @@ func writeHomeCheckout(t *testing.T, root string) string {
 			"rendering at every viewport width the sweep visits.\n")
 
 	// The CV page is a thin host: the whole body comes from the TOML.
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "cv.md"),
+	writeText(t, filepath.Join(root, "stricttools", "docs", "cv.md"),
 		"+++\n"+
 			"title = \"CV\"\n"+
 			"type = \"cv\"\n"+
@@ -327,14 +327,14 @@ func writeHomeCheckout(t *testing.T, root string) string {
 			"+++\n"+
 			"\n"+
 			":-: cv path=\"docs/cv.toml\"\n")
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "cv.toml"), cvTOML)
-	writeBytes(t, filepath.Join(root, ".stricttools", "docs", "assets", "photo.png"), png2x2)
+	writeText(t, filepath.Join(root, "stricttools", "docs", "cv.toml"), cvTOML)
+	writeBytes(t, filepath.Join(root, "stricttools", "docs", "assets", "photo.png"), png2x2)
 
 	// The curated listing the front page and /projects/ both render from.
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "projects.toml"), listingTOML)
+	writeText(t, filepath.Join(root, "stricttools", "docs", "projects.toml"), listingTOML)
 
 	// Posts are site-level: they land at /blog/<slug>/ under no project slug.
-	postsDir := filepath.Join(root, ".stricttools", "posts")
+	postsDir := filepath.Join(root, "stricttools", "posts")
 	writeText(t, filepath.Join(postsDir, "first.md"),
 		"+++\n"+
 			"title = \"The First Post\"\n"+
@@ -409,9 +409,9 @@ func writeAlphaCheckout(t *testing.T, root string) string {
 		"## A second section\n" +
 		"\n" +
 		"So the page has a table of contents with more than one entry.\n"
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "index.md"), indexMD)
+	writeText(t, filepath.Join(root, "stricttools", "docs", "index.md"), indexMD)
 
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "tables.md"),
+	writeText(t, filepath.Join(root, "stricttools", "docs", "tables.md"),
 		"+++\n"+
 			"title = \"Settings\"\n"+
 			"description = \"A table long enough to scroll under its own header.\"\n"+
@@ -440,7 +440,7 @@ func writeAlphaCheckout(t *testing.T, root string) string {
 
 	// The terms page declares the glossary; the build generates
 	// glossary/index.html from every term declared across the project.
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "terms.md"),
+	writeText(t, filepath.Join(root, "stricttools", "docs", "terms.md"),
 		"+++\n"+
 			"title = \"Terms\"\n"+
 			"description = \"The terms Alpha's documentation uses.\"\n"+
@@ -476,11 +476,11 @@ func writeAlphaCheckout(t *testing.T, root string) string {
 	runGit(t, root, "tag", "v0.1.0")
 	// A visible edit between the two versions, so the archive is not a
 	// byte-for-byte copy of the current version.
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "index.md"), strings.Replace(
+	writeText(t, filepath.Join(root, "stricttools", "docs", "index.md"), strings.Replace(
 		indexMD,
 		"Alpha is the versioned fixture project.",
 		"Alpha is the versioned fixture project, revised for 0.2.0.", 1))
-	runGit(t, root, "add", ".stricttools/docs/index.md")
+	runGit(t, root, "add", "stricttools/docs/index.md")
 	runGit(t, root, "commit", "-m", "alpha 0.2.0")
 	runGit(t, root, "tag", "v0.2.0")
 	writeManifest(t, root)
@@ -493,7 +493,7 @@ func writeBetaCheckout(t *testing.T, root string) string {
 	t.Helper()
 	writeJSON(t, filepath.Join(root, "selfdoc.json"),
 		projectConfig("beta", "Beta", map[string]any{"unversioned": true}))
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\n"+
 			"title = \"Beta\"\n"+
 			"description = \"The unversioned fixture project.\"\n"+
@@ -512,7 +512,7 @@ func writeBetaCheckout(t *testing.T, root string) string {
 			"## A second section\n"+
 			"\n"+
 			"So this page has a table of contents too.\n")
-	writeText(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+	writeText(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 		"+++\n"+
 			"title = \"Beta Guide\"\n"+
 			"description = \"A second page in the unversioned project.\"\n"+
@@ -670,7 +670,7 @@ func buildStandaloneProject(t *testing.T, root, theme string) string {
 	}, handle); err != nil {
 		t.Fatalf("[%s] building alpha's standalone site: %v", theme, err)
 	}
-	out := filepath.Join(checkout, ".stricttools", "docs-cache", "build")
+	out := filepath.Join(checkout, "stricttools", ".docs-cache", "build")
 	if err := assembly.IndexSite(out, handle); err != nil {
 		t.Fatalf("[%s] indexing alpha's standalone site: %v", theme, err)
 	}

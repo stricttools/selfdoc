@@ -35,8 +35,8 @@ func write(t *testing.T, path, content string) {
 func makeConfig(overrides map[string]any) map[string]any {
 	config := map[string]any{
 		"source":      []any{},
-		"docs":        ".stricttools/docs/",
-		"output":      ".stricttools/docs-cache/build/",
+		"docs":        "stricttools/docs/",
+		"output":      "stricttools/.docs-cache/build/",
 		"description": "A described project.",
 		"directives":  map[string]any{},
 	}
@@ -207,8 +207,8 @@ func TestValidNamesAcceptsAConfigWithNoDirectivesKey(t *testing.T) {
 func TestResolveAllKeysPagesByTheirDocsRelativePath(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# Home\n")
-	write(t, filepath.Join(base, ".stricttools", "docs", "api", "reference.md"), "# Reference\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# Home\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "api", "reference.md"), "# Reference\n")
 
 	all := resolveAll(t, makeConfig(nil), "", base, nil)
 
@@ -221,10 +221,10 @@ func TestResolveAllKeysPagesByTheirDocsRelativePath(t *testing.T) {
 func TestResolveAllSkipsUnderscoreTemplatesAndNonMarkdown(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# Home\n")
-	write(t, filepath.Join(base, ".stricttools", "docs", "_README.md"), "# Root template\n")
-	write(t, filepath.Join(base, ".stricttools", "docs", "_partials", "_nav.md"), "# Nav\n")
-	write(t, filepath.Join(base, ".stricttools", "docs", "style.css"), "body{}\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# Home\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "_README.md"), "# Root template\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "_partials", "_nav.md"), "# Nav\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "style.css"), "body{}\n")
 
 	all := resolveAll(t, makeConfig(nil), "", base, nil)
 
@@ -236,12 +236,12 @@ func TestResolveAllSkipsUnderscoreTemplatesAndNonMarkdown(t *testing.T) {
 func TestResolveAllSkipsTheOutputDirectory(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# Home\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# Home\n")
 	// A previous build's artifacts, which the walk must not feed back in.
-	write(t, filepath.Join(base, ".stricttools", "docs-cache", "build", "leftover.md"), "# Stale\n")
-	write(t, filepath.Join(base, ".stricttools", "docs-cache", "build", "deep", "leftover.md"), "# Stale\n")
+	write(t, filepath.Join(base, "stricttools", ".docs-cache", "build", "leftover.md"), "# Stale\n")
+	write(t, filepath.Join(base, "stricttools", ".docs-cache", "build", "deep", "leftover.md"), "# Stale\n")
 
-	config := makeConfig(map[string]any{"output": ".stricttools/docs-cache/build/"})
+	config := makeConfig(map[string]any{"output": "stricttools/.docs-cache/build/"})
 	all := resolveAll(t, config, "", base, nil)
 
 	if got := keysOf(all); !reflect.DeepEqual(got, []string{"index.md"}) {
@@ -255,10 +255,10 @@ func TestResolveAllSkipsTheOutputDirectory(t *testing.T) {
 func TestResolveAllSkipsAnOutputDirectoryWithoutTheUnderscore(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# Home\n")
-	write(t, filepath.Join(base, ".stricttools", "docs", "site", "leftover.md"), "# Stale\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# Home\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "site", "leftover.md"), "# Stale\n")
 
-	config := makeConfig(map[string]any{"output": ".stricttools/docs/site/"})
+	config := makeConfig(map[string]any{"output": "stricttools/docs/site/"})
 	all := resolveAll(t, config, "", base, nil)
 
 	if got := keysOf(all); !reflect.DeepEqual(got, []string{"index.md"}) {
@@ -269,7 +269,7 @@ func TestResolveAllSkipsAnOutputDirectoryWithoutTheUnderscore(t *testing.T) {
 func TestResolveAllReadsAnExplicitDocsDirectory(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# Home\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# Home\n")
 	write(t, filepath.Join(base, "other", "page.md"), "# Other\n")
 
 	all := resolveAll(t, makeConfig(nil), filepath.Join(base, "other"), base, nil)
@@ -293,7 +293,7 @@ func TestResolveAllOnAMissingDocsDirectoryIsEmpty(t *testing.T) {
 func TestResolveAllOverlayAddsAndReplaces(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# On disk\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# On disk\n")
 
 	overlay := map[string]string{
 		"index.md":      "# From the overlay\n",
@@ -316,7 +316,7 @@ func TestResolveAllOverlayAddsAndReplaces(t *testing.T) {
 func TestResolveAllResolvesDirectivesAgainstTheProject(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"),
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\n+++\n"+`Project: :-: var key="project.description"`+"\n")
 
 	all := resolveAll(t, makeConfig(nil), "", base, nil)
@@ -336,7 +336,7 @@ func TestResolveAllResolvesDirectivesAgainstTheProject(t *testing.T) {
 func TestResolveAllRefusesAnUngrammaticalCustomDirectiveName(t *testing.T) {
 	isolate(t)
 	base := t.TempDir()
-	write(t, filepath.Join(base, ".stricttools", "docs", "index.md"), "# Home\n")
+	write(t, filepath.Join(base, "stricttools", "docs", "index.md"), "# Home\n")
 
 	config := makeConfig(map[string]any{
 		"directives": map[string]any{"-bad": "scripts/api.py"},

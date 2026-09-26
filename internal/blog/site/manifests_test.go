@@ -140,10 +140,10 @@ func TestLoadListingForRefusesWhenTheSidecarIsAbsent(t *testing.T) {
 	}
 	want := ListingSidecarPath(dir, "home") + " does not exist, so the assembly " +
 		"carries no curated project listing for its home project 'home'. The " +
-		"listing is authored in that project as .stricttools/docs/projects.toml and copied " +
+		"listing is authored in that project as stricttools/docs/projects.toml and copied " +
 		"here by its deploy ('selfdoc assembly integrate' with scope 'full' or " +
 		"'docs'), which is what should have written this file. Add " +
-		".stricttools/docs/projects.toml to 'home' if it has none, then deploy 'home' once " +
+		"stricttools/docs/projects.toml to 'home' if it has none, then deploy 'home' once " +
 		"before generating the shared files."
 	if err.Error() != want {
 		t.Errorf("refusal:\n%s\nwant:\n%s", err.Error(), want)

@@ -95,7 +95,7 @@ func structureFromJSON(t *testing.T, text string) *Structure {
 // docs directory.
 func mustGenerate(t *testing.T, structure *Structure, dir string) string {
 	t.Helper()
-	docsDir := filepath.Join(dir, ".stricttools", "docs")
+	docsDir := filepath.Join(dir, "stricttools", "docs")
 	if _, err := GenerateCLIPages(structure, docsDir, effects.Unbound()); err != nil {
 		t.Fatalf("GenerateCLIPages: %v", err)
 	}
@@ -748,7 +748,7 @@ func TestGenerateCLIPages(t *testing.T) {
 	isolate(t)
 	dir := t.TempDir()
 	structure := structureFromJSON(t, basicStructure)
-	docsDir := filepath.Join(dir, ".stricttools", "docs")
+	docsDir := filepath.Join(dir, "stricttools", "docs")
 	pages, err := GenerateCLIPages(structure, docsDir, effects.Unbound())
 	if err != nil {
 		t.Fatalf("GenerateCLIPages: %v", err)

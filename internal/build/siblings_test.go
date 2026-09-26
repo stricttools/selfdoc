@@ -27,7 +27,7 @@ func threeSiblings() []SiblingProject {
 func buildWithSiblings(t *testing.T, siblings []SiblingProject) string {
 	t.Helper()
 	hygiene.Isolate(t)
-	dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+	dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 	cfg, err := config.Load(dir)
 	if err != nil {
 		t.Fatalf("loading the fixture config: %v", err)
@@ -126,8 +126,8 @@ func TestTheSiblingBlockSitsOutsideTheIndexedBodyAndBeforeTheFooter(t *testing.T
 func TestTheSiblingBlockPassesTheResolutionRule(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := testproject.Make(t, map[string]any{
-		"docs":     ".stricttools/docs/",
-		"output":   ".stricttools/docs-cache/build/",
+		"docs":     "stricttools/docs/",
+		"output":   "stricttools/.docs-cache/build/",
 		"base_url": "https://docs.example.com/selfdoc",
 	})
 	cfg, err := config.Load(dir)

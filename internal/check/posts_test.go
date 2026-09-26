@@ -30,26 +30,26 @@ func postsProject(t *testing.T, posts map[string]string) string {
 	projectConfig := configForSource(
 		map[string]any{"path": "src/", "language": "python"},
 	)
-	projectConfig["posts"] = map[string]any{"dir": ".stricttools/posts/"}
+	projectConfig["posts"] = map[string]any{"dir": "stricttools/posts/"}
 	writeConfig(t, root, projectConfig)
 	write(t, filepath.Join(root, "src", "__init__.py"), `"""Example package."""`+"\n")
 	// The posts directory exists even with no posts in it: a project that
 	// declares one and has none is a different state from one that has no
 	// directory at all, and both surfaces of the check look here.
-	write(t, filepath.Join(root, ".stricttools", "posts", ".keep"), "")
-	write(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	write(t, filepath.Join(root, "stricttools", "posts", ".keep"), "")
+	write(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \"A home page whose description is long "+
 			"enough to keep the description rules quiet in this fixture.\"\n"+
 			"+++\n# Test Project\n\nWelcome.\n")
 	for name, content := range posts {
-		write(t, filepath.Join(root, ".stricttools", "posts", name), content)
+		write(t, filepath.Join(root, "stricttools", "posts", name), content)
 	}
 	return root
 }
 
 // postPath is a post's reporting path, relative to the project root.
 func postPath(name string) string {
-	return filepath.Join(".stricttools", "posts", name)
+	return filepath.Join("stricttools", "posts", name)
 }
 
 func TestAPostIsHeldToThePageRules(t *testing.T) {
@@ -159,7 +159,7 @@ func TestAProjectWithNoPostsIsUnaffected(t *testing.T) {
 	result := checkFixture(t, root)
 
 	for _, diagnostic := range result.Lints {
-		if strings.Contains(diagnostic.File(), ".stricttools") {
+		if strings.Contains(diagnostic.File(), "stricttools") {
 			t.Errorf("a diagnostic named a post path: %s %s",
 				diagnostic.File(), diagnostic.Message())
 		}
@@ -333,13 +333,13 @@ func TestCheckPostsWithNoPostsDirectory(t *testing.T) {
 
 func TestCheckPostsReadsTheConventionalDirectoryWithNoPostsBlock(t *testing.T) {
 	// A project with no "posts" block still keeps its posts at the
-	// conventional .stricttools/posts/, which is where the post-lint slice
+	// conventional stricttools/posts/, which is where the post-lint slice
 	// reads them from. An invalid one there is a POST diagnostic, not a
 	// hard error raised past the check's own reporting.
 	isolate(t)
 	root := t.TempDir()
 	writePostFrontmatter(t,
-		filepath.Join(root, ".stricttools", "posts"), "p.md",
+		filepath.Join(root, "stricttools", "posts"), "p.md",
 		[]string{"title = \"No Date\""}, "",
 	)
 
@@ -350,7 +350,7 @@ func TestCheckPostsReadsTheConventionalDirectoryWithNoPostsBlock(t *testing.T) {
 	if len(results) != 1 || results[0].Code() != "POST001" {
 		t.Fatalf("diagnostics = %v, want one POST001", messagesOf(results))
 	}
-	want := filepath.Join(".stricttools", "posts", "p.md")
+	want := filepath.Join("stricttools", "posts", "p.md")
 	if results[0].File() != want {
 		t.Errorf("file = %q, want %q", results[0].File(), want)
 	}
@@ -412,7 +412,7 @@ func TestLintPostBufferWithoutAPostsDirectory(t *testing.T) {
 		map[string]any{"path": "src/", "language": "python"},
 	))
 	write(t, filepath.Join(root, "src", "__init__.py"), `"""Pkg."""`+"\n")
-	write(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\ndescription = \"A home page whose description is long enough.\"\n+++\n# Home\n")
 
 	_, err := LintPostBuffer(root, "hello.md", postFrontmatter+"Body.\n", nil, handle())

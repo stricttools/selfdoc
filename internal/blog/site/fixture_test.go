@@ -185,7 +185,7 @@ func assemblyTree(t *testing.T) string {
 func buildTree(t *testing.T) string {
 	t.Helper()
 	hygiene.Isolate(t)
-	build := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	build := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	write(t, filepath.Join(build, "index.html"), page("Alpha", "alpha/", "new alpha"))
 	write(t, filepath.Join(build, "guide", "index.html"),
 		page("Alpha Guide", "alpha/guide/", "new guide"))

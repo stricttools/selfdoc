@@ -52,7 +52,7 @@ func TestLayoutDumpCarriesEveryClaimedDirectory(t *testing.T) {
 			t.Errorf("%s commitment = %v, want %v",
 				declared.Name, entry["commitment"], declared.Commitment)
 		}
-		if entry["path"] != layout.Root+"/"+declared.Name {
+		if entry["path"] != declared.Rel() {
 			t.Errorf("%s path = %v", declared.Name, entry["path"])
 		}
 		if description, _ := entry["description"].(string); description == "" {

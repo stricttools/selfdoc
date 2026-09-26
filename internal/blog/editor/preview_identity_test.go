@@ -67,7 +67,7 @@ func (discardWriter) Write(payload []byte) (int, error) { return len(payload), n
 // publishedBytes reads the file a posts build wrote for one slug.
 func publishedBytes(t *testing.T, project, slug string) string {
 	t.Helper()
-	path := filepath.Join(project, ".stricttools", "docs-cache", "build", "blog", slug, "index.html")
+	path := filepath.Join(project, "stricttools", ".docs-cache", "build", "blog", slug, "index.html")
 	content, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("reading %s: %v", path, err)

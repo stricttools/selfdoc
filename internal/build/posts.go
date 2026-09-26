@@ -20,7 +20,7 @@ import (
 
 // defaultPostsDir is where a project keeps its posts when it declares no
 // directory of its own.
-const defaultPostsDir = layout.PostsDefault
+var defaultPostsDir = layout.PostsDefault
 
 // RenderPostListing renders the Markdown listing page from published post
 // metadata, frontmatter included.

@@ -36,7 +36,7 @@ func projectDescription(t *testing.T) string {
 func TestTheReadmeOpensWithTheProjectDescription(t *testing.T) {
 	description := projectDescription(t)
 	data, err := os.ReadFile(filepath.Join(
-		moduleRoot(t), ".stricttools", "docs", "_README.md"))
+		moduleRoot(t), "stricttools", "docs", "_README.md"))
 	if err != nil {
 		t.Fatalf("reading the README template: %v", err)
 	}

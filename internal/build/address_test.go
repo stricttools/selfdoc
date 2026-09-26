@@ -56,7 +56,7 @@ func makeAddressFixture(t *testing.T, configExtra map[string]any, localeCodes []
 		})
 	}
 	config := map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 		"version":  versions[len(versions)-1],
 		"versions": []any{map[string]any{"version": "0.1.0"}, map[string]any{"version": "0.2.0"}},
 		"locales":  localeEntries,
@@ -70,15 +70,15 @@ func makeAddressFixture(t *testing.T, configExtra map[string]any, localeCodes []
 	var docRoots []string
 	for _, code := range localeCodes {
 		if localized {
-			docRoots = append(docRoots, filepath.Join(dir, ".stricttools", "docs", code))
+			docRoots = append(docRoots, filepath.Join(dir, "stricttools", "docs", code))
 			continue
 		}
-		docRoots = append(docRoots, filepath.Join(dir, ".stricttools", "docs"))
+		docRoots = append(docRoots, filepath.Join(dir, "stricttools", "docs"))
 	}
 	if localized {
 		// The single-locale fixture's own index.md would otherwise sit
 		// beside the locale directories and be built as a page of its own.
-		if err := os.Remove(filepath.Join(dir, ".stricttools", "docs", "index.md")); err != nil {
+		if err := os.Remove(filepath.Join(dir, "stricttools", "docs", "index.md")); err != nil {
 			t.Fatalf("clearing the unlocalized index page: %v", err)
 		}
 	}
@@ -96,7 +96,7 @@ func makeAddressFixture(t *testing.T, configExtra map[string]any, localeCodes []
 			testproject.WriteText(t, filepath.Join(docRoot, "index.md"),
 				"# Fixture\n\nRoot page for "+version+".\n")
 		}
-		testproject.Git(t, dir, "add", ".stricttools")
+		testproject.Git(t, dir, "add", "stricttools")
 		testproject.Git(t, dir, "commit", "-m", "docs "+version)
 		testproject.Git(t, dir, "tag", "v"+version)
 	}
@@ -111,7 +111,7 @@ func buildAddressFixture(t *testing.T, configExtra map[string]any, localeCodes [
 	if err != nil {
 		t.Fatalf("Build: %v", err)
 	}
-	return site{dir: dir, output: filepath.Join(dir, ".stricttools", "docs-cache", "build"), written: written}
+	return site{dir: dir, output: filepath.Join(dir, "stricttools", ".docs-cache", "build"), written: written}
 }
 
 // emittedFiles lists every file the build wrote, as slash paths relative to
@@ -354,8 +354,8 @@ func TestABuildThatProducesNoContentPagesIsAnError(t *testing.T) {
 		latestVersion:     "0.2.0",
 		buildVersions:     configList(cfg, "versions"),
 		buildLocales:      configList(cfg, "locales"),
-		outputDir:         filepath.Join(dir, ".stricttools", "docs-cache", "build"),
-		docsDirName:       ".stricttools/docs",
+		outputDir:         filepath.Join(dir, "stricttools", ".docs-cache", "build"),
+		docsDirName:       "stricttools/docs",
 		partitions:        blind,
 		sitePages:         map[string]bool{},
 		stdout:            &discard{},

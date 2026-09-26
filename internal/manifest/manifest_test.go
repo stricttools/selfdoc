@@ -78,7 +78,7 @@ func generate(t *testing.T, projectConfig map[string]any, pages map[string]Doc, 
 // readDocument reads the written manifest as a generic document.
 func readDocument(t *testing.T, dirPath string) map[string]any {
 	t.Helper()
-	content, err := os.ReadFile(filepath.Join(dirPath, ".stricttools", "docs-state", DefaultOutputName))
+	content, err := os.ReadFile(filepath.Join(dirPath, "stricttools", ".docs-state", DefaultOutputName))
 	if err != nil {
 		t.Fatalf("reading the manifest: %v", err)
 	}
@@ -286,7 +286,7 @@ func TestGenerateWritesTheFile(t *testing.T) {
 // untouched content does not dirty the working tree.
 func TestGenerateSkipsTheWriteWhenOnlyTheTimestampWouldChange(t *testing.T) {
 	base := testproject.Dir(t)
-	path := filepath.Join(base, ".stricttools", "docs-state", DefaultOutputName)
+	path := filepath.Join(base, "stricttools", ".docs-state", DefaultOutputName)
 
 	generate(t, baseConfig(), basePages(), nil, base)
 	first, err := os.ReadFile(path)
@@ -476,7 +476,7 @@ func TestGenerateProducesTheRecordedDocument(t *testing.T) {
 	}
 	base := testproject.Dir(t)
 	generate(t, projectConfig, pages, posts, base)
-	written, err := os.ReadFile(filepath.Join(base, ".stricttools", "docs-state", DefaultOutputName))
+	written, err := os.ReadFile(filepath.Join(base, "stricttools", ".docs-state", DefaultOutputName))
 	if err != nil {
 		t.Fatalf("reading the written manifest: %v", err)
 	}
@@ -736,7 +736,7 @@ func TestLoadFromGit(t *testing.T) {
 	t.Run("the committed manifest, not the working tree's", func(t *testing.T) {
 		base := testproject.Dir(t)
 		run(t, base, "git", "init", "--quiet")
-		path := filepath.Join(base, ".stricttools", "docs-state", DefaultOutputName)
+		path := filepath.Join(base, "stricttools", ".docs-state", DefaultOutputName)
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			t.Fatalf("creating .selfdoc: %v", err)
 		}
@@ -745,7 +745,7 @@ func TestLoadFromGit(t *testing.T) {
 		if err := os.WriteFile(path, []byte(committed), 0o644); err != nil {
 			t.Fatalf("writing the manifest: %v", err)
 		}
-		run(t, base, "git", "add", filepath.Join(".stricttools", "docs-state", DefaultOutputName))
+		run(t, base, "git", "add", filepath.Join("stricttools", ".docs-state", DefaultOutputName))
 		run(t, base, "git", "commit", "--quiet", "-m", "manifest")
 
 		// gen has since rewritten the working-tree copy with a new slug; the

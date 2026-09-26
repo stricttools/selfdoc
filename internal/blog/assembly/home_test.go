@@ -45,7 +45,7 @@ func homeSource(t *testing.T, pages map[string]string, listingTOML string) strin
 	t.Helper()
 	source := t.TempDir()
 	for rel, content := range pages {
-		path := filepath.Join(source, ".stricttools", "docs-cache", "build",
+		path := filepath.Join(source, "stricttools", ".docs-cache", "build",
 			filepath.Join(strings.Split(rel, "/")...))
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			t.Fatalf("making %s: %v", filepath.Dir(path), err)
@@ -67,7 +67,7 @@ func homeSource(t *testing.T, pages map[string]string, listingTOML string) strin
 	if err != nil {
 		t.Fatalf("encoding the manifest: %v", err)
 	}
-	path := filepath.Join(source, ".stricttools", "docs-state", "manifest.json")
+	path := filepath.Join(source, "stricttools", ".docs-state", "manifest.json")
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatalf("making %s: %v", filepath.Dir(path), err)
 	}

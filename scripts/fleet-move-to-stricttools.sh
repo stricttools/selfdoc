@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Move every roster project onto the .stricttools/ layout with the move
+# Move every roster project onto the stricttools/ layout with the move
 # script in this repository, using this repository's build of selfdoc for
 # everything after the move and the installed (previous) selfdoc for the one
 # build the move needs before it: the sitemap of the old layout, always
@@ -15,7 +15,7 @@
 # and prints its plan. --apply, per project: archives regenerable caches the
 # move would refuse (the version cache, bytecode caches), builds once with
 # the installed selfdoc so the old layout's sitemap exists, creates
-# `.stricttools/` (the person's step, done here on the person's order), runs
+# `stricttools/` (the person's step, done here on the person's order), runs
 # the move script with --apply (two commits), then in every project on the
 # layout: builds with this repository's selfdoc, compares the URL set before
 # and after, archives the old build output, regenerates, checks, validates
@@ -62,14 +62,14 @@ post_move() {
     archive "the retired .selfdoc/ directory after the layout move; only the regenerable version cache remained in it" "$dir/.selfdoc"
   fi
   (cd "$dir" && "$selfdoc" build >/dev/null 2>&1) || { echo "   build failed on the new layout"; (cd "$dir" && "$selfdoc" build 2>&1 | grep -v warning: | tail -2 | sed 's/^/     /'); return 1; }
-  local before="$dir/.stricttools/docs-cache/sitemap-before-move.xml" after="$dir/.stricttools/docs-cache/build/sitemap.xml"
+  local before="$dir/stricttools/.docs-cache/sitemap-before-move.xml" after="$dir/stricttools/.docs-cache/build/sitemap.xml"
   if [ -f "$before" ]; then
     if [ "$(url_set "$before")" != "$(url_set "$after")" ]; then
       echo "   URL set changed by the move:"; diff <(url_set "$before") <(url_set "$after") | head -6 | sed 's/^/     /'; return 1
     fi
     archive "the pre-move sitemap capture, verified equal to the post-move sitemap" "$before"
   fi
-  [ -e "$dir/docs/_build" ] && archive "old build output; the build now writes under .stricttools/docs-cache/" "$dir/docs/_build"
+  [ -e "$dir/docs/_build" ] && archive "old build output; the build now writes under stricttools/.docs-cache/" "$dir/docs/_build"
   [ -d "$dir/docs" ] && [ -z "$(ls -A "$dir/docs")" ] && rmdir "$dir/docs"
   (cd "$dir" && "$selfdoc" gen >/dev/null 2>&1) || { echo "   gen failed"; return 1; }
   local errors; errors=$(cd "$dir" && "$selfdoc" check 2>&1 | grep -c "error:")
@@ -98,7 +98,7 @@ while IFS= read -r slug; do
   done
   [ -z "$dir" ] && { echo "$slug: no local checkout; skipped"; continue; }
   echo "== $slug ($dir)"
-  if [ -d "$dir/.stricttools/docs" ]; then
+  if [ -d "$dir/stricttools/docs" ]; then
     [ "$mode" = "--dry-run" ] && { echo "   already moved; --apply would verify and commit"; continue; }
     post_move "$dir" "$slug" || failed+=("$slug")
     continue
@@ -107,9 +107,9 @@ while IFS= read -r slug; do
     echo "   working tree not clean; skipped"; failed+=("$slug"); continue
   fi
   if [ "$mode" = "--dry-run" ]; then
-    mkdir -p "$dir/.stricttools"
+    mkdir -p "$dir/stricttools"
     "$mover" --project "$dir" --selfdoc "$selfdoc" --dry-run 2>&1 | tail -3 | sed 's/^/   /'
-    rmdir "$dir/.stricttools" 2>/dev/null
+    rmdir "$dir/stricttools" 2>/dev/null
     continue
   fi
   # The URL set the move must preserve is the one the old layout builds
@@ -122,9 +122,9 @@ while IFS= read -r slug; do
   # recreates their bytecode caches, so the caches are archived last.
   [ -e "$dir/.selfdoc/cache" ] && archive "pre-move cleanup: the regenerable version cache" "$dir/.selfdoc/cache"
   while IFS= read -r pyc; do [ -n "$pyc" ] && archive "pre-move cleanup: regenerable Python bytecode cache" "$pyc"; done < <(find "$dir/docs" "$dir/.selfdoc" -type d -name __pycache__ 2>/dev/null)
-  mkdir -p "$dir/.stricttools"
+  mkdir -p "$dir/stricttools"
   if ! "$mover" --project "$dir" --selfdoc "$selfdoc" --apply > "$dir/move-to-stricttools.log.local-only" 2>&1; then
-    if [ ! -d "$dir/.stricttools/docs" ]; then echo "   move refused; see $dir/move-to-stricttools.log.local-only"; tail -2 "$dir/move-to-stricttools.log.local-only" | sed 's/^/     /'; failed+=("$slug"); continue; fi
+    if [ ! -d "$dir/stricttools/docs" ]; then echo "   move refused; see $dir/move-to-stricttools.log.local-only"; tail -2 "$dir/move-to-stricttools.log.local-only" | sed 's/^/     /'; failed+=("$slug"); continue; fi
   fi
   post_move "$dir" "$slug" || failed+=("$slug")
 done < <(printf '%s\n' "$roster" | sed -n 's/^slug = "\(.*\)"/\1/p')

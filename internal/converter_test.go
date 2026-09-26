@@ -224,7 +224,7 @@ func TestConverterCollapsesTheTwoSortKeys(t *testing.T) {
 	requirePython3(t)
 	root := moduleRoot(t)
 	dir := t.TempDir()
-	docsDir := filepath.Join(dir, ".stricttools", "docs")
+	docsDir := filepath.Join(dir, "stricttools", "docs")
 	writeFixture(t, docsDir, "top.md", "---\ntitle: Top\norder: 40\nnav_order: 3\n---\nB\n")
 	writeFixture(t, docsDir, filepath.Join("guides", "inner.md"),
 		"---\ntitle: Inner\norder: 40\nnav_order: 3\n---\nB\n")

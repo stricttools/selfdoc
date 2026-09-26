@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -58,6 +59,31 @@ func read(t *testing.T, path string) string {
 	return string(data)
 }
 
+// A directory's name on disk is derived from its side: the directories a
+// person writes carry their function name, the ones selfdoc generates carry it
+// behind a dot.
+func TestTheOnDiskNameIsDerivedFromTheSide(t *testing.T) {
+	hygiene.Isolate(t)
+	want := map[string]string{
+		DocsName:       Root + "/docs",
+		PostsName:      Root + "/posts",
+		VocabularyName: Root + "/vocabulary",
+		DocsStateName:  Root + "/.docs-state",
+		DocsCacheName:  Root + "/.docs-cache",
+	}
+	for _, dir := range Declared() {
+		if got := dir.Rel(); got != want[dir.Name] {
+			t.Errorf("%s lives at %q, want %q", dir.Name, got, want[dir.Name])
+		}
+		if strings.HasPrefix(dir.DiskName(), ".") != (dir.Side == Generated) {
+			t.Errorf("%s: the dot of %q disagrees with side %s", dir.Name, dir.DiskName(), dir.Side)
+		}
+	}
+	if Root != "stricttools" {
+		t.Errorf("Root = %q, want the visible stricttools", Root)
+	}
+}
+
 func TestTheDeclarationCoversEveryDirectorySelfdocWrites(t *testing.T) {
 	hygiene.Isolate(t)
 	claimed := map[string]bool{}
@@ -67,6 +93,7 @@ func TestTheDeclarationCoversEveryDirectorySelfdocWrites(t *testing.T) {
 	for _, rel := range []string{
 		DocsRel, GeneratedPagesRel, ManifestRel, PostManifestRel, RevisionsRel,
 		HashesRel, DataRel, OutputRel, VersionsRel, PostsRel, VocabularyRel,
+		TermsRel, ReviewRel,
 	} {
 		name, ok := FunctionOf(rel)
 		if !ok {
@@ -161,12 +188,12 @@ func TestCreatingADirectoryWritesTheDerivedIgnoreFile(t *testing.T) {
 		t.Fatalf("the output directory was not created: %v", err)
 	}
 	ignore := read(t, IgnorePath(dir))
-	if !strings.Contains(ignore, DocsCacheName+"/*") {
+	if !strings.Contains(ignore, "."+DocsCacheName+"/*") {
 		t.Errorf("the derived ignore file does not ignore the uncommitted directory:\n%s", ignore)
 	}
 	// The permission travels with the repository even though the contents do
 	// not, so a fresh checkout does not have to be granted again.
-	if !strings.Contains(ignore, "!"+DocsCacheName+"/"+ManifestFileName) {
+	if !strings.Contains(ignore, "!."+DocsCacheName+"/"+ManifestFileName) {
 		t.Errorf("the derived ignore file swallows the uncommitted directory's manifest:\n%s", ignore)
 	}
 	if strings.Contains(ignore, DocsStateName+"/") {
@@ -178,7 +205,7 @@ func TestTheDerivedIgnoreFileLeavesOtherToolsLinesAlone(t *testing.T) {
 	hygiene.Isolate(t)
 	existing := "# BEGIN othertool\nother-cache/\n# END othertool\n"
 	rendered := RenderIgnore(existing)
-	for _, want := range []string{"# BEGIN othertool", "other-cache/", "# END othertool", DocsCacheName + "/*"} {
+	for _, want := range []string{"# BEGIN othertool", "other-cache/", "# END othertool", "." + DocsCacheName + "/*"} {
 		if !strings.Contains(rendered, want) {
 			t.Errorf("the rendered ignore file lost %q:\n%s", want, rendered)
 		}
@@ -313,6 +340,65 @@ func TestTheOldLayoutRefusalPrintsTheWholeMigrationProcedure(t *testing.T) {
 	for _, step := range []string{"1.", "2.", "3.", "4.", "5."} {
 		if !strings.Contains(message, step) {
 			t.Errorf("the refusal does not number step %q:\n%s", step, message)
+		}
+	}
+}
+
+// A repository still keeping selfdoc's directories under the previous hidden
+// root, with none under the new one, is refused, naming the migrate command.
+func TestTheUnmigratedLayoutIsRefused(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := t.TempDir()
+	write(t, filepath.Join(dir, PreviousRoot, DocsName, ManifestFileName), DirectoryManifestContent(Owner))
+	write(t, filepath.Join(dir, PreviousRoot, DocsStateName, ManifestFileName), DirectoryManifestContent(Owner))
+	err := RefuseOldLayout(dir, PreviousRoot+"/docs/", "", "")
+	var unmigrated *UnmigratedError
+	if !errors.As(err, &unmigrated) {
+		t.Fatalf("err = %v, want the unmigrated refusal", err)
+	}
+	for _, want := range []string{MigrateCommand, PreviousRoot + "/docs", PreviousRoot + "/docs-state"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal does not carry %q: %v", want, err)
+		}
+	}
+	// A directory another tool owns there is not selfdoc's to move.
+	other := t.TempDir()
+	write(t, filepath.Join(other, PreviousRoot, "other-state", ManifestFileName), DirectoryManifestContent("othertool"))
+	if err := RefuseUnmigrated(other); err != nil {
+		t.Errorf("a previous root holding only another tool's directory was refused: %v", err)
+	}
+}
+
+// A declared path under the previous root is refused with the path to declare
+// instead.
+func TestAPathDeclaredUnderThePreviousRootIsRefused(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := owned(t)
+	err := RefuseOldLayout(dir, "", PreviousRoot+"/docs-cache/build/", "")
+	if err == nil {
+		t.Fatal("a path under the previous root was accepted")
+	}
+	if !strings.Contains(err.Error(), `"`+OutputDefault+`"`) {
+		t.Errorf("the refusal does not name the path to declare: %v", err)
+	}
+	if err := RefuseOldLayout(dir, "", OutputDefault, ""); err != nil {
+		t.Errorf("the declared replacement was refused: %v", err)
+	}
+}
+
+func TestMigratedPathMapsOntoTheDerivedNames(t *testing.T) {
+	hygiene.Isolate(t)
+	for previous, want := range map[string]string{
+		".stricttools/docs/":             "stricttools/docs/",
+		".stricttools/docs/_README.md":   "stricttools/docs/_README.md",
+		".stricttools/docs-state/pages":  "stricttools/.docs-state/pages",
+		".stricttools/docs-cache/build/": "stricttools/.docs-cache/build/",
+		".stricttools/docs-cache":        "stricttools/.docs-cache",
+		".stricttools/other-state/x":     ".stricttools/other-state/x",
+		"docs/":                          "docs/",
+	} {
+		if got := MigratedPath(previous); got != want {
+			t.Errorf("MigratedPath(%q) = %q, want %q", previous, got, want)
 		}
 	}
 }

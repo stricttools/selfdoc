@@ -33,11 +33,11 @@ func TestBuildTargetSiteIsTheAbsentDefault(t *testing.T) {
 func TestBuildTargetPosts(t *testing.T) {
 	isolate(t)
 	dir := postProject(t, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \"The landing page of a project whose posts are built alone.\"\n+++\n\n# Home\n")
-	writePost(t, filepath.Join(dir, ".stricttools", "posts"), "hello.md",
+	writePost(t, filepath.Join(dir, "stricttools", "posts"), "hello.md",
 		[]string{"title = \"Hello World\"", "date = 2024-01-15", "slug = \"hello-world\"",
 			"tags = [\"release\"]", "draft = false"},
 		"This is the post content.\n")
@@ -46,10 +46,10 @@ func TestBuildTargetPosts(t *testing.T) {
 	if result.ExitCode != 0 {
 		t.Fatalf("posts build failed: %s\n%s", result.Stdout, result.Stderr)
 	}
-	if !strings.Contains(result.Stdout, "Built ") || !strings.Contains(result.Stdout, ".stricttools/docs-cache/build/") {
+	if !strings.Contains(result.Stdout, "Built ") || !strings.Contains(result.Stdout, "stricttools/.docs-cache/build/") {
 		t.Errorf("the posts build summary is not the declared one:\n%s", result.Stdout)
 	}
-	if !exists(filepath.Join(dir, ".stricttools", "docs-cache", "build", "blog", "hello-world", "index.html")) {
+	if !exists(filepath.Join(dir, "stricttools", ".docs-cache", "build", "blog", "hello-world", "index.html")) {
 		t.Error("the post page was not written")
 	}
 }
@@ -57,11 +57,11 @@ func TestBuildTargetPosts(t *testing.T) {
 func TestBuildTargetPostsWithDrafts(t *testing.T) {
 	isolate(t)
 	dir := postProject(t, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \"The landing page of a project whose posts are built alone.\"\n+++\n\n# Home\n")
-	postsDir := filepath.Join(dir, ".stricttools", "posts")
+	postsDir := filepath.Join(dir, "stricttools", "posts")
 	writePost(t, postsDir, "hello.md",
 		[]string{"title = \"Hello World\"", "date = 2024-01-15", "slug = \"hello-world\"", "draft = false"},
 		"Published.\n")
@@ -69,7 +69,7 @@ func TestBuildTargetPostsWithDrafts(t *testing.T) {
 		[]string{"title = \"Draft Post\"", "date = 2024-01-16", "slug = \"draft-post\"", "draft = true"},
 		"Draft content here.\n")
 
-	draftPage := filepath.Join(dir, ".stricttools", "docs-cache", "build", "blog", "draft-post", "index.html")
+	draftPage := filepath.Join(dir, "stricttools", ".docs-cache", "build", "blog", "draft-post", "index.html")
 
 	if result := run(t, dir, "build", "--target", "posts", "--no-auto-commit"); result.ExitCode != 0 {
 		t.Fatalf("posts build failed: %s\n%s", result.Stdout, result.Stderr)
@@ -128,7 +128,7 @@ func TestBuildTargetHomeRequiresTheAssemblysManifests(t *testing.T) {
 	// only the assembly's manifests carry those.
 	isolate(t)
 	dir := postProject(t, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
 	result := run(t, dir, "build", "--target", "home", "--no-auto-commit")
 	if result.ExitCode != 1 {

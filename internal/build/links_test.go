@@ -179,7 +179,7 @@ func TestBuildRendersLegacyLinksInAnArchiveOnly(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Build: %v", err)
 		}
-		built := site{dir: dir, output: filepath.Join(dir, ".stricttools", "docs-cache", "build"), written: written}
+		built := site{dir: dir, output: filepath.Join(dir, "stricttools", ".docs-cache", "build"), written: written}
 
 		if !built.exists("v/0.1.0/guide/index.html") {
 			t.Fatal("the archived guide was not built")
@@ -231,13 +231,13 @@ func TestBuildRendersLegacyLinksInAnArchiveOnly(t *testing.T) {
 func twoTagProject(t *testing.T, archivedPages, currentPages map[string]string) string {
 	t.Helper()
 	dir := testproject.Make(t, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 		"version":  "0.2.0",
 		"versions": []any{map[string]any{"version": "0.1.0"}, map[string]any{"version": "0.2.0"}},
 	})
 	lay := func(pages map[string]string) {
 		t.Helper()
-		docsDir := filepath.Join(dir, ".stricttools", "docs")
+		docsDir := filepath.Join(dir, "stricttools", "docs")
 		existing, err := markdownFilesUnder(docsDir)
 		if err != nil {
 			t.Fatalf("listing the docs tree: %v", err)

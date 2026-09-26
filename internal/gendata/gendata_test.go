@@ -104,7 +104,7 @@ func TestGenerateDataWithNoScriptsCreatesNothing(t *testing.T) {
 	if _, err := GenerateData(map[string]any{}, base, effects.Unbound()); err != nil {
 		t.Fatalf("GenerateData: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(base, ".stricttools", "docs-state", "data")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(base, "stricttools", ".docs-state", "data")); !os.IsNotExist(err) {
 		t.Errorf("the data directory exists after a run with no scripts (stat err = %v)", err)
 	}
 }
@@ -199,7 +199,7 @@ func TestValidateScript(t *testing.T) {
 func TestBuildBwrapCommandWholeArgv(t *testing.T) {
 	cmd, err := buildBwrapCommand(
 		script("python3 scripts/extract.py", "targets.json", "selfdoc/", "docs/"),
-		"/project", "/project/.stricttools/docs-state/data",
+		"/project", "/project/stricttools/.docs-state/data",
 	)
 	if err != nil {
 		t.Fatalf("buildBwrapCommand: %v", err)
@@ -209,7 +209,7 @@ func TestBuildBwrapCommandWholeArgv(t *testing.T) {
 		"bwrap", "--die-with-parent", "--unshare-all", "--clearenv",
 		"--ro-bind", "/project/selfdoc", "/project/selfdoc",
 		"--ro-bind", "/project/docs", "/project/docs",
-		"--bind", "/project/.stricttools/docs-state/data", "/project/.stricttools/docs-state/data",
+		"--bind", "/project/stricttools/.docs-state/data", "/project/stricttools/.docs-state/data",
 	}
 	for _, sysPath := range systemPaths {
 		if _, err := os.Stat(sysPath); err == nil {
@@ -239,7 +239,7 @@ func TestBuildBwrapCommandDetails(t *testing.T) {
 			name:   "a relative base directory is made absolute",
 			script: script("echo hi", "out.json", "src/"),
 			base:   ".",
-			output: ".stricttools/docs-state/data",
+			output: "stricttools/.docs-state/data",
 			check: func(t *testing.T, cmd []string) {
 				cwd, err := os.Getwd()
 				if err != nil {
@@ -247,14 +247,14 @@ func TestBuildBwrapCommandDetails(t *testing.T) {
 				}
 				assertFollows(t, cmd, "--chdir", cwd)
 				assertBind(t, cmd, "--ro-bind", filepath.Join(cwd, "src"))
-				assertBind(t, cmd, "--bind", filepath.Join(cwd, ".stricttools", "docs-state", "data"))
+				assertBind(t, cmd, "--bind", filepath.Join(cwd, "stricttools", ".docs-state", "data"))
 			},
 		},
 		{
 			name:   "an absolute mount replaces the base directory",
 			script: script("echo hi", "out.json", "/opt/shared"),
 			base:   "/project",
-			output: "/project/.stricttools/docs-state/data",
+			output: "/project/stricttools/.docs-state/data",
 			check: func(t *testing.T, cmd []string) {
 				assertBind(t, cmd, "--ro-bind", "/opt/shared")
 			},
@@ -263,7 +263,7 @@ func TestBuildBwrapCommandDetails(t *testing.T) {
 			name:   "a command is split on arbitrary whitespace",
 			script: script("python3   -m  tool\tgo", "out.json"),
 			base:   "/project",
-			output: "/project/.stricttools/docs-state/data",
+			output: "/project/stricttools/.docs-state/data",
 			check: func(t *testing.T, cmd []string) {
 				sep := indexOf(t, cmd, "--")
 				got := strings.Join(cmd[sep+1:], "|")
@@ -276,9 +276,9 @@ func TestBuildBwrapCommandDetails(t *testing.T) {
 			name:   "no mounts declared",
 			script: script("echo hi", "out.json"),
 			base:   "/project",
-			output: "/project/.stricttools/docs-state/data",
+			output: "/project/stricttools/.docs-state/data",
 			check: func(t *testing.T, cmd []string) {
-				assertBind(t, cmd, "--bind", "/project/.stricttools/docs-state/data")
+				assertBind(t, cmd, "--bind", "/project/stricttools/.docs-state/data")
 				if cmd[4] != "--bind" {
 					t.Errorf("cmd[4] = %q, want --bind right after the isolation flags", cmd[4])
 				}
@@ -460,7 +460,7 @@ func TestGenerateData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bin := isolate(t)
 			base := testproject.Dir(t)
-			out := filepath.Join(base, ".stricttools", "docs-state", "data")
+			out := filepath.Join(base, "stricttools", ".docs-state", "data")
 			// The fake runner receives bwrap's own argv. It exports the
 			// output directory as $out and the last argument -- the script
 			// file the sandboxed command names -- as $last, which is enough
@@ -503,7 +503,7 @@ func shellQuote(s string) string {
 func TestGenerateDataCreatesTheOutputDirectory(t *testing.T) {
 	bin := isolate(t)
 	base := testproject.Dir(t)
-	out := filepath.Join(base, ".stricttools", "docs-state", "data")
+	out := filepath.Join(base, "stricttools", ".docs-state", "data")
 	fakeTool(t, bin, "bwrap", `printf '[]' > `+shellQuote(filepath.Join(out, "data.json")))
 
 	got, err := GenerateData(config(script("python3 scripts/extract.py", "data.json")), base, effects.Unbound())
@@ -520,12 +520,12 @@ func TestGenerateDataCreatesTheOutputDirectory(t *testing.T) {
 }
 
 // TestGenerateDataReturnsPathsUnderTheGivenBase covers the return shape: the
-// paths are the base directory joined with .stricttools/docs-state/data and the declared
+// paths are the base directory joined with stricttools/.docs-state/data and the declared
 // output name, so a relative base yields relative paths.
 func TestGenerateDataReturnsPathsUnderTheGivenBase(t *testing.T) {
 	bin := isolate(t)
 	base := testproject.Dir(t)
-	out := filepath.Join(base, ".stricttools", "docs-state", "data")
+	out := filepath.Join(base, "stricttools", ".docs-state", "data")
 	fakeTool(t, bin, "bwrap", `printf '{}' > `+shellQuote(filepath.Join(out, "x.json")))
 
 	hygiene.Chdir(t, base)
@@ -534,8 +534,8 @@ func TestGenerateDataReturnsPathsUnderTheGivenBase(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GenerateData: %v", err)
 	}
-	if len(got) != 1 || got[0] != "./.stricttools/docs-state/data/x.json" {
-		t.Errorf("generated = %v, want [./.stricttools/docs-state/data/x.json]", got)
+	if len(got) != 1 || got[0] != "./stricttools/.docs-state/data/x.json" {
+		t.Errorf("generated = %v, want [./stricttools/.docs-state/data/x.json]", got)
 	}
 }
 
@@ -586,14 +586,14 @@ func TestGenerateDataUnderPreview(t *testing.T) {
 	if genErr != nil {
 		t.Fatalf("GenerateData: %v", genErr)
 	}
-	want := filepath.Join(base, ".stricttools", "docs-state", "data", "targets.json")
+	want := filepath.Join(base, "stricttools", ".docs-state", "data", "targets.json")
 	if len(got) != 1 || got[0] != want {
 		t.Fatalf("generated = %v, want [%s]", got, want)
 	}
 	if _, err := os.Stat(filepath.Join(base, "ran")); !os.IsNotExist(err) {
 		t.Errorf("the recorded sandbox ran anyway (stat err = %v)", err)
 	}
-	if _, err := os.Stat(filepath.Join(base, ".stricttools", "docs-state", "data")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(base, "stricttools", ".docs-state", "data")); !os.IsNotExist(err) {
 		t.Errorf("the output directory was created in a preview (stat err = %v)", err)
 	}
 	log := app.EffectLog()

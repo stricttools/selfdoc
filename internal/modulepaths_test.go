@@ -27,7 +27,7 @@ var reservedWindowsNames = []string{
 // git database rather than module content.
 var skippedDirs = map[string]bool{
 	".git":         true,
-	".stricttools": true,
+	"stricttools": true,
 	"bin":          true,
 	"dist":         true,
 }

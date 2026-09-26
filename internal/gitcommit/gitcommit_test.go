@@ -305,19 +305,19 @@ func TestAutoCommitClassification(t *testing.T) {
 		{
 			name: "a gitignored file mixed in with a legitimate one",
 			setup: func(t *testing.T, dir string) []string {
-				write(t, dir, ".gitignore", ".stricttools/docs-cache/\n")
+				write(t, dir, ".gitignore", "stricttools/.docs-cache/\n")
 				run(t, dir, "add", ".gitignore")
 				run(t, dir, "commit", "-m", "add gitignore")
-				write(t, dir, ".stricttools/docs/index.md", "# Hello\n")
-				write(t, dir, ".stricttools/docs-cache/build/index.html", "<html></html>\n")
+				write(t, dir, "stricttools/docs/index.md", "# Hello\n")
+				write(t, dir, "stricttools/.docs-cache/build/index.html", "<html></html>\n")
 				return []string{
-					".stricttools/docs/index.md",
-					".stricttools/docs-cache/build/index.html",
+					"stricttools/docs/index.md",
+					"stricttools/.docs-cache/build/index.html",
 				}
 			},
 			check: func(t *testing.T, dir string) {
-				assertTracked(t, dir, ".stricttools/docs/index.md")
-				assertNotTracked(t, dir, ".stricttools/docs-cache/build/index.html")
+				assertTracked(t, dir, "stricttools/docs/index.md")
+				assertNotTracked(t, dir, "stricttools/.docs-cache/build/index.html")
 			},
 		},
 		{

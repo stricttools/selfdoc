@@ -24,15 +24,15 @@ import (
 func baselineProject(t *testing.T) string {
 	t.Helper()
 	return postProject(t, map[string]any{
-		"docs":   ".stricttools/docs/",
-		"output": ".stricttools/docs-cache/build/",
+		"docs":   "stricttools/docs/",
+		"output": "stricttools/.docs-cache/build/",
 	})
 }
 
 // writePage writes a documentation page with the given description and body.
 func writePage(t *testing.T, dir, description, body, name string) {
 	t.Helper()
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", name),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", name),
 		"+++\ndescription = \""+description+"\"\n+++\n# Page\n\n"+body+"\n")
 }
 
@@ -206,7 +206,7 @@ func stalePageInAGitRepository(t *testing.T) (string, string) {
 	writePage(t, dir, "Original description", "Original content here.", "page.md")
 
 	testproject.Git(t, dir, "init")
-	testproject.Git(t, dir, "add", "selfdoc.json", ".stricttools/docs/page.md", "src/__init__.py")
+	testproject.Git(t, dir, "add", "selfdoc.json", "stricttools/docs/page.md", "src/__init__.py")
 	testproject.Git(t, dir, "commit", "-m", "initial")
 
 	if stale := staleIdentifiers(t, dir); len(stale) != 0 {
@@ -311,8 +311,8 @@ func TestADescriptionEditClearsDriftThroughGen(t *testing.T) {
 	isolate(t)
 	dir := postProject(t, map[string]any{
 		"source": []any{map[string]any{"path": "mylib/", "language": "python"}},
-		"docs":   ".stricttools/docs/",
-		"output": ".stricttools/docs-cache/build/",
+		"docs":   "stricttools/docs/",
+		"output": "stricttools/.docs-cache/build/",
 	})
 	writeSource := func(docstring string) {
 		t.Helper()

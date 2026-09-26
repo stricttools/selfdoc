@@ -148,8 +148,8 @@ func TestLoadHappyPath(t *testing.T) {
 				"source":     []any{map[string]any{"path": "src/", "language": "python"}},
 				"base_url":   "https://example.com",
 				"version":    "1.0.0",
-				"docs":       ".stricttools/docs/",
-				"output":     ".stricttools/docs-cache/build/",
+				"docs":       "stricttools/docs/",
+				"output":     "stricttools/.docs-cache/build/",
 				"deploy":     map[string]any{"provider": "github-pages"},
 				"directives": map[string]any{},
 			},
@@ -170,7 +170,7 @@ func TestLoadHappyPath(t *testing.T) {
 				"source": []any{map[string]any{"path": "pkg/", "language": "go"}},
 			}),
 			check: func(t *testing.T, cfg Config) {
-				if cfg["docs"] != ".stricttools/docs/" || cfg["output"] != ".stricttools/docs-cache/build/" {
+				if cfg["docs"] != "stricttools/docs/" || cfg["output"] != "stricttools/.docs-cache/build/" {
 					t.Fatalf("docs = %#v, output = %#v", cfg["docs"], cfg["output"])
 				}
 				if cfg["deploy"] != nil {
@@ -1011,9 +1011,9 @@ func TestPostsTopologyAssembly(t *testing.T) {
 	runCases(t, []configCase{
 		{
 			name: "posts.dir loads",
-			data: base(map[string]any{"posts": map[string]any{"dir": ".stricttools/posts/"}}),
+			data: base(map[string]any{"posts": map[string]any{"dir": "stricttools/posts/"}}),
 			check: func(t *testing.T, cfg Config) {
-				if cfg["posts"].(map[string]any)["dir"] != ".stricttools/posts/" {
+				if cfg["posts"].(map[string]any)["dir"] != "stricttools/posts/" {
 					t.Fatalf("posts = %#v", cfg["posts"])
 				}
 			},
@@ -1235,7 +1235,7 @@ func TestExplicitNulls(t *testing.T) {
 		{
 			name:  "an explicit null on a defaulted string resolves to the default",
 			data:  baseKeys(map[string]any{"docs": nil}),
-			check: wantEqual("docs", ".stricttools/docs/"),
+			check: wantEqual("docs", "stricttools/docs/"),
 		},
 		{
 			name:  "an explicit null on a list field resolves to its empty default",

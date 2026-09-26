@@ -14,12 +14,12 @@ import (
 // deployProject is a project with an output tree and the given deploy block.
 func deployProject(t *testing.T, deploy map[string]any) string {
 	t.Helper()
-	overrides := map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"}
+	overrides := map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"}
 	if deploy != nil {
 		overrides["deploy"] = deploy
 	}
 	dir := postProject(t, overrides)
-	writeText(t, filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html"), "<html></html>\n")
+	writeText(t, filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html"), "<html></html>\n")
 	return dir
 }
 
@@ -36,12 +36,12 @@ func TestDeployRefusesWithoutAConfig(t *testing.T) {
 
 func TestDeployRefusesWithoutAnOutputTree(t *testing.T) {
 	isolate(t)
-	dir := postProject(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+	dir := postProject(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 	result := run(t, dir, "deploy", "--approve-consequential")
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code is %d, want 1", result.ExitCode)
 	}
-	if !strings.Contains(result.Stderr, "Output directory '.stricttools/docs-cache/build' not found") {
+	if !strings.Contains(result.Stderr, "Output directory 'stricttools/.docs-cache/build' not found") {
 		t.Errorf("the refusal is not the missing output's: %s", result.Stderr)
 	}
 }
@@ -117,11 +117,11 @@ func TestSpellCorpusReadsTheNamedRootAndEmitsThePayload(t *testing.T) {
 	isolate(t)
 	root := t.TempDir()
 	project := filepath.Join(root, "one")
-	writeText(t, filepath.Join(project, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(project, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \""+longDescription+"\"\n+++\n\n# Home\n\nPlain prose.\n")
 	writeText(t, filepath.Join(project, "selfdoc.json"), `{"base_url":"https://example.com",`+
 		`"author":{"name":"Test Author","url":"https://author.example"},`+
-		`"docs":".stricttools/docs/","output":".stricttools/docs-cache/build/","unversioned":true,`+
+		`"docs":"stricttools/docs/","output":"stricttools/.docs-cache/build/","unversioned":true,`+
 		`"locales":[{"code":"en","label":"English","default":true}]}`)
 
 	result := run(t, t.TempDir(), "spell-corpus", "--root", root, "--json")

@@ -175,8 +175,8 @@ func TestSelfdocInfoWithoutAConfig(t *testing.T) {
 
 func TestSelfdocInfoDefaultsTheDocsDirectory(t *testing.T) {
 	root := t.TempDir()
-	writeFile(t, root, "selfdoc.json", `{"root_files": [".stricttools/docs/_README.md"]}`)
-	writeFile(t, root, ".stricttools/docs/page.md", ":-: version\n")
+	writeFile(t, root, "selfdoc.json", `{"root_files": ["stricttools/docs/_README.md"]}`)
+	writeFile(t, root, "stricttools/docs/page.md", ":-: version\n")
 
 	info := SelfdocInfo(root)
 	if info.DirectiveCount != 1 {

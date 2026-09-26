@@ -26,7 +26,7 @@ import (
 // SourceFile is the file, relative to the home project's root, that declares
 // the listing. It sits beside the pages, in the handwritten docs directory: the
 // listing is content a person writes.
-const SourceFile = layout.DocsRel + "/projects.toml"
+var SourceFile = layout.DocsRel + "/projects.toml"
 
 // SidecarSuffix is where the assembly keeps the copy the deploy grafted, as a
 // manifest sidecar belonging to the home slug.

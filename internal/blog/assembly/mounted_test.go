@@ -116,7 +116,7 @@ func buildMountedAlpha(t *testing.T, tree *assemblyTree) string {
 			"slug":      "alpha",
 		},
 	})
-	docs := filepath.Join(source, ".stricttools", "docs")
+	docs := filepath.Join(source, "stricttools", "docs")
 	// The guide defines a term of its own and mentions the one the post
 	// defines. That makes the build write a cross-page term link in each
 	// direction, and under a mount the two cross the boundary between the
@@ -127,7 +127,7 @@ func buildMountedAlpha(t *testing.T, tree *assemblyTree) string {
 			"## Widget catalog\n\n"+
 			"<dfn>Widget catalog</dfn> is a list of every widget this project ships.\n\n"+
 			"See the notes on chained revision for the history model.\n")
-	testproject.WriteText(t, filepath.Join(source, ".stricttools", "posts", "hello.md"),
+	testproject.WriteText(t, filepath.Join(source, "stricttools", "posts", "hello.md"),
 		"+++\ntitle = \"Hello World\"\ndate = 2024-06-01\n"+
 			"slug = \""+mountedPostSlug+"\"\ntags = []\ndraft = false\ndirectives = false\n"+
 			"+++\nThe post body.\n\n"+
@@ -156,7 +156,7 @@ func buildMountedAlpha(t *testing.T, tree *assemblyTree) string {
 	if err != nil {
 		t.Fatalf("encoding the manifest: %v", err)
 	}
-	testproject.WriteText(t, filepath.Join(source, ".stricttools", "docs-state", "manifest.json"), string(encoded))
+	testproject.WriteText(t, filepath.Join(source, "stricttools", ".docs-state", "manifest.json"), string(encoded))
 	return source
 }
 

@@ -65,9 +65,9 @@ func TestResolveCV(t *testing.T) {
 
 	t.Run("renders the declared document", func(t *testing.T) {
 		base := t.TempDir()
-		write(t, filepath.Join(base, ".stricttools", "docs", "cv.toml"), cvDocument)
+		write(t, filepath.Join(base, "stricttools", "docs", "cv.toml"), cvDocument)
 		rendered, ok, err := ResolveContent("cv",
-			map[string]string{"path": ".stricttools/docs/cv.toml"}, nil, base,
+			map[string]string{"path": "stricttools/docs/cv.toml"}, nil, base,
 			cvConfig())
 		if err != nil || !ok {
 			t.Fatalf("ResolveContent: ok=%v err=%v", ok, err)
@@ -86,12 +86,12 @@ func TestResolveCV(t *testing.T) {
 	})
 
 	t.Run("a path that is not a file is a hard error", func(t *testing.T) {
-		_, err := ResolveCV(map[string]string{"path": ".stricttools/docs/cv.toml"},
+		_, err := ResolveCV(map[string]string{"path": "stricttools/docs/cv.toml"},
 			cvConfig(), t.TempDir())
 		if err == nil {
 			t.Fatal("a cv directive naming no document must be refused")
 		}
-		wants(t, err.Error(), "directive 'cv': '.stricttools/docs/cv.toml' is not a file")
+		wants(t, err.Error(), "directive 'cv': 'stricttools/docs/cv.toml' is not a file")
 	})
 
 	t.Run("a malformed document is the loader's error", func(t *testing.T) {

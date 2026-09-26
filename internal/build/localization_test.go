@@ -24,7 +24,7 @@ func twoLocales() []map[string]any {
 func buildLocalized(t *testing.T, locales []map[string]any, apply func(*Options)) (site, error) {
 	t.Helper()
 	dir := testproject.MakeLocalized(t, locales, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
 	opts := Options{DirPath: dir, Stdout: &discard{}}
 	if apply != nil {
@@ -33,7 +33,7 @@ func buildLocalized(t *testing.T, locales []map[string]any, apply func(*Options)
 	written, err := Build(opts, effects.Unbound())
 	return site{
 		dir:     dir,
-		output:  filepath.Join(dir, ".stricttools", "docs-cache", "build"),
+		output:  filepath.Join(dir, "stricttools", ".docs-cache", "build"),
 		written: written,
 	}, err
 }
@@ -154,9 +154,9 @@ func TestBuildMissingLocaleDirectory(t *testing.T) {
 	testproject.RequirePagefind(t)
 
 	dir := testproject.MakeLocalized(t, twoLocales(), map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
-	if err := os.RemoveAll(filepath.Join(dir, ".stricttools", "docs", "fa")); err != nil {
+	if err := os.RemoveAll(filepath.Join(dir, "stricttools", "docs", "fa")); err != nil {
 		t.Fatalf("removing the locale's docs tree: %v", err)
 	}
 	_, err := Build(Options{DirPath: dir, Stdout: &discard{}}, effects.Unbound())

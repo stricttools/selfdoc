@@ -1312,8 +1312,8 @@ for (const t of document.querySelectorAll(
 <tbody>
 <tr role="row"><td role="gridcell"><code>language</code></td><td role="gridcell">yes</td><td role="gridcell">One of <code>python</code>, <code>go</code>, <code>typescript</code>, or <code>javascript</code></td></tr>
 <tr role="row"><td role="gridcell"><code>source</code></td><td role="gridcell">yes</td><td role="gridcell">List of directories containing source code to extract from</td></tr>
-<tr role="row"><td role="gridcell"><code>docs</code></td><td role="gridcell">no</td><td role="gridcell">Directory containing Markdown templates (default: <code>.stricttools/docs/</code>)</td></tr>
-<tr role="row"><td role="gridcell"><code>output</code></td><td role="gridcell">no</td><td role="gridcell">Directory for generated HTML output (default: <code>.stricttools/docs-cache/build/</code>)</td></tr>
+<tr role="row"><td role="gridcell"><code>docs</code></td><td role="gridcell">no</td><td role="gridcell">Directory containing Markdown templates (default: <code>stricttools/docs/</code>)</td></tr>
+<tr role="row"><td role="gridcell"><code>output</code></td><td role="gridcell">no</td><td role="gridcell">Directory for generated HTML output (default: <code>stricttools/.docs-cache/build/</code>)</td></tr>
 <tr role="row"><td role="gridcell"><code>deploy</code></td><td role="gridcell">no</td><td role="gridcell">Deploy provider config -- see the deployment docs</td></tr>
 <tr role="row"><td role="gridcell"><code>directives</code></td><td role="gridcell">no</td><td role="gridcell">Map of custom directive names to script paths</td></tr>
 </tbody>

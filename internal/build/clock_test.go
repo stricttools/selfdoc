@@ -24,7 +24,7 @@ func TestTheClockIsAnInput(t *testing.T) {
 	fixed := time.Date(2031, time.July, 4, 12, 0, 0, 0, time.UTC)
 
 	t.Run("an overlay page with no date is dated from the stated clock", func(t *testing.T) {
-		dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+		dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 		cfg, err := config.Load(dir)
 		if err != nil {
 			t.Fatalf("loading the fixture config: %v", err)

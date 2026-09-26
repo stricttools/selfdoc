@@ -80,14 +80,14 @@ func TestInitCreatesConfigAndDocs(t *testing.T) {
 	if !found {
 		t.Errorf("source does not name the package: %v", source)
 	}
-	if config["docs"] != ".stricttools/docs/" {
+	if config["docs"] != "stricttools/docs/" {
 		t.Errorf("docs is %v", config["docs"])
 	}
-	if config["output"] != ".stricttools/docs-cache/build/" {
+	if config["output"] != "stricttools/.docs-cache/build/" {
 		t.Errorf("output is %v", config["output"])
 	}
 
-	content := readText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"))
+	content := readText(t, filepath.Join(dir, "stricttools", "docs", "index.md"))
 	if !strings.Contains(content, "testproj") {
 		t.Errorf("starter page does not name the project:\n%s", content)
 	}
@@ -99,7 +99,7 @@ func TestInitCreatesConfigAndDocs(t *testing.T) {
 func TestInitIndexHasFrontmatter(t *testing.T) {
 	isolate(t)
 	dir := initialized(t)
-	content := readText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"))
+	content := readText(t, filepath.Join(dir, "stricttools", "docs", "index.md"))
 
 	if !strings.HasPrefix(content, "+++\n") {
 		t.Fatalf("starter page has no frontmatter:\n%s", content)
@@ -185,7 +185,7 @@ func TestBuildProducesOutput(t *testing.T) {
 	// output files are still written before the lint pass.
 	run(t, dir, "build", "--no-auto-commit")
 
-	index := filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html")
+	index := filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html")
 	if !exists(index) {
 		t.Fatalf("no index.html written")
 	}
@@ -222,7 +222,7 @@ func TestBuildExitsOneOnErrors(t *testing.T) {
 	dir := initialized(t)
 	// Removing the description from the frontmatter triggers SEO006, whose
 	// severity is error.
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"), "# Test\n\nContent.\n")
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"), "# Test\n\nContent.\n")
 
 	result := run(t, dir, "build", "--no-auto-commit")
 	if result.ExitCode != 1 {
@@ -304,7 +304,7 @@ func TestCheckExitsOneOnErrors(t *testing.T) {
 	isolate(t)
 	requirePython3(t)
 	dir := initialized(t)
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"), "# Test\n\nContent.\n")
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"), "# Test\n\nContent.\n")
 
 	result := run(t, dir, "check", "--no-auto-commit")
 	if result.ExitCode != 1 {
@@ -331,7 +331,7 @@ func TestCheckExitsOneOnABrokenValidatedExample(t *testing.T) {
 	writeText(t, configPath, string(data))
 
 	page := func(name, snippet, summary string) {
-		writeText(t, filepath.Join(dir, ".stricttools", "docs", name),
+		writeText(t, filepath.Join(dir, "stricttools", "docs", name),
 			"+++\ntitle = \""+name+"\"\ndescription = \""+summary+"\"\n+++\n\n"+
 				"# "+name+"\n\n```python validate\n"+snippet+"```\n")
 	}

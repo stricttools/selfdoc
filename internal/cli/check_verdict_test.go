@@ -34,8 +34,8 @@ func loweredThresholdProjects(t *testing.T) (lib, site string) {
 
 	testproject.WriteJSON(t, filepath.Join(lib, "selfdoc.json"), map[string]any{
 		"source":             []any{map[string]any{"path": "mylib/", "language": "python"}},
-		"docs":               ".stricttools/docs/",
-		"output":             ".stricttools/docs-cache/build/",
+		"docs":               "stricttools/docs/",
+		"output":             "stricttools/.docs-cache/build/",
 		"base_url":           "https://example.com/lib",
 		"author":             testproject.Author(),
 		"search_engine":      "pagefind",
@@ -47,13 +47,13 @@ func loweredThresholdProjects(t *testing.T) (lib, site string) {
 		"\"\"\"Alpha module.\"\"\"\n\n\ndef alpha():\n    \"\"\"Do alpha.\"\"\"\n    return 1\n")
 	writeText(t, filepath.Join(lib, "mylib", "beta.py"),
 		"\"\"\"Beta module.\"\"\"\n\n\ndef beta():\n    \"\"\"Do beta.\"\"\"\n    return 2\n")
-	writeText(t, filepath.Join(lib, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(lib, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Lib\"\ndescription = \""+longDescription+"\"\n+++\n\n# Lib\n\n"+
 			`:-: ref path="mylib/alpha.py"`+"\n")
 
 	testproject.WriteJSON(t, filepath.Join(site, "selfdoc.json"), map[string]any{
-		"docs":               ".stricttools/docs/",
-		"output":             ".stricttools/docs-cache/build/",
+		"docs":               "stricttools/docs/",
+		"output":             "stricttools/.docs-cache/build/",
 		"base_url":           "https://example.com",
 		"author":             testproject.Author(),
 		"search_engine":      "pagefind",
@@ -62,7 +62,7 @@ func loweredThresholdProjects(t *testing.T) (lib, site string) {
 		"locales":            []any{map[string]any{"code": "en", "label": "English", "default": true}},
 		"unified":            map[string]any{"projects": []any{map[string]any{"path": "../lib"}}},
 	})
-	writeText(t, filepath.Join(site, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(site, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Docs\"\ndescription = \""+longDescription+"\"\n+++\n\n# Docs\n")
 
 	return lib, site
@@ -115,13 +115,13 @@ func TestTheCheckRunsThePostLintsForAnOrdinaryProject(t *testing.T) {
 	// no posts", and a post found at the conventional path anyway is a hard
 	// error rather than a diagnostic.
 	dir := postProject(t, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
-		"posts": map[string]any{"dir": ".stricttools/posts/"},
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
+		"posts": map[string]any{"dir": "stricttools/posts/"},
 	})
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \""+longDescription+"\"\n+++\n\n# Home\n")
 	// A post whose date is not YYYY-MM-DD is POST003.
-	writeText(t, filepath.Join(dir, ".stricttools", "posts", "broken.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "posts", "broken.md"),
 		"+++\ntitle = \"Broken\"\ndate = \"15-01-2024\"\ndirectives = false\n+++\n\nBad date.\n")
 
 	result := run(t, dir, "check", "--json", "--no-auto-commit")

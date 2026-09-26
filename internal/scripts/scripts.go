@@ -20,7 +20,7 @@ import "strings"
 
 // The maintenance scripts, by the filename each one carries.
 const (
-	// Move is the one-way move of a repository onto selfdoc's .stricttools/
+	// Move is the one-way move of a repository onto selfdoc's stricttools/
 	// layout. Every refusal of the old layout names it.
 	Move = "move-to-stricttools-layout.py"
 	// ConvertFrontmatter rewrites a document's retired "---" frontmatter

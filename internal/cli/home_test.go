@@ -36,7 +36,7 @@ func homeSiteProject(t *testing.T, overrides map[string]any) string {
 		config[key] = value
 	}
 	testproject.WriteJSON(t, filepath.Join(dir, "selfdoc.json"), config)
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "projects.toml"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "projects.toml"),
 		"[[category]]\nname = \"Frameworks\"\n"+
 			"[[category.project]]\nslug = \"alpha\"\n"+
 			"blurb = \"Does the alpha thing.\"\n")
@@ -50,7 +50,7 @@ func homeSiteProject(t *testing.T, overrides map[string]any) string {
 // claims to say, which is the shape STALE001 reports.
 func writeHomeFrontPage(t *testing.T, dir, prose string) {
 	t.Helper()
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Front page\"\ndescription = \"The front page of the site.\"\n+++\n\n"+
 			"# Me\n\n"+prose+"\n\n"+
 			":-: projects-cards\n\n"+
@@ -136,7 +136,7 @@ func TestCheckResolvesTheSiteDirectivesOfTheHomeProject(t *testing.T) {
 
 	// A built page as a home build leaves it: the region the front page's
 	// marker rendered into, carrying the links the assembled site resolves.
-	writeText(t, filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html"),
+	writeText(t, filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html"),
 		"<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"+
 			`<link rel="canonical" href="https://example.com/">`+"\n"+
 			"</head>\n<body>\n"+
@@ -219,7 +219,7 @@ func TestPublishDocsBuildsAndPlacesTheHomeProjectAsHome(t *testing.T) {
 
 	// The build resolved the site-level directives against the assembly's
 	// manifests, which is what only a home build can do.
-	front := readText(t, filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html"))
+	front := readText(t, filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html"))
 	for _, want := range []string{"projects-cards", "Does the alpha thing."} {
 		if !strings.Contains(front, want) {
 			t.Errorf("the built front page does not carry %q", want)

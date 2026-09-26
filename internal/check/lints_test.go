@@ -994,7 +994,7 @@ func namedLintProject(t *testing.T, name string) lintFixture {
 	t.Helper()
 	isolate(t)
 	root := filepath.Join(t.TempDir(), name)
-	docsDir := filepath.Join(root, ".stricttools", "docs")
+	docsDir := filepath.Join(root, "stricttools", "docs")
 	if err := os.MkdirAll(docsDir, 0o755); err != nil {
 		t.Fatalf("mkdir docs: %v", err)
 	}

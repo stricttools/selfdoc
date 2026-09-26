@@ -1,12 +1,23 @@
 // Package layout is selfdoc's declaration of the per-repository directories it
 // owns, and the single authority for every path it reads or writes inside them.
 //
-// A repository keeps one hidden directory at its root, [Root], holding
+// A repository keeps one visible directory at its root, [Root], holding
 // function-named directories rather than tool-named ones: docs/ is the pages a
-// person writes, docs-state/ is what selfdoc generates and the repository
-// commits, docs-cache/ is what selfdoc generates and the repository does not
+// person writes, .docs-state/ is what selfdoc generates and the repository
+// commits, .docs-cache/ is what selfdoc generates and the repository does not
 // commit, posts/ is the blog, vocabulary/ is the project's word lists. Another
-// tool's state lives beside them under its own function name.
+// tool's state lives beside them under its own function name, never under a
+// tool's name.
+//
+// # Names
+//
+// A directory a person writes carries its function name as it is; a directory
+// a tool generates carries it behind a leading dot, so the hand-edited
+// directories are the ones a directory listing shows. The dot is derived from
+// the side the declaration states ([Directory.DiskName]), never typed beside
+// it, and [Validate] refuses a directory selfdoc owns whose dot disagrees with
+// its side. The dot means that at the top level of [Root] only: deeper down it
+// means nothing, and selfdoc's committed directories hold no dotted entries.
 //
 // # Ownership
 //
@@ -52,9 +63,9 @@ import (
 	"github.com/stricttools/selfdoc/internal/scripts"
 )
 
-// Root is the one hidden directory a repository's tool-owned state lives in,
+// Root is the one directory a repository's tool-owned state lives in,
 // relative to the repository root.
-const Root = ".stricttools"
+const Root = "stricttools"
 
 // Owner is the name selfdoc is declared under in a directory's manifest.
 const Owner = "selfdoc"
@@ -75,8 +86,8 @@ const (
 	manifestFormatVersion = SCHEMA_FORMAT_VERSION
 )
 
-// IgnoreFileName is the derived ignore file inside [Root], and the one entry
-// there allowed to start with a dot.
+// IgnoreFileName is the derived ignore file inside [Root]. It starts with a dot
+// because git reads it under no other name, not because it is generated.
 const IgnoreFileName = ".gitignore"
 
 // MoveScript is the script that moves a repository off the layout selfdoc used
@@ -119,18 +130,19 @@ const (
 )
 
 // The function directories, as paths relative to the repository root, in slash
-// form.
-const (
-	DocsRel       = Root + "/" + DocsName
-	DocsStateRel  = Root + "/" + DocsStateName
-	DocsCacheRel  = Root + "/" + DocsCacheName
-	PostsRel      = Root + "/" + PostsName
-	VocabularyRel = Root + "/" + VocabularyName
+// form. Each is derived from the declaration, so a directory's on-disk name is
+// written in one place: [Directory.DiskName].
+var (
+	DocsRel       = declaredRel(DocsName)
+	DocsStateRel  = declaredRel(DocsStateName)
+	DocsCacheRel  = declaredRel(DocsCacheName)
+	PostsRel      = declaredRel(PostsName)
+	VocabularyRel = declaredRel(VocabularyName)
 )
 
 // The files and subdirectories selfdoc keeps inside its function directories,
 // as paths relative to the repository root, in slash form.
-const (
+var (
 	// GeneratedPagesRel is the second docs root: the pages selfdoc generates,
 	// merged into one URL namespace with the handwritten root at build time.
 	GeneratedPagesRel = DocsStateRel + "/pages"
@@ -139,7 +151,7 @@ const (
 	// PostManifestRel is the posts-only manifest the assembly's post publisher
 	// reads.
 	PostManifestRel = DocsStateRel + "/post-manifest.json"
-	// RevisionsRel is the post revision sidecar.
+	// RevisionsRel is the post revision record.
 	RevisionsRel = DocsStateRel + "/revisions.json"
 	// HashesDirRel holds the content and description hash baselines.
 	HashesDirRel = DocsStateRel + "/hashes"
@@ -151,12 +163,17 @@ const (
 	OutputRel = DocsCacheRel + "/build"
 	// VersionsRel holds one extracted checkout per archived version.
 	VersionsRel = DocsCacheRel + "/versions"
+	// TermsRel is the project's accepted and rejected vocabulary.
+	TermsRel = VocabularyRel + "/terms.toml"
+	// ReviewRel is the vocabulary's review list: words proposed for
+	// acceptance that nobody has approved yet.
+	ReviewRel = VocabularyRel + "/review.toml"
 )
 
 // The declared values of the config keys that name a layout directory. A
 // project that declares nothing gets these, and a project that declares
 // something else has to keep it under [Root].
-const (
+var (
 	DocsDefault   = DocsRel + "/"
 	OutputDefault = OutputRel + "/"
 	PostsDefault  = PostsRel + "/"
@@ -166,7 +183,8 @@ const (
 // side of the authorship line it sits on, whether the repository commits it,
 // and the paths it replaced.
 type Directory struct {
-	// Name is the directory's name under [Root].
+	// Name is the directory's function name. The name it carries on disk is
+	// [Directory.DiskName].
 	Name string
 	// Side is whether people or selfdoc write its contents.
 	Side Side
@@ -187,36 +205,93 @@ var declared = []Directory{
 		Side:            Handwritten,
 		Commitment:      Committed,
 		Description:     "The pages a person writes, the underscore-prefixed templates they include, and the docs configuration that sits beside them.",
-		DeprecatedNames: []string{"docs/"},
+		DeprecatedNames: []string{"docs/", PreviousRoot + "/" + DocsName + "/"},
 	},
 	{
 		Name:            DocsStateName,
 		Side:            Generated,
 		Commitment:      Committed,
 		Description:     "What selfdoc generates and the repository keeps: the manifests, the hash baselines, the post revisions, the generated data files, and the generated pages.",
-		DeprecatedNames: []string{".selfdoc/"},
+		DeprecatedNames: []string{".selfdoc/", PreviousRoot + "/" + DocsStateName + "/"},
 	},
 	{
 		Name:            DocsCacheName,
 		Side:            Generated,
 		Commitment:      Uncommitted,
 		Description:     "What selfdoc generates and the repository throws away: the built site and one extracted checkout per archived version.",
-		DeprecatedNames: []string{"docs/_build/", ".selfdoc/cache/"},
+		DeprecatedNames: []string{"docs/_build/", ".selfdoc/cache/", PreviousRoot + "/" + DocsCacheName + "/"},
 	},
 	{
 		Name:            PostsName,
 		Side:            Handwritten,
 		Commitment:      Committed,
 		Description:     "The project's blog posts.",
-		DeprecatedNames: []string{".selfdoc/posts/"},
+		DeprecatedNames: []string{".selfdoc/posts/", PreviousRoot + "/" + PostsName + "/"},
 	},
 	{
 		Name:            VocabularyName,
 		Side:            Handwritten,
 		Commitment:      Committed,
-		Description:     "The project's accepted and rejected vocabulary, read by the spell check and the glossary.",
-		DeprecatedNames: nil,
+		Description:     "The project's accepted and rejected vocabulary and its review list, read by the spell check.",
+		DeprecatedNames: []string{PreviousRoot + "/" + VocabularyName + "/"},
 	},
+}
+
+// generatedPrefix is what a generated directory's name starts with on disk,
+// at the top level of [Root].
+const generatedPrefix = "."
+
+// DiskName is the name the directory carries under [Root]: its function name,
+// behind a leading dot when selfdoc generates its contents.
+func (d Directory) DiskName() string {
+	if d.Side == Generated {
+		return generatedPrefix + d.Name
+	}
+	return d.Name
+}
+
+// Rel is the directory as a path relative to the repository root, in slash
+// form.
+func (d Directory) Rel() string {
+	return Root + "/" + d.DiskName()
+}
+
+// declaredRel is one claimed directory's relative path. It is only ever called
+// with the names this package declares, so a miss is a defect in this file.
+func declaredRel(name string) string {
+	dir, ok := Lookup(name)
+	if !ok {
+		panic("layout: " + name + " is not a declared directory")
+	}
+	return dir.Rel()
+}
+
+// DiskNameOf is the name a directory carries under [Root]: the derived name
+// for a directory selfdoc claims, and the name as given for any other.
+func DiskNameOf(name string) string {
+	if dir, ok := Lookup(name); ok {
+		return dir.DiskName()
+	}
+	return name
+}
+
+// LookupDiskName returns the claimed directory an entry under [Root] is, by
+// the name it carries on disk. An entry whose dot disagrees with the claimed
+// directory's side is not that directory.
+func LookupDiskName(entry string) (Directory, bool) {
+	for _, dir := range declared {
+		if dir.DiskName() == entry {
+			return dir, true
+		}
+	}
+	return Directory{}, false
+}
+
+// LookupFunction returns the claimed directory an entry under [Root] names by
+// its function, whatever its dot says: the entry with its one leading dot
+// removed, when that is a function selfdoc claims.
+func LookupFunction(entry string) (Directory, bool) {
+	return Lookup(strings.TrimPrefix(entry, generatedPrefix))
 }
 
 // Declared returns the directories selfdoc claims, in declaration order.
@@ -250,8 +325,9 @@ func UnderRoot(declaredPath string) bool {
 	return clean == Root || strings.HasPrefix(clean, Root+"/")
 }
 
-// FunctionOf returns the function directory a relative path sits in.
-func FunctionOf(rel string) (string, bool) {
+// EntryOf returns the entry directly under [Root] a relative path sits in, as
+// it is spelled on disk.
+func EntryOf(rel string) (string, bool) {
 	clean := strings.TrimRight(filepath.ToSlash(rel), "/")
 	if !strings.HasPrefix(clean, Root+"/") {
 		return "", false
@@ -263,10 +339,32 @@ func FunctionOf(rel string) (string, bool) {
 	return strings.SplitN(rest, "/", 2)[0], true
 }
 
+// FunctionOf returns the function of the claimed directory a relative path
+// sits in. A path under [Root] in a directory selfdoc does not claim, or in
+// one whose dot disagrees with the claimed side, sits in none.
+func FunctionOf(rel string) (string, bool) {
+	entry, ok := EntryOf(rel)
+	if !ok {
+		return "", false
+	}
+	dir, claimed := LookupDiskName(entry)
+	if !claimed {
+		return "", false
+	}
+	return dir.Name, true
+}
+
 // DirectoryManifestRel is a directory's ownership manifest, as a path relative
-// to the repository root, in slash form.
+// to the repository root, in slash form. name is a function name: a directory
+// selfdoc claims resolves to the name it carries on disk.
 func DirectoryManifestRel(name string) string {
-	return Root + "/" + name + "/" + ManifestFileName
+	return entryManifestRel(DiskNameOf(name))
+}
+
+// entryManifestRel is the manifest of one entry under [Root], by the name the
+// entry carries on disk.
+func entryManifestRel(entry string) string {
+	return Root + "/" + entry + "/" + ManifestFileName
 }
 
 // DirectoryManifestPath is where a directory's ownership manifest sits, in the
@@ -297,7 +395,17 @@ func DirectoryManifestContent(owner string) string {
 // [OwnerKey] line, and a file that declares the gate itself is refused, so the
 // key has exactly one author.
 func ReadDirectoryManifest(baseDir, name string) (*DirectoryManifest, error) {
-	manifestPath := DirectoryManifestPath(baseDir, name)
+	return readEntryManifest(baseDir, DiskNameOf(name))
+}
+
+// readEntryManifest reads and validates the manifest of one entry under
+// [Root], named as it is spelled on disk.
+func readEntryManifest(baseDir, entry string) (*DirectoryManifest, error) {
+	return readManifestFile(Path(baseDir, entryManifestRel(entry)))
+}
+
+// readManifestFile reads and validates one ownership manifest by its path.
+func readManifestFile(manifestPath string) (*DirectoryManifest, error) {
 	raw, err := os.ReadFile(manifestPath)
 	if err != nil {
 		return nil, err
@@ -358,8 +466,8 @@ func EnsureOwned(baseDir, name string) error {
 	manifest, err := ReadDirectoryManifest(baseDir, name)
 	if errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf(
-			"selfdoc may not write into %s: it carries no %s, and the manifest is the permission. Only `selfdoc init` writes one. Create %s holding this line:\n%s",
-			filepath.Join(Root, name), ManifestFileName, DirectoryManifestRel(name),
+			"selfdoc may not write into %s: it carries no %s, and the manifest is the permission. Create %s holding this line:\n%s",
+			Root+"/"+DiskNameOf(name), ManifestFileName, DirectoryManifestRel(name),
 			strings.TrimRight(DirectoryManifestContent(Owner), "\n"))
 	}
 	if err != nil {
@@ -368,15 +476,15 @@ func EnsureOwned(baseDir, name string) error {
 	if manifest.Owner != Owner {
 		return fmt.Errorf(
 			"selfdoc may not write into %s: %s declares %q as its owner, not %q",
-			filepath.Join(Root, name), DirectoryManifestRel(name), manifest.Owner, Owner)
+			Root+"/"+DiskNameOf(name), DirectoryManifestRel(name), manifest.Owner, Owner)
 	}
 	return nil
 }
 
 // InitDirectories are the directories `selfdoc init` grants selfdoc: the
 // pages, the generated state and the cache every project writes from its first
-// build on.
-var InitDirectories = []string{DocsName, DocsStateName, DocsCacheName}
+// build on, and the vocabulary its spell check reads.
+var InitDirectories = []string{DocsName, DocsStateName, DocsCacheName, VocabularyName}
 
 // GrantInit writes the ownership manifests of [InitDirectories] that are
 // missing, naming selfdoc, and refreshes the derived ignore file. It returns
@@ -398,12 +506,12 @@ func GrantInit(h *effects.Handle, baseDir string) ([]string, error) {
 		case manifest.Owner != Owner:
 			return nil, fmt.Errorf(
 				"selfdoc init may not adopt %s: %s declares %q as its owner, not %q",
-				filepath.Join(Root, name), DirectoryManifestRel(name), manifest.Owner, Owner)
+				Root+"/"+DiskNameOf(name), DirectoryManifestRel(name), manifest.Owner, Owner)
 		}
 	}
 	written := make([]string, 0, len(missing))
 	for _, name := range missing {
-		if err := h.MkdirAll(Path(baseDir, Root+"/"+name)); err != nil {
+		if err := h.MkdirAll(Path(baseDir, declaredRel(name))); err != nil {
 			return nil, err
 		}
 		if err := h.AtomicWrite(DirectoryManifestPath(baseDir, name),
@@ -426,13 +534,15 @@ func GrantInit(h *effects.Handle, baseDir string) ([]string, error) {
 // under [Root] goes through here, so no path can reach the filesystem without
 // its owning manifest having been read.
 func EnsureDir(h *effects.Handle, baseDir, rel string) error {
-	name, ok := FunctionOf(rel)
+	entry, ok := EntryOf(rel)
 	if !ok {
 		return fmt.Errorf("%q is not a path under %s", rel, Root)
 	}
-	if _, claimed := Lookup(name); !claimed {
-		return fmt.Errorf("selfdoc does not claim %s", filepath.Join(Root, name))
+	dir, claimed := LookupDiskName(entry)
+	if !claimed {
+		return fmt.Errorf("selfdoc does not claim %s", Root+"/"+entry)
 	}
+	name := dir.Name
 	if err := EnsureOwned(baseDir, name); err != nil {
 		return err
 	}
@@ -463,8 +573,8 @@ func IgnoreBlock() []string {
 	for _, dir := range declared {
 		if dir.Commitment == Uncommitted {
 			block = append(block,
-				dir.Name+"/*",
-				"!"+dir.Name+"/"+ManifestFileName)
+				dir.DiskName()+"/*",
+				"!"+dir.DiskName()+"/"+ManifestFileName)
 		}
 	}
 	return append(block, ignoreEnd)
@@ -499,6 +609,37 @@ func RenderIgnore(existing string) string {
 	if rest := trimBlankEdges(after); len(rest) > 0 {
 		lines = append(lines, "")
 		lines = append(lines, rest...)
+	}
+	return strings.Join(lines, "\n") + "\n"
+}
+
+// WithoutIgnoreBlock returns an ignore file's content with selfdoc's block
+// removed and every other line kept, for the ignore file a move leaves behind.
+func WithoutIgnoreBlock(existing string) string {
+	var before, after []string
+	inBlock, sawBlock := false, false
+	for _, line := range strings.Split(strings.ReplaceAll(existing, "\r\n", "\n"), "\n") {
+		switch {
+		case strings.TrimSpace(line) == ignoreBegin:
+			inBlock, sawBlock = true, true
+		case strings.TrimSpace(line) == ignoreEnd:
+			inBlock = false
+		case inBlock:
+		case sawBlock:
+			after = append(after, line)
+		default:
+			before = append(before, line)
+		}
+	}
+	lines := trimBlankEdges(before)
+	if rest := trimBlankEdges(after); len(rest) > 0 {
+		if len(lines) > 0 {
+			lines = append(lines, "")
+		}
+		lines = append(lines, rest...)
+	}
+	if len(lines) == 0 {
+		return ""
 	}
 	return strings.Join(lines, "\n") + "\n"
 }

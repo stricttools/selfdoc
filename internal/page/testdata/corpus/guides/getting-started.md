@@ -71,8 +71,8 @@ The configuration file controls how selfdoc finds your source code, where to loo
 {
   "language": "python",
   "source": ["mypackage/"],
-  "docs": ".stricttools/docs/",
-  "output": ".stricttools/docs-cache/build/"
+  "docs": "stricttools/docs/",
+  "output": "stricttools/.docs-cache/build/"
 }
 ```
 
@@ -80,8 +80,8 @@ The configuration file controls how selfdoc finds your source code, where to loo
 | ----- | -------- | ----------- |
 | `language` | yes | One of `python`, `go`, `typescript`, or `javascript` |
 | `source` | yes | List of directories containing source code to extract from |
-| `docs` | no | Directory containing Markdown templates (default: `.stricttools/docs/`) |
-| `output` | no | Directory for generated HTML output (default: `.stricttools/docs-cache/build/`) |
+| `docs` | no | Directory containing Markdown templates (default: `stricttools/docs/`) |
+| `output` | no | Directory for generated HTML output (default: `stricttools/.docs-cache/build/`) |
 | `deploy` | no | Deploy provider config -- see the deployment docs |
 | `directives` | no | Map of custom directive names to script paths |
 

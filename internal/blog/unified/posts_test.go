@@ -26,7 +26,7 @@ func post(title, date, slug string, draft bool) string {
 // writePost saves a post under a project's default posts directory.
 func writePost(t *testing.T, projectDir, name, source string) {
 	t.Helper()
-	testproject.WriteText(t, filepath.Join(projectDir, ".stricttools", "posts", name), source)
+	testproject.WriteText(t, filepath.Join(projectDir, "stricttools", "posts", name), source)
 }
 
 // projectDirOf is a constituent's directory inside a unified fixture.
@@ -62,7 +62,7 @@ func TestBuildUnifiedEmitsEveryProjectsPostsIntoTheSharedTree(t *testing.T) {
 	if _, err := BuildUnified(docsSite, nil, "", false, effects.Unbound()); err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 
 	// A post has no project segment whichever project wrote it: every one
 	// of them is served from the site-level tree at "blog/<slug>/".
@@ -86,8 +86,8 @@ func TestBuildUnifiedCleansUpTheInjectedPostsOfEveryProject(t *testing.T) {
 
 	// The pages injection wrote are removed from every docs tree it wrote
 	// into, so a build never leaves a generated page behind in the source.
-	assertNoInjectedPosts(t, filepath.Join(coreDir, ".stricttools", "docs"))
-	assertNoInjectedPosts(t, filepath.Join(docsSite, ".stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(coreDir, "stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(docsSite, "stricttools", "docs"))
 }
 
 func TestBuildUnifiedCleansUpTheInjectedPostsWhenTheBuildFails(t *testing.T) {
@@ -110,9 +110,9 @@ func TestBuildUnifiedCleansUpTheInjectedPostsWhenTheBuildFails(t *testing.T) {
 		t.Errorf("err = %q, want it to name the repeated slug", err)
 	}
 
-	assertNoInjectedPosts(t, filepath.Join(coreDir, ".stricttools", "docs"))
-	assertNoInjectedPosts(t, filepath.Join(cliDir, ".stricttools", "docs"))
-	assertNoInjectedPosts(t, filepath.Join(docsSite, ".stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(coreDir, "stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(cliDir, "stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(docsSite, "stricttools", "docs"))
 }
 
 func TestBuildUnifiedCleansUpTheInjectedPostsWhenSetupFails(t *testing.T) {
@@ -131,7 +131,7 @@ func TestBuildUnifiedCleansUpTheInjectedPostsWhenSetupFails(t *testing.T) {
 		t.Fatal("an unreadable constituent config was accepted")
 	}
 
-	assertNoInjectedPosts(t, filepath.Join(coreDir, ".stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(coreDir, "stricttools", "docs"))
 }
 
 func TestBuildUnifiedLeavesADocsTreeAloneWhenThereAreNoPosts(t *testing.T) {
@@ -140,8 +140,8 @@ func TestBuildUnifiedLeavesADocsTreeAloneWhenThereAreNoPosts(t *testing.T) {
 
 	docsSite, output := buildUnifiedFixture(t, twoProjects, nil)
 
-	assertNoInjectedPosts(t, filepath.Join(projectDirOf(docsSite, "core"), ".stricttools", "docs"))
-	assertNoInjectedPosts(t, filepath.Join(docsSite, ".stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(projectDirOf(docsSite, "core"), "stricttools", "docs"))
+	assertNoInjectedPosts(t, filepath.Join(docsSite, "stricttools", "docs"))
 	if isDir(filepath.Join(output, "blog")) {
 		t.Error("a site with no posts still got a site-level blog tree")
 	}
@@ -169,7 +169,7 @@ func TestBuildUnifiedDraftsAreWithheldUnlessAskedFor(t *testing.T) {
 				docsSite, nil, "", testCase.includeDrafts, effects.Unbound()); err != nil {
 				t.Fatalf("BuildUnified: %v", err)
 			}
-			output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+			output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 			requireFile(t, filepath.Join(output, "blog", "live", "index.html"))
 
 			draftPage := filepath.Join(output, "blog", "hidden", "index.html")

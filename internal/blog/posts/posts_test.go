@@ -63,7 +63,7 @@ func writePost(t *testing.T, postsDir, name string, frontmatter []string, body s
 // returns its path.
 func writeManifest(t *testing.T, dirPath string, posts string) string {
 	t.Helper()
-	path := filepath.Join(dirPath, ".stricttools", "docs-state", "manifest.json")
+	path := filepath.Join(dirPath, "stricttools", ".docs-state", "manifest.json")
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatalf("mkdir %s: %v", filepath.Dir(path), err)
 	}
@@ -672,11 +672,11 @@ func TestSlugImmutabilityAcceptsAnUnchangedSlug(t *testing.T) {
 	hygiene.Isolate(t)
 	base := t.TempDir()
 	initRepo(t, base)
-	postsDir := filepath.Join(base, ".stricttools", "posts")
+	postsDir := filepath.Join(base, "stricttools", "posts")
 	writePost(t, postsDir, "hello.md",
 		[]string{"title = \"Hello\"", "date = 2025-01-01", "slug = \"hello\""}, "")
 	_ = writeManifest(t, base, `{"path": "hello.md", "slug": "hello"}`)
-	run(t, base, "git", "add", ".stricttools/docs-state/manifest.json")
+	run(t, base, "git", "add", "stricttools/.docs-state/manifest.json")
 	run(t, base, "git", "commit", "--quiet", "-m", "add manifest")
 
 	all := discover(t, postsDir, base)
@@ -690,11 +690,11 @@ func TestSlugImmutabilityRefusesAChangedSlug(t *testing.T) {
 	hygiene.Isolate(t)
 	base := t.TempDir()
 	initRepo(t, base)
-	postsDir := filepath.Join(base, ".stricttools", "posts")
+	postsDir := filepath.Join(base, "stricttools", "posts")
 	writePost(t, postsDir, "hello.md",
 		[]string{"title = \"Hello\"", "date = 2025-01-01", "slug = \"hello-new\""}, "")
 	_ = writeManifest(t, base, `{"path": "hello.md", "slug": "hello-old"}`)
-	run(t, base, "git", "add", ".stricttools/docs-state/manifest.json")
+	run(t, base, "git", "add", "stricttools/.docs-state/manifest.json")
 	run(t, base, "git", "commit", "--quiet", "-m", "add manifest")
 
 	postError := discoverError(t, postsDir, base)
@@ -713,9 +713,9 @@ func TestSlugImmutabilityReadsTheCommittedManifest(t *testing.T) {
 	hygiene.Isolate(t)
 	base := t.TempDir()
 	initRepo(t, base)
-	postsDir := filepath.Join(base, ".stricttools", "posts")
+	postsDir := filepath.Join(base, "stricttools", "posts")
 	_ = writeManifest(t, base, `{"path": "hello.md", "slug": "hello-old"}`)
-	run(t, base, "git", "add", ".stricttools/docs-state/manifest.json")
+	run(t, base, "git", "add", "stricttools/.docs-state/manifest.json")
 	run(t, base, "git", "commit", "--quiet", "-m", "add manifest")
 
 	writePost(t, postsDir, "hello.md",
@@ -733,11 +733,11 @@ func TestSlugImmutabilityAcceptsAPostTheManifestDoesNotName(t *testing.T) {
 	hygiene.Isolate(t)
 	base := t.TempDir()
 	initRepo(t, base)
-	postsDir := filepath.Join(base, ".stricttools", "posts")
+	postsDir := filepath.Join(base, "stricttools", "posts")
 	writePost(t, postsDir, "new-post.md",
 		[]string{"title = \"New Post\"", "date = 2025-06-01", "slug = \"new-post\""}, "")
 	_ = writeManifest(t, base, "")
-	run(t, base, "git", "add", ".stricttools/docs-state/manifest.json")
+	run(t, base, "git", "add", "stricttools/.docs-state/manifest.json")
 	run(t, base, "git", "commit", "--quiet", "-m", "add manifest")
 
 	all := discover(t, postsDir, base)
@@ -780,7 +780,7 @@ func TestSlugImmutabilityIsSkippedWithNothingToCompareAgainst(t *testing.T) {
 			hygiene.Isolate(t)
 			base := t.TempDir()
 			testCase.setup(t, base)
-			postsDir := filepath.Join(base, ".stricttools", "posts")
+			postsDir := filepath.Join(base, "stricttools", "posts")
 			writePost(t, postsDir, "hello.md",
 				[]string{"title = \"Hello\"", "date = 2025-01-01", "slug = \"hello-new\""}, "")
 			_ = writeManifest(t, base, `{"path": "hello.md", "slug": "hello-old"}`)

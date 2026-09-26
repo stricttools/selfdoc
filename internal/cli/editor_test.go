@@ -246,7 +246,7 @@ func TestThePublisherProjectsTheCommandsOwnDeclaration(t *testing.T) {
 func TestThePublisherPlansFromTheProjectsOwnPosts(t *testing.T) {
 	isolate(t)
 	dir := postProject(t, nil)
-	postsDir := filepath.Join(dir, ".stricttools", "posts")
+	postsDir := filepath.Join(dir, "stricttools", "posts")
 	writePost(t, postsDir, "live.md",
 		[]string{"title = \"Live\"", "date = 2025-01-15", "slug = \"live\"", "draft = false"}, "Body.\n")
 	writePost(t, postsDir, "held.md",

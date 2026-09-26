@@ -312,7 +312,7 @@ func TestDocumentWrite(t *testing.T) {
 		if body["saved"] != true {
 			t.Errorf("saved = %v", body["saved"])
 		}
-		onDisk := filepath.Join(space.project, ".stricttools", "posts", postHelloName)
+		onDisk := filepath.Join(space.project, "stricttools", "posts", postHelloName)
 		if got := testproject.ReadText(t, onDisk); got != edited {
 			t.Errorf("the saved file reads %q", got)
 		}
@@ -326,7 +326,7 @@ func TestDocumentWrite(t *testing.T) {
 		if status != 200 {
 			t.Fatalf("status = %d, want 200", status)
 		}
-		created := filepath.Join(space.project, ".stricttools", "posts", "brand-new.md")
+		created := filepath.Join(space.project, "stricttools", "posts", "brand-new.md")
 		if got := testproject.ReadText(t, created); got != source {
 			t.Errorf("the created file reads %q", got)
 		}

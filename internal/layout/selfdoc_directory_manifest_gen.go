@@ -28,9 +28,9 @@ const SCHEMA_FORMAT_VERSION = 1
 // files and scalar manifest) so the validator is self-contained and does no IO.
 var embeddedSchema = map[string]string{
 	"directory-manifest.schema.toml": `# strictspec schema -- the manifest that declares who owns one directory under
-# a repository's .stricttools/ root.
+# a repository's stricttools/ root.
 #
-# Governs .stricttools/<directory>/manifest.toml: the one-key document that
+# Governs stricttools/<directory>/manifest.toml: the one-key document that
 # says which tool owns the directory it sits in. The generated validator
 # (internal/layout/selfdoc_directory_manifest_gen.go) is what
 # layout.ReadDirectoryManifest validates each file against, so a manifest that reaches the permission check
@@ -58,11 +58,11 @@ format_version = 1
 document_syntax = "toml"
 role = "schema"
 root = "DirectoryManifest"
-description = "One directory's ownership manifest under a repository's .stricttools/ root: the single key naming the tool that owns the directory."
+description = "One directory's ownership manifest under a repository's stricttools/ root: the single key naming the tool that owns the directory."
 
 [types.DirectoryManifest]
 type = "record"
-description = "The manifest file a directory under .stricttools/ carries."
+description = "The manifest file a directory under stricttools/ carries."
 
 [types.DirectoryManifest.fields.format_version]
 type = "integer"

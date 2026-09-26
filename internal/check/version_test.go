@@ -18,7 +18,7 @@ func versionProject(
 	root := t.TempDir()
 	writeConfig(t, root, projectConfig)
 	write(t, filepath.Join(root, "mylib", "__init__.py"), `"""Lib."""`+"\n")
-	write(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Test\"\ndescription = \"A test project for version consistency "+
 			"checking across builds\"\n+++\n\n# Test\n")
 	if pyprojectVersion != "" {
@@ -153,9 +153,9 @@ func TestVER004GeneratedRootFileVersion(t *testing.T) {
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
 			projectConfig := pythonProjectConfig()
-			projectConfig["root_files"] = []any{".stricttools/docs/_README.md"}
+			projectConfig["root_files"] = []any{"stricttools/docs/_README.md"}
 			root := versionProject(t, projectConfig, "1.0.0")
-			write(t, filepath.Join(root, ".stricttools", "docs", "_README.md"), testCase.template)
+			write(t, filepath.Join(root, "stricttools", "docs", "_README.md"), testCase.template)
 			if testCase.writeGenerated {
 				write(t, filepath.Join(root, "README.md"), testCase.generated)
 			}
@@ -227,8 +227,8 @@ func multiVersionProject(t *testing.T) string {
 	gitInit(t, root)
 	runGit(t, root, "tag", "v0.1.0")
 
-	write(t, filepath.Join(root, ".stricttools", "docs", "index.md"), "# Project\n\nWelcome.\n")
-	runGit(t, root, "add", ".stricttools/docs/")
+	write(t, filepath.Join(root, "stricttools", "docs", "index.md"), "# Project\n\nWelcome.\n")
+	runGit(t, root, "add", "stricttools/docs/")
 	runGit(t, root, "commit", "-m", "add docs")
 	runGit(t, root, "tag", "v0.2.0")
 
@@ -269,9 +269,9 @@ func TestVersionFilterControlsVER001(t *testing.T) {
 
 	t.Run("the other checks still run under a filter", func(t *testing.T) {
 		root := multiVersionProject(t)
-		write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+		write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 			"# API\n\n:-: ref path=\"nonexistent_module\"\n")
-		runGit(t, root, "add", ".stricttools/docs/api.md")
+		runGit(t, root, "add", "stricttools/docs/api.md")
 		runGit(t, root, "commit", "-m", "add broken directive")
 
 		result, err := CheckDocs(root, nil, true, "0.2.0", "", handle())

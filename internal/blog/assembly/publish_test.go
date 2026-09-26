@@ -20,7 +20,7 @@ func buildTree(t *testing.T, pages ...string) string {
 	if len(pages) == 0 {
 		pages = []string{"index.html", "guide/index.html"}
 	}
-	output := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	output := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	for _, page := range pages {
 		path := filepath.Join(output, filepath.Join(strings.Split(page, "/")...))
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
@@ -496,7 +496,7 @@ func TestPublishingTheHomeProjectRefusesAReservedAddress(t *testing.T) {
 func TestPublishingTheHomeProjectCarriesItsCuratedListing(t *testing.T) {
 	gh := publishFixture(t, nil)
 	source := t.TempDir()
-	writeBuildFile(t, filepath.Join(source, ".stricttools", "docs"), "projects.toml",
+	writeBuildFile(t, filepath.Join(source, "stricttools", "docs"), "projects.toml",
 		[]byte("[[category]]\nname = \"Frameworks\"\n"+
 			"[[category.project]]\nslug = \"alpha\"\nblurb = \"Does it.\"\n"))
 	if _, err := publishHome(t, buildTree(t), source); err != nil {

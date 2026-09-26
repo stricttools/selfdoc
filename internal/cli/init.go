@@ -118,7 +118,7 @@ func projectName(dir string) string {
 }
 
 func (c *cli) registerInit() {
-	c.app.Command("init", "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page",
+	c.app.Command("init", "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of "+strings.Join(initDirectoryPaths(), ", ")+", and a starter docs page",
 		c.cmdInit,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
@@ -135,7 +135,7 @@ func (c *cli) registerInit() {
 const newProjectVersion = "0.0.0"
 
 // indexRel is the starter page init writes, relative to the project root.
-const indexRel = layout.DocsRel + "/index.md"
+var indexRel = layout.DocsRel + "/index.md"
 
 func (c *cli) cmdInit(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
 	baseURL := strictcli.Get[string](kwargs, "base_url")
@@ -321,4 +321,15 @@ func (c *cli) cmdInit(ctx *strictcli.Context, kwargs map[string]any) strictcli.O
 	}
 
 	return strictcli.Exit(0)
+}
+
+// initDirectoryPaths are the directories `selfdoc init` grants, as the paths
+// its help names them by.
+func initDirectoryPaths() []string {
+	paths := make([]string, 0, len(layout.InitDirectories))
+	for _, name := range layout.InitDirectories {
+		dir, _ := layout.Lookup(name)
+		paths = append(paths, dir.Rel())
+	}
+	return paths
 }

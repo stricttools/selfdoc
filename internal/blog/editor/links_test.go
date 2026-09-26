@@ -99,7 +99,7 @@ func betaManifest() map[string]any {
 // writeManifest writes one project manifest under a project root.
 func writeManifest(t *testing.T, root string, manifest map[string]any) string {
 	t.Helper()
-	path := filepath.Join(root, ".stricttools", "docs-state", "manifest.json")
+	path := filepath.Join(root, "stricttools", ".docs-state", "manifest.json")
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}

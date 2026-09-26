@@ -220,28 +220,28 @@ func (a *assemblyTree) writeSourceProject() {
 			map[string]any{"version": "1.0.0"},
 		},
 	})
-	a.Write("source/alpha/.stricttools/docs-cache/build/index.html",
+	a.Write("source/alpha/stricttools/.docs-cache/build/index.html",
 		integratePage("Alpha", "alpha/", "new alpha", "1.0.0"))
-	a.Write("source/alpha/.stricttools/docs-cache/build/guide/index.html",
+	a.Write("source/alpha/stricttools/.docs-cache/build/guide/index.html",
 		integratePage("Alpha Guide", "alpha/guide/", "new guide", "1.0.0"))
 	// The listing page the build renders for the project's own standalone
 	// site. It is not grafted: the assembled site's blog index is written by
 	// the shared generator and lists every project's posts.
-	a.Write("source/alpha/.stricttools/docs-cache/build/blog/index.html",
+	a.Write("source/alpha/stricttools/.docs-cache/build/blog/index.html",
 		integratePage("Alpha Posts", "blog/", "standalone listing", "1.0.0"))
-	a.Write("source/alpha/.stricttools/docs-cache/build/blog/hello/index.html",
+	a.Write("source/alpha/stricttools/.docs-cache/build/blog/hello/index.html",
 		integratePage("Hello", "blog/hello/", "hello", "1.0.0"))
 	// Per-project deploy artifacts the assembly must not inherit.
-	a.Write("source/alpha/.stricttools/docs-cache/build/_headers", "/*\n  X-Frame-Options: DENY\n")
-	a.Write("source/alpha/.stricttools/docs-cache/build/_redirects", "/* /index.html 200\n")
-	a.Write("source/alpha/.stricttools/docs-cache/build/_worker.js", "export default {}\n")
-	a.Write("source/alpha/.stricttools/docs-cache/build/index.html.gz", "gzipped")
-	a.Write("source/alpha/.stricttools/docs-cache/build/guide/index.html.br", "brotli")
+	a.Write("source/alpha/stricttools/.docs-cache/build/_headers", "/*\n  X-Frame-Options: DENY\n")
+	a.Write("source/alpha/stricttools/.docs-cache/build/_redirects", "/* /index.html 200\n")
+	a.Write("source/alpha/stricttools/.docs-cache/build/_worker.js", "export default {}\n")
+	a.Write("source/alpha/stricttools/.docs-cache/build/index.html.gz", "gzipped")
+	a.Write("source/alpha/stricttools/.docs-cache/build/guide/index.html.br", "brotli")
 	// A full build's manifest carries the posts the build rendered.
 	post := []any{map[string]any{"slug": "hello", "title": "Hello", "date": "2024-06-01"}}
-	a.WriteJSON("source/alpha/.stricttools/docs-state/manifest.json",
+	a.WriteJSON("source/alpha/stricttools/.docs-state/manifest.json",
 		integrateManifest("alpha", "Alpha", "1.0.0", post))
-	a.WriteJSON("source/alpha/.stricttools/docs-state/post-manifest.json",
+	a.WriteJSON("source/alpha/stricttools/.docs-state/post-manifest.json",
 		integrateManifest("alpha", "Alpha", "1.0.0", post))
 }
 
@@ -609,7 +609,7 @@ func TestThePostsScopeClaimsTheSiteLevelPathsItWrote(t *testing.T) {
 func TestAPostsScopePublishWithNoPostsPublishesNothing(t *testing.T) {
 	// A build that emitted no posts is not an instruction to unpublish.
 	tree := newAssemblyTree(t)
-	tree.Remove("source/alpha/.stricttools/docs-cache/build/blog")
+	tree.Remove("source/alpha/stricttools/.docs-cache/build/blog")
 	tree.Write("manifests/alpha-files.json", string(filesRecord(t, "alpha",
 		map[string][]string{"posts": {"blog/old-post/index.html"}})))
 
@@ -965,7 +965,7 @@ func TestZeroAttemptsIsRejected(t *testing.T) {
 // breakTheBuild puts a page the assembly must not serve into the source build.
 func (a *assemblyTree) breakTheBuild() {
 	a.t.Helper()
-	a.Write("source/alpha/.stricttools/docs-cache/build/index.html",
+	a.Write("source/alpha/stricttools/.docs-cache/build/index.html",
 		"<html><head></head><body>no title, no canonical</body></html>")
 }
 

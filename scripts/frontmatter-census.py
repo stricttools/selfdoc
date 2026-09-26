@@ -49,7 +49,7 @@ def project_dirs(root: Path) -> list[Path]:
 
 def configured(project: Path) -> tuple[Path, Path]:
     """The project's docs directory and posts directory."""
-    docs_rel, posts_rel = ".stricttools/docs/", ".stricttools/posts/"
+    docs_rel, posts_rel = "stricttools/docs/", "stricttools/posts/"
     try:
         config = json.loads((project / "selfdoc.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):

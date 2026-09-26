@@ -23,14 +23,14 @@ func baselineProject(t *testing.T, locales []any) string {
 	}
 	writeConfig(t, root, projectConfig)
 	write(t, filepath.Join(root, "src", "__init__.py"), "")
-	write(t, filepath.Join(root, ".stricttools", "docs", ".keep"), "")
+	write(t, filepath.Join(root, "stricttools", "docs", ".keep"), "")
 	return root
 }
 
 // writePage writes one docs page with the given description and body.
 func writePage(t *testing.T, root, description, body, name string) {
 	t.Helper()
-	write(t, filepath.Join(root, ".stricttools", "docs", name),
+	write(t, filepath.Join(root, "stricttools", "docs", name),
 		"+++\ndescription = \""+description+"\"\n+++\n# Page\n\n"+body+"\n")
 }
 

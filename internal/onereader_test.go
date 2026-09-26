@@ -142,7 +142,7 @@ func TestNoRetiredFrontmatterFenceInTheTree(t *testing.T) {
 // longer exists.
 func TestFrontmatterDocumentationCarriesTheDerivedKeyTable(t *testing.T) {
 	root := moduleRoot(t)
-	page := filepath.Join(root, ".stricttools", "docs", "frontmatter.md")
+	page := filepath.Join(root, "stricttools", "docs", "frontmatter.md")
 	data, err := os.ReadFile(page)
 	if err != nil {
 		t.Fatalf("reading %s: %v", page, err)

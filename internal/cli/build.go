@@ -17,7 +17,7 @@ import (
 )
 
 // hashStorePath is the content-hash store every build and check auto-commits.
-const hashStorePath = layout.HashesRel
+var hashStorePath = layout.HashesRel
 
 // hashStoreMessage is the commit message that store is committed under.
 const hashStoreMessage = "selfdoc: update content hashes"

@@ -30,23 +30,23 @@ func TestBuildUnifiedPinnedConstituentServesItsOwnArchivedContent(t *testing.T) 
 	})
 
 	coreDir := projectDirOf(docsSite, "core")
-	testproject.WriteText(t, filepath.Join(coreDir, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(coreDir, "stricttools", "docs", "index.md"),
 		"# Core v1\n\nOld core content for version 1.0.0.\n")
 	testproject.Git(t, coreDir, "init")
 	testproject.Git(t, coreDir, "add", ".")
 	testproject.Git(t, coreDir, "commit", "-m", "core v1.0.0")
 	testproject.Git(t, coreDir, "tag", "v1.0.0")
 
-	testproject.WriteText(t, filepath.Join(coreDir, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(coreDir, "stricttools", "docs", "index.md"),
 		"# Core v2\n\nNew core content for version 2.0.0.\n")
-	testproject.Git(t, coreDir, "add", ".stricttools/docs/index.md")
+	testproject.Git(t, coreDir, "add", "stricttools/docs/index.md")
 	testproject.Git(t, coreDir, "commit", "-m", "core v2.0.0")
 	testproject.Git(t, coreDir, "tag", "v2.0.0")
 
 	if _, err := BuildUnified(docsSite, nil, "", false, effects.Unbound()); err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 
 	// The old docs-site version is an archive: core's pinned 1.0.0 content
 	// sits under the archive prefix inside core's own mount.
@@ -80,7 +80,7 @@ func TestBuildUnifiedWithoutAPinningBuildsTheWorkingTreeForEveryVersion(t *testi
 	if _, err := BuildUnified(docsSite, nil, "", false, effects.Unbound()); err != nil {
 		t.Fatalf("BuildUnified: %v", err)
 	}
-	output := filepath.Join(docsSite, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(docsSite, "stricttools", ".docs-cache", "build")
 
 	requireFile(t, filepath.Join(output, "core", "v", "1.0.0", "index.html"))
 	requireFile(t, filepath.Join(output, "core", "index.html"))

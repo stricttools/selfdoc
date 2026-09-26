@@ -26,11 +26,11 @@ func strictcliProject(
 	}
 	write(t, filepath.Join(root, ".strictcli", "schema.json"), string(encoded))
 
-	write(t, filepath.Join(root, ".stricttools", "docs", ".keep"), "")
+	write(t, filepath.Join(root, "stricttools", "docs", ".keep"), "")
 	// The CLI reference pages go where gen writes them: the generated docs
 	// root, not the handwritten one.
 	for relPath, content := range pages {
-		write(t, filepath.Join(root, ".stricttools", "docs-state", "pages", relPath), content)
+		write(t, filepath.Join(root, "stricttools", ".docs-state", "pages", relPath), content)
 	}
 	return root
 }
@@ -154,7 +154,7 @@ func TestCLI001(t *testing.T) {
 
 	t.Run("a project with no dumped schema is silent", func(t *testing.T) {
 		root := pythonProject(t)
-		write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+		write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 			"+++\ndescription = \"A guide covering everything the project does for a "+
 				"reader.\"\n+++\n# Guide\n\nText.\n")
 		result := checkFixture(t, root)
@@ -323,11 +323,11 @@ func TestCLIPagesResolveAcrossBothDocsRoots(t *testing.T) {
 			"cli-index.md": cliIndexPage,
 			"cli-run.md":   runPage,
 		})
-		generated := filepath.Join(root, ".stricttools", "docs-state", "pages", "cli-run.md")
+		generated := filepath.Join(root, "stricttools", ".docs-state", "pages", "cli-run.md")
 		if !isFile(generated) {
 			t.Fatalf("fixture did not write %s", generated)
 		}
-		if isFile(filepath.Join(root, ".stricttools", "docs", "cli-run.md")) {
+		if isFile(filepath.Join(root, "stricttools", "docs", "cli-run.md")) {
 			t.Fatal("fixture wrote the page into the handwritten root too")
 		}
 		result := checkFixture(t, root)
@@ -339,7 +339,7 @@ func TestCLIPagesResolveAcrossBothDocsRoots(t *testing.T) {
 
 	t.Run("a page only in the handwritten root", func(t *testing.T) {
 		root := strictcliProject(t, schema, map[string]string{"cli-index.md": cliIndexPage})
-		write(t, filepath.Join(root, ".stricttools", "docs", "cli-run.md"), runPage)
+		write(t, filepath.Join(root, "stricttools", "docs", "cli-run.md"), runPage)
 		result := checkFixture(t, root)
 		if hasCode(result.Lints, "CLI001") {
 			t.Errorf("CLI001 fired for a page in the handwritten root: %v",

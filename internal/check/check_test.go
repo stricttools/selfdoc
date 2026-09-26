@@ -23,7 +23,7 @@ func checkFixture(t *testing.T, root string) *CheckResult {
 
 func TestAllDirectivesOK(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"# API\n\n:-: ref path=\"mylib\"\n")
 
 	result := checkFixture(t, root)
@@ -52,7 +52,7 @@ func TestAllDirectivesOK(t *testing.T) {
 
 func TestMultipleDirectivesAllOK(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"# API\n\n:-: ref path=\"mylib\"\n\n:-: ref path=\"mylib.utils\"\n")
 
 	result := checkFixture(t, root)
@@ -70,7 +70,7 @@ func TestMultipleDirectivesAllOK(t *testing.T) {
 
 func TestFailedDirectiveReported(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"# API\n\n:-: ref path=\"mylib.nonexistent\"\n")
 
 	result := checkFixture(t, root)
@@ -89,8 +89,8 @@ func TestFailedDirectiveReported(t *testing.T) {
 
 func TestDirectivesAcrossMultipleFiles(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "a.md"), "# A\n\n:-: ref path=\"mylib\"\n")
-	write(t, filepath.Join(root, ".stricttools", "docs", "b.md"), "# B\n\n:-: ref path=\"mylib.utils\"\n")
+	write(t, filepath.Join(root, "stricttools", "docs", "a.md"), "# A\n\n:-: ref path=\"mylib\"\n")
+	write(t, filepath.Join(root, "stricttools", "docs", "b.md"), "# B\n\n:-: ref path=\"mylib.utils\"\n")
 
 	result := checkFixture(t, root)
 
@@ -106,7 +106,7 @@ func TestDirectivesAcrossMultipleFiles(t *testing.T) {
 
 func TestCoverageFull(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"),
 		"# API\n\n:-: ref path=\"mylib\"\n\n:-: ref path=\"mylib.utils\"\n")
 
 	result := checkFixture(t, root)
@@ -129,7 +129,7 @@ func TestCoverageFull(t *testing.T) {
 
 func TestCoveragePartial(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "api.md"), "# API\n\n:-: ref path=\"mylib\"\n")
+	write(t, filepath.Join(root, "stricttools", "docs", "api.md"), "# API\n\n:-: ref path=\"mylib\"\n")
 
 	result := checkFixture(t, root)
 
@@ -147,7 +147,7 @@ func TestCoveragePartial(t *testing.T) {
 
 func TestCoverageNoneDocumented(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"), "# Guide\n\nNo directives here.\n")
+	write(t, filepath.Join(root, "stricttools", "docs", "guide.md"), "# Guide\n\nNo directives here.\n")
 
 	result := checkFixture(t, root)
 
@@ -193,9 +193,9 @@ func TestNoConfigRaises(t *testing.T) {
 func TestRootTemplateDirectivesValidated(t *testing.T) {
 	root := pythonProject(t)
 	config := pythonProjectConfig()
-	config["root_files"] = []any{".stricttools/docs/_README.md"}
+	config["root_files"] = []any{"stricttools/docs/_README.md"}
 	writeConfig(t, root, config)
-	write(t, filepath.Join(root, ".stricttools", "docs", "_README.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "_README.md"),
 		"# Project\n\n:-: ref path=\"mylib\"\n")
 
 	result := checkFixture(t, root)
@@ -204,7 +204,7 @@ func TestRootTemplateDirectivesValidated(t *testing.T) {
 		t.Fatalf("directive results = %+v, want the root template's one",
 			result.DirectiveResults)
 	}
-	if result.DirectiveResults[0].File != ".stricttools/docs/_README.md" {
+	if result.DirectiveResults[0].File != "stricttools/docs/_README.md" {
 		t.Errorf("file = %q, want docs/_README.md", result.DirectiveResults[0].File)
 	}
 }
@@ -225,9 +225,9 @@ func TestRootTemplateMissingFileSkipped(t *testing.T) {
 func TestRootTemplateWithFrontmatter(t *testing.T) {
 	root := pythonProject(t)
 	config := pythonProjectConfig()
-	config["root_files"] = []any{".stricttools/docs/_README.md"}
+	config["root_files"] = []any{"stricttools/docs/_README.md"}
 	writeConfig(t, root, config)
-	write(t, filepath.Join(root, ".stricttools", "docs", "_README.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "_README.md"),
 		"+++\ntitle = \"Readme\"\n+++\n\n# Project\n\n:-: ref path=\"mylib\"\n")
 
 	result := checkFixture(t, root)
@@ -323,7 +323,7 @@ func TestStrictcliCodeHelpIsAHardError(t *testing.T) {
   "commands": {},
   "groups": {}
 }`)
-	write(t, filepath.Join(root, ".stricttools", "docs", "cli.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "cli.md"),
 		"# CLI\n\n:-: code-help path=\"mylib\"\n")
 
 	_, err := CheckDocs(root, nil, false, "", "", handle())
@@ -379,12 +379,12 @@ func TestThemeCSSAnswersEveryShippedTheme(t *testing.T) {
 
 func TestCheckDocsWritesHashStore(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 		"+++\ndescription = \"A guide to the library and everything in it.\"\n+++\n# Guide\n\nText.\n")
 
 	checkFixture(t, root)
 
-	hashesPath := filepath.Join(root, ".stricttools", "docs-state", "hashes", "hashes.json")
+	hashesPath := filepath.Join(root, "stricttools", ".docs-state", "hashes", "hashes.json")
 	if _, err := os.Stat(hashesPath); err != nil {
 		t.Fatalf("the hash store was not written: %v", err)
 	}
@@ -392,14 +392,14 @@ func TestCheckDocsWritesHashStore(t *testing.T) {
 
 func TestCheckDocsDryRunLeavesHashStoreAlone(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 		"+++\ndescription = \"A guide to the library and everything in it.\"\n+++\n# Guide\n\nText.\n")
 
 	if _, err := CheckDocs(root, nil, true, "", "", handle()); err != nil {
 		t.Fatalf("CheckDocs: %v", err)
 	}
 
-	hashesPath := filepath.Join(root, ".stricttools", "docs-state", "hashes", "hashes.json")
+	hashesPath := filepath.Join(root, "stricttools", ".docs-state", "hashes", "hashes.json")
 	if _, err := os.Stat(hashesPath); err == nil {
 		t.Error("a dry run wrote the hash store")
 	}
@@ -409,7 +409,7 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 
 	t.Run("a project with no build output has nothing to check", func(t *testing.T) {
 		root := pythonProject(t)
-		write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+		write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 			"+++\ndescription = \"A guide covering everything the project does for a "+
 				"reader.\"\n+++\n# Guide\n\nText.\n")
 
@@ -423,10 +423,10 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 
 	t.Run("an emitted reference naming nothing is reported", func(t *testing.T) {
 		root := pythonProject(t)
-		write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+		write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 			"+++\ndescription = \"A guide covering everything the project does for a "+
 				"reader.\"\n+++\n# Guide\n\nText.\n")
-		write(t, filepath.Join(root, ".stricttools", "docs-cache", "build", "index.html"),
+		write(t, filepath.Join(root, "stricttools", ".docs-cache", "build", "index.html"),
 			`<a href="missing/">Missing</a>`)
 
 		result := checkFixture(t, root)
@@ -438,12 +438,12 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 
 	t.Run("a resolving tree is silent", func(t *testing.T) {
 		root := pythonProject(t)
-		write(t, filepath.Join(root, ".stricttools", "docs", "guide.md"),
+		write(t, filepath.Join(root, "stricttools", "docs", "guide.md"),
 			"+++\ndescription = \"A guide covering everything the project does for a "+
 				"reader.\"\n+++\n# Guide\n\nText.\n")
-		write(t, filepath.Join(root, ".stricttools", "docs-cache", "build", "index.html"),
+		write(t, filepath.Join(root, "stricttools", ".docs-cache", "build", "index.html"),
 			`<a href="guide/">Guide</a>`)
-		write(t, filepath.Join(root, ".stricttools", "docs-cache", "build", "guide", "index.html"),
+		write(t, filepath.Join(root, "stricttools", ".docs-cache", "build", "guide", "index.html"),
 			`<p>hi</p>`)
 
 		result := checkFixture(t, root)
@@ -500,7 +500,7 @@ func codelessProjectWithDescription(t *testing.T, description string) string {
 		projectConfig["description"] = description
 	}
 	writeConfig(t, root, projectConfig)
-	write(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	write(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\ndescription = \"A home page whose description is long enough to keep "+
 			"the description rules quiet in this fixture.\"\n+++\n# Home\n\nWelcome.\n")
 	return root

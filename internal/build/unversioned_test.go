@@ -53,15 +53,15 @@ func TestPartitionPages(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+			dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 			for relPath, content := range test.docs {
-				testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", filepath.FromSlash(relPath)), content)
+				testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", filepath.FromSlash(relPath)), content)
 			}
 			cfg, err := config.Load(dir)
 			if err != nil {
 				t.Fatalf("loading the fixture config: %v", err)
 			}
-			partition, err := PartitionPages(cfg, filepath.Join(dir, ".stricttools", "docs"), dir, effects.Unbound())
+			partition, err := PartitionPages(cfg, filepath.Join(dir, "stricttools", "docs"), dir, effects.Unbound())
 			if err != nil {
 				t.Fatalf("PartitionPages: %v", err)
 			}
@@ -156,8 +156,8 @@ func TestBuildUnversionedPages(t *testing.T) {
 func TestBuildSinglePageFilter(t *testing.T) {
 	hygiene.Isolate(t)
 
-	dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-	testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", "guide.md"),
+	dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+	testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", "guide.md"),
 		"+++\ntitle = \"Guide\"\n+++\n\n# Guide\n\nFiltered guide.\n")
 	cfg, err := config.Load(dir)
 	if err != nil {

@@ -168,7 +168,7 @@ func postsDirRel(cfg config.Config) string {
 
 // defaultPostsDir is where a project keeps its posts when it declares no
 // posts block.
-const defaultPostsDir = layout.PostsDefault
+var defaultPostsDir = layout.PostsDefault
 
 // PostSummary is one post as the sidebar and the publish plan carry it: only
 // what a list needs, because the post bodies are fetched one at a time, when

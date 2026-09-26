@@ -126,7 +126,7 @@ func TestSaveCreatesSelfdocDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SaveRevisions: %v", err)
 	}
-	if want := filepath.Join(directory, ".stricttools", "docs-state", "revisions.json"); path != want {
+	if want := filepath.Join(directory, "stricttools", ".docs-state", "revisions.json"); path != want {
 		t.Errorf("wrote %q, want %q", path, want)
 	}
 	if _, err := os.Stat(path); err != nil {
@@ -138,7 +138,7 @@ func TestLoadPreservesDocumentOrder(t *testing.T) {
 	// The sidecar is rewritten whole, so a rewrite must not reorder the posts.
 	hygiene.Isolate(t)
 	directory := testproject.Dir(t)
-	if err := os.MkdirAll(filepath.Join(directory, ".stricttools", "docs-state"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(directory, "stricttools", ".docs-state"), 0o755); err != nil {
 		t.Fatal(err)
 	}
 	body := `{
@@ -148,7 +148,7 @@ func TestLoadPreservesDocumentOrder(t *testing.T) {
   }
 }
 `
-	path := filepath.Join(directory, ".stricttools", "docs-state", "revisions.json")
+	path := filepath.Join(directory, "stricttools", ".docs-state", "revisions.json")
 	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -336,7 +336,7 @@ func TestSummaryOptional(t *testing.T) {
 	if _, err := RecordRevision(effects.Unbound(), directory, "slug", "Body text", ""); err != nil {
 		t.Fatal(err)
 	}
-	raw, err := os.ReadFile(filepath.Join(directory, ".stricttools", "docs-state", "revisions.json"))
+	raw, err := os.ReadFile(filepath.Join(directory, "stricttools", ".docs-state", "revisions.json"))
 	if err != nil {
 		t.Fatal(err)
 	}

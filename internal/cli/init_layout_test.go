@@ -11,12 +11,13 @@ import (
 // `selfdoc init` in a repository that has never met selfdoc.
 //
 // Init is where a repository grants selfdoc its directories, so it writes the
-// ownership manifests of the three directories a new project needs -- docs,
-// docs-state and docs-cache -- rather than refusing for want of the first one
-// and leaving the other two for a later command to refuse over.
+// ownership manifests of the directories a new project needs -- docs, the
+// generated state, the cache and the vocabulary -- rather than refusing for
+// want of the first one and leaving the others for a later command to refuse
+// over.
 
 // initManifested are the directories init grants selfdoc.
-var initManifested = []string{layout.DocsName, layout.DocsStateName, layout.DocsCacheName}
+var initManifested = []string{layout.DocsName, layout.DocsStateName, layout.DocsCacheName, layout.VocabularyName}
 
 func TestInitWritesTheOwnershipManifestsOfAFreshRepository(t *testing.T) {
 	isolate(t)
@@ -35,7 +36,7 @@ func TestInitWritesTheOwnershipManifestsOfAFreshRepository(t *testing.T) {
 			t.Errorf("%s names %q as its owner", name, manifest.Owner)
 		}
 	}
-	if !exists(filepath.Join(dir, ".stricttools", layout.IgnoreFileName)) {
+	if !exists(filepath.Join(dir, "stricttools", layout.IgnoreFileName)) {
 		t.Error("init wrote no derived ignore file")
 	}
 

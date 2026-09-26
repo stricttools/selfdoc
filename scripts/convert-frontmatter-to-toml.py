@@ -32,7 +32,7 @@ Usage:
     scripts/convert-frontmatter-to-toml.py --dry-run --expect-files 29
     scripts/convert-frontmatter-to-toml.py --apply --expect-files 29
 
-    scripts/convert-frontmatter-to-toml.py --dry-run --path .stricttools/docs
+    scripts/convert-frontmatter-to-toml.py --dry-run --path stricttools/docs
 
 Exactly one of --dry-run and --apply is required. --expect-files asserts how
 many files the run changes; a different number is a hard error and nothing is
@@ -279,7 +279,7 @@ def markdown_files(root: Path):
 
 def configured_paths(project: Path) -> list[Path]:
     """The project's docs directory and its posts directory."""
-    docs_rel, posts_rel = ".stricttools/docs/", ".stricttools/posts/"
+    docs_rel, posts_rel = "stricttools/docs/", "stricttools/posts/"
     config_path = project / "selfdoc.json"
     if config_path.is_file():
         try:

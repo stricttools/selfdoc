@@ -33,7 +33,7 @@ const (
 func postFiles(postsByName map[string]string) map[string]string {
 	files := map[string]string{}
 	for name, content := range postsByName {
-		files[".stricttools/posts/"+name] = content
+		files["stricttools/posts/"+name] = content
 	}
 	return files
 }
@@ -77,7 +77,7 @@ func TestInjectPostsIntoDocs(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+			dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 			for relPath, content := range postFiles(test.postsByName) {
 				testproject.WriteText(t, filepath.Join(dir, filepath.FromSlash(relPath)), content)
 			}
@@ -85,7 +85,7 @@ func TestInjectPostsIntoDocs(t *testing.T) {
 			if err != nil {
 				t.Fatalf("loading the fixture config: %v", err)
 			}
-			docsDir := filepath.Join(dir, ".stricttools", "docs")
+			docsDir := filepath.Join(dir, "stricttools", "docs")
 			injected, err := InjectPostsIntoDocs(dir, cfg, docsDir, test.includeDrafts, effects.Unbound())
 			if err != nil {
 				t.Fatalf("InjectPostsIntoDocs: %v", err)
@@ -120,7 +120,7 @@ func TestCleanupInjectedPosts(t *testing.T) {
 	hygiene.Isolate(t)
 
 	t.Run("the files and the emptied directory go", func(t *testing.T) {
-		docsDir := filepath.Join(t.TempDir(), ".stricttools", "docs")
+		docsDir := filepath.Join(t.TempDir(), "stricttools", "docs")
 		postsSubdir := filepath.Join(docsDir, "blog")
 		testproject.MkdirAll(t, postsSubdir)
 		fileA := filepath.Join(postsSubdir, "a.md")
@@ -140,7 +140,7 @@ func TestCleanupInjectedPosts(t *testing.T) {
 	})
 
 	t.Run("a directory that still holds a file stays", func(t *testing.T) {
-		docsDir := filepath.Join(t.TempDir(), ".stricttools", "docs")
+		docsDir := filepath.Join(t.TempDir(), "stricttools", "docs")
 		postsSubdir := filepath.Join(docsDir, "blog")
 		testproject.MkdirAll(t, postsSubdir)
 		injected := filepath.Join(postsSubdir, "injected.md")
@@ -255,10 +255,10 @@ func TestBuildWithPosts(t *testing.T) {
 
 	t.Run("the injected pages are cleaned out of the docs tree", func(t *testing.T) {
 		built := buildFixture(t, fixture{Files: postFiles(map[string]string{"hello.md": postHello})})
-		if isDir(filepath.Join(built.dir, ".stricttools", "docs", "blog")) {
+		if isDir(filepath.Join(built.dir, "stricttools", "docs", "blog")) {
 			t.Error("the injected blog directory was left in the docs tree")
 		}
-		if isFile(filepath.Join(built.dir, ".stricttools", "docs", "blog.md")) {
+		if isFile(filepath.Join(built.dir, "stricttools", "docs", "blog.md")) {
 			t.Error("the injected listing page was left in the docs tree")
 		}
 	})
@@ -343,7 +343,7 @@ func TestBuildTargetPosts(t *testing.T) {
 			Files: postFiles(map[string]string{"hello.md": postHello}),
 			Build: postsOnly,
 		})
-		blogDir := filepath.Join(built.dir, ".stricttools", "docs", "blog")
+		blogDir := filepath.Join(built.dir, "stricttools", "docs", "blog")
 		if isDir(blogDir) {
 			entries, err := os.ReadDir(blogDir)
 			if err != nil {
@@ -360,7 +360,7 @@ func TestBuildTargetPosts(t *testing.T) {
 			Files: postFiles(map[string]string{"hello.md": postHello, "second.md": postSecond}),
 			Build: postsOnly,
 		})
-		raw := readFile(t, filepath.Join(built.dir, ".stricttools", "docs-state", "post-manifest.json"))
+		raw := readFile(t, filepath.Join(built.dir, "stricttools", ".docs-state", "post-manifest.json"))
 		var manifest struct {
 			SchemaVersion int              `json:"schema_version"`
 			Pages         []map[string]any `json:"pages"`

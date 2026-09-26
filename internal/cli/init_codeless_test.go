@@ -25,7 +25,7 @@ const (
 func codelessProject(t *testing.T) string {
 	t.Helper()
 	dir := testproject.Dir(t)
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "about.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "about.md"),
 		"+++\ntitle = \"About\"\n"+
 			"description = \"A short page about this site and the person who writes it.\"\n"+
 			"+++\n\n# About\n\nThis page has no code behind it.\n")
@@ -111,7 +111,7 @@ func TestTheCodelessStarterHasNoCodeDirective(t *testing.T) {
 	if code, _, stderr := initProject(t, dir); code != 0 {
 		t.Fatalf("init failed: %s", stderr)
 	}
-	index := readText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"))
+	index := readText(t, filepath.Join(dir, "stricttools", "docs", "index.md"))
 	if strings.Contains(index, ":-: ref") {
 		t.Errorf("the starter page carries an extraction directive:\n%s", index)
 	}
@@ -130,7 +130,7 @@ func TestACodelessProjectBuilds(t *testing.T) {
 
 	run(t, dir, "build", "--no-auto-commit")
 
-	out := filepath.Join(dir, ".stricttools", "docs-cache", "build")
+	out := filepath.Join(dir, "stricttools", ".docs-cache", "build")
 	if !exists(filepath.Join(out, "index.html")) {
 		t.Error("no index.html written")
 	}
@@ -153,7 +153,7 @@ func TestGenSkipsReferencePagesForACodelessProject(t *testing.T) {
 	if result.ExitCode != 0 {
 		t.Fatalf("gen failed: %s\n%s", result.Stdout, result.Stderr)
 	}
-	if exists(filepath.Join(dir, ".stricttools", "docs", "gen-index.md")) {
+	if exists(filepath.Join(dir, "stricttools", "docs", "gen-index.md")) {
 		t.Error("gen wrote an API index for a project with no source")
 	}
 	if !strings.Contains(result.Stdout, "source") {
@@ -189,7 +189,7 @@ func TestInitEmitsALoadableConfigForACodeProject(t *testing.T) {
 	}
 
 	run(t, dir, "build", "--no-auto-commit")
-	if !exists(filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html")) {
+	if !exists(filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html")) {
 		t.Error("the scaffolded project does not build")
 	}
 }

@@ -80,82 +80,82 @@ func TestParseRefusals(t *testing.T) {
 		{
 			name: "an unknown key on a listed project",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\nnote = \"typo\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 declares unknown key(s) 'note'. A listed project carries slug, blurb, url, name, repo.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 declares unknown key(s) 'note'. A listed project carries slug, blurb, url, name, repo.",
 		},
 		{
 			name: "an unknown top-level key",
 			text: "projects = []\n",
-			want: ".stricttools/docs/projects.toml declares unknown top-level key(s) 'projects'. The listing holds nothing but [[category]] blocks.",
+			want: "stricttools/docs/projects.toml declares unknown top-level key(s) 'projects'. The listing holds nothing but [[category]] blocks.",
 		},
 		{
 			name: "no category at all",
 			text: "",
-			want: ".stricttools/docs/projects.toml declares no [[category]] block. The listing is the site's curated project index and there is no empty default.",
+			want: "stricttools/docs/projects.toml declares no [[category]] block. The listing is the site's curated project index and there is no empty default.",
 		},
 		{
 			name: "a category with an unknown key",
 			text: "[[category]]\nname = \"A\"\ntitle = \"A\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 declares unknown key(s) 'title'. A [[category]] block carries name, project.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 declares unknown key(s) 'title'. A [[category]] block carries name, project.",
 		},
 		{
 			name: "a category with no name",
 			text: "[[category]]\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 is missing a non-empty 'name'.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 is missing a non-empty 'name'.",
 		},
 		{
 			name: "a repeated category name",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\n[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"b\"\nblurb = \"b\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #2 repeats the category name 'A', which an earlier block already declares.",
+			want: "stricttools/docs/projects.toml: [[category]] #2 repeats the category name 'A', which an earlier block already declares.",
 		},
 		{
 			name: "an empty category",
 			text: "[[category]]\nname = \"A\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A') declares no [[category.project]] block. An empty category would render as a heading over nothing.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A') declares no [[category.project]] block. An empty category would render as a heading over nothing.",
 		},
 		{
 			name: "a project with no slug",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nblurb = \"b\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 is missing a non-empty 'slug'.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 is missing a non-empty 'slug'.",
 		},
 		{
 			name: "a project with no blurb",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"a\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (a) is missing a non-empty 'blurb'. The listing is curated prose, not a directory dump.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (a) is missing a non-empty 'blurb'. The listing is curated prose, not a directory dump.",
 		},
 		{
 			name: "an external entry with no name",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\nurl = \"https://x/\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (a) declares a url, so it is a project this site does not serve and has no manifest to take a display name from. Declare 'name'.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (a) declares a url, so it is a project this site does not serve and has no manifest to take a display name from. Declare 'name'.",
 		},
 		{
 			name: "a served entry declaring a name",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\nname = \"A Thing\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (a) declares a name but no url. A project this site serves takes its name from its manifest, so declaring one here would be a second source for it.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (a) declares a name but no url. A project this site serves takes its name from its manifest, so declaring one here would be a second source for it.",
 		},
 		{
 			name: "a repository repeating the url",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"out\"\nname = \"Out\"\nblurb = \"b\"\nurl = \"https://github.com/someone/out\"\nrepo = \"https://github.com/someone/out\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (out) declares the same address as 'url' and 'repo', so the card would print two links to one place. An entry whose only address is its repository needs 'url' alone.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 (out) declares the same address as 'url' and 'repo', so the card would print two links to one place. An entry whose only address is its repository needs 'url' alone.",
 		},
 		{
 			name: "a duplicate slug across categories",
 			text: "[[category]]\nname = \"A\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\n[[category]]\nname = \"B\"\n[[category.project]]\nslug = \"a\"\nblurb = \"b\"\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #2 ('B'): [[category.project]] #1 repeats the slug 'a', already listed under 'A'. One project, one card.",
+			want: "stricttools/docs/projects.toml: [[category]] #2 ('B'): [[category.project]] #1 repeats the slug 'a', already listed under 'A'. One project, one card.",
 		},
 		{
 			name: "a category that is not a table",
 			text: "category = [\"A\"]\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 is not a table.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 is not a table.",
 		},
 		{
 			name: "a project that is not a table",
 			text: "[[category]]\nname = \"A\"\nproject = [\"a\"]\n",
-			want: ".stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 is not a table.",
+			want: "stricttools/docs/projects.toml: [[category]] #1 ('A'): [[category.project]] #1 is not a table.",
 		},
 		{
 			name:   "a document that is not TOML",
 			text:   "[[category]\nname = ",
-			want:   ".stricttools/docs/projects.toml is not valid TOML: ",
+			want:   "stricttools/docs/projects.toml is not valid TOML: ",
 			prefix: true,
 		},
 	}
@@ -315,7 +315,7 @@ func TestTheServedProjectsAreNamedInTheRefusal(t *testing.T) {
 		[]map[string]any{manifest("beta", "Beta", "1.0.0"), manifest("alpha", "Alpha", "1.0.0")},
 		"home", SourceFile,
 	)
-	want := ".stricttools/docs/projects.toml lists gone, which the assembly has no manifest " +
+	want := "stricttools/docs/projects.toml lists gone, which the assembly has no manifest " +
 		"for, so the listing would print a card for a project this site does " +
 		"not serve. Either the project has never deployed, or the entry names " +
 		"an external project and is missing its 'url' and 'name'. Served " +
@@ -331,7 +331,7 @@ func TestTheHomeProjectMayNotListItself(t *testing.T) {
 		[]map[string]any{manifest("home", "Home", "0.1.0")},
 		"", "home", "",
 	)
-	want := ".stricttools/docs/projects.toml lists 'home', which is the home project -- the " +
+	want := "stricttools/docs/projects.toml lists 'home', which is the home project -- the " +
 		"page the listing appears on. The home project is left out of the " +
 		"listing it renders."
 	if err == nil || err.Error() != want {

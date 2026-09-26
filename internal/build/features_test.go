@@ -363,8 +363,8 @@ func TestBuildIsReproducible(t *testing.T) {
 	hygiene.Isolate(t)
 	testproject.RequirePagefind(t)
 
-	dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-	testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", "guide.md"),
+	dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+	testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", "guide.md"),
 		"+++\ndate = 2024-01-15\n+++\n# Guide\n\nA guide page.\n")
 
 	first := buildTwice(t, dir)
@@ -387,7 +387,7 @@ func buildTwice(t *testing.T, dir string) map[string]string {
 	if _, err := Build(Options{DirPath: dir, Stdout: &discard{}}, effects.Unbound()); err != nil {
 		t.Fatalf("Build: %v", err)
 	}
-	output := filepath.Join(dir, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(dir, "stricttools", ".docs-cache", "build")
 	files := map[string]string{}
 	err := filepath.Walk(output, func(path string, info os.FileInfo, err error) error {
 		if err != nil {

@@ -122,20 +122,20 @@ func TestManifestFreshness(t *testing.T) {
 			isolate(t)
 			root := t.TempDir()
 			for _, page := range testCase.diskPages {
-				write(t, filepath.Join(root, ".stricttools", "docs", page), "# Page\n")
+				write(t, filepath.Join(root, "stricttools", "docs", page), "# Page\n")
 			}
 			for _, post := range testCase.diskPosts {
-				write(t, filepath.Join(root, ".stricttools", "posts", post), "# Post\n")
+				write(t, filepath.Join(root, "stricttools", "posts", post), "# Post\n")
 			}
 			if testCase.writeManifestFile {
 				writeManifest(t,
-					filepath.Join(root, ".stricttools", "docs-state", "manifest.json"),
+					filepath.Join(root, "stricttools", ".docs-state", "manifest.json"),
 					testCase.manifestPages, testCase.manifestPosts,
 				)
 			}
 			projectConfig := map[string]any{
-				"docs":  ".stricttools/docs/",
-				"posts": map[string]any{"dir": ".stricttools/posts/"},
+				"docs":  "stricttools/docs/",
+				"posts": map[string]any{"dir": "stricttools/posts/"},
 			}
 
 			results, err := checkManifestFreshness(projectConfig, root)

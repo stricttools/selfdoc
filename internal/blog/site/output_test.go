@@ -228,7 +228,7 @@ func TestGraftSubtreeIgnoresARemovedPathThatIsNotThere(t *testing.T) {
 
 func TestCollectSiteFilesAddressesTheProjectsSubtree(t *testing.T) {
 	hygiene.Isolate(t)
-	output := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	output := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	write(t, filepath.Join(output, "index.html"), "<html>index</html>")
 	write(t, filepath.Join(output, "guide", "index.html"), "<html>guide</html>")
 	files, err := CollectSiteFiles(output, "alpha", false)
@@ -244,7 +244,7 @@ func TestCollectSiteFilesAddressesTheProjectsSubtree(t *testing.T) {
 // A locally built post is site-level, as a deployed one is.
 func TestCollectSiteFilesSendsAPostToTheSiteLevelBlog(t *testing.T) {
 	hygiene.Isolate(t)
-	output := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	output := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	write(t, filepath.Join(output, "index.html"), "<html>index</html>")
 	write(t, filepath.Join(output, "blog", "hello", "index.html"), "<html>hello</html>")
 	files, err := CollectSiteFiles(output, "alpha", false)
@@ -260,7 +260,7 @@ func TestCollectSiteFilesSendsAPostToTheSiteLevelBlog(t *testing.T) {
 // The site's blog index is the assembly's, listing every project's posts.
 func TestCollectSiteFilesDropsTheProjectsOwnBlogListing(t *testing.T) {
 	hygiene.Isolate(t)
-	output := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	output := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	write(t, filepath.Join(output, "blog", "index.html"), "<html>listing</html>")
 	write(t, filepath.Join(output, "blog", "hello", "index.html"), "<html>hello</html>")
 	files, err := CollectSiteFiles(output, "alpha", false)
@@ -275,7 +275,7 @@ func TestCollectSiteFilesDropsTheProjectsOwnBlogListing(t *testing.T) {
 
 func TestCollectSiteFilesReadsContentAsBytes(t *testing.T) {
 	hygiene.Isolate(t)
-	output := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	output := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	write(t, filepath.Join(output, "index.html"), "<html>index</html>")
 	// A PNG header: valid bytes that are not valid UTF-8, so a read that
 	// decoded them as text would destroy the file.
@@ -294,7 +294,7 @@ func TestCollectSiteFilesReadsContentAsBytes(t *testing.T) {
 
 func TestCollectSiteFilesAppliesTheDeployArtifactExclusions(t *testing.T) {
 	hygiene.Isolate(t)
-	output := filepath.Join(t.TempDir(), ".stricttools", "docs-cache", "build")
+	output := filepath.Join(t.TempDir(), "stricttools", ".docs-cache", "build")
 	write(t, filepath.Join(output, "index.html"), "<html>index</html>")
 	write(t, filepath.Join(output, "guide", "index.html"), "<html>guide</html>")
 	write(t, filepath.Join(output, "_headers"), "/*\n")

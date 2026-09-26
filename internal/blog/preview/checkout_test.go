@@ -105,7 +105,7 @@ func TestTheThemeOfAnAlreadyBuiltTree(t *testing.T) {
 
 	t.Run("a checkout with no build output was not built under any theme", func(t *testing.T) {
 		root := homeCheckout(t, filepath.Join(t.TempDir(), "home"))
-		if err := os.RemoveAll(filepath.Join(root, ".stricttools", "docs-cache", "build")); err != nil {
+		if err := os.RemoveAll(filepath.Join(root, "stricttools", ".docs-cache", "build")); err != nil {
 			t.Fatalf("removing the build tree: %v", err)
 		}
 		built, err := BuiltUnderTheme(root, theme)
@@ -127,7 +127,7 @@ func TestTheThemeOfAnAlreadyBuiltTree(t *testing.T) {
 		if err != nil {
 			t.Fatalf("CSSRel: %v", err)
 		}
-		css := filepath.Join(root, ".stricttools", "docs-cache", "build", filepath.FromSlash(rel))
+		css := filepath.Join(root, "stricttools", ".docs-cache", "build", filepath.FromSlash(rel))
 		testproject.WriteText(t, css, expected)
 		built, err := BuiltUnderTheme(root, theme)
 		if err != nil {

@@ -19,7 +19,7 @@ import (
 func twoLocaleFixture(t *testing.T, overrides map[string]any) site {
 	t.Helper()
 	config := map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 		"locales": []any{
 			map[string]any{"code": "en", "label": "English", "default": true},
 			map[string]any{"code": "fr", "label": "French"},
@@ -30,14 +30,14 @@ func twoLocaleFixture(t *testing.T, overrides map[string]any) site {
 	}
 	dir := testproject.Make(t, config)
 	for _, locale := range []string{"en", "fr"} {
-		testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", locale, "index.md"),
+		testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", locale, "index.md"),
 			"# Test ("+locale+")\n\nContent.\n")
 	}
 	written, err := Build(Options{DirPath: dir, Stdout: &discard{}}, effects.Unbound())
 	if err != nil {
 		t.Fatalf("Build: %v", err)
 	}
-	return site{dir: dir, output: filepath.Join(dir, ".stricttools", "docs-cache", "build"), written: written}
+	return site{dir: dir, output: filepath.Join(dir, "stricttools", ".docs-cache", "build"), written: written}
 }
 
 // stubHops lists every same-site hop a redirect stub emits.
@@ -233,7 +233,7 @@ func TestBuildConfigRedirects(t *testing.T) {
 
 	t.Run("a redirect expands across every locale and version", func(t *testing.T) {
 		dir := testproject.MakeVersioned(t, []string{"0.9.0", "1.0.0"}, map[string]any{
-			"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+			"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 			"locales": []any{
 				map[string]any{"code": "en", "label": "English", "default": true},
 				map[string]any{"code": "fr", "label": "French"},
@@ -244,10 +244,10 @@ func TestBuildConfigRedirects(t *testing.T) {
 		// are what a localized build reads, so they are added and committed
 		// under both tags.
 		for _, locale := range []string{"en", "fr"} {
-			testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", locale, "index.md"),
+			testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", locale, "index.md"),
 				"# Test ("+locale+")\n\nContent.\n")
 		}
-		testproject.Git(t, dir, "add", ".stricttools")
+		testproject.Git(t, dir, "add", "stricttools")
 		testproject.Git(t, dir, "commit", "-m", "locale docs")
 		testproject.Git(t, dir, "tag", "-f", "v0.9.0")
 		testproject.Git(t, dir, "tag", "-f", "v1.0.0")
@@ -256,7 +256,7 @@ func TestBuildConfigRedirects(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Build: %v", err)
 		}
-		built := site{dir: dir, output: filepath.Join(dir, ".stricttools", "docs-cache", "build"), written: written}
+		built := site{dir: dir, output: filepath.Join(dir, "stricttools", ".docs-cache", "build"), written: written}
 
 		// Four combinations, each at the address its version is emitted at:
 		// the current version at the stable mount, the superseded one under

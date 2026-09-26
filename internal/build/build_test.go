@@ -56,13 +56,13 @@ func buildFixture(t *testing.T, f fixture) site {
 // the build answered -- which is what a refusal test reads.
 func tryBuildFixture(t *testing.T, f fixture) (site, error) {
 	t.Helper()
-	overrides := map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"}
+	overrides := map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"}
 	for key, value := range f.Config {
 		overrides[key] = value
 	}
 	dir := testproject.Make(t, overrides)
 	for relPath, content := range f.Docs {
-		testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", filepath.FromSlash(relPath)), content)
+		testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", filepath.FromSlash(relPath)), content)
 	}
 	for relPath, content := range f.Files {
 		testproject.WriteText(t, filepath.Join(dir, filepath.FromSlash(relPath)), content)
@@ -76,7 +76,7 @@ func tryBuildFixture(t *testing.T, f fixture) (site, error) {
 	written, err := Build(opts, effects.Unbound())
 	return site{
 		dir:     dir,
-		output:  filepath.Join(dir, ".stricttools", "docs-cache", "build"),
+		output:  filepath.Join(dir, "stricttools", ".docs-cache", "build"),
 		written: written,
 		stdout:  out.String(),
 	}, err
@@ -450,8 +450,8 @@ func TestBuildRefusals(t *testing.T) {
 	})
 
 	t.Run("a project with no docs directory", func(t *testing.T) {
-		dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-		if err := os.RemoveAll(filepath.Join(dir, ".stricttools", "docs")); err != nil {
+		dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+		if err := os.RemoveAll(filepath.Join(dir, "stricttools", "docs")); err != nil {
 			t.Fatalf("removing the docs tree: %v", err)
 		}
 		_, err := Build(Options{DirPath: dir, Stdout: &bytes.Buffer{}}, effects.Unbound())
@@ -479,8 +479,8 @@ func TestBuildRefusals(t *testing.T) {
 	})
 
 	t.Run("a config with no author", func(t *testing.T) {
-		dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-		raw := testproject.DefaultConfig(map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+		dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+		raw := testproject.DefaultConfig(map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 		delete(raw, "author")
 		testproject.WriteJSON(t, filepath.Join(dir, "selfdoc.json"), raw)
 		_, err := Build(Options{DirPath: dir, Stdout: &bytes.Buffer{}}, effects.Unbound())
@@ -527,8 +527,8 @@ func TestBuildRefusals(t *testing.T) {
 // returns the error it refused with.
 func configRefusal(t *testing.T, overrides map[string]any) error {
 	t.Helper()
-	dir := testproject.Make(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-	raw := testproject.DefaultConfig(map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+	dir := testproject.Make(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+	raw := testproject.DefaultConfig(map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 	for key, value := range overrides {
 		if value == nil {
 			delete(raw, key)

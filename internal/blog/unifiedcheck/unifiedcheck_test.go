@@ -134,7 +134,7 @@ func TestAPostDefectIsReportedUnderItsProjectsSlug(t *testing.T) {
 	testproject.WriteJSON(t, filepath.Join(docsSite, "selfdoc.json"), siteDocument)
 	testproject.WriteText(t, filepath.Join(docsSite, "src", "__init__.py"),
 		`"""Docs site."""`+"\n")
-	testproject.WriteText(t, filepath.Join(docsSite, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(docsSite, "stricttools", "docs", "index.md"),
 		"# Docs site\n\nHello.\n")
 
 	result, err := CheckUnified(nil, docsSite, true, effects.Unbound())
@@ -146,7 +146,7 @@ func TestAPostDefectIsReportedUnderItsProjectsSlug(t *testing.T) {
 	if len(matching) != 1 {
 		t.Fatalf("SEO003 count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
-	wantFile := "[core] " + filepath.Join(".stricttools", "posts", "hello.md")
+	wantFile := "[core] " + filepath.Join("stricttools", "posts", "hello.md")
 	if matching[0].File() != wantFile {
 		t.Errorf("file = %q, want %q", matching[0].File(), wantFile)
 	}
@@ -220,7 +220,7 @@ func TestAProjectWhoseCheckRefusesIsUNIFIED002(t *testing.T) {
 
 	// A project whose declared docs directory is not on disk: the check
 	// refuses before it validates anything.
-	coreDocs := filepath.Join(filepath.Dir(docsSite), "core", ".stricttools", "docs")
+	coreDocs := filepath.Join(filepath.Dir(docsSite), "core", "stricttools", "docs")
 	if err := os.RemoveAll(coreDocs); err != nil {
 		t.Fatalf("remove %s: %v", coreDocs, err)
 	}
@@ -238,7 +238,7 @@ func TestAProjectWhoseCheckRefusesIsUNIFIED002(t *testing.T) {
 		t.Errorf("file = %q, want %q", matching[0].File(), "[core]")
 	}
 	// The refusal's own message is carried through, not a restatement.
-	if matching[0].Message() != "Docs directory '.stricttools/docs/' not found." {
+	if matching[0].Message() != "Docs directory 'stricttools/docs/' not found." {
 		t.Errorf("message = %q", matching[0].Message())
 	}
 	if !containsSubstring(filesOf(result), "[common]") {
@@ -282,7 +282,7 @@ func TestADeclaredProjectPathThatIsNotThereIsAnError(t *testing.T) {
 	testproject.WriteJSON(t, filepath.Join(docsSite, "selfdoc.json"), document)
 	testproject.WriteText(t, filepath.Join(docsSite, "src", "__init__.py"),
 		`"""Docs site."""`+"\n")
-	testproject.WriteText(t, filepath.Join(docsSite, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(docsSite, "stricttools", "docs", "index.md"),
 		"# Docs site\n\nHello.\n")
 
 	_, err := CheckUnified(nil, docsSite, true, effects.Unbound())
@@ -299,17 +299,17 @@ func TestADeclaredProjectPathThatIsNotThereIsAnError(t *testing.T) {
 func writePostsProject(t *testing.T, root string, posts map[string]string) {
 	t.Helper()
 	document := testproject.DefaultConfig(map[string]any{
-		"posts": map[string]any{"dir": ".stricttools/posts/"},
+		"posts": map[string]any{"dir": "stricttools/posts/"},
 	})
 	testproject.WriteJSON(t, filepath.Join(root, "selfdoc.json"), document)
 	testproject.WriteText(t, filepath.Join(root, "src", "__init__.py"),
 		`"""Example package."""`+"\n")
-	testproject.WriteText(t, filepath.Join(root, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(root, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \"A home page whose description is long "+
 			"enough to keep the description rules quiet in this fixture.\"\n"+
 			"+++\n# Test Project\n\nWelcome.\n")
 	for name, content := range posts {
-		testproject.WriteText(t, filepath.Join(root, ".stricttools", "posts", name), content)
+		testproject.WriteText(t, filepath.Join(root, "stricttools", "posts", name), content)
 	}
 }
 

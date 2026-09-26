@@ -19,11 +19,11 @@ func homeProject(t *testing.T) string {
 		"base_url": canonicalBase,
 		"topology": map[string]any{"slug": "home"},
 	})
-	testproject.WriteText(t, filepath.Join(project, ".stricttools", "docs", "projects.toml"),
+	testproject.WriteText(t, filepath.Join(project, "stricttools", "docs", "projects.toml"),
 		"[[category]]\nname = \"Frameworks\"\n"+
 			"[[category.project]]\nslug = \"alpha\"\n"+
 			"blurb = \"Does the alpha thing.\"\n")
-	testproject.WriteText(t, filepath.Join(project, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(project, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Front page\"\n+++\n\n"+
 			"# Me\n\nProse the author wrote.\n\n"+
 			":-: projects-cards\n\n"+
@@ -84,7 +84,7 @@ func TestAHomeBuildResolvesTheDirectivesIntoRegions(t *testing.T) {
 		t.Fatal("the home build wrote nothing")
 	}
 
-	page := read(t, filepath.Join(project, ".stricttools", "docs-cache", "build", "index.html"))
+	page := read(t, filepath.Join(project, "stricttools", ".docs-cache", "build", "index.html"))
 	wants(t, page, "Prose the author wrote.")
 	// The card's version badge is the alpha manifest's, which only the
 	// assembly holds: it is the whole reason this build needs them.
@@ -119,7 +119,7 @@ func TestAHomeBuildsRegionsAreRefreshableFromTheOutput(t *testing.T) {
 	// The deploy-time pass is the same code on the same output: a rebuild
 	// of the regions from the same manifests changes nothing, which is what
 	// makes a later deploy's refresh a no-op until a version moves.
-	output := filepath.Join(project, ".stricttools", "docs-cache", "build")
+	output := filepath.Join(project, "stricttools", ".docs-cache", "build")
 	context := SiteContext{
 		Manifests: []map[string]any{manifest(
 			"alpha", "Alpha", "1.0.0", post("hello", "Hello", "2024-06-01"),
@@ -169,7 +169,7 @@ func regionBody(t *testing.T, page, name string) string {
 func TestAHomeProjectWithNoListingRefusesItsCards(t *testing.T) {
 	hygiene.Isolate(t)
 	project := homeProject(t)
-	if err := removeFile(filepath.Join(project, ".stricttools", "docs", "projects.toml")); err != nil {
+	if err := removeFile(filepath.Join(project, "stricttools", "docs", "projects.toml")); err != nil {
 		t.Fatalf("removing the fixture listing: %v", err)
 	}
 	_, err := BuildHomeProject(project, assemblyManifests(t), "", false, handle())
@@ -181,8 +181,8 @@ func TestAHomeProjectWithNoListingRefusesItsCards(t *testing.T) {
 
 func TestTheHomeListingPathFollowsTheDocsKey(t *testing.T) {
 	cases := map[string]string{
-		"":                   filepath.Join("/p", ".stricttools", "docs", "projects.toml"),
-		".stricttools/docs/": filepath.Join("/p", ".stricttools", "docs", "projects.toml"),
+		"":                   filepath.Join("/p", "stricttools", "docs", "projects.toml"),
+		"stricttools/docs/": filepath.Join("/p", "stricttools", "docs", "projects.toml"),
 		"documents":          filepath.Join("/p", "documents", "projects.toml"),
 		"site/docs///":       filepath.Join("/p", "site", "docs", "projects.toml"),
 	}

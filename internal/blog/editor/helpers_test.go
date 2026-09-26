@@ -44,15 +44,15 @@ func makeProject(t *testing.T, posts map[string]string) string {
 // applied over the fixture defaults.
 func makeProjectWithConfig(t *testing.T, posts map[string]string, overrides map[string]any) string {
 	t.Helper()
-	settings := map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"}
+	settings := map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"}
 	for key, value := range overrides {
 		settings[key] = value
 	}
 	dir := testproject.Make(t, settings)
-	testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"# Test Project\n\nWelcome.\n")
 	for name, content := range posts {
-		testproject.WriteText(t, filepath.Join(dir, ".stricttools", "posts", name), content)
+		testproject.WriteText(t, filepath.Join(dir, "stricttools", "posts", name), content)
 	}
 	return dir
 }

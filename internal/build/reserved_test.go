@@ -83,7 +83,7 @@ func TestBuildRefusesAnAuthoredReservedPage(t *testing.T) {
 			docs:        map[string]string{"blog.md": authoredBlogPage},
 			posts:       map[string]string{"hello.md": reservedPost},
 			wantInError: "blog.md",
-			survives:    ".stricttools/docs/blog.md",
+			survives:    "stricttools/docs/blog.md",
 		},
 		{
 			name: "an authored blog page, with no posts at all",
@@ -93,7 +93,7 @@ func TestBuildRefusesAnAuthoredReservedPage(t *testing.T) {
 			// silently destroy the page.
 			docs:        map[string]string{"blog.md": authoredBlogPage},
 			wantInError: "blog.md",
-			survives:    ".stricttools/docs/blog.md",
+			survives:    "stricttools/docs/blog.md",
 		},
 		{
 			name: "an authored page under the blog directory",
@@ -102,7 +102,7 @@ func TestBuildRefusesAnAuthoredReservedPage(t *testing.T) {
 			},
 			posts:       map[string]string{"hello.md": reservedPost},
 			wantInError: "blog/notes.md",
-			survives:    ".stricttools/docs/blog/notes.md",
+			survives:    "stricttools/docs/blog/notes.md",
 		},
 		{
 			name: "an authored page under the archive prefix",
@@ -110,7 +110,7 @@ func TestBuildRefusesAnAuthoredReservedPage(t *testing.T) {
 				"v/old.md": "# Old\n\nHand-written.\n",
 			},
 			wantInError: "v/old.md",
-			survives:    ".stricttools/docs/v/old.md",
+			survives:    "stricttools/docs/v/old.md",
 		},
 	}
 	for _, test := range tests {
@@ -139,10 +139,10 @@ func TestBuildRefusesAnAuthoredReservedPage(t *testing.T) {
 		if !built.reported("blog/hello-world/index.html") {
 			t.Error("the post page was not written")
 		}
-		if isFile(filepath.Join(built.dir, ".stricttools", "docs", "blog.md")) {
+		if isFile(filepath.Join(built.dir, "stricttools", "docs", "blog.md")) {
 			t.Error("the injected listing page was left in the docs tree")
 		}
-		if isDir(filepath.Join(built.dir, ".stricttools", "docs", "blog")) {
+		if isDir(filepath.Join(built.dir, "stricttools", "docs", "blog")) {
 			t.Error("the injected blog directory was left in the docs tree")
 		}
 	})
@@ -153,20 +153,20 @@ func TestCheckReservedAuthoredPages(t *testing.T) {
 
 	t.Run("a clean docs tree passes", func(t *testing.T) {
 		dir := t.TempDir()
-		testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"), "# Home\n")
-		if err := CheckReservedAuthoredPages(filepath.Join(dir, ".stricttools", "docs"), dir); err != nil {
+		testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", "index.md"), "# Home\n")
+		if err := CheckReservedAuthoredPages(filepath.Join(dir, "stricttools", "docs"), dir); err != nil {
 			t.Errorf("a clean docs tree was refused: %v", err)
 		}
 	})
 
 	t.Run("the reported path is relative to the base directory", func(t *testing.T) {
 		dir := t.TempDir()
-		testproject.WriteText(t, filepath.Join(dir, ".stricttools", "docs", "blog.md"), authoredBlogPage)
-		err := CheckReservedAuthoredPages(filepath.Join(dir, ".stricttools", "docs"), dir)
+		testproject.WriteText(t, filepath.Join(dir, "stricttools", "docs", "blog.md"), authoredBlogPage)
+		err := CheckReservedAuthoredPages(filepath.Join(dir, "stricttools", "docs"), dir)
 		if err == nil {
 			t.Fatal("an authored page on a reserved path was accepted")
 		}
-		assertCarries(t, "the refusal", err.Error(), "'.stricttools/docs/blog.md'")
+		assertCarries(t, "the refusal", err.Error(), "'stricttools/docs/blog.md'")
 	})
 }
 

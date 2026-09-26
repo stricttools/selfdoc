@@ -49,7 +49,7 @@ func project(t *testing.T, root, name string, cfg map[string]any, docs map[strin
 		t.Fatalf("writing selfdoc.json: %v", err)
 	}
 	for rel, content := range docs {
-		full := filepath.Join(path, ".stricttools", "docs", rel)
+		full := filepath.Join(path, "stricttools", "docs", rel)
 		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
 			t.Fatalf("creating %s: %v", filepath.Dir(full), err)
 		}
@@ -389,7 +389,7 @@ func TestLoadDocsBodiesReturnsTheLintSliceShape(t *testing.T) {
 	path := project(t, root, "alpha", nil, map[string]string{
 		"index.md": "+++\ntitle = \"Home\"\n+++\n\nBody text.\n",
 	})
-	bodies, err := LoadDocsBodies(filepath.Join(path, ".stricttools", "docs"))
+	bodies, err := LoadDocsBodies(filepath.Join(path, "stricttools", "docs"))
 	if err != nil {
 		t.Fatalf("LoadDocsBodies: %v", err)
 	}
@@ -421,7 +421,7 @@ func TestLoadDocsBodiesSkipsPartialsAndBuildOutput(t *testing.T) {
 		"guide/deep.md":   "# Deep\n",
 		"notes.txt":       "not a page\n",
 	})
-	bodies, err := LoadDocsBodies(filepath.Join(path, ".stricttools", "docs"))
+	bodies, err := LoadDocsBodies(filepath.Join(path, "stricttools", "docs"))
 	if err != nil {
 		t.Fatalf("LoadDocsBodies: %v", err)
 	}

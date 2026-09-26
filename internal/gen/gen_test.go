@@ -523,8 +523,8 @@ func TestGenerateDocsRefusesACodelessProject(t *testing.T) {
 	isolate(t)
 	dir := t.TempDir()
 	cfg := writeConfig(t, dir, map[string]any{
-		"docs":          ".stricttools/docs/",
-		"output":        ".stricttools/docs-cache/build/",
+		"docs":          "stricttools/docs/",
+		"output":        "stricttools/.docs-cache/build/",
 		"base_url":      "https://example.com",
 		"search_engine": "pagefind",
 	})
@@ -829,8 +829,8 @@ func TestDirectoryPruning(t *testing.T) {
 		dir := t.TempDir()
 		cfg := writeConfig(t, dir, map[string]any{
 			"source":        []any{map[string]any{"path": "src/", "language": "typescript"}},
-			"docs":          ".stricttools/docs/",
-			"output":        ".stricttools/docs-cache/build/",
+			"docs":          "stricttools/docs/",
+			"output":        "stricttools/.docs-cache/build/",
 			"base_url":      "https://example.com",
 			"search_engine": "pagefind",
 		})
@@ -867,8 +867,8 @@ func TestDirectoryPruning(t *testing.T) {
 		dir := t.TempDir()
 		cfg := writeConfig(t, dir, map[string]any{
 			"source":        []any{map[string]any{"path": ".", "language": "python"}},
-			"docs":          ".stricttools/docs/",
-			"output":        ".stricttools/docs-cache/build/",
+			"docs":          "stricttools/docs/",
+			"output":        "stricttools/.docs-cache/build/",
 			"base_url":      "https://example.com",
 			"search_engine": "pagefind",
 		})
@@ -1416,19 +1416,19 @@ func TestLocaleDocsDirs(t *testing.T) {
 	}{
 		{
 			name:   "no locales generates into docs",
-			config: map[string]any{"docs": ".stricttools/docs/"},
+			config: map[string]any{"docs": "stricttools/docs/"},
 			want:   []localeDocsDir{{code: "", dir: genDir(dir), handwritten: handDir(dir)}},
 		},
 		{
 			name: "one locale with no subdirectory generates into docs",
-			config: map[string]any{"docs": ".stricttools/docs/", "locales": []any{
+			config: map[string]any{"docs": "stricttools/docs/", "locales": []any{
 				map[string]any{"code": "en"},
 			}},
 			want: []localeDocsDir{{code: "", dir: genDir(dir), handwritten: handDir(dir)}},
 		},
 		{
 			name: "one locale with a subdirectory generates into it",
-			config: map[string]any{"docs": ".stricttools/docs/", "locales": []any{
+			config: map[string]any{"docs": "stricttools/docs/", "locales": []any{
 				map[string]any{"code": "fa"},
 			}},
 			want: []localeDocsDir{{
@@ -1439,7 +1439,7 @@ func TestLocaleDocsDirs(t *testing.T) {
 		},
 		{
 			name: "several locales generate into each",
-			config: map[string]any{"docs": ".stricttools/docs/", "locales": []any{
+			config: map[string]any{"docs": "stricttools/docs/", "locales": []any{
 				map[string]any{"code": "en"},
 				map[string]any{"code": "fa"},
 			}},

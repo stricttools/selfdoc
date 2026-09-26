@@ -38,8 +38,8 @@ func freePort(t *testing.T) int {
 // servedProject is a project whose output tree carries one page.
 func servedProject(t *testing.T) string {
 	t.Helper()
-	dir := postProject(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
-	writeText(t, filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html"),
+	dir := postProject(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
+	writeText(t, filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html"),
 		"<!DOCTYPE html>\n<html><head><title>Home</title></head>"+
 			"<body><h1>Home</h1></body></html>\n")
 	return dir
@@ -161,12 +161,12 @@ func TestServeRefusesWithoutAConfig(t *testing.T) {
 
 func TestServeRefusesWithoutAnOutputTree(t *testing.T) {
 	isolate(t)
-	dir := postProject(t, map[string]any{"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/"})
+	dir := postProject(t, map[string]any{"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/"})
 	result := run(t, dir, "serve")
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code is %d, want 1", result.ExitCode)
 	}
-	if !strings.Contains(result.Stderr, "Output directory '.stricttools/docs-cache/build' not found") {
+	if !strings.Contains(result.Stderr, "Output directory 'stricttools/.docs-cache/build' not found") {
 		t.Errorf("the refusal is not the missing output's: %s", result.Stderr)
 	}
 	if !strings.Contains(result.Stderr, "Run 'selfdoc build' first.") {
@@ -229,7 +229,7 @@ func TestServeHoldsTheEventStreamOpen(t *testing.T) {
 
 	// Touching the output tree makes the watcher push one event.
 	time.Sleep(200 * time.Millisecond)
-	writeText(t, filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html"),
+	writeText(t, filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html"),
 		"<!DOCTYPE html>\n<html><head><title>Home</title></head>"+
 			"<body><h1>Rebuilt</h1></body></html>\n")
 
@@ -248,18 +248,18 @@ func TestServeWithDraftsRebuildsFirst(t *testing.T) {
 	isolate(t)
 	requirePython3(t)
 	dir := postProject(t, map[string]any{
-		"docs": ".stricttools/docs/", "output": ".stricttools/docs-cache/build/",
+		"docs": "stricttools/docs/", "output": "stricttools/.docs-cache/build/",
 	})
-	writeText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"),
+	writeText(t, filepath.Join(dir, "stricttools", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \""+longDescription+"\"\n+++\n\n# Home\n")
-	writePost(t, filepath.Join(dir, ".stricttools", "posts"), "draft.md",
+	writePost(t, filepath.Join(dir, "stricttools", "posts"), "draft.md",
 		[]string{"title = \"Draft Post\"", "date = 2024-01-16", "slug = \"draft-post\"", "draft = true"},
 		"Draft content here.\n")
 	// The server refuses an absent output tree, so the rebuild has to be what
 	// produces the draft page below.
-	writeText(t, filepath.Join(dir, ".stricttools", "docs-cache", "build", "placeholder.txt"), "placeholder\n")
+	writeText(t, filepath.Join(dir, "stricttools", ".docs-cache", "build", "placeholder.txt"), "placeholder\n")
 
-	draftPage := filepath.Join(dir, ".stricttools", "docs-cache", "build", "blog", "draft-post", "index.html")
+	draftPage := filepath.Join(dir, "stricttools", ".docs-cache", "build", "blog", "draft-post", "index.html")
 	if exists(draftPage) {
 		t.Fatal("the fixture already carries the draft page")
 	}
@@ -276,7 +276,7 @@ func TestServeWithDraftsRebuildsFirst(t *testing.T) {
 func TestServeWithoutDraftsDoesNotRebuild(t *testing.T) {
 	isolate(t)
 	dir := servedProject(t)
-	sentinel := filepath.Join(dir, ".stricttools", "docs-cache", "build", "index.html")
+	sentinel := filepath.Join(dir, "stricttools", ".docs-cache", "build", "index.html")
 	before := readText(t, sentinel)
 
 	port, _ := startServer(t, dir)

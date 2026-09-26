@@ -130,8 +130,8 @@ func writeCheckout(t *testing.T, spec checkoutSpec) string {
 	cfg := map[string]any{
 		"name":          spec.Name,
 		"base_url":      canonicalBase + "/" + spec.Slug,
-		"docs":          ".stricttools/docs/",
-		"output":        ".stricttools/docs-cache/build/",
+		"docs":          "stricttools/docs/",
+		"output":        "stricttools/.docs-cache/build/",
 		"search_engine": "pagefind",
 		"author":        map[string]any{"name": "Test Author", "url": "https://author.example"},
 		"locales":       []any{map[string]any{"code": "en", "label": "English", "default": true}},
@@ -143,10 +143,10 @@ func writeCheckout(t *testing.T, spec checkoutSpec) string {
 		cfg["unversioned"] = true
 	}
 	testproject.WriteJSON(t, filepath.Join(spec.Root, "selfdoc.json"), cfg)
-	testproject.WriteJSON(t, filepath.Join(spec.Root, ".stricttools", "docs-state", "manifest.json"),
+	testproject.WriteJSON(t, filepath.Join(spec.Root, "stricttools", ".docs-state", "manifest.json"),
 		fixtureManifest(spec.Slug, spec.Name, spec.Version, spec.Pages, spec.Posts))
 
-	buildDir := filepath.Join(spec.Root, ".stricttools", "docs-cache", "build")
+	buildDir := filepath.Join(spec.Root, "stricttools", ".docs-cache", "build")
 	for _, entry := range spec.Pages {
 		stem := strings.TrimSuffix(entry.Path, ".md")
 		address, out := "", "index.html"
@@ -171,7 +171,7 @@ func writeCheckout(t *testing.T, spec checkoutSpec) string {
 		fixtureHTML("Not found", "", ""))
 	testproject.WriteText(t, filepath.Join(buildDir, "_headers"), "/*\n  X-Test: 1\n")
 	if spec.Listing != "" {
-		testproject.WriteText(t, filepath.Join(spec.Root, ".stricttools", "docs", "projects.toml"), spec.Listing)
+		testproject.WriteText(t, filepath.Join(spec.Root, "stricttools", "docs", "projects.toml"), spec.Listing)
 	}
 	return spec.Root
 }

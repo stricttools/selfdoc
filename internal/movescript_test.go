@@ -12,7 +12,7 @@ import (
 )
 
 // The layout move script is scripts/move-to-stricttools-layout.py: the one-way
-// move of a repository's selfdoc directories under .stricttools/, run by hand
+// move of a repository's selfdoc directories under stricttools/, run by hand
 // per repository. These cases drive the real script over a real git repository,
 // so the script and the layout the engine reads cannot drift apart.
 
@@ -88,14 +88,14 @@ func oldLayoutProject(t *testing.T) string {
 // directory itself.
 func makeToolRoot(t *testing.T, dir string) {
 	t.Helper()
-	testproject.MkdirAll(t, filepath.Join(dir, ".stricttools"))
+	testproject.MkdirAll(t, filepath.Join(dir, "stricttools"))
 }
 
 // grantTo writes one directory's ownership manifest, naming the given owner.
 func grantTo(t *testing.T, dir, name, owner string) {
 	t.Helper()
 	testproject.WriteText(t,
-		filepath.Join(dir, ".stricttools", name, "manifest.toml"),
+		filepath.Join(dir, "stricttools", name, "manifest.toml"),
 		"owner = \""+owner+"\"\n")
 }
 
@@ -106,8 +106,8 @@ func fakeSelfdoc(t *testing.T, dir, sitemap string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "fake-selfdoc")
 	script := "#!/bin/sh\n" +
-		"mkdir -p .stricttools/docs-cache/build\n" +
-		"cat > .stricttools/docs-cache/build/sitemap.xml <<'SITEMAP'\n" +
+		"mkdir -p stricttools/.docs-cache/build\n" +
+		"cat > stricttools/.docs-cache/build/sitemap.xml <<'SITEMAP'\n" +
 		sitemap +
 		"SITEMAP\n"
 	if err := os.WriteFile(path, []byte(script), 0o755); err != nil {
@@ -144,12 +144,12 @@ func TestTheMoveScriptRefusesARepositoryThatGrantedNothing(t *testing.T) {
 	if status == 0 {
 		t.Fatalf("the script moved a repository that granted no ownership:\n%s", out)
 	}
-	for _, want := range []string{".stricttools", "manifest.toml", `owner = "selfdoc"`} {
+	for _, want := range []string{"stricttools", "manifest.toml", `owner = "selfdoc"`} {
 		if !strings.Contains(out, want) {
 			t.Errorf("the refusal does not carry %q:\n%s", want, out)
 		}
 	}
-	if _, err := os.Stat(filepath.Join(dir, ".stricttools", "docs")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(dir, "stricttools", "docs")); !os.IsNotExist(err) {
 		t.Errorf("the script created a directory anyway (stat err = %v)", err)
 	}
 }
@@ -166,31 +166,31 @@ func TestTheMoveScriptDryRunChangesNothing(t *testing.T) {
 		t.Fatalf("the dry run refused:\n%s", out)
 	}
 	for _, want := range []string{
-		"docs/api.md -> .stricttools/docs-state/pages/api.md",
-		"docs/index.md -> .stricttools/docs/index.md",
-		"docs/_README.md -> .stricttools/docs/_README.md",
-		".selfdoc/posts/hello.md -> .stricttools/posts/hello.md",
-		".selfdoc/manifest.json -> .stricttools/docs-state/manifest.json",
-		".selfdoc/hashes/hashes.json -> .stricttools/docs-state/hashes/hashes.json",
+		"docs/api.md -> stricttools/.docs-state/pages/api.md",
+		"docs/index.md -> stricttools/docs/index.md",
+		"docs/_README.md -> stricttools/docs/_README.md",
+		".selfdoc/posts/hello.md -> stricttools/posts/hello.md",
+		".selfdoc/manifest.json -> stricttools/.docs-state/manifest.json",
+		".selfdoc/hashes/hashes.json -> stricttools/.docs-state/hashes/hashes.json",
 		"sitemap URLs captured: 2",
 		"files to rewrite:",
 		"dry run: nothing was moved",
 		// The manifests are the permission the move writes, and the dry
 		// run says which ones and what each will hold.
-		".stricttools/docs/manifest.toml",
-		".stricttools/docs-state/manifest.toml",
-		".stricttools/docs-cache/manifest.toml",
-		".stricttools/posts/manifest.toml",
+		"stricttools/docs/manifest.toml",
+		"stricttools/.docs-state/manifest.toml",
+		"stricttools/.docs-cache/manifest.toml",
+		"stricttools/posts/manifest.toml",
 		`owner = "selfdoc"`,
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("the dry run does not report %q:\n%s", want, out)
 		}
 	}
-	if _, err := os.Stat(filepath.Join(dir, ".stricttools", "docs", "manifest.toml")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(dir, "stricttools", "docs", "manifest.toml")); !os.IsNotExist(err) {
 		t.Errorf("the dry run wrote a manifest (stat err = %v)", err)
 	}
-	if _, err := os.Stat(filepath.Join(dir, ".stricttools", "docs", "index.md")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(dir, "stricttools", "docs", "index.md")); !os.IsNotExist(err) {
 		t.Errorf("the dry run moved a page (stat err = %v)", err)
 	}
 	if got := testproject.ReadText(t, filepath.Join(dir, "selfdoc.json")); !strings.Contains(got, `"docs": "docs/"`) {
@@ -213,13 +213,13 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 	}
 
 	for _, want := range []string{
-		".stricttools/docs/index.md",
-		".stricttools/docs/guide.md",
-		".stricttools/docs/_README.md",
-		".stricttools/docs-state/pages/api.md",
-		".stricttools/docs-state/manifest.json",
-		".stricttools/docs-state/hashes/hashes.json",
-		".stricttools/posts/hello.md",
+		"stricttools/docs/index.md",
+		"stricttools/docs/guide.md",
+		"stricttools/docs/_README.md",
+		"stricttools/.docs-state/pages/api.md",
+		"stricttools/.docs-state/manifest.json",
+		"stricttools/.docs-state/hashes/hashes.json",
+		"stricttools/posts/hello.md",
 	} {
 		if _, err := os.Stat(filepath.Join(dir, filepath.FromSlash(want))); err != nil {
 			t.Errorf("%s was not moved: %v", want, err)
@@ -231,10 +231,10 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 	moved := strings.Split(strings.TrimSpace(
 		gitOutput(t, dir, "show", "--name-only", "--format=", "HEAD~1")), "\n")
 	for _, want := range []string{
-		".stricttools/docs/manifest.toml",
-		".stricttools/docs-state/manifest.toml",
-		".stricttools/docs-cache/manifest.toml",
-		".stricttools/posts/manifest.toml",
+		"stricttools/docs/manifest.toml",
+		"stricttools/.docs-state/manifest.toml",
+		"stricttools/.docs-cache/manifest.toml",
+		"stricttools/posts/manifest.toml",
 	} {
 		if testproject.ReadText(t, filepath.Join(dir, filepath.FromSlash(want))) != "owner = \"selfdoc\"\n" {
 			t.Errorf("%s does not name selfdoc as the owner", want)
@@ -257,27 +257,27 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 
 	config := testproject.ReadText(t, filepath.Join(dir, "selfdoc.json"))
 	for _, want := range []string{
-		`"docs": ".stricttools/docs/"`,
-		`"output": ".stricttools/docs-cache/build/"`,
-		`".stricttools/docs/_README.md"`,
+		`"docs": "stricttools/docs/"`,
+		`"output": "stricttools/.docs-cache/build/"`,
+		`"stricttools/docs/_README.md"`,
 	} {
 		if !strings.Contains(config, want) {
 			t.Errorf("the config does not carry %q:\n%s", want, config)
 		}
 	}
 	// A path spelled inside the moved content is rewritten too.
-	page := testproject.ReadText(t, filepath.Join(dir, ".stricttools", "docs", "index.md"))
-	guide := testproject.ReadText(t, filepath.Join(dir, ".stricttools", "docs", "guide.md"))
+	page := testproject.ReadText(t, filepath.Join(dir, "stricttools", "docs", "index.md"))
+	guide := testproject.ReadText(t, filepath.Join(dir, "stricttools", "docs", "guide.md"))
 	for _, kept := range []string{"https://example.org/docs/git/", "the mydocs/ folder"} {
 		if !strings.Contains(guide, kept) {
 			t.Errorf("the rewrite touched text that is not a path of this repository; guide.md:\n%s", guide)
 		}
 	}
-	if !strings.Contains(page, ".stricttools/docs/_README.md") {
+	if !strings.Contains(page, "stricttools/docs/_README.md") {
 		t.Errorf("the page still names the old path:\n%s", page)
 	}
-	post := testproject.ReadText(t, filepath.Join(dir, ".stricttools", "posts", "hello.md"))
-	if !strings.Contains(post, ".stricttools/docs/index.md") {
+	post := testproject.ReadText(t, filepath.Join(dir, "stricttools", "posts", "hello.md"))
+	if !strings.Contains(post, "stricttools/docs/index.md") {
 		t.Errorf("the post still names the old path:\n%s", post)
 	}
 	// The root ignore file's line for the old build output is dropped: the
@@ -291,7 +291,7 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 	log := gitOutput(t, dir, "log", "--format=%s", "-3")
 	subjects := strings.Split(strings.TrimSpace(log), "\n")
 	if len(subjects) < 3 ||
-		!strings.Contains(subjects[0], "name the .stricttools/ paths") ||
+		!strings.Contains(subjects[0], "name the stricttools/ paths") ||
 		!strings.Contains(subjects[1], "move selfdoc's directories") {
 		t.Errorf("the commits are %v, want the rewrites over the moves", subjects)
 	}
@@ -304,7 +304,7 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 		// that file is written by the build the person runs next -- which is
 		// what the closing report tells them to commit.
 		if trimmed == "" || strings.HasSuffix(trimmed, "docs/") ||
-			strings.Contains(trimmed, ".stricttools/docs-cache/") {
+			strings.Contains(trimmed, "stricttools/.docs-cache/") {
 			continue
 		}
 		t.Errorf("the move left %q uncommitted", trimmed)
@@ -325,13 +325,13 @@ func TestTheMoveScriptRefusesADirectoryAnotherToolOwns(t *testing.T) {
 	root := moduleRoot(t)
 	dir := oldLayoutProject(t)
 	makeToolRoot(t, dir)
-	grantTo(t, dir, "docs-state", "someothertool")
+	grantTo(t, dir, ".docs-state", "someothertool")
 
 	out, status := runMove(t, root, dir, "--dry-run")
 	if status == 0 {
 		t.Fatalf("the script moved into a directory another tool owns:\n%s", out)
 	}
-	for _, want := range []string{"someothertool", ".stricttools/docs-state"} {
+	for _, want := range []string{"someothertool", "stricttools/.docs-state"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("the refusal does not carry %q:\n%s", want, out)
 		}
@@ -362,7 +362,7 @@ func TestTheMoveScriptRefusesAChangedURLSet(t *testing.T) {
 		}
 	}
 	// The commits stay: the refusal is about the outcome, not a rollback.
-	if _, err := os.Stat(filepath.Join(dir, ".stricttools", "docs", "index.md")); err != nil {
+	if _, err := os.Stat(filepath.Join(dir, "stricttools", "docs", "index.md")); err != nil {
 		t.Errorf("the moves were rolled back: %v", err)
 	}
 }
@@ -412,7 +412,7 @@ func TestTheMoveScriptRewritesAReadOnlyGeneratedFile(t *testing.T) {
 	}
 
 	rewritten := testproject.ReadText(t, readme)
-	if !strings.Contains(rewritten, ".stricttools/docs/guide.md") {
+	if !strings.Contains(rewritten, "stricttools/docs/guide.md") {
 		t.Errorf("the read-only generated file was not rewritten:\n%s", rewritten)
 	}
 	after, err := os.Stat(readme)
@@ -454,7 +454,7 @@ func TestTheMoveScriptAssertsEveryPlannedCount(t *testing.T) {
 				!strings.Contains(out, testCase.want) {
 				t.Errorf("the refusal does not name the %s mismatch:\n%s", testCase.want, out)
 			}
-			if _, err := os.Stat(filepath.Join(dir, ".stricttools", "docs")); !os.IsNotExist(err) {
+			if _, err := os.Stat(filepath.Join(dir, "stricttools", "docs")); !os.IsNotExist(err) {
 				t.Errorf("the refused run created a directory (stat err = %v)", err)
 			}
 		})
@@ -507,7 +507,7 @@ func TestTheMoveScriptRewritesAnUnslashedDocsKey(t *testing.T) {
 		t.Fatalf("the move refused:\n%s", out)
 	}
 	moved := testproject.ReadText(t, config)
-	for _, want := range []string{`"docs": ".stricttools/docs/"`, `"output": ".stricttools/docs-cache/build/"`} {
+	for _, want := range []string{`"docs": "stricttools/docs/"`, `"output": "stricttools/.docs-cache/build/"`} {
 		if !strings.Contains(moved, want) {
 			t.Errorf("selfdoc.json does not declare %s after the move:\n%s", want, moved)
 		}
