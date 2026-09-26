@@ -1,6 +1,6 @@
 +++
 title = "internal/layout"
-description = "The directories selfdoc owns under the hidden tool-state root, the manifest that grants each one, and the authority for every path inside them."
+description = "The directories selfdoc owns under stricttools/, generated ones behind a dot, the manifest granting each, and the authority for every path inside them."
 generated = true
 nav_group = "API Reference"
 nav_order = 47

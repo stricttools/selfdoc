@@ -1,6 +1,6 @@
 +++
 title = "selfdoc layout"
-description = "Inspect and check the per-repository directories selfdoc owns under .stricttools/"
+description = "Inspect, check and migrate the directories selfdoc owns under stricttools/: dump the claim, validate a tree, and move one off .stricttools/."
 generated = true
 nav_group = "CLI Reference"
 nav_order = 10

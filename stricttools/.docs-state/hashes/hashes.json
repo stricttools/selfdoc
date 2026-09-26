@@ -161,9 +161,8 @@
     "schema_hash": "d6410f6b2537f50bb956969bd6eae0705d3049466c628c8c71a0a81223d2dcb7"
   },
   "en/cli-layout.md": {
-    "content": "dfd3c29d9789df5d182d9475a73ac6f32a0a3c1806354c79c691d5cd01a6a0b7",
-    "description": "03a329791ffa7fd6105ea4ccb43d1589ec9bad9ff6cc575a90bdfc1552233410",
-    "schema_hash": "f4739060410e451c642fd44168b2196aca8157678ba63550661f98261e02bcb0"
+    "content": "166ed710a9769e25c0b63c3c7777e497b25d0d2793fed14cf386e1c980524cc8",
+    "description": "ef03249c5a8dea0cac6c19c7cb7f7fb66429d7a5526bd968b5d93437858e00e6"
   },
   "en/cli-post.md": {
     "content": "86fe01520f627c2342a68880aa7adc42438729597461260c9693e5c99cff1a15",
@@ -183,14 +182,12 @@
     "schema_hash": "6731ecca71e9ecd6e640a501bf94bb9bcef4670c8bd64cf0588aed119364733a"
   },
   "en/cli-spell-corpus.md": {
-    "content": "214823ac511617b5530135e0b4dc9faab24cb00254f380eca50c663298646607",
-    "description": "0c733b57b542d2d309233fed2f6e4d6b55e7310ad071622f055130bfd761a998",
-    "schema_hash": "3544a7b71aa56a3af5f455e8f6d98686bd432e6202339965547c400195dbc53b"
+    "content": "3fa55419c48978754a046818926dca8048c928951afa7e462bba1b01c6ae66f8",
+    "description": "61f260eaceae77a179148414b9a081d6a836c6543c6e5d58b0a5d0137b6bb041"
   },
   "en/cli-vocabulary.md": {
-    "content": "f3b8419b54f943a6aad7cd5925bb7b04033dc440785317d4abb8aa5452309855",
-    "description": "0f1c6b658b724936dd0cf7ca33ab82be0b77b6e5df41f27843489de710dcf725",
-    "seed_hash": "0f1c6b658b724936dd0cf7ca33ab82be0b77b6e5df41f27843489de710dcf725"
+    "content": "c85f6f044a2f1bb590c5b36dc6c8797f45e57789b1e7c133f00cba1123a11e61",
+    "description": "bf857cdfd5363b8f8003cd07ddf330858e9f1a965970181a728a052cca367c39"
   },
   "en/cmd-selfdoc.md": {
     "content": "71de616eb0be1e9d0885ebf89597750b011b6fc3db20fc8af27cd46de9f3a41f",
@@ -529,8 +526,7 @@
   },
   "en/internal-layout.md": {
     "content": "52f92ef04414261f2f49481d476762ebd38a5b6a8947ed602f3b647d8d28bdd8",
-    "description": "af3462390e8feacf50d8b9b9eb76c082d5026b07d60939b31c2fe787bf24c6bf",
-    "source_docstring": "94d831a6c115b7a8e6f7f0a199dc05ebe89923dd4821b5778d119b13a411718b"
+    "description": "fd15c2ddda3ced8da30881714748cb9a9a4d95cb0cb4f34d60085dc48fc09641"
   },
   "en/internal-lints.md": {
     "content": "7911da93c39e1c1946c429f921a8ec87c3f58e00e93165f136b092d3ae5aa2e4",
@@ -544,8 +540,7 @@
   },
   "en/internal-migrate.md": {
     "content": "fa922969a57523d1c0fe70a3d1832d544144b4e968a71be2390f11f8f966d524",
-    "description": "49d76e6c50d4acabe4fa915e752098d5a58c71fd37304b63560aee4388475a4f",
-    "seed_hash": "49d76e6c50d4acabe4fa915e752098d5a58c71fd37304b63560aee4388475a4f"
+    "description": "98723047da55dcbc4874cb527bc033c8f96f0df51dbbf3de1b6426afd93c9a7e"
   },
   "en/internal-ownership.md": {
     "content": "bbf6559f35ab251e4033f07de1139db21b724b293062c770a5bde8f73b314824",
@@ -604,13 +599,11 @@
   },
   "en/internal-spellcorpus.md": {
     "content": "df8b5710560939df2be57c75c2d6599190ed9938c3f4a473885a343b481e1d31",
-    "description": "95d516c977472dc3cd405b5816ffcd8d894eef5b68544cb0849ff5d0c154615c",
-    "source_docstring": "0634b96d3e0b5dc597a78e016dbb972982f17f61f57b316753646c376e3c0831"
+    "description": "eded1e0ad63fdc26d45c4d43d20119d3a6bfb6643d3f14e3de17828eb2a49dae"
   },
   "en/internal-spelling.md": {
     "content": "3821b96aa458fd177df1118145d89d01ac59f85f7ba42b02942109f32dfc8f07",
-    "description": "f6c49e439557b6d94bcf2fb879d2da2c530875a097b018a415a2c8a5655b500e",
-    "source_docstring": "bf712f3349a21cafa5bcef8f0cb9d005bdfc0588c95d9f5802b56fba5cfe9560"
+    "description": "fb964c27ac0ae9b4e50a5722ef35411129179c53a3e36d737b06998a409cf571"
   },
   "en/internal-staleness.md": {
     "content": "1fb8652ef7e6bca9cc2877554f943609a6e172964a28a8f6db26719c2ce4dec4",
@@ -649,18 +642,15 @@
   },
   "en/internal-vocabulary-reviewschema.md": {
     "content": "5b163ad769fa9e8ee4577f1bc85ce6a40a8b9bcd0fb1a1372ef3d6236b534b0e",
-    "description": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200",
-    "seed_hash": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200"
+    "description": "0da69245a0595f18fa70e6b6f7841db462402619bda424ae99e4118a9edb8bed"
   },
   "en/internal-vocabulary-termsschema.md": {
     "content": "fe0bd4dd737d954800e8b308e220597800bf8665455d15bbdb5ea678a756f62d",
-    "description": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200",
-    "seed_hash": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200"
+    "description": "97ce15042bc919c9da5c66553246b5876c310486160033619f05985e90937af3"
   },
   "en/internal-vocabulary.md": {
     "content": "75c64ffcdab0447bdaef0a44b110b81b245fdab2e925b26205598b89aa642e0c",
-    "description": "d21c4188c85defec4c3d2d733cb5065bc84909acefd76ddf96326c8100ba0170",
-    "seed_hash": "d21c4188c85defec4c3d2d733cb5065bc84909acefd76ddf96326c8100ba0170"
+    "description": "cb19c766e0a2623f48da1f6b416838d6d7af625432858d3af1ecfa93511dc447"
   },
   "en/internals.md": {
     "content": "3f3cf1f31ae98baaeb97fbcb9987ffe5ca19c28a94e8f6fb653024fe3ec70aa7",

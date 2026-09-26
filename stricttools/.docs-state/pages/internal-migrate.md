@@ -1,8 +1,7 @@
 +++
 title = "internal/migrate"
-description = "Package migrate moves a repository off the layout before this one: selfdoc's directories under the hidden .stricttools/ root, each under its bare function name, onto the visible stricttools/ root, where a generated directory's name starts with a dot."
+description = "The engine of selfdoc layout migrate: plans and performs the move of selfdoc's directories off the hidden .stricttools/ root onto stricttools/."
 generated = true
-seeded = true
 nav_group = "API Reference"
 nav_order = 50
 +++

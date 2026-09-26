@@ -1,6 +1,6 @@
 +++
 title = "internal/spellcorpus"
-description = "The corpus-wide spelling run: the engine selfdoc check uses, applied to every sibling project, which is how the shared accept list gets populated at all."
+description = "The corpus-wide spelling run: the engine selfdoc check uses, applied to every sibling project against that project's own vocabulary."
 generated = true
 nav_group = "API Reference"
 nav_order = 62

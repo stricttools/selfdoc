@@ -1,6 +1,6 @@
 +++
 title = "internal/spelling"
-description = "The spelling engine: one word checker and one accept list serving every surface that needs one, so no surface holds a second opinion about a word."
+description = "The spelling engine: one word checker serving every surface that needs one, reading the word list and the vocabulary its caller hands it."
 generated = true
 nav_group = "API Reference"
 nav_order = 63

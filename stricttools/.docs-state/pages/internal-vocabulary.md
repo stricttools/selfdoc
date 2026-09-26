@@ -1,8 +1,7 @@
 +++
 title = "internal/vocabulary"
-description = "Package vocabulary is a project's word lists: the words its pages may use that the English word list does not carry, the terms its pages may not use, and the words proposed for acceptance that nobody has reviewed yet."
+description = "A project's word lists: the baseline and terms.toml the spell check accepts from, the rejected terms, the review list, and the editing commands."
 generated = true
-seeded = true
 nav_group = "API Reference"
 nav_order = 71
 +++

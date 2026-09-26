@@ -1,8 +1,7 @@
 +++
 title = "selfdoc vocabulary"
-description = "Edit this project's vocabulary: the words its pages may use that the English word list does not carry, the terms they may not use (stricttools/vocabulary/terms.toml), and the words proposed for acceptance awaiting review (stricttools/vocabulary/review.toml)."
+description = "Edit the project's vocabulary: accept, reject and remove terms in terms.toml, and approve or drop the words pending in review.toml."
 generated = true
-seeded = true
 nav_group = "CLI Reference"
 nav_order = 14
 +++
@@ -41,7 +40,7 @@ Reject a term in stricttools/vocabulary/terms.toml, in sorted position, with the
 
 | Name | Short | Type | Presence | Env | Description |
 | --- | --- | --- | --- | --- | --- |
-| `--kind` |  | str | required |  | How the pattern matches Values: `word` (a whole word, with a word boundary on both sides), `phrase` (a whole phrase, its words separated by any whitespace), `suffix` (the end of a longer word), `prefix` (the start of a longer word). |
+| `--kind` |  | str | required |  | How the pattern matches the text of a page, compared case-insensitively Values: `word` (a whole word, with a word boundary on both sides), `phrase` (a whole phrase, its words separated by any whitespace), `suffix` (the end of a longer word), `prefix` (the start of a longer word). |
 | `--reason` |  | str | required |  | Why the term is rejected, shown beside every place a page uses it |
 | `--auto-commit`, `--no-auto-commit` |  | bool | optional |  | Commit the vocabulary file the command edited. Omitted, it commits; pass --no-auto-commit to leave the edit uncommitted |
 
@@ -67,7 +66,7 @@ Remove every entry of stricttools/vocabulary/terms.toml whose word or pattern is
 
 | Name | Type | Presence | Description |
 | --- | --- | --- | --- |
-| `word` | str | required | The accepted word or rejected pattern to remove |
+| `word` | str | required | The accepted word or rejected pattern to remove, compared case-insensitively |
 
 ## vocabulary approve
 
@@ -86,7 +85,7 @@ Approve a word pending review: move its entry from stricttools/vocabulary/review
 
 | Name | Type | Presence | Description |
 | --- | --- | --- | --- |
-| `word` | str | required | The pending word, compared case-insensitively |
+| `word` | str | required | The pending word, as review.toml spells it, compared case-insensitively |
 
 ## vocabulary drop
 
@@ -104,4 +103,4 @@ Drop a word pending review: delete its entry from stricttools/vocabulary/review.
 
 | Name | Type | Presence | Description |
 | --- | --- | --- | --- |
-| `word` | str | required | The pending word, compared case-insensitively |
+| `word` | str | required | The pending word, as review.toml spells it, compared case-insensitively |
