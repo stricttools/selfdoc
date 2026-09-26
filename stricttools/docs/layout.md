@@ -1,6 +1,6 @@
 +++
 title = "The stricttools/ layout"
-description = "Where selfdoc keeps a repository's state: one directory of function-named directories, generated ones behind a dot, a manifest inside each naming its owner, a derived ignore file, and the commands that inspect, check and migrate it."
+description = "Where selfdoc keeps a repository's state: one directory of function-named directories, generated ones behind a dot, a manifest inside each naming its owner, a derived ignore file, the commands that inspect, check and migrate it, and the conversion of its manifests to the schema that records the vocabulary."
 nav_group = "Guides"
 nav_order = 4
 +++
