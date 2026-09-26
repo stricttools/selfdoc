@@ -2,6 +2,15 @@
 
 # Changelog
 
+## 0.45.1
+
+The .selfdoc/ move script now finishes on a real repository: it removes the .selfdoc/ directory the move empties before running selfdoc layout migrate, and the migrate step writes the stricttools/vocabulary/ directory the old layout never had.
+
+### Fixes
+
+- The `.selfdoc/` move script no longer leaves the emptied `.selfdoc/` directory behind: it removes every directory the move emptied, and `.selfdoc/` itself, before running `selfdoc layout migrate`, which every selfdoc command refused while the directory existed, and refuses, naming it, if any file is left inside.
+- A repository moved from the `.selfdoc/` layout now gets `stricttools/vocabulary/` (its `manifest.toml` and an empty `terms.toml`), so `selfdoc vocabulary accept` no longer refuses it: `selfdoc layout migrate` writes that directory for any repository on `stricttools/` whose vocabulary directory carries no manifest, and the move script runs it whenever that is the case.
+
 ## 0.45.0
 
 selfdoc's per-repository directories move to a visible stricttools/ root, with generated directories behind a dot, and 'selfdoc layout migrate' moves a repository onto it. Each project now owns its spelling vocabulary: stricttools/vocabulary/terms.toml (accepted words with meanings, rejected terms with reasons) and review.toml (pending words), edited with 'selfdoc vocabulary'. The spell check reads only selfdoc's built-in baseline and the project's terms.toml. The manifest moves to schema_version 2, which records the project's accepted words and rejected patterns; every reader refuses schema 1, 'selfdoc layout migrate' converts it, a deploy or documentation publish refuses a vocabulary that disagrees with another project's on the site, and the new 'selfdoc assembly republish-all' republishes every project in one pass.
