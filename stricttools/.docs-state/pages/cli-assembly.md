@@ -106,7 +106,7 @@ Generate the shared cross-project elements for the assembled documentation site.
 
 ## assembly integrate
 
-Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. This is the whole body of the generated deploy workflow.
+Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. A full-scope deploy first checks the vocabulary the project's manifest records against every other project's manifest on the site and selfdoc's built-in baseline, and refuses before touching the checkout when one project's rejected pattern covers a word another accepts, naming both projects, the word, the pattern and the fix. This is the whole body of the generated deploy workflow.
 
 **Effect:** mutating
 
@@ -145,6 +145,25 @@ Assert every property a built assembly tree has to have before it is deployed: t
 | --- | --- | --- | --- | --- | --- |
 | `--assembly-dir` |  | str | default: `.` |  | Path to the assembly repository checkout to verify |
 | `--canonical-base` |  | str | required |  | Absolute canonical base URL of the assembly site, from topology.docs_base. Required: it is what tells this site's absolute URLs from everybody else's, and without it half the assertions would pass by not looking. |
+
+## assembly republish-all
+
+Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version 2, which records each project's vocabulary. Before building anything it refuses a checkout not on the stricttools/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project, which also converts the project's post overlay on the site, manifests/<slug>-posts.json, when an older selfdoc wrote it, keeping its posts and adding the vocabulary of the checkout's manifest), and sends one shared-only deploy request. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.
+
+**Effect:** mutating · **consequential** (prompts before running; `--approve-consequential` skips)
+
+### Flags
+
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--repo` |  | list[str] (unique) | default: `[]` |  | Path to the checkout of one project on the roster other than the home project. Repeat once per project: together with --home, the checkouts must declare the roster's slugs exactly. |
+| `--home` |  | str | required |  | Path to the checkout of the roster's home project, the one served at the site root. Required: a republish of the whole site publishes its front page too. |
+
+### Grants
+
+| Kind | Name | Reason |
+| --- | --- | --- |
+| proc_mutate | `assembly-dispatch` | triggers a GitHub Actions workflow on the assembly repository, which rebuilds and republishes the live documentation site |
 
 ## assembly preview
 

@@ -14,7 +14,7 @@ Blog posts, the authoring app, and publishing this project's documentation to th
 
 ## blog publish-docs
 
-Publish this project's documentation to the assembly without a release. Builds the docs locally, pushes the built site, its manifest and its membership record into the assembly repo via the Git Data API -- deleting the pages this project published before and no longer produces -- then dispatches a shared-only workflow to regenerate cross-project elements.
+Publish this project's documentation to the assembly without a release. Builds the docs locally, pushes the built site, its manifest and its membership record into the assembly repo via the Git Data API -- deleting the pages this project published before and no longer produces -- then dispatches a shared-only workflow to regenerate cross-project elements. Refuses before pushing anything when the vocabulary this project's manifest records and another project's on the assembly disagree about a word -- one's rejected pattern covering a word the other, or selfdoc's built-in baseline, accepts -- naming both projects, the word, the pattern and the fix.
 
 **Effect:** mutating · **consequential** (prompts before running; `--approve-consequential` skips)
 

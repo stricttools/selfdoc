@@ -211,6 +211,16 @@
         },
         {
           "level": 3,
+          "text": "One vocabulary per site",
+          "anchor": "one-vocabulary-per-site"
+        },
+        {
+          "level": 3,
+          "text": "Republishing every project",
+          "anchor": "republishing-every-project"
+        },
+        {
+          "level": 3,
           "text": "What a build owns",
           "anchor": "what-a-build-owns"
         },
@@ -440,13 +450,28 @@
         },
         {
           "level": 2,
+          "text": "assembly republish-all",
+          "anchor": "assembly-republish-all"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-5"
+        },
+        {
+          "level": 3,
+          "text": "Grants",
+          "anchor": "grants-5"
+        },
+        {
+          "level": 2,
           "text": "assembly preview",
           "anchor": "assembly-preview"
         },
         {
           "level": 3,
           "text": "Flags",
-          "anchor": "flags-5"
+          "anchor": "flags-6"
         },
         {
           "level": 2,
@@ -456,12 +481,12 @@
         {
           "level": 3,
           "text": "Flags",
-          "anchor": "flags-6"
+          "anchor": "flags-7"
         },
         {
           "level": 3,
           "text": "Grants",
-          "anchor": "grants-5"
+          "anchor": "grants-6"
         }
       ]
     },
@@ -1904,6 +1929,11 @@
         },
         {
           "level": 3,
+          "text": "`RepublishCommand`",
+          "anchor": "republishcommand"
+        },
+        {
+          "level": 3,
           "text": "`WorkflowGoVersion`",
           "anchor": "workflowgoversion"
         },
@@ -1986,6 +2016,26 @@
           "level": 3,
           "text": "`RemoteReadError`",
           "anchor": "remotereaderror"
+        },
+        {
+          "level": 3,
+          "text": "`RepublishOptions`",
+          "anchor": "republishoptions"
+        },
+        {
+          "level": 3,
+          "text": "`RepublishedProject`",
+          "anchor": "republishedproject"
+        },
+        {
+          "level": 3,
+          "text": "`RepublishSummary`",
+          "anchor": "republishsummary"
+        },
+        {
+          "level": 3,
+          "text": "`PublishBuildOptions`",
+          "anchor": "publishbuildoptions"
         },
         {
           "level": 3,
@@ -2129,6 +2179,31 @@
         },
         {
           "level": 3,
+          "text": "`RepublishAll`",
+          "anchor": "republishall"
+        },
+        {
+          "level": 3,
+          "text": "`DeployedSelfdocPin`",
+          "anchor": "deployedselfdocpin"
+        },
+        {
+          "level": 3,
+          "text": "`BuildForPublish`",
+          "anchor": "buildforpublish"
+        },
+        {
+          "level": 3,
+          "text": "`PublishVersion`",
+          "anchor": "publishversion"
+        },
+        {
+          "level": 3,
+          "text": "`DispatchSharedRebuild`",
+          "anchor": "dispatchsharedrebuild"
+        },
+        {
+          "level": 3,
           "text": "`RetireProject`",
           "anchor": "retireproject"
         },
@@ -2176,6 +2251,11 @@
           "level": 3,
           "text": "`SiteNameFor`",
           "anchor": "sitenamefor"
+        },
+        {
+          "level": 3,
+          "text": "`PublishedVocabularies`",
+          "anchor": "publishedvocabularies"
         },
         {
           "level": 3,
@@ -3078,11 +3158,6 @@
         },
         {
           "level": 3,
-          "text": "`ReadSlug`",
-          "anchor": "readslug"
-        },
-        {
-          "level": 3,
           "text": "`ExpectedStylesheet`",
           "anchor": "expectedstylesheet"
         },
@@ -3504,8 +3579,18 @@
         },
         {
           "level": 3,
+          "text": "`Checkout`",
+          "anchor": "checkout"
+        },
+        {
+          "level": 3,
           "text": "`RemoteTextFetcher`",
           "anchor": "remotetextfetcher"
+        },
+        {
+          "level": 3,
+          "text": "`OutdatedManifestError`",
+          "anchor": "outdatedmanifesterror"
         },
         {
           "level": 3,
@@ -3536,6 +3621,16 @@
           "level": 3,
           "text": "`Error`",
           "anchor": "error"
+        },
+        {
+          "level": 3,
+          "text": "`ResolveCheckouts`",
+          "anchor": "resolvecheckouts"
+        },
+        {
+          "level": 3,
+          "text": "`ReadSlug`",
+          "anchor": "readslug"
         },
         {
           "level": 3,
@@ -3791,6 +3886,11 @@
           "level": 3,
           "text": "`VersionLabel`",
           "anchor": "versionlabel"
+        },
+        {
+          "level": 3,
+          "text": "`OutdatedManifestError.Error`",
+          "anchor": "outdatedmanifesterrorerror"
         },
         {
           "level": 3,
@@ -4855,6 +4955,11 @@
         },
         {
           "level": 3,
+          "text": "`OutputRel`",
+          "anchor": "outputrel"
+        },
+        {
+          "level": 3,
           "text": "`DecodeDocument`",
           "anchor": "decodedocument"
         },
@@ -5664,8 +5769,18 @@
         },
         {
           "level": 3,
+          "text": "`ScratchDirs`",
+          "anchor": "scratchdirs"
+        },
+        {
+          "level": 3,
           "text": "`ShouldSkipDir`",
           "anchor": "shouldskipdir"
+        },
+        {
+          "level": 3,
+          "text": "`IsScratchDir`",
+          "anchor": "isscratchdir"
         },
         {
           "level": 3,
@@ -7981,8 +8096,8 @@
         },
         {
           "level": 3,
-          "text": "The reader is tolerant",
-          "anchor": "the-reader-is-tolerant"
+          "text": "The reader is tolerant, and reads one schema",
+          "anchor": "the-reader-is-tolerant-and-reads-one-schema"
         },
         {
           "level": 3,
@@ -7993,6 +8108,11 @@
           "level": 3,
           "text": "`SchemaVersion`",
           "anchor": "schemaversion"
+        },
+        {
+          "level": 3,
+          "text": "`PreviousSchemaVersion`",
+          "anchor": "previousschemaversion"
         },
         {
           "level": 3,
@@ -8016,6 +8136,21 @@
         },
         {
           "level": 3,
+          "text": "`AcceptedWord`",
+          "anchor": "acceptedword"
+        },
+        {
+          "level": 3,
+          "text": "`RejectedPattern`",
+          "anchor": "rejectedpattern"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary`",
+          "anchor": "vocabulary"
+        },
+        {
+          "level": 3,
           "text": "`Manifest`",
           "anchor": "manifest"
         },
@@ -8023,6 +8158,16 @@
           "level": 3,
           "text": "`Doc`",
           "anchor": "doc"
+        },
+        {
+          "level": 3,
+          "text": "`OutdatedError`",
+          "anchor": "outdatederror"
+        },
+        {
+          "level": 3,
+          "text": "`VocabularyOf`",
+          "anchor": "vocabularyof"
         },
         {
           "level": 3,
@@ -8041,6 +8186,21 @@
         },
         {
           "level": 3,
+          "text": "`Convert`",
+          "anchor": "convert"
+        },
+        {
+          "level": 3,
+          "text": "`ConvertWith`",
+          "anchor": "convertwith"
+        },
+        {
+          "level": 3,
+          "text": "`DeclaredSchema`",
+          "anchor": "declaredschema"
+        },
+        {
+          "level": 3,
           "text": "`Load`",
           "anchor": "load"
         },
@@ -8048,6 +8208,21 @@
           "level": 3,
           "text": "`LoadFromGit`",
           "anchor": "loadfromgit"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary.Published`",
+          "anchor": "vocabularypublished"
+        },
+        {
+          "level": 3,
+          "text": "`OutdatedError.Error`",
+          "anchor": "outdatederrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`OutdatedError.Declares`",
+          "anchor": "outdatederrordeclares"
         }
       ]
     },
@@ -10539,6 +10714,21 @@
         },
         {
           "level": 3,
+          "text": "`Published`",
+          "anchor": "published"
+        },
+        {
+          "level": 3,
+          "text": "`CrossConflict`",
+          "anchor": "crossconflict"
+        },
+        {
+          "level": 3,
+          "text": "`ConflictsError`",
+          "anchor": "conflictserror"
+        },
+        {
+          "level": 3,
           "text": "`Edit`",
           "anchor": "edit"
         },
@@ -10586,6 +10776,26 @@
           "level": 3,
           "text": "`ConflictError`",
           "anchor": "conflicterror"
+        },
+        {
+          "level": 3,
+          "text": "`SiteConflicts`",
+          "anchor": "siteconflicts"
+        },
+        {
+          "level": 3,
+          "text": "`CheckIncoming`",
+          "anchor": "checkincoming"
+        },
+        {
+          "level": 3,
+          "text": "`LoadTermsAt`",
+          "anchor": "loadtermsat"
+        },
+        {
+          "level": 3,
+          "text": "`LoadProject`",
+          "anchor": "loadproject"
         },
         {
           "level": 3,
@@ -10671,6 +10881,21 @@
           "level": 3,
           "text": "`Less`",
           "anchor": "less"
+        },
+        {
+          "level": 3,
+          "text": "`CrossConflict.Message`",
+          "anchor": "crossconflictmessage"
+        },
+        {
+          "level": 3,
+          "text": "`CrossConflict.Involves`",
+          "anchor": "crossconflictinvolves"
+        },
+        {
+          "level": 3,
+          "text": "`ConflictsError.Error`",
+          "anchor": "conflictserrorerror"
         },
         {
           "level": 3,
@@ -10875,6 +11100,11 @@
           "level": 2,
           "text": "Moving a repository off `.stricttools/`",
           "anchor": "moving-a-repository-off-stricttools"
+        },
+        {
+          "level": 3,
+          "text": "Converting the manifests",
+          "anchor": "converting-the-manifests"
         },
         {
           "level": 2,
@@ -11477,7 +11707,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-26T17:51:38.535652+00:00",
+  "last_gen": "2026-09-26T19:52:35.070321+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [

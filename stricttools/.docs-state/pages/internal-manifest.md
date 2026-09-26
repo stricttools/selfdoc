@@ -1,6 +1,6 @@
 +++
 title = "internal/manifest"
-description = "Generating and reading a project's manifest: the JSON record of its identity, version, its pages with their heading anchors, and its published posts."
+description = "Generating and reading a project's manifest: the JSON record of its identity, version, its pages with their heading anchors, its published posts, and its vocabulary."
 generated = true
 nav_group = "API Reference"
 nav_order = 49

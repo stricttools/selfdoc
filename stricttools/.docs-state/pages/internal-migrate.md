@@ -1,6 +1,6 @@
 +++
 title = "internal/migrate"
-description = "The engine of selfdoc layout migrate: plans and performs the move of selfdoc's directories off the hidden .stricttools/ root onto stricttools/."
+description = "The engine of selfdoc layout migrate: plans and performs the move of selfdoc's directories off the hidden .stricttools/ root onto stricttools/, and converts the manifests to the schema that records the vocabulary."
 generated = true
 nav_group = "API Reference"
 nav_order = 50

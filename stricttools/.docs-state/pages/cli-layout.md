@@ -1,6 +1,6 @@
 +++
 title = "selfdoc layout"
-description = "Inspect, check and migrate the directories selfdoc owns under stricttools/: dump the claim, validate a tree, and move one off .stricttools/."
+description = "Inspect, check and migrate the directories selfdoc owns under stricttools/: dump the claim, validate a tree, and move one off .stricttools/ while converting its manifests to the schema that records the vocabulary."
 generated = true
 nav_group = "CLI Reference"
 nav_order = 10
@@ -25,7 +25,7 @@ Check this repository's stricttools/ directory: every directory carries a manife
 
 ## layout migrate
 
-Move this repository off the layout before this one: every directory under .stricttools/ whose manifest.toml names selfdoc moves under stricttools/, a generated one behind a dot (.stricttools/docs -> stricttools/docs, .stricttools/docs-state -> stricttools/.docs-state, .stricttools/docs-cache -> stricttools/.docs-cache, .stricttools/posts -> stricttools/posts, .stricttools/vocabulary -> stricttools/vocabulary). It creates stricttools/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from .stricttools/.gitignore (the file and .stricttools/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes stricttools/vocabulary/terms.toml empty when the project has none, and commits. Another tool's directories stay where they are. Refuses a repository already migrated, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing
+Move this repository off the layout before this one: every directory under .stricttools/ whose manifest.toml names selfdoc moves under stricttools/, a generated one behind a dot (.stricttools/docs -> stricttools/docs, .stricttools/docs-state -> stricttools/.docs-state, .stricttools/docs-cache -> stricttools/.docs-cache, .stricttools/posts -> stricttools/posts, .stricttools/vocabulary -> stricttools/vocabulary). It creates stricttools/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from .stricttools/.gitignore (the file and .stricttools/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes stricttools/vocabulary/terms.toml empty when the project has none, converts the manifests (stricttools/.docs-state/manifest.json and stricttools/.docs-state/post-manifest.json) from schema_version 1 to 2, which records the project's accepted words and rejected patterns from stricttools/vocabulary/terms.toml, and commits. A repository already on stricttools/ whose manifests are on schema_version 1 gets the manifest conversion alone. Another tool's directories stay where they are. Refuses a repository already migrated with its manifests converted, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing
 
 **Effect:** mutating
 
