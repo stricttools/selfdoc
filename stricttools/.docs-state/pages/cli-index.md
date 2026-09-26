@@ -15,20 +15,21 @@ Version: :-: var key="project.version"
 
 ## Commands
 
-- [init](../cli-init/) -- Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page
+- [init](../cli-init/) -- Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of stricttools/docs, stricttools/.docs-state, stricttools/.docs-cache, stricttools/vocabulary, and a starter docs page
 - [build](../cli-build/) -- Build the documentation site from templates and source code
 - [serve](../cli-serve/) -- Serve the documentation site locally with live reload
 - [deploy](../cli-deploy/) -- Deploy the built documentation site to the configured provider
-- [check](../cli-check/) -- Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .stricttools/docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one
+- [check](../cli-check/) -- Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in stricttools/.docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one
 - [gen](../cli-gen/) -- Auto-generate documentation pages from project structure
 - [gen-data](../cli-gen-data/) -- Generate data files by running sandboxed scripts via bwrap
-- [spell-corpus](../cli-spell-corpus/) -- Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits
+- [spell-corpus](../cli-spell-corpus/) -- Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001), each project against its own vocabulary: selfdoc's built-in baseline and the project's stricttools/vocabulary/terms.toml. Read-only over every project it visits
 - [quality](../cli-quality/) -- Show documentation quality tier and metrics for the current project
 
 ## Command Groups
 
 - [baseline](../cli-baseline/) -- Manage the content and description hash baselines that drive staleness (STALE001) and source-drift (DRIFT001) detection during selfdoc check
-- [layout](../cli-layout/) -- Inspect and check the per-repository directories selfdoc owns under .stricttools/
+- [layout](../cli-layout/) -- Inspect, check and migrate the per-repository directories selfdoc owns under stricttools/
+- [vocabulary](../cli-vocabulary/) -- Edit this project's vocabulary: the words its pages may use that the English word list does not carry, the terms they may not use (stricttools/vocabulary/terms.toml), and the words proposed for acceptance awaiting review (stricttools/vocabulary/review.toml). The spell check reads selfdoc's built-in baseline and these files, and nothing outside the repository
 - [assembly](../cli-assembly/) -- Manage the unified multi-project documentation assembly and deployment
 - [blog](../cli-blog/) -- Blog posts, the authoring app, and publishing this project's documentation to the unified site
 

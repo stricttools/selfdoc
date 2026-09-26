@@ -25,6 +25,8 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 - `baseline` -- accept the content and description hash baselines that drive STALE001 and DRIFT001
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
 - `assembly` -- initialize, push, inspect, rebuild, retire and verify the unified multi-project site
+- `layout` -- dump selfdoc's claim on the `stricttools/` directory, validate a repository against it, and migrate a repository off the previous `.stricttools/` layout
+- `vocabulary` -- accept, reject and remove words in the project's `stricttools/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
 
 ### Stable addresses, archived versions
 
@@ -63,17 +65,38 @@ version badge, offer no version search filter and no version picker.
 `versions` at the version the project's manifest states, or 0.0.0 for a new
 project that states none, so a site that later gains source code needs no
 re-declaration. Init also writes the ownership manifests of
-`.stricttools/docs/`, `.stricttools/docs-state/` and `.stricttools/docs-cache/`
-(the repository adopting selfdoc), and refuses a directory whose manifest names
-another tool.
+`stricttools/docs/`, `stricttools/.docs-state/`, `stricttools/.docs-cache/` and
+`stricttools/vocabulary/` (the repository adopting selfdoc), and refuses a
+directory whose manifest names another tool.
+
+### The stricttools/ layout
+
+Everything selfdoc keeps in a repository lives under `stricttools/`, in
+function-named directories: the ones a person writes (`docs`, `posts`,
+`vocabulary`) under their names, the ones selfdoc generates behind a dot
+(`.docs-state`, `.docs-cache`). The dot is derived from the side the layout
+declaration states, and `selfdoc layout validate` refuses a directory whose dot
+disagrees. A repository still on the previous hidden `.stricttools/` root is
+refused by every command until `selfdoc layout migrate` moves it.
+
+### Vocabulary
+
+The spell check (SPELL001) accepts a word when selfdoc's built-in baseline or
+the project's `stricttools/vocabulary/terms.toml` accepts it, and reads nothing
+outside the repository. `terms.toml` holds `[[accepted]]` words, each with a
+required meaning, and `[[rejected]]` terms, each with a kind and a reason;
+`review.toml` holds `[[pending]]` words nobody has approved yet, which the spell
+check still reports. Both files are strictspec-validated and kept sorted, and
+edited through `selfdoc vocabulary`. The VOCAB lints report unused, duplicated,
+disagreeing and unsorted entries, and rejected terms in page prose.
 
 ### Multi-version builds
 
-Builds documentation from git tags. Tagged versions are checked out and built from cache (`.stricttools/docs-cache/versions/`), while the latest version builds from the working tree. The version picker's links are computed by the build from each page's own address, and archived pages carry a dismissable notice keyed per version.
+Builds documentation from git tags. Tagged versions are checked out and built from cache (`stricttools/.docs-cache/versions/`), while the latest version builds from the working tree. The version picker's links are computed by the build from each page's own address, and archived pages carry a dismissable notice keyed per version.
 
 ### Localization
 
-Parallel `.stricttools/docs/<locale>/` directories with per-locale templates. Generates hreflang tags, per-locale sitemaps, and locale picker UI.
+Parallel `stricttools/docs/<locale>/` directories with per-locale templates. Generates hreflang tags, per-locale sitemaps, and locale picker UI.
 
 ### Monorepo unified sites
 
@@ -103,7 +126,7 @@ Sandboxed script execution via bubblewrap (bwrap). Runs scripts in isolated envi
 
 ### Root file templates
 
-`.stricttools/docs/_CLAUDE.md` and `.stricttools/docs/_README.md` are templates that generate the project root `CLAUDE.md` and `README.md` via `selfdoc gen`. They support directives like any other template.
+`stricttools/docs/_CLAUDE.md` and `stricttools/docs/_README.md` are templates that generate the project root `CLAUDE.md` and `README.md` via `selfdoc gen`. They support directives like any other template.
 
 ## Release workflow
 
@@ -203,6 +226,7 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - **internal/layout**: Package layout is selfdoc's declaration of the per-repository directories it owns, and the single authority for every path it reads or writes inside them.
 - **internal/lints**: Package lints owns the lint-code registry and the verdict rules every check entry point shares.
 - **internal/manifest**: Package manifest generates and reads a project's manifest: the JSON record of what a build published -- the project's identity and version, its pages with their heading anchors, and its posts.
+- **internal/migrate**: Package migrate moves a repository off the layout before this one: selfdoc's directories under the hidden .stricttools/ root, each under its bare function name, onto the visible stricttools/ root, where a generated directory's name starts with a dot.
 - **internal/ownership**: Package ownership decides whether a generated page's frontmatter description is machine-owned -- a placeholder selfdoc emitted and may freely overwrite -- or handwritten, and must never be overwritten.
 - **internal/page**: Package page builds the chrome a converted Markdown body is wrapped in.
 - **internal/payloadschemas**: Package payloadschemas declares the JSON Schemas of selfdoc's machine-mode payloads.
@@ -224,3 +248,6 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - **internal/tokenizer**: Package tokenizer is a standalone Markdown block tokenizer.
 - **internal/urls**: Package urls builds absolute URLs from relative paths, decoupling URL generation from a hardcoded base_url and supporting locale-prefixed and versioned paths.
 - **internal/util**: Package util holds the small shared helpers the rest of selfdoc builds on: frontmatter parsing, project manifest and version detection, HTML escaping, path joining, date formatting, title casing, and the Python-compatible string, number and JSON spellings the emitted documents are pinned to.
+- **internal/vocabulary**: Package vocabulary is a project's word lists: the words its pages may use that the English word list does not carry, the terms its pages may not use, and the words proposed for acceptance that nobody has reviewed yet.
+- **internal/vocabulary/reviewschema**: Code generated by strictspec.
+- **internal/vocabulary/termsschema**: Code generated by strictspec.

@@ -2,7 +2,6 @@
 title = "selfdoc spell-corpus"
 description = "Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list."
 generated = true
-seeded = true
 nav_group = "CLI Reference"
 nav_order = 13
 +++
@@ -10,7 +9,7 @@ nav_order = 13
 
 # selfdoc spell-corpus
 
-Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits
+Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001), each project against its own vocabulary: selfdoc's built-in baseline and the project's stricttools/vocabulary/terms.toml. Read-only over every project it visits
 
 **Effect:** read_only
 

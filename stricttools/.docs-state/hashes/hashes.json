@@ -163,8 +163,7 @@
   "en/cli-layout.md": {
     "content": "dfd3c29d9789df5d182d9475a73ac6f32a0a3c1806354c79c691d5cd01a6a0b7",
     "description": "03a329791ffa7fd6105ea4ccb43d1589ec9bad9ff6cc575a90bdfc1552233410",
-    "schema_hash": "f4739060410e451c642fd44168b2196aca8157678ba63550661f98261e02bcb0",
-    "seed_hash": "03a329791ffa7fd6105ea4ccb43d1589ec9bad9ff6cc575a90bdfc1552233410"
+    "schema_hash": "f4739060410e451c642fd44168b2196aca8157678ba63550661f98261e02bcb0"
   },
   "en/cli-post.md": {
     "content": "86fe01520f627c2342a68880aa7adc42438729597461260c9693e5c99cff1a15",
@@ -186,8 +185,12 @@
   "en/cli-spell-corpus.md": {
     "content": "214823ac511617b5530135e0b4dc9faab24cb00254f380eca50c663298646607",
     "description": "0c733b57b542d2d309233fed2f6e4d6b55e7310ad071622f055130bfd761a998",
-    "schema_hash": "3544a7b71aa56a3af5f455e8f6d98686bd432e6202339965547c400195dbc53b",
-    "seed_hash": "0c733b57b542d2d309233fed2f6e4d6b55e7310ad071622f055130bfd761a998"
+    "schema_hash": "3544a7b71aa56a3af5f455e8f6d98686bd432e6202339965547c400195dbc53b"
+  },
+  "en/cli-vocabulary.md": {
+    "content": "f3b8419b54f943a6aad7cd5925bb7b04033dc440785317d4abb8aa5452309855",
+    "description": "0f1c6b658b724936dd0cf7ca33ab82be0b77b6e5df41f27843489de710dcf725",
+    "seed_hash": "0f1c6b658b724936dd0cf7ca33ab82be0b77b6e5df41f27843489de710dcf725"
   },
   "en/cmd-selfdoc.md": {
     "content": "71de616eb0be1e9d0885ebf89597750b011b6fc3db20fc8af27cd46de9f3a41f",
@@ -239,9 +242,9 @@
     "description": "b987b85e7d65fca02cfb007948ec96dc77f35fb6b5cf331b0759a8037f2adb82"
   },
   "en/gen-index.md": {
-    "content": "0bbf3308db2790930ebaeb6176cd04908e4df37076ea4ed6d7da4e38e0d9b056",
-    "description": "3a5e5039119f82a76e5b6fc6cfcaca9e06bd5cb944e177d7419fb756fc234df5",
-    "seed_hash": "3a5e5039119f82a76e5b6fc6cfcaca9e06bd5cb944e177d7419fb756fc234df5"
+    "content": "d608180fe78439c58fea2c5b93a0a6d3badcf9da5e7a727373903c24a7345fd7",
+    "description": "d7f6b63b6104f51b11266a3eb1b7f3416135d1abc998d7bd7473ee77516fe614",
+    "seed_hash": "d7f6b63b6104f51b11266a3eb1b7f3416135d1abc998d7bd7473ee77516fe614"
   },
   "en/getting-started.md": {
     "content": "10a445f21a383001fc5283140dab761d4ec5ecf0abbe61b8a7b5e78085b37c9e",
@@ -539,6 +542,11 @@
     "description": "b3e424b57dad7017cccad5baa78479bd345234b885cd0dfe8fc04fda0c0cd049",
     "source_docstring": "760b21eb1097348bc1a41fe9b75430698a2d68a1a432cc9338297368979637c8"
   },
+  "en/internal-migrate.md": {
+    "content": "fa922969a57523d1c0fe70a3d1832d544144b4e968a71be2390f11f8f966d524",
+    "description": "49d76e6c50d4acabe4fa915e752098d5a58c71fd37304b63560aee4388475a4f",
+    "seed_hash": "49d76e6c50d4acabe4fa915e752098d5a58c71fd37304b63560aee4388475a4f"
+  },
   "en/internal-ownership.md": {
     "content": "bbf6559f35ab251e4033f07de1139db21b724b293062c770a5bde8f73b314824",
     "description": "89fdd46466f5281eafdb38deebf8f8e2328d69078a56e3f3c3d8fcd58cc55dce",
@@ -639,13 +647,28 @@
     "description": "8ea210e849519046b36111c306be59a481cac37d78e6e2f3360cedaabb01686d",
     "source_docstring": "5479db471b64fae176fa884d74337d3666fea96998a5766e113656b246e394f7"
   },
+  "en/internal-vocabulary-reviewschema.md": {
+    "content": "5b163ad769fa9e8ee4577f1bc85ce6a40a8b9bcd0fb1a1372ef3d6236b534b0e",
+    "description": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200",
+    "seed_hash": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200"
+  },
+  "en/internal-vocabulary-termsschema.md": {
+    "content": "fe0bd4dd737d954800e8b308e220597800bf8665455d15bbdb5ea678a756f62d",
+    "description": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200",
+    "seed_hash": "502157584f1fe26a19b8e7845b5f45633eb748730923539828d7e05298c24200"
+  },
+  "en/internal-vocabulary.md": {
+    "content": "75c64ffcdab0447bdaef0a44b110b81b245fdab2e925b26205598b89aa642e0c",
+    "description": "d21c4188c85defec4c3d2d733cb5065bc84909acefd76ddf96326c8100ba0170",
+    "seed_hash": "d21c4188c85defec4c3d2d733cb5065bc84909acefd76ddf96326c8100ba0170"
+  },
   "en/internals.md": {
     "content": "3f3cf1f31ae98baaeb97fbcb9987ffe5ca19c28a94e8f6fb653024fe3ec70aa7",
     "description": "368283e2ae5434b431437461e25c722f4ddc31083b2720fe7794ada67c517418"
   },
   "en/layout.md": {
-    "content": "7e8b8f6f187e3e9904f29c40ed79c3eb732e37eacfb18f1d3eda045805b3664f",
-    "description": "94ca63d3e296e57039da4a2536d10f168f606c2bca66f04c548134a9d185a23e"
+    "content": "fea3a1d3ac06724b981bec4dfe3dcbca1328247c7a9a06b8aed618043dfa4f69",
+    "description": "50debafa3a424e73c5b7c0d10a6ba690ac859aaaf25663c681402e9bbb4ea7e0"
   },
   "en/llms-txt.md": {
     "content": "f2b2dbaace9656c8aa7445983484cdd8cd142c49cbe289301dc23871d641d7aa",
@@ -668,8 +691,8 @@
     "description": "2a2e8455084ba7b525b477d733a74361fb3c90fff9e8a53519214a655aa87e8f"
   },
   "en/root-files.md": {
-    "content": "c1ec68c697e0543fd479719bfa00b12e35402abc2cbcc8c9733a12ff80a7179c",
-    "description": "93fe7f88e76f0b629eb594e093cd56712d8de7ace00e72519574af39e4acfb00"
+    "content": "3579cd5b64c66de65253260885111446a3af1c3f137e4321394e04848da248db",
+    "description": "83a567684a0e458dce526efef2135e0787fd357567f973aa600fedeca2fdc4d5"
   },
   "en/search.md": {
     "content": "70f6175c54f8b55ef6ec371935972b2d80f428d32b7ffc9f02ff1d7c9ff2623d",

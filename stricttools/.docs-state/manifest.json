@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "selfdoc",
   "slug": "selfdoc",
-  "version": "0.43.1",
+  "version": "0.44.0",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -290,6 +290,11 @@
           "level": 3,
           "text": "Spelling (SPELL001)",
           "anchor": "spelling-spell001"
+        },
+        {
+          "level": 3,
+          "text": "The vocabulary (VOCAB)",
+          "anchor": "the-vocabulary-vocab"
         },
         {
           "level": 3,
@@ -657,6 +662,16 @@
           "level": 2,
           "text": "layout validate",
           "anchor": "layout-validate"
+        },
+        {
+          "level": 2,
+          "text": "layout migrate",
+          "anchor": "layout-migrate"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags"
         }
       ]
     },
@@ -703,6 +718,93 @@
           "level": 2,
           "text": "Flags",
           "anchor": "flags"
+        }
+      ]
+    },
+    {
+      "path": "cli-vocabulary.md",
+      "title": "selfdoc vocabulary",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "selfdoc vocabulary",
+          "anchor": "selfdoc-vocabulary"
+        },
+        {
+          "level": 2,
+          "text": "vocabulary accept",
+          "anchor": "vocabulary-accept"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags"
+        },
+        {
+          "level": 3,
+          "text": "Arguments",
+          "anchor": "arguments"
+        },
+        {
+          "level": 2,
+          "text": "vocabulary reject",
+          "anchor": "vocabulary-reject"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-1"
+        },
+        {
+          "level": 3,
+          "text": "Arguments",
+          "anchor": "arguments-1"
+        },
+        {
+          "level": 2,
+          "text": "vocabulary remove",
+          "anchor": "vocabulary-remove"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-2"
+        },
+        {
+          "level": 3,
+          "text": "Arguments",
+          "anchor": "arguments-2"
+        },
+        {
+          "level": 2,
+          "text": "vocabulary approve",
+          "anchor": "vocabulary-approve"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-3"
+        },
+        {
+          "level": 3,
+          "text": "Arguments",
+          "anchor": "arguments-3"
+        },
+        {
+          "level": 2,
+          "text": "vocabulary drop",
+          "anchor": "vocabulary-drop"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-4"
+        },
+        {
+          "level": 3,
+          "text": "Arguments",
+          "anchor": "arguments-4"
         }
       ]
     },
@@ -2405,11 +2507,6 @@
         },
         {
           "level": 3,
-          "text": "`ManifestRel`",
-          "anchor": "manifestrel"
-        },
-        {
-          "level": 3,
           "text": "`PublishCommand`",
           "anchor": "publishcommand"
         },
@@ -2442,6 +2539,11 @@
           "level": 3,
           "text": "`ToSiteRoot`",
           "anchor": "tositeroot"
+        },
+        {
+          "level": 3,
+          "text": "`ManifestRel`",
+          "anchor": "manifestrel"
         },
         {
           "level": 3,
@@ -2757,11 +2859,6 @@
         },
         {
           "level": 3,
-          "text": "`SourceFile`",
-          "anchor": "sourcefile"
-        },
-        {
-          "level": 3,
           "text": "`SidecarSuffix`",
           "anchor": "sidecarsuffix"
         },
@@ -2769,6 +2866,11 @@
           "level": 3,
           "text": "`FormatVersion`",
           "anchor": "formatversion"
+        },
+        {
+          "level": 3,
+          "text": "`SourceFile`",
+          "anchor": "sourcefile"
         },
         {
           "level": 3,
@@ -6621,6 +6723,16 @@
         },
         {
           "level": 3,
+          "text": "`RootFileHeaderLine`",
+          "anchor": "rootfileheaderline"
+        },
+        {
+          "level": 3,
+          "text": "`RootFileOutputName`",
+          "anchor": "rootfileoutputname"
+        },
+        {
+          "level": 3,
           "text": "`GenerateRootFiles`",
           "anchor": "generaterootfiles"
         }
@@ -7085,6 +7197,11 @@
         },
         {
           "level": 3,
+          "text": "Names",
+          "anchor": "names"
+        },
+        {
+          "level": 3,
           "text": "Ownership",
           "anchor": "ownership"
         },
@@ -7175,6 +7292,66 @@
         },
         {
           "level": 3,
+          "text": "`DeprecatedRoot`",
+          "anchor": "deprecatedroot"
+        },
+        {
+          "level": 3,
+          "text": "`PreviousRoot`",
+          "anchor": "previousroot"
+        },
+        {
+          "level": 3,
+          "text": "`MigrateCommand`",
+          "anchor": "migratecommand"
+        },
+        {
+          "level": 3,
+          "text": "`PreFlipRelease`",
+          "anchor": "prefliprelease"
+        },
+        {
+          "level": 3,
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
+        },
+        {
+          "level": 3,
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
+        },
+        {
+          "level": 3,
+          "text": "`CheckOwnership`",
+          "anchor": "checkownership"
+        },
+        {
+          "level": 3,
+          "text": "`CheckSide`",
+          "anchor": "checkside"
+        },
+        {
+          "level": 3,
+          "text": "`CheckHidden`",
+          "anchor": "checkhidden"
+        },
+        {
+          "level": 3,
+          "text": "`CheckIgnore`",
+          "anchor": "checkignore"
+        },
+        {
+          "level": 3,
+          "text": "`MoveScript`",
+          "anchor": "movescript"
+        },
+        {
+          "level": 3,
           "text": "`DocsRel`",
           "anchor": "docsrel"
         },
@@ -7245,6 +7422,16 @@
         },
         {
           "level": 3,
+          "text": "`TermsRel`",
+          "anchor": "termsrel"
+        },
+        {
+          "level": 3,
+          "text": "`ReviewRel`",
+          "anchor": "reviewrel"
+        },
+        {
+          "level": 3,
           "text": "`DocsDefault`",
           "anchor": "docsdefault"
         },
@@ -7257,56 +7444,6 @@
           "level": 3,
           "text": "`PostsDefault`",
           "anchor": "postsdefault"
-        },
-        {
-          "level": 3,
-          "text": "`DeprecatedRoot`",
-          "anchor": "deprecatedroot"
-        },
-        {
-          "level": 3,
-          "text": "`PreFlipRelease`",
-          "anchor": "prefliprelease"
-        },
-        {
-          "level": 3,
-          "text": "`GENERATED_BY`",
-          "anchor": "generated_by"
-        },
-        {
-          "level": 3,
-          "text": "`GENERATED_CODE_FORMAT`",
-          "anchor": "generated_code_format"
-        },
-        {
-          "level": 3,
-          "text": "`SCHEMA_FORMAT_VERSION`",
-          "anchor": "schema_format_version"
-        },
-        {
-          "level": 3,
-          "text": "`CheckOwnership`",
-          "anchor": "checkownership"
-        },
-        {
-          "level": 3,
-          "text": "`CheckSide`",
-          "anchor": "checkside"
-        },
-        {
-          "level": 3,
-          "text": "`CheckHidden`",
-          "anchor": "checkhidden"
-        },
-        {
-          "level": 3,
-          "text": "`CheckIgnore`",
-          "anchor": "checkignore"
-        },
-        {
-          "level": 3,
-          "text": "`MoveScript`",
-          "anchor": "movescript"
         },
         {
           "level": 3,
@@ -7330,6 +7467,11 @@
         },
         {
           "level": 3,
+          "text": "`UnmigratedError`",
+          "anchor": "unmigratederror"
+        },
+        {
+          "level": 3,
           "text": "`OldLayoutError`",
           "anchor": "oldlayouterror"
         },
@@ -7342,6 +7484,21 @@
           "level": 3,
           "text": "`Problem`",
           "anchor": "problem"
+        },
+        {
+          "level": 3,
+          "text": "`DiskNameOf`",
+          "anchor": "disknameof"
+        },
+        {
+          "level": 3,
+          "text": "`LookupDiskName`",
+          "anchor": "lookupdiskname"
+        },
+        {
+          "level": 3,
+          "text": "`LookupFunction`",
+          "anchor": "lookupfunction"
         },
         {
           "level": 3,
@@ -7362,6 +7519,11 @@
           "level": 3,
           "text": "`UnderRoot`",
           "anchor": "underroot"
+        },
+        {
+          "level": 3,
+          "text": "`EntryOf`",
+          "anchor": "entryof"
         },
         {
           "level": 3,
@@ -7420,6 +7582,11 @@
         },
         {
           "level": 3,
+          "text": "`WithoutIgnoreBlock`",
+          "anchor": "withoutignoreblock"
+        },
+        {
+          "level": 3,
           "text": "`IgnorePath`",
           "anchor": "ignorepath"
         },
@@ -7435,6 +7602,21 @@
         },
         {
           "level": 3,
+          "text": "`PreviousSelfdocEntries`",
+          "anchor": "previousselfdocentries"
+        },
+        {
+          "level": 3,
+          "text": "`CurrentSelfdocEntries`",
+          "anchor": "currentselfdocentries"
+        },
+        {
+          "level": 3,
+          "text": "`RefuseUnmigrated`",
+          "anchor": "refuseunmigrated"
+        },
+        {
+          "level": 3,
           "text": "`MigrationProcedure`",
           "anchor": "migrationprocedure"
         },
@@ -7442,6 +7624,11 @@
           "level": 3,
           "text": "`RefuseOldLayout`",
           "anchor": "refuseoldlayout"
+        },
+        {
+          "level": 3,
+          "text": "`MigratedPath`",
+          "anchor": "migratedpath"
         },
         {
           "level": 3,
@@ -7462,6 +7649,21 @@
           "level": 3,
           "text": "`Validate`",
           "anchor": "validate"
+        },
+        {
+          "level": 3,
+          "text": "`Directory.DiskName`",
+          "anchor": "directorydiskname"
+        },
+        {
+          "level": 3,
+          "text": "`Directory.Rel`",
+          "anchor": "directoryrel"
+        },
+        {
+          "level": 3,
+          "text": "`UnmigratedError.Error`",
+          "anchor": "unmigratederrorerror"
         },
         {
           "level": 3,
@@ -7850,6 +8052,78 @@
       ]
     },
     {
+      "path": "internal-migrate.md",
+      "title": "internal/migrate",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/migrate",
+          "anchor": "internalmigrate"
+        },
+        {
+          "level": 2,
+          "text": "`internal/migrate`",
+          "anchor": "internalmigrate"
+        },
+        {
+          "level": 3,
+          "text": "`Move`",
+          "anchor": "move"
+        },
+        {
+          "level": 3,
+          "text": "`Rewrite`",
+          "anchor": "rewrite"
+        },
+        {
+          "level": 3,
+          "text": "`Write`",
+          "anchor": "write"
+        },
+        {
+          "level": 3,
+          "text": "`Plan`",
+          "anchor": "plan"
+        },
+        {
+          "level": 3,
+          "text": "`NotNeededError`",
+          "anchor": "notneedederror"
+        },
+        {
+          "level": 3,
+          "text": "`PartialError`",
+          "anchor": "partialerror"
+        },
+        {
+          "level": 3,
+          "text": "`PlanMigration`",
+          "anchor": "planmigration"
+        },
+        {
+          "level": 3,
+          "text": "`Apply`",
+          "anchor": "apply"
+        },
+        {
+          "level": 3,
+          "text": "`Plan.Lines`",
+          "anchor": "planlines"
+        },
+        {
+          "level": 3,
+          "text": "`NotNeededError.Error`",
+          "anchor": "notneedederrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`PartialError.Error`",
+          "anchor": "partialerrorerror"
+        }
+      ]
+    },
+    {
       "path": "internal-ownership.md",
       "title": "internal/ownership",
       "type": "doc",
@@ -8157,6 +8431,11 @@
           "level": 3,
           "text": "`LayoutDump`",
           "anchor": "layoutdump"
+        },
+        {
+          "level": 3,
+          "text": "`LayoutMigrate`",
+          "anchor": "layoutmigrate"
         },
         {
           "level": 3,
@@ -8710,8 +8989,8 @@
         },
         {
           "level": 3,
-          "text": "The accept list",
-          "anchor": "the-accept-list"
+          "text": "The project's vocabulary",
+          "anchor": "the-projects-vocabulary"
         },
         {
           "level": 3,
@@ -8735,11 +9014,6 @@
         },
         {
           "level": 3,
-          "text": "`AcceptListError`",
-          "anchor": "acceptlisterror"
-        },
-        {
-          "level": 3,
           "text": "`Misspelling`",
           "anchor": "misspelling"
         },
@@ -8747,6 +9021,11 @@
           "level": 3,
           "text": "`UnknownWord`",
           "anchor": "unknownword"
+        },
+        {
+          "level": 3,
+          "text": "`ProseLine`",
+          "anchor": "proseline"
         },
         {
           "level": 3,
@@ -8770,16 +9049,6 @@
         },
         {
           "level": 3,
-          "text": "`AcceptListPath`",
-          "anchor": "acceptlistpath"
-        },
-        {
-          "level": 3,
-          "text": "`LoadAcceptList`",
-          "anchor": "loadacceptlist"
-        },
-        {
-          "level": 3,
           "text": "`SuggestionsFor`",
           "anchor": "suggestionsfor"
         },
@@ -8795,6 +9064,11 @@
         },
         {
           "level": 3,
+          "text": "`ProseLines`",
+          "anchor": "proselines"
+        },
+        {
+          "level": 3,
           "text": "`Vocab.Has`",
           "anchor": "vocabhas"
         },
@@ -8802,11 +9076,6 @@
           "level": 3,
           "text": "`layered.Has`",
           "anchor": "layeredhas"
-        },
-        {
-          "level": 3,
-          "text": "`AcceptListError.Error`",
-          "anchor": "acceptlisterrorerror"
         },
         {
           "level": 3,
@@ -10005,6 +10274,447 @@
       ]
     },
     {
+      "path": "internal-vocabulary-reviewschema.md",
+      "title": "internal/vocabulary/reviewschema",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/vocabulary/reviewschema",
+          "anchor": "internalvocabularyreviewschema"
+        },
+        {
+          "level": 2,
+          "text": "`internal/vocabulary/reviewschema`",
+          "anchor": "internalvocabularyreviewschema"
+        },
+        {
+          "level": 3,
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
+        },
+        {
+          "level": 3,
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
+        },
+        {
+          "level": 3,
+          "text": "`Review`",
+          "anchor": "review"
+        },
+        {
+          "level": 3,
+          "text": "`PendingTerm`",
+          "anchor": "pendingterm"
+        },
+        {
+          "level": 3,
+          "text": "`ValidateBytes`",
+          "anchor": "validatebytes"
+        },
+        {
+          "level": 3,
+          "text": "`ValidateValue`",
+          "anchor": "validatevalue"
+        },
+        {
+          "level": 3,
+          "text": "`ValidateBytesWithEvidence`",
+          "anchor": "validatebyteswithevidence"
+        },
+        {
+          "level": 3,
+          "text": "`Review.WithFormatVersion`",
+          "anchor": "reviewwithformatversion"
+        },
+        {
+          "level": 3,
+          "text": "`Review.WithPending`",
+          "anchor": "reviewwithpending"
+        },
+        {
+          "level": 3,
+          "text": "`PendingTerm.WithWord`",
+          "anchor": "pendingtermwithword"
+        },
+        {
+          "level": 3,
+          "text": "`PendingTerm.WithMeaning`",
+          "anchor": "pendingtermwithmeaning"
+        },
+        {
+          "level": 3,
+          "text": "`PendingTerm.WithConfidence`",
+          "anchor": "pendingtermwithconfidence"
+        },
+        {
+          "level": 3,
+          "text": "`PendingTerm.WithEvidence`",
+          "anchor": "pendingtermwithevidence"
+        }
+      ]
+    },
+    {
+      "path": "internal-vocabulary-termsschema.md",
+      "title": "internal/vocabulary/termsschema",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/vocabulary/termsschema",
+          "anchor": "internalvocabularytermsschema"
+        },
+        {
+          "level": 2,
+          "text": "`internal/vocabulary/termsschema`",
+          "anchor": "internalvocabularytermsschema"
+        },
+        {
+          "level": 3,
+          "text": "`GENERATED_BY`",
+          "anchor": "generated_by"
+        },
+        {
+          "level": 3,
+          "text": "`GENERATED_CODE_FORMAT`",
+          "anchor": "generated_code_format"
+        },
+        {
+          "level": 3,
+          "text": "`SCHEMA_FORMAT_VERSION`",
+          "anchor": "schema_format_version"
+        },
+        {
+          "level": 3,
+          "text": "`Terms`",
+          "anchor": "terms"
+        },
+        {
+          "level": 3,
+          "text": "`AcceptedTerm`",
+          "anchor": "acceptedterm"
+        },
+        {
+          "level": 3,
+          "text": "`RejectedTerm`",
+          "anchor": "rejectedterm"
+        },
+        {
+          "level": 3,
+          "text": "`ValidateBytes`",
+          "anchor": "validatebytes"
+        },
+        {
+          "level": 3,
+          "text": "`ValidateValue`",
+          "anchor": "validatevalue"
+        },
+        {
+          "level": 3,
+          "text": "`ValidateBytesWithEvidence`",
+          "anchor": "validatebyteswithevidence"
+        },
+        {
+          "level": 3,
+          "text": "`Terms.WithFormatVersion`",
+          "anchor": "termswithformatversion"
+        },
+        {
+          "level": 3,
+          "text": "`Terms.WithAccepted`",
+          "anchor": "termswithaccepted"
+        },
+        {
+          "level": 3,
+          "text": "`Terms.WithRejected`",
+          "anchor": "termswithrejected"
+        },
+        {
+          "level": 3,
+          "text": "`AcceptedTerm.WithWord`",
+          "anchor": "acceptedtermwithword"
+        },
+        {
+          "level": 3,
+          "text": "`AcceptedTerm.WithMeaning`",
+          "anchor": "acceptedtermwithmeaning"
+        },
+        {
+          "level": 3,
+          "text": "`AcceptedTerm.WithAliases`",
+          "anchor": "acceptedtermwithaliases"
+        },
+        {
+          "level": 3,
+          "text": "`RejectedTerm.WithPattern`",
+          "anchor": "rejectedtermwithpattern"
+        },
+        {
+          "level": 3,
+          "text": "`RejectedTerm.WithKind`",
+          "anchor": "rejectedtermwithkind"
+        },
+        {
+          "level": 3,
+          "text": "`RejectedTerm.WithReason`",
+          "anchor": "rejectedtermwithreason"
+        }
+      ]
+    },
+    {
+      "path": "internal-vocabulary.md",
+      "title": "internal/vocabulary",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/vocabulary",
+          "anchor": "internalvocabulary"
+        },
+        {
+          "level": 2,
+          "text": "`internal/vocabulary`",
+          "anchor": "internalvocabulary"
+        },
+        {
+          "level": 3,
+          "text": "Two layers",
+          "anchor": "two-layers"
+        },
+        {
+          "level": 3,
+          "text": "The review list",
+          "anchor": "the-review-list"
+        },
+        {
+          "level": 3,
+          "text": "Matching",
+          "anchor": "matching"
+        },
+        {
+          "level": 3,
+          "text": "`BaselineSource`",
+          "anchor": "baselinesource"
+        },
+        {
+          "level": 3,
+          "text": "`KindWord`",
+          "anchor": "kindword"
+        },
+        {
+          "level": 3,
+          "text": "`KindPhrase`",
+          "anchor": "kindphrase"
+        },
+        {
+          "level": 3,
+          "text": "`KindSuffix`",
+          "anchor": "kindsuffix"
+        },
+        {
+          "level": 3,
+          "text": "`KindPrefix`",
+          "anchor": "kindprefix"
+        },
+        {
+          "level": 3,
+          "text": "`EmptyTerms`",
+          "anchor": "emptyterms"
+        },
+        {
+          "level": 3,
+          "text": "`EmptyReview`",
+          "anchor": "emptyreview"
+        },
+        {
+          "level": 3,
+          "text": "`Kinds`",
+          "anchor": "kinds"
+        },
+        {
+          "level": 3,
+          "text": "`Edit`",
+          "anchor": "edit"
+        },
+        {
+          "level": 3,
+          "text": "`Finding`",
+          "anchor": "finding"
+        },
+        {
+          "level": 3,
+          "text": "`Match`",
+          "anchor": "match"
+        },
+        {
+          "level": 3,
+          "text": "`Matcher`",
+          "anchor": "matcher"
+        },
+        {
+          "level": 3,
+          "text": "`Accepted`",
+          "anchor": "accepted"
+        },
+        {
+          "level": 3,
+          "text": "`Rejected`",
+          "anchor": "rejected"
+        },
+        {
+          "level": 3,
+          "text": "`Pending`",
+          "anchor": "pending"
+        },
+        {
+          "level": 3,
+          "text": "`List`",
+          "anchor": "list"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary`",
+          "anchor": "vocabulary"
+        },
+        {
+          "level": 3,
+          "text": "`ConflictError`",
+          "anchor": "conflicterror"
+        },
+        {
+          "level": 3,
+          "text": "`Accept`",
+          "anchor": "accept"
+        },
+        {
+          "level": 3,
+          "text": "`Reject`",
+          "anchor": "reject"
+        },
+        {
+          "level": 3,
+          "text": "`Remove`",
+          "anchor": "remove"
+        },
+        {
+          "level": 3,
+          "text": "`Approve`",
+          "anchor": "approve"
+        },
+        {
+          "level": 3,
+          "text": "`Drop`",
+          "anchor": "drop"
+        },
+        {
+          "level": 3,
+          "text": "`UnsortedEntries`",
+          "anchor": "unsortedentries"
+        },
+        {
+          "level": 3,
+          "text": "`DuplicateEntries`",
+          "anchor": "duplicateentries"
+        },
+        {
+          "level": 3,
+          "text": "`CoveredAccepted`",
+          "anchor": "coveredaccepted"
+        },
+        {
+          "level": 3,
+          "text": "`UnusedAccepted`",
+          "anchor": "unusedaccepted"
+        },
+        {
+          "level": 3,
+          "text": "`NewMatcher`",
+          "anchor": "newmatcher"
+        },
+        {
+          "level": 3,
+          "text": "`Uses`",
+          "anchor": "uses"
+        },
+        {
+          "level": 3,
+          "text": "`Fold`",
+          "anchor": "fold"
+        },
+        {
+          "level": 3,
+          "text": "`LoadBaseline`",
+          "anchor": "loadbaseline"
+        },
+        {
+          "level": 3,
+          "text": "`Load`",
+          "anchor": "load"
+        },
+        {
+          "level": 3,
+          "text": "`Where`",
+          "anchor": "where"
+        },
+        {
+          "level": 3,
+          "text": "`SortKey`",
+          "anchor": "sortkey"
+        },
+        {
+          "level": 3,
+          "text": "`Less`",
+          "anchor": "less"
+        },
+        {
+          "level": 3,
+          "text": "`Matcher.Find`",
+          "anchor": "matcherfind"
+        },
+        {
+          "level": 3,
+          "text": "`Matcher.Covers`",
+          "anchor": "matchercovers"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary.AllAccepted`",
+          "anchor": "vocabularyallaccepted"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary.AllRejected`",
+          "anchor": "vocabularyallrejected"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary.SpellVocab`",
+          "anchor": "vocabularyspellvocab"
+        },
+        {
+          "level": 3,
+          "text": "`Accepted.Spellings`",
+          "anchor": "acceptedspellings"
+        },
+        {
+          "level": 3,
+          "text": "`Vocabulary.PendingWord`",
+          "anchor": "vocabularypendingword"
+        },
+        {
+          "level": 3,
+          "text": "`ConflictError.Error`",
+          "anchor": "conflicterrorerror"
+        }
+      ]
+    },
+    {
       "path": "internals.md",
       "title": "Internals",
       "type": "doc",
@@ -10118,18 +10828,23 @@
     },
     {
       "path": "layout.md",
-      "title": "The .stricttools/ layout",
+      "title": "The stricttools/ layout",
       "type": "doc",
       "headings": [
         {
           "level": 1,
-          "text": "The .stricttools/ layout",
+          "text": "The stricttools/ layout",
           "anchor": "the-stricttools-layout"
         },
         {
           "level": 2,
           "text": "The directories selfdoc claims",
           "anchor": "the-directories-selfdoc-claims"
+        },
+        {
+          "level": 3,
+          "text": "Names: a generated directory starts with a dot",
+          "anchor": "names-a-generated-directory-starts-with-a-dot"
         },
         {
           "level": 3,
@@ -10158,8 +10873,13 @@
         },
         {
           "level": 2,
-          "text": "Moving a repository onto the layout",
-          "anchor": "moving-a-repository-onto-the-layout"
+          "text": "Moving a repository off `.stricttools/`",
+          "anchor": "moving-a-repository-off-stricttools"
+        },
+        {
+          "level": 2,
+          "text": "Moving a repository from the `.selfdoc/` layout",
+          "anchor": "moving-a-repository-from-the-selfdoc-layout"
         },
         {
           "level": 3,
@@ -10757,6 +11477,6 @@
       ]
     }
   ],
-  "last_gen": "2026-09-24T21:17:43.438426+00:00",
+  "last_gen": "2026-09-26T17:51:38.535652+00:00",
   "theme": "minimal"
 }

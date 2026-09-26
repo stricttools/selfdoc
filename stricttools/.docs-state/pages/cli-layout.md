@@ -2,7 +2,6 @@
 title = "selfdoc layout"
 description = "Inspect and check the per-repository directories selfdoc owns under .stricttools/"
 generated = true
-seeded = true
 nav_group = "CLI Reference"
 nav_order = 10
 +++
@@ -10,7 +9,7 @@ nav_order = 10
 
 # selfdoc layout
 
-Inspect and check the per-repository directories selfdoc owns under .stricttools/
+Inspect, check and migrate the per-repository directories selfdoc owns under stricttools/
 
 ## layout dump
 
@@ -20,6 +19,18 @@ Print selfdoc's layout declaration: every directory it claims, whether the direc
 
 ## layout validate
 
-Check this repository's .stricttools/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, every directory selfdoc owns holds only what its side allows, nothing inside starts with a dot except the derived ignore file, and that ignore file is what selfdoc's declaration renders
+Check this repository's stricttools/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, and the derived ignore file is what selfdoc's declaration renders
 
 **Effect:** read_only
+
+## layout migrate
+
+Move this repository off the layout before this one: every directory under .stricttools/ whose manifest.toml names selfdoc moves under stricttools/, a generated one behind a dot (.stricttools/docs -> stricttools/docs, .stricttools/docs-state -> stricttools/.docs-state, .stricttools/docs-cache -> stricttools/.docs-cache, .stricttools/posts -> stricttools/posts, .stricttools/vocabulary -> stricttools/vocabulary). It creates stricttools/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from .stricttools/.gitignore (the file and .stricttools/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes stricttools/vocabulary/terms.toml empty when the project has none, and commits. Another tool's directories stay where they are. Refuses a repository already migrated, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing
+
+**Effect:** mutating
+
+### Flags
+
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--auto-commit`, `--no-auto-commit` |  | bool | optional |  | Commit the move and every file it wrote or rewrote. Omitted, it commits; pass --no-auto-commit to leave the move uncommitted |

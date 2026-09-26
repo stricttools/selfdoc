@@ -25,7 +25,7 @@ selfdoc init --base-url https://myproject.pages.dev
 # Auto-generate API and CLI reference pages
 selfdoc gen
 
-# Edit .stricttools/docs/ pages -- add directives referencing your code
+# Edit stricttools/docs/ pages -- add directives referencing your code
 
 # Build HTML output
 selfdoc build
@@ -164,8 +164,8 @@ Dispatch order is content directives, then custom directives, then the language 
 ```json
 {
   "source": [{"path": "internal/", "language": "go"}],
-  "docs": ".stricttools/docs/",
-  "output": ".stricttools/docs-cache/build/",
+  "docs": "stricttools/docs/",
+  "output": "stricttools/.docs-cache/build/",
   "base_url": "https://my-project.example.com",
   "versions": [{"version": "1.0.0"}],
   "locales": [{"code": "en", "label": "English", "default": true}],
@@ -229,20 +229,27 @@ Dispatch order is content directives, then custom directives, then the language 
 
 | Command | Description |
 | --- | --- |
-| `init` | Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of .stricttools/docs, .stricttools/docs-state and .stricttools/docs-cache, and a starter docs page |
+| `init` | Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of stricttools/docs, stricttools/.docs-state, stricttools/.docs-cache, stricttools/vocabulary, and a starter docs page |
 | `build` | Build the documentation site from templates and source code |
 | `serve` | Serve the documentation site locally with live reload |
 | `deploy` | Deploy the built documentation site to the configured provider |
-| `check` | Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .stricttools/docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one |
+| `check` | Check documentation coverage, directive resolution, and lint rules -- and write: it advances the content and description baseline of every page it does not report stale or drifted in stricttools/.docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one |
 | `gen` | Auto-generate documentation pages from project structure |
 | `gen-data` | Generate data files by running sandboxed scripts via bwrap |
-| `spell-corpus` | Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001) and the shared accept list. Read-only over every project it visits |
+| `spell-corpus` | Spell-check the docs of every selfdoc project beside this one, using the same engine 'selfdoc check' runs (SPELL001), each project against its own vocabulary: selfdoc's built-in baseline and the project's stricttools/vocabulary/terms.toml. Read-only over every project it visits |
 | `quality` | Show documentation quality tier and metrics for the current project |
 | **baseline** | Manage the content and description hash baselines that drive staleness (STALE001) and source-drift (DRIFT001) detection during selfdoc check |
 | `baseline accept` | Accept a reviewed staleness or drift dead-end by advancing a page's stored content and description hash baseline to its current values. Use this only after a human has confirmed the page's content changed but its existing frontmatter description was reviewed and is still accurate. Each named page must currently be reporting a STALE001 or DRIFT001 error; accepting clears that error so selfdoc check passes without rewriting an already-correct description. |
-| **layout** | Inspect and check the per-repository directories selfdoc owns under .stricttools/ |
+| **layout** | Inspect, check and migrate the per-repository directories selfdoc owns under stricttools/ |
 | `layout dump` | Print selfdoc's layout declaration: every directory it claims, whether the directory is handwritten or generated, whether the repository commits it, the manifest.toml that grants it and what that file must hold, and the paths it replaced |
-| `layout validate` | Check this repository's .stricttools/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, every directory selfdoc owns holds only what its side allows, nothing inside starts with a dot except the derived ignore file, and that ignore file is what selfdoc's declaration renders |
+| `layout validate` | Check this repository's stricttools/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, and the derived ignore file is what selfdoc's declaration renders |
+| `layout migrate` | Move this repository off the layout before this one: every directory under .stricttools/ whose manifest.toml names selfdoc moves under stricttools/, a generated one behind a dot (.stricttools/docs -> stricttools/docs, .stricttools/docs-state -> stricttools/.docs-state, .stricttools/docs-cache -> stricttools/.docs-cache, .stricttools/posts -> stricttools/posts, .stricttools/vocabulary -> stricttools/vocabulary). It creates stricttools/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from .stricttools/.gitignore (the file and .stricttools/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes stricttools/vocabulary/terms.toml empty when the project has none, and commits. Another tool's directories stay where they are. Refuses a repository already migrated, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing |
+| **vocabulary** | Edit this project's vocabulary: the words its pages may use that the English word list does not carry, the terms they may not use (stricttools/vocabulary/terms.toml), and the words proposed for acceptance awaiting review (stricttools/vocabulary/review.toml). The spell check reads selfdoc's built-in baseline and these files, and nothing outside the repository |
+| `vocabulary accept` | Accept a word into stricttools/vocabulary/terms.toml, in sorted position, with its meaning. Matching is case-insensitive, so one entry accepts every casing. Refuses a word already accepted (as a word or an alias, in the project or selfdoc's built-in baseline), a word a rejected term covers, and a word pending review, which 'selfdoc vocabulary approve' resolves instead |
+| `vocabulary reject` | Reject a term in stricttools/vocabulary/terms.toml, in sorted position, with the reason: every page whose prose uses it then fails 'selfdoc check' (VOCAB004). Refuses a term already rejected, and one that would reject an accepted word |
+| `vocabulary remove` | Remove every entry of stricttools/vocabulary/terms.toml whose word or pattern is the given one, compared case-insensitively: an accepted word, a rejected term, or both. It is also how a word both accepted and rejected is resolved: remove it, then accept or reject it again. An entry of selfdoc's built-in baseline is not the project's to remove, and is refused |
+| `vocabulary approve` | Approve a word pending review: move its entry from stricttools/vocabulary/review.toml into the accepted words of stricttools/vocabulary/terms.toml, with the proposed meaning or, with --meaning, a corrected one. Refuses a word that is not pending |
+| `vocabulary drop` | Drop a word pending review: delete its entry from stricttools/vocabulary/review.toml without accepting it, so pages using it keep failing the spell check until the spelling is fixed. Refuses a word that is not pending |
 | **assembly** | Manage the unified multi-project documentation assembly and deployment |
 | `assembly init` | Create and initialize the assembly GitHub repository with workflow and configuration files. Creates a private GitHub repo, pushes initial files via the Contents API, creates a Cloudflare Pages project if credentials are available, and sets GitHub secrets for deployment authentication. |
 | `assembly push` | Dispatch a GitHub Actions workflow to rebuild this project in the documentation assembly. Detects the source repository, resolves the latest git tag as the version reference, and sends a repository dispatch event to the assembly repo with the project slug, version, and commit SHA. |
