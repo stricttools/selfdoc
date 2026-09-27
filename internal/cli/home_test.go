@@ -47,7 +47,7 @@ func homeSiteProject(t *testing.T, overrides map[string]any) string {
 // writeHomeFrontPage writes the home project's front page with the given
 // prose, keeping its description and its site-level markers. The body is a
 // parameter so a test can change what the page says without touching what it
-// claims to say, which is the shape STALE001 reports.
+// claims to say, which is the shape stale-page-description reports.
 func writeHomeFrontPage(t *testing.T, dir, prose string) {
 	t.Helper()
 	writeText(t, filepath.Join(dir, ".strictmetadata", "docs", "index.md"),
@@ -155,7 +155,7 @@ func TestCheckResolvesTheSiteDirectivesOfTheHomeProject(t *testing.T) {
 	// The cards link into other projects' subtrees, which only the assembled
 	// site holds. This project's own build writes none of them, and the
 	// check does not report them as references it should have written.
-	if strings.Contains(report, "LINK001") {
+	if strings.Contains(report, "broken-emitted-reference") {
 		t.Errorf("the region's cross-project links were reported:\n%s", report)
 	}
 	// The card's version badge comes from the assembly's manifest for
@@ -253,7 +253,7 @@ func TestBaselineAcceptResolvesTheSiteDirectivesOfTheHomeProject(t *testing.T) {
 	serveAssembly(t, tools, "home")
 
 	// Establish the baseline, then rewrite the front page's prose while
-	// leaving its description alone: that is the STALE001 dead end
+	// leaving its description alone: that is the stale-page-description dead end
 	// `baseline accept` exists to clear.
 	run(t, dir, "check", "--no-auto-commit")
 	writeHomeFrontPage(t, dir, "Completely rewritten prose about the site.")
@@ -271,7 +271,7 @@ func TestBaselineAcceptResolvesTheSiteDirectivesOfTheHomeProject(t *testing.T) {
 		t.Fatalf("baseline accept exited %d\n%s", result.ExitCode, report)
 	}
 	if after := staleIdentifiers(t, dir); len(after) != 0 {
-		t.Errorf("STALE001 survived the acceptance: %v", after)
+		t.Errorf("stale-page-description survived the acceptance: %v", after)
 	}
 }
 

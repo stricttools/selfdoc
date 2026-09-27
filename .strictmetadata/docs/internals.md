@@ -148,34 +148,33 @@ For every directive in every template, the checker performs full resolution usin
 
 Measures how many public symbols in your source code are referenced by at least one directive across all documentation templates. It uses each extractor's `PublicSymbols` to enumerate exports and cross-references them against the symbols named in resolved directive output. `coverage_threshold` in `selfdoc.json` is the fraction that must be documented for the check to pass; it defaults to `1.0`.
 
-### Rule families
+### Rule groups
 
-Codes are grouped by prefix, and a family's members share a subject:
+A lint is named for what it reports, in lowercase words joined by hyphens
+(`stale-page-description`, `broken-emitted-reference`), and that name is also
+the name of the option that governs it, `selfdoc:<name>`. The registry lists
+the lints grouped by subject:
 
-| Prefix | Subject |
-|--------|---------|
-| `SEO` | Metadata quality, heading structure, alt text, anchor text |
-| `STALE` | A page's content changed but its description did not |
-| `DRIFT` | A generated description no longer matches its source |
-| `DQ` | Documentation quality signals on a symbol |
-| `XREF` | Cross-references that name something absent |
-| `PARAM`, `RETURN` | A symbol's parameters and return value going undocumented |
-| `EXAMPLE` | Code examples that do not parse or do not run |
-| `CLI` | CLI reference pages against the CLI's own schema |
-| `LANG` | Source entries and their declared languages |
-| `SEARCH` | The search index and its configuration |
-| `VER` | Version-bearing generated content |
-| `SPELL` | Spelling, against the vendored word list and the project's accepted vocabulary |
-| `VOCAB` | The project's vocabulary files, and rejected terms in page prose |
-| `POST` | Blog post frontmatter and layout |
-| `LINK` | Internal links that resolve nowhere |
-| `UNIFIED` | The unified multi-project build |
+| Group | Subject |
+|-------|---------|
+| Search engines and page structure | Metadata quality, heading structure, alt text, anchor text |
+| Staleness and drift | A page's content, or the source it documents, changed but its description did not |
+| Description quality | Descriptions that restate a name or are too short |
+| Cross-references and symbols | Links and directive paths that name something absent, and a symbol's parameters and return value going undocumented |
+| Examples | Code examples that do not parse or do not run |
+| CLI reference | CLI reference pages against the CLI's own schema |
+| Sources and search | Source entries and their declared languages, and the search indexer |
+| Versions | Version-bearing configuration and generated content |
+| Spelling and vocabulary | Spelling against the vendored word list and the project's accepted vocabulary, the vocabulary files themselves, and rejected terms in page prose |
+| Posts | Blog post frontmatter and slugs |
+| Emitted references | Links, canonicals, sitemap entries and feed links that name a file the build did not write |
+| Unified sites | The unified multi-project build |
 
-See the [SEO and lint reference](../seo/) for every code with its severity and message.
+See the [check guide](../check-guide/) for every lint with its severity and message.
 
 ### Why tokens, not raw Markdown
 
-The lint system operates on tokens rather than raw text, getting pre-parsed structure for free. It can distinguish "an image inside a code block" (skip SEO003) from "an image in body text" (flag it).
+The lint system operates on tokens rather than raw text, getting pre-parsed structure for free. It can distinguish "an image inside a code block" (skip empty-image-alt-text) from "an image in body text" (flag it).
 
 ### Staleness detection
 

@@ -9,7 +9,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/lints"
 )
 
-// pythonSourceEntry is the declared source entry the PARAM001/RETURN001 cases
+// pythonSourceEntry is the declared source entry the undocumented-parameter/undocumented-return-value cases
 // resolve their directive through.
 func pythonSourceEntry(t *testing.T) *extractors.SourceEntry {
 	t.Helper()
@@ -25,7 +25,7 @@ func pythonSourceEntry(t *testing.T) *extractors.SourceEntry {
 	}
 }
 
-// symbolDocsCase is one PARAM001/RETURN001 scenario.
+// symbolDocsCase is one undocumented-parameter/undocumented-return-value scenario.
 type symbolDocsCase struct {
 	// name identifies the subtest.
 	name string
@@ -110,7 +110,7 @@ func TestPARAM001(t *testing.T) {
     pass
 `,
 			target:   "greet",
-			want:     []string{"PARAM001"},
+			want:     []string{"undocumented-parameter"},
 			fragment: "loud",
 		},
 		{
@@ -128,7 +128,7 @@ func TestPARAM001(t *testing.T) {
     pass
 `,
 			target: "greet",
-			absent: []string{"PARAM001"},
+			absent: []string{"undocumented-parameter"},
 		},
 		{
 			name: "a function with no parameters",
@@ -141,7 +141,7 @@ func TestPARAM001(t *testing.T) {
     pass
 `,
 			target: "greet",
-			absent: []string{"PARAM001"},
+			absent: []string{"undocumented-parameter"},
 		},
 		{
 			name: "a directive naming no target",
@@ -149,7 +149,7 @@ func TestPARAM001(t *testing.T) {
     """Say hello."""
     pass
 `,
-			absent: []string{"PARAM001", "RETURN001"},
+			absent: []string{"undocumented-parameter", "undocumented-return-value"},
 		},
 	})
 }
@@ -167,7 +167,7 @@ func TestRETURN001(t *testing.T) {
     pass
 `,
 			target:   "greet",
-			want:     []string{"RETURN001"},
+			want:     []string{"undocumented-return-value"},
 			fragment: "str",
 		},
 		{
@@ -184,7 +184,7 @@ func TestRETURN001(t *testing.T) {
     pass
 `,
 			target: "greet",
-			absent: []string{"RETURN001"},
+			absent: []string{"undocumented-return-value"},
 		},
 		{
 			name: "no declared return type",
@@ -197,7 +197,7 @@ func TestRETURN001(t *testing.T) {
     pass
 `,
 			target: "greet",
-			absent: []string{"RETURN001"},
+			absent: []string{"undocumented-return-value"},
 		},
 		{
 			name: "a None return type is nothing to document",
@@ -210,7 +210,7 @@ func TestRETURN001(t *testing.T) {
     pass
 `,
 			target: "greet",
-			absent: []string{"RETURN001"},
+			absent: []string{"undocumented-return-value"},
 		},
 	})
 }

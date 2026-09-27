@@ -142,9 +142,9 @@ func TestAPostDefectIsReportedUnderItsProjectsSlug(t *testing.T) {
 		t.Fatalf("CheckUnified: %v", err)
 	}
 
-	matching := withCode(result.Lints, "SEO003")
+	matching := withCode(result.Lints, "empty-image-alt-text")
 	if len(matching) != 1 {
-		t.Fatalf("SEO003 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("empty-image-alt-text count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	wantFile := "[core] " + filepath.Join(".strictmetadata", "posts", "hello.md")
 	if matching[0].File() != wantFile {
@@ -156,8 +156,8 @@ func TestAPostDefectIsReportedUnderItsProjectsSlug(t *testing.T) {
 		t.Errorf("line = %v, want 11", matching[0].Line())
 	}
 	// Relabelling produces a new diagnostic, whose severity must still be
-	// the registry's answer for SEO003 rather than a default.
-	severity, err := lints.LintSeverity("SEO003")
+	// the registry's answer for empty-image-alt-text rather than a default.
+	severity, err := lints.LintSeverity("empty-image-alt-text")
 	if err != nil {
 		t.Fatalf("LintSeverity: %v", err)
 	}
@@ -188,9 +188,9 @@ func TestAProjectWithNoConfigIsUNIFIED001(t *testing.T) {
 		t.Fatalf("CheckUnified: %v", err)
 	}
 
-	matching := withCode(result.Lints, "UNIFIED001")
+	matching := withCode(result.Lints, "unified-project-without-config")
 	if len(matching) != 1 {
-		t.Fatalf("UNIFIED001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("unified-project-without-config count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if matching[0].File() != "[core]" {
 		t.Errorf("file = %q, want %q", matching[0].File(), "[core]")
@@ -230,9 +230,9 @@ func TestAProjectWhoseCheckRefusesIsUNIFIED002(t *testing.T) {
 		t.Fatalf("CheckUnified: %v", err)
 	}
 
-	matching := withCode(result.Lints, "UNIFIED002")
+	matching := withCode(result.Lints, "unified-project-check-failed")
 	if len(matching) != 1 {
-		t.Fatalf("UNIFIED002 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("unified-project-check-failed count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if matching[0].File() != "[core]" {
 		t.Errorf("file = %q, want %q", matching[0].File(), "[core]")

@@ -41,8 +41,8 @@ const pythonReferenceReport = "Directives\n" +
 	"  n.py: three\n" +
 	"\n" +
 	"Lints\n" +
-	"  error: [SEO006] a.md - No 'description' in frontmatter\n" +
-	"  warning: [SEO002] b.md:12 - Heading level jumps from H2 to H4 (skips H3)\n"
+	"  error: [missing-frontmatter-description] a.md - No 'description' in frontmatter\n" +
+	"  warning: [skipped-heading-level] b.md:12 - Heading level jumps from H2 to H4 (skips H3)\n"
 
 // referenceResult is the result pythonReferenceReport was captured from.
 func referenceResult() *CheckResult {
@@ -66,9 +66,9 @@ func referenceResult() *CheckResult {
 			},
 		},
 		Lints: []lints.LintResult{
-			lints.MustLintResult("a.md", nil, "SEO006",
+			lints.MustLintResult("a.md", nil, "missing-frontmatter-description",
 				"No 'description' in frontmatter"),
-			lints.MustLintResult("b.md", &line12, "SEO002",
+			lints.MustLintResult("b.md", &line12, "skipped-heading-level",
 				"Heading level jumps from H2 to H4 (skips H3)"),
 		},
 	}

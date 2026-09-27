@@ -31,7 +31,7 @@ var bareYear = regexp.MustCompile(`^[0-9]{4}$`)
 // CountsAsStatistic reports whether a prose token is a concrete numeric data
 // point.
 //
-// SEO008 measures how many quantities a page offers a citing model. A digit
+// low-numeric-data-density measures how many quantities a page offers a citing model. A digit
 // alone does not make a quantity: release versions and calendar years appear
 // in almost every documentation page and say nothing about magnitude, count or
 // proportion. Both are refused here, so a page whose only digits are "0.36.0"

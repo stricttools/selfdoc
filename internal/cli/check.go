@@ -27,9 +27,9 @@ func (c *cli) registerCheck() {
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.Check()),
 		strictcli.WithFlags(
-			strictcli.StringFlag("ignore", "Comma-separated SEO codes to suppress (e.g., SEO007,SEO008)", strictcli.Optional()),
+			strictcli.StringFlag("ignore", "Comma-separated SEO codes to suppress (e.g., first-paragraph-length-out-of-range,low-numeric-data-density)", strictcli.Optional()),
 			strictcli.BoolFlag("auto-commit", "Automatically commit "+layout.HashesRel+", the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way", strictcli.Optional()),
-			strictcli.StringFlag("version-override", "Project version that version-bearing generated content is expected to embed (VER004), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump", strictcli.Optional()),
+			strictcli.StringFlag("version-override", "Project version that version-bearing generated content is expected to embed (version-mismatch-in-generated-root-file), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump", strictcli.Optional()),
 		),
 	)
 }

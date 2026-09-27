@@ -50,7 +50,7 @@ selfdoc check --version-override 1.4.0
 
 `gen --version-override` stamps that version into version-bearing generated content instead of reading the (not yet bumped) manifest. `check --version-override` states the version that content is expected to embed, so the check is correct in the window between generation and the bump.
 
-The `VER004` check enforces the pairing: a generated root file whose template interpolates `project.version` must contain the expected version. Generating without the override during a release is a hard failure rather than a silent one-release lag.
+The `version-mismatch-in-generated-root-file` check enforces the pairing: a generated root file whose template interpolates `project.version` must contain the expected version. Generating without the override during a release is a hard failure rather than a silent one-release lag.
 
 Documentation *pages* need no override -- they keep the `var` directive in their committed Markdown and resolve it at build time, which happens after the bump.
 

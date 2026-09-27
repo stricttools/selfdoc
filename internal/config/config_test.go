@@ -1158,9 +1158,9 @@ func TestPostsTopologyAssembly(t *testing.T) {
 func installStubLintRegistry(t *testing.T) {
 	t.Helper()
 	severities := map[string]string{
-		"SEO007":  "warning",
-		"SEO008":  "warning",
-		"LINK001": "error",
+		"first-paragraph-length-out-of-range":  "warning",
+		"low-numeric-data-density":  "warning",
+		"broken-emitted-reference": "error",
 	}
 	previous := LintCodeValidator
 	LintCodeValidator = func(codes []string, source string) error {
@@ -1197,27 +1197,27 @@ func TestLintIgnore(t *testing.T) {
 	runCases(t, []configCase{
 		{
 			name:  "a list of registered codes loads unchanged",
-			data:  baseKeys(map[string]any{"lint_ignore": []any{"SEO007", "SEO008"}}),
-			check: wantEqual("lint_ignore", []any{"SEO007", "SEO008"}),
+			data:  baseKeys(map[string]any{"lint_ignore": []any{"first-paragraph-length-out-of-range", "low-numeric-data-density"}}),
+			check: wantEqual("lint_ignore", []any{"first-paragraph-length-out-of-range", "low-numeric-data-density"}),
 		},
 		{
 			name:    "an unregistered code is a hard error",
-			data:    baseKeys(map[string]any{"lint_ignore": []any{"SEO007", "SEO0O8"}}),
-			wantErr: "SEO0O8",
+			data:    baseKeys(map[string]any{"lint_ignore": []any{"first-paragraph-length-out-of-range", "low-numeric-data-densty"}}),
+			wantErr: "low-numeric-data-densty",
 		},
 		{
 			name:    "the unregistered-code refusal names the source",
-			data:    baseKeys(map[string]any{"lint_ignore": []any{"SEO007", "SEO0O8"}}),
+			data:    baseKeys(map[string]any{"lint_ignore": []any{"first-paragraph-length-out-of-range", "low-numeric-data-densty"}}),
 			wantErr: "lint_ignore",
 		},
 		{
 			name:    "an error-severity code cannot be silenced",
-			data:    baseKeys(map[string]any{"lint_ignore": []any{"SEO007", "LINK001"}}),
-			wantErr: "LINK001",
+			data:    baseKeys(map[string]any{"lint_ignore": []any{"first-paragraph-length-out-of-range", "broken-emitted-reference"}}),
+			wantErr: "broken-emitted-reference",
 		},
 		{
 			name:    "the unsuppressable refusal names the severity",
-			data:    baseKeys(map[string]any{"lint_ignore": []any{"SEO007", "LINK001"}}),
+			data:    baseKeys(map[string]any{"lint_ignore": []any{"first-paragraph-length-out-of-range", "broken-emitted-reference"}}),
 			wantErr: "error",
 		},
 		{
@@ -1325,7 +1325,7 @@ func TestDiagnosticsMatchThePythonSurface(t *testing.T) {
 		{map[string]any{"deploy": map[string]any{"provider": "netlify"}}, "invalid deploy.provider value 'netlify'; must be one of: cloudflare-pages, github-pages"},
 		{map[string]any{"examples": map[string]any{"python": "python -c pass"}}, "invalid examples.python 'python -c pass'; must contain '{file}'"},
 		{map[string]any{"examples": map[string]any{"Python 3!": "python {file}"}}, `invalid examples key 'Python 3!'; must match pattern ^[a-z][a-z0-9+#._-]*$`},
-		{map[string]any{"lint_ignore": []any{"seo007"}}, `invalid lint_ignore[0] 'seo007'; must match pattern ^[A-Z]+\d+$`},
+		{map[string]any{"lint_ignore": []any{"seo007"}}, `invalid lint_ignore[0] 'seo007'; must match pattern ^[a-z]+(-[a-z]+)*$`},
 		{map[string]any{"redirects": []any{map[string]any{"from": "a", "to": "b", "bogus": true}}}, "invalid <item> key 'bogus'; must be one of: from, to"},
 		{map[string]any{"author": map[string]any{"name": "Jane", "url": "https://j.dev", "type": "Person"}}, "invalid author key 'type'; must be one of: name, same_as, url"},
 		{map[string]any{"author": map[string]any{"name": "J", "url": "https://j.dev", "same_as": []any{map[string]any{"url": "x"}}}}, "'author.same_as[0]' must be a string"},
@@ -1337,7 +1337,7 @@ func TestDiagnosticsMatchThePythonSurface(t *testing.T) {
 		{map[string]any{"posts": map[string]any{"dir": 123}}, "'posts.dir' must be a string"},
 		{map[string]any{"versions": []any{map[string]any{"version": "1.0", "indexed": true}}}, "invalid <item> key 'indexed'; must be one of: projects, version"},
 		{map[string]any{"foo": "bar"}, "unknown config key 'foo'"},
-		{map[string]any{"lint_ignore": []any{"SEO007", "SEO0O8"}}, `invalid lint_ignore[1] 'SEO0O8'; must match pattern ^[A-Z]+\d+$`},
+		{map[string]any{"lint_ignore": []any{"first-paragraph-length-out-of-range", "SEO0O8"}}, `invalid lint_ignore[1] 'SEO0O8'; must match pattern ^[a-z]+(-[a-z]+)*$`},
 	}
 	for _, tc := range cases {
 		t.Run(tc.want, func(t *testing.T) {

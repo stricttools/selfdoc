@@ -32,7 +32,7 @@ func (e *AcceptError) Error() string { return e.Message }
 type AcceptedBaseline struct {
 	// Page is the page identifier, exactly as `selfdoc check` shows it.
 	Page string
-	// Code is the error that was cleared: "STALE001" or "DRIFT001".
+	// Code is the error that was cleared: "stale-page-description" or "description-drifted-from-source".
 	Code string
 }
 
@@ -45,14 +45,14 @@ type StalenessState struct {
 	// Stored is the loaded baseline, the hash store's own contents.
 	Stored staleness.Store
 	// ErrorPages maps a page identifier to the lint code of its
-	// outstanding error: "STALE001" or "DRIFT001".
+	// outstanding error: "stale-page-description" or "description-drifted-from-source".
 	ErrorPages map[string]string
 }
 
 // machineOwnedKeys returns the locale-prefixed page keys whose description is
 // machine-owned.
 //
-// These pages are exempt from the STALE001/DRIFT001 baseline hold: their
+// These pages are exempt from the stale-page-description/description-drifted-from-source baseline hold: their
 // description is a machine placeholder (recognized by the ownership predicate
 // via template match or the recorded seed hash), so holding the baseline would
 // deadlock -- they cannot be hand-fixed. A hand-described generated page
@@ -142,7 +142,7 @@ func prefixKeys[V any](values map[string]V, localePrefix string) map[string]V {
 // in an error state.
 //
 // It runs the same content, description, source-docstring and schema hashing
-// that [CheckDocs] uses for STALE001/DRIFT001 detection, but never writes the
+// that [CheckDocs] uses for stale-page-description/description-drifted-from-source detection, but never writes the
 // hash store.
 //
 // projectConfig may be nil, in which case it is loaded from selfdoc.json.
@@ -230,11 +230,11 @@ func ComputeStalenessState(
 
 	errorPages := map[string]string{}
 	for _, warning := range staleWarnings {
-		errorPages[warning.Page] = "STALE001"
+		errorPages[warning.Page] = "stale-page-description"
 	}
 	for _, warning := range driftWarnings {
 		if _, present := errorPages[warning.Page]; !present {
-			errorPages[warning.Page] = "DRIFT001"
+			errorPages[warning.Page] = "description-drifted-from-source"
 		}
 	}
 
@@ -262,7 +262,7 @@ func driftDirectivesOf(resolvedDirectives []ResolvedDirective) map[string][]stal
 //
 // A deliberate, auditable human action meaning "reviewed: the page content
 // changed but the existing frontmatter description is still accurate". Each
-// named page must currently be frozen in a STALE001/DRIFT001 error state;
+// named page must currently be frozen in a stale-page-description/description-drifted-from-source error state;
 // accepting advances its baseline exactly as if the description had been
 // rewritten, so the next check passes for that page.
 //
@@ -313,8 +313,8 @@ func AcceptBaselines(
 		case state.ErrorPages[page] == "":
 			refusals = append(refusals, fmt.Sprintf(
 				"'%s': is not stale or drifted -- nothing to accept. An "+
-					"edited frontmatter description clears a STALE001 or "+
-					"DRIFT001 finding on its own, so a page whose "+
+					"edited frontmatter description clears a stale-page-description or "+
+					"description-drifted-from-source finding on its own, so a page whose "+
 					"description was just rewritten is already cleared and "+
 					"needs no accept; accept is for the other course, where "+
 					"the description was reviewed and left as it is", page,

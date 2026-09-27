@@ -317,10 +317,10 @@ func TestLANG001ForUnsupportedLanguage(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if !hasCode(result.Lints, "LANG001") {
-		t.Fatalf("LANG001 missing; got %v", codes(result.Lints))
+	if !hasCode(result.Lints, "unsupported-source-language") {
+		t.Fatalf("unsupported-source-language missing; got %v", codes(result.Lints))
 	}
-	diagnostic := withCode(result.Lints, "LANG001")[0]
+	diagnostic := withCode(result.Lints, "unsupported-source-language")[0]
 	if diagnostic.Severity() != "error" {
 		t.Errorf("severity = %q, want error", diagnostic.Severity())
 	}
@@ -334,8 +334,8 @@ func TestSupportedLanguageHasNoLANG001(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "LANG001") {
-		t.Error("LANG001 fired for a language selfdoc supports")
+	if hasCode(result.Lints, "unsupported-source-language") {
+		t.Error("unsupported-source-language fired for a language selfdoc supports")
 	}
 }
 
@@ -347,9 +347,9 @@ func TestXREF002MissingSourceFile(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "XREF002") {
-		t.Errorf("XREF002 fired for a path that is on disk: %v",
-			messagesOf(withCode(result.Lints, "XREF002")))
+	if hasCode(result.Lints, "directive-path-not-on-disk") {
+		t.Errorf("directive-path-not-on-disk fired for a path that is on disk: %v",
+			messagesOf(withCode(result.Lints, "directive-path-not-on-disk")))
 	}
 }
 

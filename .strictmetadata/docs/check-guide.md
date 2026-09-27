@@ -87,7 +87,7 @@ Every `selfdoc check` invocation runs the whole lint registry: SEO and page stru
 
 :-: table-lints
 
-### Spelling (SPELL001)
+### Spelling (unknown-word)
 
 Every documentation page and every published post is spell-checked against a
 vendored English word list of about 172,000 words -- a pinned snapshot of the
@@ -112,7 +112,7 @@ accepts a word when selfdoc's built-in baseline or the project's own
 file outside the repository: the same committed docs get the same verdict on
 every machine.
 
-SPELL001 is error severity and cannot be suppressed. Fixing the prose or
+unknown-word is error severity and cannot be suppressed. Fixing the prose or
 accepting the term are the two available answers, which is the point: a
 misspelling on a published page is a defect, and the vocabulary records the
 deliberate decision that a word is not one. Each finding names the command
@@ -123,7 +123,7 @@ beside this one, each against its own vocabulary, and prints each project's
 unknown words with a first location. It is strictly read-only over the
 projects it visits.
 
-### The vocabulary (VOCAB)
+### The vocabulary
 
 `.strictmetadata/vocabulary/terms.toml` holds the words the project's pages may use
 and the terms they may not. Each accepted word carries its meaning; each
@@ -192,13 +192,13 @@ selfdoc vocabulary approve <word> --meaning "<corrected>"  # accept it with a co
 selfdoc vocabulary drop <word>                           # delete the proposal
 ```
 
-The VOCAB lints hold the file to its purpose, each naming the command that
-clears it: an accepted word no page uses (VOCAB001), an entry accepted or
-rejected twice (VOCAB002), an accepted word a rejected suffix or prefix covers
-(VOCAB003, resolved by narrowing the project's pattern when the word is the
+The vocabulary lints hold the file to its purpose, each naming the command that
+clears it: an accepted word no page uses (unused-accepted-word), an entry accepted or
+rejected twice (duplicate-vocabulary-entry), an accepted word a rejected suffix or prefix covers
+(accepted-word-matches-rejected-pattern, resolved by narrowing the project's pattern when the word is the
 baseline's, and by removing the word or narrowing the pattern when it is the
-project's), a page whose prose uses a rejected term (VOCAB004), and an array out
-of order (VOCAB005).
+project's), a page whose prose uses a rejected term (rejected-term-in-prose), and an array out
+of order (unsorted-vocabulary-entries).
 
 ### Suppressing rules
 
@@ -206,14 +206,14 @@ Suppress specific lint rules globally in your config or per invocation via CLI f
 
 ```json
 {
-  "lint_ignore": ["SEO007", "SEO008"]
+  "lint_ignore": ["first-paragraph-length-out-of-range", "low-numeric-data-density"]
 }
 ```
 
 Or per invocation with `--ignore`:
 
 ```bash
-selfdoc check --ignore SEO007,SEO008
+selfdoc check --ignore first-paragraph-length-out-of-range,low-numeric-data-density
 ```
 
 Both sources are combined -- CLI flags and config are merged.
@@ -222,13 +222,13 @@ Suppression reaches warning-severity codes only. Naming an error-severity code -
 
 ## Staleness Detection
 
-selfdoc tracks SHA-256 hashes of each page's raw template body (directives unresolved) and its frontmatter description. When the content changes but the description stays the same, it raises a STALE001 error. This catches the common case where you update a page's content but forget to revise the description that feeds into meta tags and search results.
+selfdoc tracks SHA-256 hashes of each page's raw template body (directives unresolved) and its frontmatter description. When the content changes but the description stays the same, it raises a stale-page-description error. This catches the common case where you update a page's content but forget to revise the description that feeds into meta tags and search results.
 
 Hashes are stored in `.strictmetadata/.docs-state/hashes/hashes.json` and auto-committed after each check (unless you pass `--no-auto-commit` or `--dry-run`).
 
 ## Example Validation
 
-Every Python and JSON code block is parsed during `selfdoc check`, and a block that does not parse raises `EXAMPLE001`. Parsing proves only that a snippet is well-formed, not that it still works: an example calling a function you renamed six months ago parses perfectly and is completely wrong. To catch that class, mark the block `validate` and configure a validator for its language:
+Every Python and JSON code block is parsed during `selfdoc check`, and a block that does not parse raises `code-block-syntax-error`. Parsing proves only that a snippet is well-formed, not that it still works: an example calling a function you renamed six months ago parses perfectly and is completely wrong. To catch that class, mark the block `validate` and configure a validator for its language:
 
 ````markdown
 ```python validate
@@ -248,9 +248,9 @@ print(greet("world"))
 }
 ```
 
-selfdoc writes each marked block to a scratch file suffixed for its language, substitutes the path for `{file}`, and runs the command from the project root with a 60-second timeout. A non-zero exit becomes an `EXAMPLE002` error naming the exit code and the last five lines of the validator's output. A marked block whose language has no configured command becomes an `EXAMPLE003` error rather than being skipped, so an unhonored marker can never masquerade as a passing one.
+selfdoc writes each marked block to a scratch file suffixed for its language, substitutes the path for `{file}`, and runs the command from the project root with a 60-second timeout. A non-zero exit becomes an `code-block-validation-failed` error naming the exit code and the last five lines of the validator's output. A marked block whose language has no configured command becomes an `code-block-validator-not-configured` error rather than being skipped, so an unhonored marker can never masquerade as a passing one.
 
-The marker is opt-in per block: unmarked blocks are never executed and keep the `EXAMPLE001` syntax check exactly as before. Validators run without a sandbox, so configure commands that compile, type-check, and register rather than ones that execute arbitrary payloads.
+The marker is opt-in per block: unmarked blocks are never executed and keep the `code-block-syntax-error` syntax check exactly as before. Validators run without a sandbox, so configure commands that compile, type-check, and register rather than ones that execute arbitrary payloads.
 
 ## Output Formats
 
@@ -281,7 +281,7 @@ The payload is an object with `directives`, `coverage`, `lints`, and `exit_code`
   "payload": {
     "directives": [{"file": "index.md", "line": 12, "status": "OK", ...}],
     "coverage": {"total_public": 23, "referenced": 15, ...},
-    "lints": [{"code": "SEO006", "severity": "error", ...}],
+    "lints": [{"code": "missing-frontmatter-description", "severity": "error", ...}],
     "exit_code": 0
   }
 }

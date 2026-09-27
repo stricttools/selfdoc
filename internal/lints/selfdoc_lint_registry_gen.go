@@ -87,8 +87,8 @@ description = "Registry entry for a single lint code."
 type = "string"
 required = true
 non_empty = true
-regex = '^[A-Z][A-Z0-9]*[0-9]{3}$'
-description = "Lint code. Grammar: an uppercase family name followed by a three-digit number (SEO001, DRIFT001, POST005)."
+regex = '^[a-z]+(-[a-z]+)*$'
+description = "The lint's name, which is also the name of the option that governs it (selfdoc:<name>). Grammar: lowercase words joined by single hyphens, no digits (multiple-top-level-headings, description-drifted-from-source, changed-published-post-slug)."
 
 [types.LintDescriptor.fields.severity]
 type = "enum"

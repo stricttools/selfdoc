@@ -24,7 +24,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/vocabulary"
 )
 
-// pagefindProbeTimeout bounds each of the two probes SEARCH001 makes for the
+// pagefindProbeTimeout bounds each of the two probes search-indexer-not-installed makes for the
 // indexer.
 const pagefindProbeTimeout = 10 * time.Second
 
@@ -40,10 +40,10 @@ const pagefindProbeTimeout = 10 * time.Second
 // previewing effects handle the write is recorded rather than performed, which
 // gives the same reporting and an honest preview, so the command layer leaves
 // this false and lets the handle decide. versionFilter, when non-empty, skips
-// the multi-version validation pass (VER001), which is what `build --version`
+// the multi-version validation pass (version-tag-not-extractable), which is what `build --version`
 // wants: it is checking one version and needs no cross-version answer.
 // versionOverride is the version that version-bearing generated content is
-// expected to embed (VER004), overriding the version detected from the project
+// expected to embed (version-mismatch-in-generated-root-file), overriding the version detected from the project
 // manifest; a release orchestrator passes the about-to-be-released version
 // here, matching what it passes to `selfdoc gen --version-override`.
 func CheckDocs(
@@ -163,7 +163,7 @@ func CheckDocs(
 		result.Coverage = coverage
 	}
 
-	// Post validation (POST001-POST007). It runs here, before the lint
+	// Post validation (the post lints). It runs here, before the lint
 	// pass, because the lint slice below is only defined for a post set
 	// discovery accepted: an invalid post is reported by this pass, and
 	// nothing then asks the slice to resolve a set that does not exist. The
@@ -206,19 +206,19 @@ func CheckDocs(
 	}
 	result.Lints = append(result.Lints, vocabularyLints(vocab, lintSlice)...)
 
-	// SEARCH001: the indexer every build runs has to be on this machine.
+	// search-indexer-not-installed: the indexer every build runs has to be on this machine.
 	// Pagefind is the engine, so the check is unconditional -- a build with
 	// no indexer produces a site whose search dialog answers nothing.
 	if !pagefindAvailable(handle) {
 		result.Lints = append(result.Lints, lints.MustLintResult(
-			"selfdoc.json", nil, "SEARCH001",
+			"selfdoc.json", nil, "search-indexer-not-installed",
 			"pagefind is not installed, so the build cannot index this "+
 				"site. Install with: pip install 'pagefind[bin]' or "+
 				"npm install -g pagefind",
 		))
 	}
 
-	// XREF002: a directive's path resolves, but names a file that is not on
+	// directive-path-not-on-disk: a directive's path resolves, but names a file that is not on
 	// disk.
 	for _, resolved := range resolvedDirectives {
 		pathArg := resolved.Attrs["path"]
@@ -229,7 +229,7 @@ func CheckDocs(
 		resolvedPath := entry.Extractor.ResolvePath(pathArg, []string{entry.Path}, dirPath)
 		if resolvedPath == "" || !(isFile(resolvedPath) || isDir(resolvedPath)) {
 			result.Lints = append(result.Lints, lints.MustLintResult(
-				resolved.File, nil, "XREF002",
+				resolved.File, nil, "directive-path-not-on-disk",
 				fmt.Sprintf(
 					"directive path '%s' resolves but file does not exist on disk",
 					pathArg,
@@ -238,7 +238,7 @@ func CheckDocs(
 		}
 	}
 
-	// LANG001: a declared source entry names a language selfdoc has no
+	// unsupported-source-language: a declared source entry names a language selfdoc has no
 	// extractor for.
 	//
 	// The Python asked whether the entry's extractor was the stub instance;
@@ -249,7 +249,7 @@ func CheckDocs(
 	for _, entry := range srcEntries {
 		if !extractors.IsKnownLanguage(entry.Language) {
 			result.Lints = append(result.Lints, lints.MustLintResult(
-				"selfdoc.json", nil, "LANG001",
+				"selfdoc.json", nil, "unsupported-source-language",
 				fmt.Sprintf(
 					"No extractor for language '%s' (source path: %s)",
 					entry.Language, entry.Path,
@@ -258,7 +258,7 @@ func CheckDocs(
 		}
 	}
 
-	// CLI001 and CLI002: the CLI reference pages of a strictcli project.
+	// undocumented-cli-command-or-flag and cli-help-text-too-short: the CLI reference pages of a strictcli project.
 	cliSchema, err := strictclisupport.ReadSchemaJSON(dirPath)
 	if err != nil {
 		return nil, err
@@ -288,7 +288,7 @@ func CheckDocs(
 		return nil, err
 	}
 
-	// STALE001/DRIFT001 turn on the ownership predicate (machine-owned
+	// stale-page-description/description-drifted-from-source turn on the ownership predicate (machine-owned
 	// state), not on the generated-and-seeded frontmatter flag. A
 	// machine-owned page cannot be hand-fixed, so a held baseline would
 	// deadlock -- those pages are exempt and their baselines advance. A
@@ -311,12 +311,12 @@ func CheckDocs(
 	}
 	for _, warning := range staleWarnings {
 		result.Lints = append(result.Lints, lints.MustLintResult(
-			warning.Page, nil, "STALE001", warning.Message,
+			warning.Page, nil, "stale-page-description", warning.Message,
 		))
 	}
 	for _, warning := range driftWarnings {
 		result.Lints = append(result.Lints, lints.MustLintResult(
-			warning.Page, nil, "DRIFT001", warning.Message,
+			warning.Page, nil, "description-drifted-from-source", warning.Message,
 		))
 	}
 
@@ -324,14 +324,14 @@ func CheckDocs(
 	// the post lint slice is only built for a post set discovery accepted.
 	result.Lints = append(result.Lints, postCheckLints...)
 
-	// Manifest freshness (STALE002).
+	// Manifest freshness (manifest-disagrees-with-disk).
 	manifestLints, err := checkManifestFreshness(projectConfig, dirPath)
 	if err != nil {
 		return nil, err
 	}
 	result.Lints = append(result.Lints, manifestLints...)
 
-	// Emitted-reference resolution (LINK001) over the built tree. Every
+	// Emitted-reference resolution (broken-emitted-reference) over the built tree. Every
 	// address the build emits comes from one function, and this is the
 	// assertion that the addresses it produced name files that exist: an
 	// internal link, a canonical, a sitemap entry or a feed link that
@@ -386,7 +386,7 @@ func CheckDocs(
 			)
 			if err != nil {
 				result.Lints = append(result.Lints, lints.MustLintResult(
-					"["+versionString+"]", nil, "VER001",
+					"["+versionString+"]", nil, "version-tag-not-extractable",
 					"Could not extract content for version "+versionString,
 				))
 				continue
@@ -478,11 +478,11 @@ func pagefindAvailable(handle *effects.Handle) bool {
 	return false
 }
 
-// checkCLIPages runs CLI001 and CLI002 over a strictcli project's CLI
+// checkCLIPages runs undocumented-cli-command-or-flag and cli-help-text-too-short over a strictcli project's CLI
 // reference pages.
 //
-// CLI001 reports a page that was never generated, and a flag token the page
-// does not mention. CLI002 reports help text too short to document anything.
+// undocumented-cli-command-or-flag reports a page that was never generated, and a flag token the page
+// does not mention. cli-help-text-too-short reports help text too short to document anything.
 func checkCLIPages(
 	cliSchema *strictclisupport.Structure, config map[string]any, dirPath, docsDir string,
 ) ([]lints.LintResult, error) {
@@ -496,7 +496,7 @@ func checkCLIPages(
 		commandName := strings.TrimSuffix(strings.TrimPrefix(pageName, "cli-"), ".md")
 		if !present {
 			results = append(results, lints.MustLintResult(
-				pageName, nil, "CLI001",
+				pageName, nil, "undocumented-cli-command-or-flag",
 				fmt.Sprintf("missing CLI page for command '%s'", commandName),
 			))
 			continue
@@ -544,7 +544,7 @@ func checkCLIPages(
 			seen[token] = true
 			if !strings.Contains(pageContent, token) {
 				results = append(results, lints.MustLintResult(
-					pageName, nil, "CLI001",
+					pageName, nil, "undocumented-cli-command-or-flag",
 					fmt.Sprintf("flag '%s' not documented", token),
 				))
 			}
@@ -556,7 +556,7 @@ func checkCLIPages(
 			return
 		}
 		results = append(results, lints.MustLintResult(
-			pageFile, nil, "CLI002",
+			pageFile, nil, "cli-help-text-too-short",
 			fmt.Sprintf(
 				"%s '%s' help text too short (%d chars, minimum %d)",
 				elementKind, elementName, runeLen(helpText), minHelpLength,

@@ -330,31 +330,31 @@ func TestParseRefusalsNameTheFieldAndThePost(t *testing.T) {
 			name:        "no title",
 			frontmatter: []string{"date = 2025-01-01", "directives = false"},
 			wantParts:   []string{"Post p.md", "title"},
-			wantCode:    "POST002",
+			wantCode:    "missing-post-title",
 		},
 		{
 			name:        "no date",
 			frontmatter: []string{"title = \"No Date\"", "directives = false"},
 			wantParts:   []string{"Post p.md", "date"},
-			wantCode:    "POST001",
+			wantCode:    "missing-post-date",
 		},
 		{
 			name:        "a date that is not a date",
 			frontmatter: []string{"title = \"Bad Date\"", `date = "Jan 15 2025"`, "directives = false"},
 			wantParts:   []string{"Post p.md", "$.date", "Expected a date"},
-			wantCode:    "POST003",
+			wantCode:    "malformed-post-date",
 		},
 		{
 			name:        "no directive declaration",
 			frontmatter: baseFrontmatter,
 			wantParts:   []string{"Post p.md", "directives"},
-			wantCode:    "POST006",
+			wantCode:    "invalid-post-directives-declaration",
 		},
 		{
 			name:        "a declaration that is not a boolean",
 			frontmatter: append(append([]string{}, baseFrontmatter...), `directives = "maybe"`),
 			wantParts:   []string{"Post p.md", "$.directives", "Expected a boolean"},
-			wantCode:    "POST006",
+			wantCode:    "invalid-post-directives-declaration",
 		},
 	}
 	for _, testCase := range cases {

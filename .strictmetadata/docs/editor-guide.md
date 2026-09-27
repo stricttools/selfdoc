@@ -174,7 +174,7 @@ A second request rides the same pause in typing, 450 milliseconds after the last
 
 ### Spelling
 
-Unrecognized words are marked in the text itself. The engine is the one `selfdoc check` runs for SPELL001 and `selfdoc spell-corpus` runs over every sibling project: the same vendored word list, the same project vocabulary (selfdoc's built-in baseline and the repository's own `.strictmetadata/vocabulary/terms.toml`), the same masks that keep code spans, fenced blocks, link targets and directive markers out of the prose. A word the repository accepts is accepted here, and nothing outside the repository is read.
+Unrecognized words are marked in the text itself. The engine is the one `selfdoc check` runs for unknown-word and `selfdoc spell-corpus` runs over every sibling project: the same vendored word list, the same project vocabulary (selfdoc's built-in baseline and the repository's own `.strictmetadata/vocabulary/terms.toml`), the same masks that keep code spans, fenced blocks, link targets and directive markers out of the prose. A word the repository accepts is accepted here, and nothing outside the repository is read.
 
 ### Lint marks
 

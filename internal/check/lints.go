@@ -25,7 +25,7 @@ import (
 // syntax tier leaves it alone.
 var directiveMarkers = []string{":-:", ":<:", ":>:", ":@:", ":=:", ":::"}
 
-// meaninglessAlt is the alt text SEO014 refuses outright: a word that names
+// meaninglessAlt is the alt text meaningless-image-alt-text refuses outright: a word that names
 // the medium rather than the content.
 var meaninglessAlt = map[string]bool{
 	"image": true, "screenshot": true, "photo": true, "picture": true,
@@ -35,14 +35,14 @@ var meaninglessAlt = map[string]bool{
 // filenameExts matches alt text that is really a filename.
 var filenameExts = regexp.MustCompile(`(?i)\.(png|jpg|jpeg|gif|svg|webp)$`)
 
-// genericAnchors is the link text SEO015 refuses: text that describes the act
+// genericAnchors is the link text generic-anchor-text refuses: text that describes the act
 // of clicking rather than the destination.
 var genericAnchors = map[string]bool{
 	"click here": true, "here": true, "this link": true, "this page": true,
 	"link": true, "read more": true, "more": true, "learn more": true,
 }
 
-// dqSuffixes are the kind words DQ001 strips before comparing a description
+// dqSuffixes are the kind words description-restates-name strips before comparing a description
 // against a page or symbol name, so "Config module" and "config" compare
 // equal.
 var dqSuffixes = map[string]bool{
@@ -50,7 +50,7 @@ var dqSuffixes = map[string]bool{
 	"type": true, "interface": true, "method": true,
 }
 
-// dqNonAlphanumeric matches every character DQ001's normalization drops.
+// dqNonAlphanumeric matches every character description-restates-name's normalization drops.
 var dqNonAlphanumeric = regexp.MustCompile(`[^a-z0-9\s]`)
 
 // emptyAltPattern matches an image with no alt text at all.
@@ -66,14 +66,14 @@ var anchorTextPattern = regexp.MustCompile(`\[([^\]]+)\]\(`)
 var markdownLinkPattern = regexp.MustCompile(`\[([^\]]*)\]\(([^)]+)\)`)
 
 // refDirectivePattern matches a ref directive marker in a raw page body, which
-// is what makes a page an API reference page as far as DQ003 is concerned.
+// is what makes a page an API reference page as far as reference-page-description-too-short is concerned.
 var refDirectivePattern = regexp.MustCompile(`:-:` + util.PythonSpaceClass + `*ref` + util.PythonSpaceClass)
 
-// minHelpLength is the shortest help text CLI002 accepts.
+// minHelpLength is the shortest help text cli-help-text-too-short accepts.
 const minHelpLength = 50
 
 // descriptionFloor and descriptionCeiling bound the meta description a page
-// publishes: SEO009 reports one below the floor, SEO010 one above the
+// publishes: description-too-short-for-search-snippet reports one below the floor, description-too-long-for-search-snippet one above the
 // ceiling. The ceiling is what a search result renders before it cuts the
 // description off; nothing in selfdoc cuts it, so a longer description
 // reaches the page whole and the engine decides where it ends.
@@ -82,7 +82,7 @@ const (
 	descriptionCeiling = 160
 )
 
-// normalizeDQ reduces a description or a title to the words DQ001 compares:
+// normalizeDQ reduces a description or a title to the words description-restates-name compares:
 // lowercased, punctuation dropped, separators turned into spaces and the kind
 // words removed.
 func normalizeDQ(text string) string {
@@ -155,9 +155,9 @@ func runLints(
 	// a subdirectory.
 	localePrefix := localePrefixOf(config)
 
-	// EXAMPLE002/EXAMPLE003 -- validator command templates keyed by fenced
+	// code-block-validation-failed/code-block-validator-not-configured -- validator command templates keyed by fenced
 	// language. An absent config means the feature is off, which turns
-	// every "validate" marker in the tree into an EXAMPLE003.
+	// every "validate" marker in the tree into an code-block-validator-not-configured.
 	exampleCommands := configDict(config, "examples")
 
 	knownPages := map[string]bool{}
@@ -165,7 +165,7 @@ func runLints(
 		knownPages[relPath] = true
 	}
 
-	// SPELL001 and VOCAB004 -- the vocabulary is the caller's, loaded once
+	// unknown-word and rejected-term-in-prose -- the vocabulary is the caller's, loaded once
 	// for the whole run, so a malformed list stops the run before any page
 	// is judged rather than reporting what a fixed list would have accepted.
 	spellVocab := spelling.LoadWordlist()
@@ -201,11 +201,11 @@ func runLints(
 			}
 		}
 
-		// SEO001 -- multiple H1 headings in the Markdown source.
-		// SEO013 -- no title source at all.
+		// multiple-top-level-headings -- multiple H1 headings in the Markdown source.
+		// missing-page-title -- no title source at all.
 		if len(h1Tokens) > 1 {
 			results = append(results, lints.MustLintResult(
-				relPath, nil, "SEO001",
+				relPath, nil, "multiple-top-level-headings",
 				fmt.Sprintf(
 					"Multiple H1 headings (%d found); use a single '# ' heading per page",
 					len(h1Tokens),
@@ -215,18 +215,18 @@ func runLints(
 		_, hasFrontmatterTitle := frontmatterString(metadata, "title")
 		if len(h1Tokens) == 0 && !hasFrontmatterTitle {
 			results = append(results, lints.MustLintResult(
-				relPath, nil, "SEO013",
+				relPath, nil, "missing-page-title",
 				"No title source: add a '# Heading' or set 'title:' in frontmatter",
 			))
 		}
 
-		// SEO002 -- heading level gaps.
+		// skipped-heading-level -- heading level gaps.
 		prevLevel := 0
 		for _, heading := range headingTokens {
 			level := heading.Level
 			if prevLevel > 0 && level > prevLevel+1 {
 				results = append(results, lints.MustLintResult(
-					relPath, lineOf(heading.Start()+fmOffset), "SEO002",
+					relPath, lineOf(heading.Start()+fmOffset), "skipped-heading-level",
 					fmt.Sprintf(
 						"Heading level jumps from H%d to H%d (skips H%d)",
 						prevLevel, level, prevLevel+1,
@@ -236,7 +236,7 @@ func runLints(
 			prevLevel = level
 		}
 
-		// SEO003 -- empty alt text, in text-bearing tokens only.
+		// empty-image-alt-text -- empty alt text, in text-bearing tokens only.
 		for _, token := range tokens {
 			if !tokenizer.IsTextBearing(token) {
 				continue
@@ -244,14 +244,14 @@ func runLints(
 			for offset, line := range tokenizer.TokenTextLines(token) {
 				if strings.Contains(line, emptyAltMarker) {
 					results = append(results, lints.MustLintResult(
-						relPath, lineOf(token.Start()+offset+fmOffset), "SEO003",
+						relPath, lineOf(token.Start()+offset+fmOffset), "empty-image-alt-text",
 						"Image with empty alt text",
 					))
 				}
 			}
 		}
 
-		// SEO004 -- the document title this page renders is too long.
+		// page-title-too-long -- the document title this page renders is too long.
 		//
 		// What renders is not the page's own title: the wrapper composes it
 		// out of the page title and the names of what publishes the page.
@@ -276,7 +276,7 @@ func runLints(
 			})
 			if runeLen(rendered) > page.DocumentTitleLimit {
 				results = append(results, lints.MustLintResult(
-					relPath, nil, "SEO004",
+					relPath, nil, "page-title-too-long",
 					fmt.Sprintf(
 						`Title too long for SEO (%d chars): "%s"`,
 						runeLen(rendered), rendered,
@@ -285,21 +285,21 @@ func runLints(
 			}
 		}
 
-		// SEO006 -- missing description.
+		// missing-frontmatter-description -- missing description.
 		if _, present := metadata["description"]; !present {
 			results = append(results, lints.MustLintResult(
-				relPath, nil, "SEO006", "No 'description' in frontmatter",
+				relPath, nil, "missing-frontmatter-description", "No 'description' in frontmatter",
 			))
 		}
 
-		// SEO009 -- description too short.
-		// SEO010 -- frontmatter description too long.
+		// description-too-short-for-search-snippet -- description too short.
+		// description-too-long-for-search-snippet -- frontmatter description too long.
 		var effectiveDesc string
 		descriptionValue, descriptionPresent := metadata["description"]
 		if descriptionPresent && descriptionValue != nil {
 			if text, isString := descriptionValue.(string); isString && runeLen(text) > descriptionCeiling {
 				results = append(results, lints.MustLintResult(
-					relPath, nil, "SEO010",
+					relPath, nil, "description-too-long-for-search-snippet",
 					fmt.Sprintf(
 						"Frontmatter description is %d chars (max %d)",
 						runeLen(text), descriptionCeiling,
@@ -313,7 +313,7 @@ func runLints(
 			// effective description is the complete first sentence
 			// of the whole paragraph -- the same unit the build
 			// emits into the meta tag -- not just the first physical
-			// line. No character cap here; SEO009 and SEO010 stay
+			// line. No character cap here; description-too-short-for-search-snippet and description-too-long-for-search-snippet stay
 			// advisory.
 			for _, token := range tokens {
 				switch shaped := token.(type) {
@@ -328,12 +328,12 @@ func runLints(
 			}
 		}
 
-		// SEO009 fires only when there IS a description to measure.
+		// description-too-short-for-search-snippet fires only when there IS a description to measure.
 		// With no frontmatter description and no paragraph found the
-		// effective description is empty, which SEO006 already covers.
+		// effective description is empty, which missing-frontmatter-description already covers.
 		if effectiveDesc != "" && runeLen(effectiveDesc) < descriptionFloor {
 			results = append(results, lints.MustLintResult(
-				relPath, nil, "SEO009",
+				relPath, nil, "description-too-short-for-search-snippet",
 				fmt.Sprintf(
 					"Effective description is only %d chars (aim for %d-%d)",
 					runeLen(effectiveDesc), descriptionFloor, descriptionCeiling,
@@ -341,7 +341,7 @@ func runLints(
 			))
 		}
 
-		// SEO007 -- paragraph length after a heading.
+		// first-paragraph-length-out-of-range -- paragraph length after a heading.
 		//
 		// One threshold set applies to every page type: a generated
 		// page's lead-in is held to the same band as a hand-written
@@ -397,7 +397,7 @@ func runLints(
 				continue
 			}
 			results = append(results, lints.MustLintResult(
-				relPath, lineOf(heading.Start()+fmOffset), "SEO007",
+				relPath, lineOf(heading.Start()+fmOffset), "first-paragraph-length-out-of-range",
 				fmt.Sprintf(
 					"First paragraph after '%s' is %d words (aim for 30-80 for AI citation)",
 					headingText, wordCount,
@@ -405,7 +405,7 @@ func runLints(
 			))
 		}
 
-		// SEO008 -- statistics density, over prose content tokens only.
+		// low-numeric-data-density -- statistics density, over prose content tokens only.
 		var proseWords []string
 		for _, token := range tokens {
 			switch shaped := token.(type) {
@@ -448,7 +448,7 @@ func runLints(
 			}
 			if numericCount < expected {
 				results = append(results, lints.MustLintResult(
-					relPath, nil, "SEO008",
+					relPath, nil, "low-numeric-data-density",
 					fmt.Sprintf(
 						"Page has %d words but only %d numeric data points "+
 							"(recommend at least %d for AI citation)",
@@ -458,7 +458,7 @@ func runLints(
 			}
 		}
 
-		// SEO011 -- an empty heading section: a heading followed by a
+		// empty-heading-section -- an empty heading section: a heading followed by a
 		// same-or-higher-level heading with no content between them.
 		lastHeadingLine, lastHeadingLevel := 0, 0
 		haveLastHeading := false
@@ -467,7 +467,7 @@ func runLints(
 			if isHeading && (heading.Level == 2 || heading.Level == 3) {
 				if haveLastHeading && heading.Level <= lastHeadingLevel {
 					results = append(results, lints.MustLintResult(
-						relPath, lineOf(lastHeadingLine+fmOffset), "SEO011",
+						relPath, lineOf(lastHeadingLine+fmOffset), "empty-heading-section",
 						fmt.Sprintf(
 							"H%d heading has no content before next H%d heading",
 							lastHeadingLevel, heading.Level,
@@ -487,7 +487,7 @@ func runLints(
 			haveLastHeading = false
 		}
 
-		// SEO014 -- meaningless alt text, in text-bearing tokens only.
+		// meaningless-image-alt-text -- meaningless alt text, in text-bearing tokens only.
 		for _, token := range tokens {
 			if !tokenizer.IsTextBearing(token) {
 				continue
@@ -496,7 +496,7 @@ func runLints(
 				for _, match := range altTextPattern.FindAllStringSubmatch(line, -1) {
 					alt := match[1]
 					if alt == "" {
-						continue // an empty alt is SEO003
+						continue // an empty alt is empty-image-alt-text
 					}
 					lowered := strings.ToLower(alt)
 					meaningless := meaninglessAlt[lowered] ||
@@ -504,7 +504,7 @@ func runLints(
 						filenameExts.MatchString(lowered)
 					if meaningless {
 						results = append(results, lints.MustLintResult(
-							relPath, lineOf(token.Start()+offset+fmOffset), "SEO014",
+							relPath, lineOf(token.Start()+offset+fmOffset), "meaningless-image-alt-text",
 							fmt.Sprintf(
 								"Meaningless alt text '%s'; use a descriptive alternative",
 								alt,
@@ -515,7 +515,7 @@ func runLints(
 			}
 		}
 
-		// SEO015 -- generic anchor text, in text-bearing tokens only.
+		// generic-anchor-text -- generic anchor text, in text-bearing tokens only.
 		for _, token := range tokens {
 			if !tokenizer.IsTextBearing(token) {
 				continue
@@ -525,7 +525,7 @@ func runLints(
 					text := util.PythonStrip(match[1])
 					if genericAnchors[strings.ToLower(text)] {
 						results = append(results, lints.MustLintResult(
-							relPath, lineOf(token.Start()+offset+fmOffset), "SEO015",
+							relPath, lineOf(token.Start()+offset+fmOffset), "generic-anchor-text",
 							fmt.Sprintf(
 								"Generic anchor text '%s'; use descriptive link text",
 								text,
@@ -536,7 +536,7 @@ func runLints(
 			}
 		}
 
-		// XREF001 -- a Markdown link to a .md page the docs tree does
+		// broken-page-link -- a Markdown link to a .md page the docs tree does
 		// not carry.
 		for _, token := range tokens {
 			if !tokenizer.IsTextBearing(token) {
@@ -563,7 +563,7 @@ func runLints(
 					target = strings.ReplaceAll(target, `\`, "/")
 					if !knownPages[target] {
 						results = append(results, lints.MustLintResult(
-							relPath, lineOf(token.Start()+offset+fmOffset), "XREF001",
+							relPath, lineOf(token.Start()+offset+fmOffset), "broken-page-link",
 							fmt.Sprintf("link to '%s' resolves to unknown page", target),
 						))
 					}
@@ -571,7 +571,7 @@ func runLints(
 			}
 		}
 
-		// DQ001 -- the description restates the symbol or page name.
+		// description-restates-name -- the description restates the symbol or page name.
 		descText := util.PythonStrOrEmpty(metadata["description"])
 		if descText != "" {
 			pageTitle := util.PythonStrOrEmpty(metadata["title"])
@@ -626,29 +626,29 @@ func runLints(
 				}
 				if restated {
 					results = append(results, lints.MustLintResult(
-						relPath, nil, "DQ001",
+						relPath, nil, "description-restates-name",
 						"description restates the symbol name",
 					))
 				}
 			}
 		}
 
-		// DQ002 -- description too short.
+		// description-too-short -- description too short.
 		if descriptionPresent && descriptionValue != nil {
 			length := runeLen(util.PythonStr(descriptionValue))
 			if length < 20 {
 				results = append(results, lints.MustLintResult(
-					relPath, nil, "DQ002",
+					relPath, nil, "description-too-short",
 					fmt.Sprintf(
 						"description too short (%d chars, minimum 20)", length,
 					),
 				))
 			}
-			// DQ003 -- a page that references functions needs a
+			// reference-page-description-too-short -- a page that references functions needs a
 			// substantive description.
 			if refDirectivePattern.MatchString(bodyContent) && length < 30 {
 				results = append(results, lints.MustLintResult(
-					relPath, nil, "DQ003",
+					relPath, nil, "reference-page-description-too-short",
 					fmt.Sprintf(
 						"page with ref directive has short description "+
 							"(%d chars, minimum 30 for API reference pages)",
@@ -658,8 +658,8 @@ func runLints(
 			}
 		}
 
-		// EXAMPLE001 -- code block syntax validation.
-		// EXAMPLE002/EXAMPLE003 -- opt-in semantic validation.
+		// code-block-syntax-error -- code block syntax validation.
+		// code-block-validation-failed/code-block-validator-not-configured -- opt-in semantic validation.
 		for _, token := range tokens {
 			block, isCodeBlock := token.(tokenizer.CodeBlock)
 			if !isCodeBlock {
@@ -670,7 +670,7 @@ func runLints(
 			// inferred. A block the tier owns is not also parsed
 			// below -- the validator's own diagnostic supersedes a
 			// second-hand syntax message. A marker with no
-			// configured command owns nothing, so EXAMPLE003 is
+			// configured command owns nothing, so code-block-validator-not-configured is
 			// raised and the block falls through to the syntax
 			// tier.
 			if block.Validate {
@@ -696,7 +696,7 @@ func runLints(
 					continue
 				}
 				results = append(results, lints.MustLintResult(
-					relPath, lineOf(block.Start()), "EXAMPLE003",
+					relPath, lineOf(block.Start()), "code-block-validator-not-configured",
 					fmt.Sprintf(
 						"code block marked 'validate' but no validator is "+
 							"configured for language '%s': add "+
@@ -722,7 +722,7 @@ func runLints(
 					continue
 				}
 				results = append(results, lints.MustLintResult(
-					relPath, lineOf(block.Start()+verdict.Line), "EXAMPLE001",
+					relPath, lineOf(block.Start()+verdict.Line), "code-block-syntax-error",
 					"Python syntax error in code block: "+verdict.Message,
 				))
 			case "json":
@@ -734,14 +734,14 @@ func runLints(
 					results = append(results, lints.MustLintResult(
 						relPath,
 						lineOf(block.Start()+failure.Line([]rune(document))),
-						"EXAMPLE001",
+						"code-block-syntax-error",
 						"JSON syntax error in code block: "+failure.Message,
 					))
 				}
 			}
 		}
 
-		// SPELL001 -- prose spelling. One engine, shared with the
+		// unknown-word -- prose spelling. One engine, shared with the
 		// corpus-wide sweep: this surface only turns its findings into
 		// diagnostics. Posts are in allDocs by the time the rules run,
 		// so they are checked on the same terms as documentation pages.
@@ -750,18 +750,18 @@ func runLints(
 		)
 		for _, miss := range rawMisspellings {
 			results = append(results, lints.MustLintResult(
-				relPath, lineOf(miss.Line), "SPELL001",
+				relPath, lineOf(miss.Line), "unknown-word",
 				withRemedy(miss.Describe(), spellRemedy(miss.Word, vocab)),
 			))
 		}
 
-		// VOCAB004 -- a rejected term in the page's prose, on the lines
+		// rejected-term-in-prose -- a rejected term in the page's prose, on the lines
 		// the spell check reads.
 		results = append(results, rejectedTermLints(
 			relPath, bodyContent, fmOffset, rejectedMatchers,
 		)...)
 
-		// SPELL001 over what a directive rendered. The raw body carries
+		// unknown-word over what a directive rendered. The raw body carries
 		// a marker where the reader sees text, so prose that came out
 		// of a data file -- a CV declared in TOML, a curated listing's
 		// blurbs -- was never scanned at all and shipped its typos. The
@@ -779,11 +779,11 @@ func runLints(
 		results = append(results, rendered...)
 	}
 
-	// SEO012 -- WCAG contrast ratios.
+	// insufficient-theme-color-contrast -- WCAG contrast ratios.
 	results = checkContrast(results, config, docsDir)
 
-	// PARAM001 -- parameter documentation completeness.
-	// RETURN001 -- return type documentation.
+	// undocumented-parameter -- parameter documentation completeness.
+	// undocumented-return-value -- return type documentation.
 	baseDir := projectRoot
 	for _, resolved := range resolvedDirectives {
 		if resolved.Name != "ref" || resolved.SourceEntry == nil {
@@ -809,7 +809,7 @@ func runLints(
 		for _, param := range details.Params {
 			if !param.Documented {
 				results = append(results, lints.MustLintResult(
-					resolved.File, nil, "PARAM001",
+					resolved.File, nil, "undocumented-parameter",
 					fmt.Sprintf("parameter '%s' not documented", param.Name),
 				))
 			}
@@ -818,7 +818,7 @@ func runLints(
 			*details.ReturnType != "None" && *details.ReturnType != "NoneType" &&
 			!details.ReturnDocumented {
 			results = append(results, lints.MustLintResult(
-				resolved.File, nil, "RETURN001",
+				resolved.File, nil, "undocumented-return-value",
 				fmt.Sprintf("return type '%s' not documented", *details.ReturnType),
 			))
 		}

@@ -38,41 +38,41 @@ func TestVersionConsistencyRules(t *testing.T) {
 		absent           []string
 	}{
 		{
-			name:             "VER002 the config disagrees with the manifest",
+			name:             "version-mismatch-with-project-manifest the config disagrees with the manifest",
 			configVersion:    "2.0.0",
 			pyprojectVersion: "1.0.0",
-			want:             []string{"VER002"},
+			want:             []string{"version-mismatch-with-project-manifest"},
 		},
 		{
-			name:             "VER002 is silent when they agree",
+			name:             "version-mismatch-with-project-manifest is silent when they agree",
 			configVersion:    "1.0.0",
 			pyprojectVersion: "1.0.0",
-			absent:           []string{"VER002"},
+			absent:           []string{"version-mismatch-with-project-manifest"},
 		},
 		{
-			name:          "VER002 is silent with no manifest to detect from",
+			name:          "version-mismatch-with-project-manifest is silent with no manifest to detect from",
 			configVersion: "1.0.0",
-			absent:        []string{"VER002"},
+			absent:        []string{"version-mismatch-with-project-manifest"},
 		},
 		{
-			name:             "VER003 the versions array's last entry disagrees",
+			name:             "version-mismatch-with-versions-array the versions array's last entry disagrees",
 			configVersion:    "2.0.0",
 			pyprojectVersion: "2.0.0",
 			versions:         []any{map[string]any{"version": "1.0.0"}},
-			want:             []string{"VER003"},
+			want:             []string{"version-mismatch-with-versions-array"},
 		},
 		{
-			name:             "VER003 is silent when they agree",
+			name:             "version-mismatch-with-versions-array is silent when they agree",
 			configVersion:    "2.0.0",
 			pyprojectVersion: "2.0.0",
 			versions:         []any{map[string]any{"version": "2.0.0"}},
-			absent:           []string{"VER003"},
+			absent:           []string{"version-mismatch-with-versions-array"},
 		},
 		{
-			name:             "VER003 is silent with no versions array",
+			name:             "version-mismatch-with-versions-array is silent with no versions array",
 			configVersion:    "2.0.0",
 			pyprojectVersion: "2.0.0",
-			absent:           []string{"VER003"},
+			absent:           []string{"version-mismatch-with-versions-array"},
 		},
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
@@ -166,15 +166,15 @@ func TestVER004GeneratedRootFileVersion(t *testing.T) {
 			if err != nil {
 				t.Fatalf("CheckDocs: %v", err)
 			}
-			fired := hasCode(result.Lints, "VER004")
+			fired := hasCode(result.Lints, "version-mismatch-in-generated-root-file")
 			if fired != testCase.want {
-				t.Fatalf("VER004 fired = %v, want %v: %v",
-					fired, testCase.want, messagesOf(withCode(result.Lints, "VER004")))
+				t.Fatalf("version-mismatch-in-generated-root-file fired = %v, want %v: %v",
+					fired, testCase.want, messagesOf(withCode(result.Lints, "version-mismatch-in-generated-root-file")))
 			}
 			if !fired {
 				return
 			}
-			diagnostic := withCode(result.Lints, "VER004")[0]
+			diagnostic := withCode(result.Lints, "version-mismatch-in-generated-root-file")[0]
 			if diagnostic.File() != "README.md" {
 				t.Errorf("file = %q, want README.md", diagnostic.File())
 			}
@@ -205,7 +205,7 @@ func runGit(t *testing.T, dir string, args ...string) {
 }
 
 // multiVersionProject writes a project with two declared versions whose older
-// tag carries no docs directory, so extracting it fails and VER001 fires.
+// tag carries no docs directory, so extracting it fails and version-tag-not-extractable fires.
 func multiVersionProject(t *testing.T) string {
 	t.Helper()
 	isolate(t)
@@ -237,15 +237,15 @@ func multiVersionProject(t *testing.T) string {
 
 func TestVersionFilterControlsVER001(t *testing.T) {
 
-	t.Run("without a filter VER001 fires", func(t *testing.T) {
+	t.Run("without a filter version-tag-not-extractable fires", func(t *testing.T) {
 		root := multiVersionProject(t)
 		result, err := CheckDocs(root, nil, true, "", "", handle())
 		if err != nil {
 			t.Fatalf("CheckDocs: %v", err)
 		}
-		matching := withCode(result.Lints, "VER001")
+		matching := withCode(result.Lints, "version-tag-not-extractable")
 		if len(matching) == 0 {
-			t.Fatalf("VER001 missing; got %v", codes(result.Lints))
+			t.Fatalf("version-tag-not-extractable missing; got %v", codes(result.Lints))
 		}
 		if !strings.Contains(matching[0].Message(), "0.1.0") {
 			t.Errorf("message = %q, want it to name the version", matching[0].Message())
@@ -261,9 +261,9 @@ func TestVersionFilterControlsVER001(t *testing.T) {
 		if err != nil {
 			t.Fatalf("CheckDocs: %v", err)
 		}
-		if hasCode(result.Lints, "VER001") {
-			t.Errorf("VER001 fired under a version filter: %v",
-				messagesOf(withCode(result.Lints, "VER001")))
+		if hasCode(result.Lints, "version-tag-not-extractable") {
+			t.Errorf("version-tag-not-extractable fired under a version filter: %v",
+				messagesOf(withCode(result.Lints, "version-tag-not-extractable")))
 		}
 	})
 
@@ -287,8 +287,8 @@ func TestVersionFilterControlsVER001(t *testing.T) {
 		if failed == 0 {
 			t.Errorf("no directive failed; got %+v", result.DirectiveResults)
 		}
-		if hasCode(result.Lints, "VER001") {
-			t.Error("VER001 fired under a version filter")
+		if hasCode(result.Lints, "version-tag-not-extractable") {
+			t.Error("version-tag-not-extractable fired under a version filter")
 		}
 	})
 }

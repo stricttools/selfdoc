@@ -29,13 +29,13 @@ import (
 // writes nothing: the buffer is unsaved, and looking at it must not decide
 // that it is saved.
 
-// Long enough to clear SEO009's description floor, so a post the rules have
+// Long enough to clear description-too-short-for-search-snippet's description floor, so a post the rules have
 // nothing to say about really produces no findings.
 const analysisDescription = "A post written to carry no lint findings at all, with a description " +
 	"long enough that the description-length rule has nothing to say about " +
 	"it either."
 
-// Between 30 and 80 words, which is the band SEO007 holds every first
+// Between 30 and 80 words, which is the band first-paragraph-length-out-of-range holds every first
 // paragraph to.
 const analysisBody = "This post exists so that the editor has something to analyse, and it " +
 	"says enough to clear the first-paragraph length rule without saying " +
@@ -262,19 +262,19 @@ func TestLintMarks(t *testing.T) {
 
 	t.Run("a second h1 is reported under its registered code", func(t *testing.T) {
 		content := analysisPost("# Hello World\n\n# Second Title\n\nBody.\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "SEO001") {
+		if !hasCode(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
 			t.Error("the second heading was not reported")
 		}
 	})
 
 	t.Run("the severity comes from the registry", func(t *testing.T) {
 		content := analysisPost("# Hello World\n\n# Second Title\n\nBody.\n")
-		want, err := lints.LintSeverity("SEO001")
+		want, err := lints.LintSeverity("multiple-top-level-headings")
 		if err != nil {
 			t.Fatalf("LintSeverity: %v", err)
 		}
 		for _, finding := range lintsOf(t, project, postHelloName, content) {
-			if finding.Code == "SEO001" && finding.Severity != want {
+			if finding.Code == "multiple-top-level-headings" && finding.Severity != want {
 				t.Errorf("severity = %q, want %q", finding.Severity, want)
 			}
 		}
@@ -285,7 +285,7 @@ func TestLintMarks(t *testing.T) {
 		lines := strings.Split(content, "\n")
 		found := false
 		for _, finding := range lintsOf(t, project, postHelloName, content) {
-			if finding.Code != "SEO002" {
+			if finding.Code != "skipped-heading-level" {
 				continue
 			}
 			found = true
@@ -305,7 +305,7 @@ func TestLintMarks(t *testing.T) {
 		// The build skips a draft; the editor is where a draft is written.
 		content := analysisPostAs("Hello World", "hello-world", true,
 			"# Hello World\n\n# Second Title\n\nBody.\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "SEO001") {
+		if !hasCode(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
 			t.Error("the draft was not judged")
 		}
 	})
@@ -313,7 +313,7 @@ func TestLintMarks(t *testing.T) {
 	t.Run("the buffer is judged, not the saved file", func(t *testing.T) {
 		// The saved post is clean; only the unsaved buffer has the defect.
 		content := analysisPost("# Hello World\n\n# Second Title\n\nBody.\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "SEO001") {
+		if !hasCode(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
 			t.Error("the buffer's own defect was not reported")
 		}
 		if findings := lintsOf(t, project, postHelloName, cleanPost); len(findings) != 0 {
@@ -324,7 +324,7 @@ func TestLintMarks(t *testing.T) {
 	t.Run("spelling is not reported twice", func(t *testing.T) {
 		// One misspelling is one finding, in the lane that has its columns.
 		content := analysisPost("# Hello World\n\nThis is teh post content.\n")
-		if hasCode(lintsOf(t, project, postHelloName, content), "SPELL001") {
+		if hasCode(lintsOf(t, project, postHelloName, content), "unknown-word") {
 			t.Error("the lint lane restated the spelling finding")
 		}
 		if words := wordsOf(spellingOf(t, content)); strings.Join(words, ",") != "teh" {
@@ -334,7 +334,7 @@ func TestLintMarks(t *testing.T) {
 }
 
 func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
-	// XREF001 resolves a link against the page's own directory. A post's own
+	// broken-page-link resolves a link against the page's own directory. A post's own
 	// directory is the posts directory, so the pages a post's .md link can
 	// name are the other posts -- which is the slice the rules run over,
 	// saved posts and the unsaved buffer alike.
@@ -354,7 +354,7 @@ func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
 		project := twoPostProject(t)
 		content := analysisPost("# Hello World\n\n" + analysisBody +
 			"\n\nSee [it](sibling.md).\n")
-		if hasCode(lintsOf(t, project, postHelloName, content), "XREF001") {
+		if hasCode(lintsOf(t, project, postHelloName, content), "broken-page-link") {
 			t.Error("a link to a saved sibling was called unknown")
 		}
 	})
@@ -363,7 +363,7 @@ func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
 		project := twoPostProject(t)
 		content := analysisPost("# Hello World\n\n" + analysisBody +
 			"\n\nSee [it](ghost.md).\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "XREF001") {
+		if !hasCode(lintsOf(t, project, postHelloName, content), "broken-page-link") {
 			t.Error("a link to nothing was not reported")
 		}
 	})
@@ -373,7 +373,7 @@ func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
 		project := twoPostProject(t)
 		content := analysisPost("# Hello World\n\n" + analysisBody +
 			"\n\nSee [the guide](../../alpha/guide/).\n")
-		if hasCode(lintsOf(t, project, postHelloName, content), "XREF001") {
+		if hasCode(lintsOf(t, project, postHelloName, content), "broken-page-link") {
 			t.Error("a site-level address was judged as a file link")
 		}
 	})
@@ -386,16 +386,16 @@ func TestABufferThatIsNotAValidPost(t *testing.T) {
 	t.Run("a missing date is the post check's own code", func(t *testing.T) {
 		broken := "+++\ntitle = \"No Date\"\nslug = \"no-date\"\ndirectives = false\n+++\nBody\n"
 		codes := codesOf(lintsOf(t, project, postHelloName, broken))
-		if strings.Join(codes, ",") != "POST001" {
-			t.Errorf("codes = %v, want POST001", codes)
+		if strings.Join(codes, ",") != "missing-post-date" {
+			t.Errorf("codes = %v, want missing-post-date", codes)
 		}
 	})
 
 	t.Run("a missing title is reported rather than raised", func(t *testing.T) {
 		broken := "+++\ndate = 2024-01-15\nslug = \"no-title\"\ndirectives = false\n+++\nB\n"
 		codes := codesOf(lintsOf(t, project, postHelloName, broken))
-		if strings.Join(codes, ",") != "POST002" {
-			t.Errorf("codes = %v, want POST002", codes)
+		if strings.Join(codes, ",") != "missing-post-title" {
+			t.Errorf("codes = %v, want missing-post-title", codes)
 		}
 	})
 
@@ -424,7 +424,7 @@ func TestAnalyzeBuffer(t *testing.T) {
 		if words := wordsOf(findings.Spelling); strings.Join(words, ",") != "teh" {
 			t.Errorf("words = %v, want only teh", words)
 		}
-		if !hasCode(findings.Lints, "SEO001") {
+		if !hasCode(findings.Lints, "multiple-top-level-headings") {
 			t.Errorf("lints = %v", codesOf(findings.Lints))
 		}
 	})
@@ -511,7 +511,7 @@ func TestTheAnalysisEndpoint(t *testing.T) {
 		if words := jsonWords(t, body); strings.Join(words, ",") != "teh" {
 			t.Errorf("words = %v, want only teh", words)
 		}
-		if !contains(jsonCodes(t, body), "SEO001") {
+		if !contains(jsonCodes(t, body), "multiple-top-level-headings") {
 			t.Errorf("lints = %v", jsonCodes(t, body))
 		}
 	})
@@ -539,8 +539,8 @@ func TestTheAnalysisEndpoint(t *testing.T) {
 		if words := jsonWords(t, body); strings.Join(words, ",") != "teh" {
 			t.Errorf("words = %v, want only teh", words)
 		}
-		if codes := jsonCodes(t, body); strings.Join(codes, ",") != "POST001" {
-			t.Errorf("codes = %v, want POST001", codes)
+		if codes := jsonCodes(t, body); strings.Join(codes, ",") != "missing-post-date" {
+			t.Errorf("codes = %v, want missing-post-date", codes)
 		}
 
 		previewStatus, _ := request(t, port, "POST",

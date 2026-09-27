@@ -66,7 +66,7 @@ import (
 const HashVersion = 3
 
 // BaselineAcceptHintTemplate is the remediation hint appended to every
-// DRIFT001 message, with "{source}" and "{page}" standing for what changed
+// description-drifted-from-source message, with "{source}" and "{page}" standing for what changed
 // and which page reports it. BaselineAcceptHint renders it.
 //
 // A drift error means the source moved while the description did not -- which
@@ -203,7 +203,7 @@ type Warning struct {
 	Message string
 }
 
-// BaselineAcceptHint renders the DRIFT001 remediation hint for pagePath.
+// BaselineAcceptHint renders the description-drifted-from-source remediation hint for pagePath.
 //
 // source names what changed ("docstrings", "CLI schema") so the operator
 // knows what to review the description against.

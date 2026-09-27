@@ -14,15 +14,15 @@ import (
 	"github.com/stricttools/selfdoc/internal/tokenizer"
 )
 
-// EXAMPLE002/EXAMPLE003 -- opt-in semantic example validation.
+// code-block-validation-failed/code-block-validator-not-configured -- opt-in semantic example validation.
 //
-// EXAMPLE001 parses a fenced block; it cannot tell a program that compiles
+// code-block-syntax-error parses a fenced block; it cannot tell a program that compiles
 // from a program that works. A "validate" token in the fence info string opts
 // a block into the semantic tier: selfdoc writes it to a scratch file and
 // hands the path to the command configured for that language under the
 // "examples" config key. The marker is opt-in because most documentation
 // snippets are deliberately partial -- an opt-out polarity would flag them
-// all. A marker whose language has no configured command is EXAMPLE003, a hard
+// all. A marker whose language has no configured command is code-block-validator-not-configured, a hard
 // error rather than a silent skip: a marker that validates nothing is
 // indistinguishable from a passing one, which is the defect the whole tier
 // exists to remove.
@@ -102,7 +102,7 @@ func exampleOutputTail(result effects.Result) string {
 }
 
 // validateExampleBlock executes one "validate"-marked block and returns its
-// EXAMPLE002 diagnostic, or nil when the block passed.
+// code-block-validation-failed diagnostic, or nil when the block passed.
 //
 // The block's raw text is written to a scratch file whose suffix names the
 // language, "{file}" in commandTemplate is replaced with that path, and the
@@ -165,7 +165,7 @@ func validateExampleBlock(
 			)
 		}
 		lint := lints.MustLintResult(
-			relPath, lineOf(block.Start()), "EXAMPLE002", message,
+			relPath, lineOf(block.Start()), "code-block-validation-failed", message,
 		)
 		return &lint, nil
 	}
@@ -173,7 +173,7 @@ func validateExampleBlock(
 		return nil, nil
 	}
 	lint := lints.MustLintResult(
-		relPath, lineOf(block.Start()), "EXAMPLE002",
+		relPath, lineOf(block.Start()), "code-block-validation-failed",
 		fmt.Sprintf(
 			"%s example failed validation (exit %d): %s",
 			block.Lang, result.ExitCode, exampleOutputTail(result),

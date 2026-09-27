@@ -599,7 +599,7 @@ func TestAMissingChromeAssetFails(t *testing.T) {
 }
 
 // TestTheChromeReferenceIsResolvedByTheLinkPass: a dangling stylesheet href is
-// the LINK001 pass's failure, not a new one.
+// the broken-emitted-reference pass's failure, not a new one.
 func TestTheChromeReferenceIsResolvedByTheLinkPass(t *testing.T) {
 	root := newAssembly(t)
 	clearChrome(t, root)

@@ -140,7 +140,7 @@ func isWordLetter(char rune) bool {
 	return unicode.IsLetter(char)
 }
 
-// spellRenderedDirectives runs SPELL001 over prose a directive rendered out of
+// spellRenderedDirectives runs unknown-word over prose a directive rendered out of
 // an authored document.
 //
 // A page's own prose is scanned from the raw body, where every reported column
@@ -192,7 +192,7 @@ func spellRenderedDirectives(
 				suffix = "; did you mean " + strings.Join(miss.Suggestions, ", ") + "?"
 			}
 			results = append(results, lints.MustLintResult(
-				location.File, lineOf(location.Line), "SPELL001",
+				location.File, lineOf(location.Line), "unknown-word",
 				fmt.Sprintf(
 					"Unrecognized word '%s' (col %d)%s -- rendered into %s%s",
 					miss.Word, location.Column, suffix, relPath,
@@ -219,7 +219,7 @@ func sentenceEnd(text, remedy string) string {
 	return "." + remedy
 }
 
-// spellRemedy is the sentence a SPELL001 message closes with: how to resolve
+// spellRemedy is the sentence a unknown-word message closes with: how to resolve
 // the word when it is genuine. A word pending review is resolved by the review
 // commands; any other by accepting it.
 func spellRemedy(word string, vocab *vocabulary.Vocabulary) string {
@@ -235,7 +235,7 @@ func spellRemedy(word string, vocab *vocabulary.Vocabulary) string {
 }
 
 // rejectedTermLints reports every rejected term on the prose lines of one
-// page body (VOCAB004). fmOffset turns a body line into a file line.
+// page body (rejected-term-in-prose). fmOffset turns a body line into a file line.
 func rejectedTermLints(
 	relPath, body string, fmOffset int, matchers []vocabulary.Matcher,
 ) []lints.LintResult {
@@ -259,7 +259,7 @@ func rejectedTermLints(
 						rejected.Pattern)
 				}
 				results = append(results, lints.MustLintResult(
-					relPath, lineOf(line.Number+fmOffset), "VOCAB004", message,
+					relPath, lineOf(line.Number+fmOffset), "rejected-term-in-prose", message,
 				))
 			}
 		}
@@ -269,7 +269,7 @@ func rejectedTermLints(
 
 // vocabularyLints are the lints about the project's vocabulary files rather
 // than about one page: unused, duplicated, disagreeing and unsorted entries
-// (VOCAB001, VOCAB002, VOCAB003, VOCAB005). pages are every page the run
+// (unused-accepted-word, duplicate-vocabulary-entry, accepted-word-matches-rejected-pattern, unsorted-vocabulary-entries). pages are every page the run
 // checks, whose raw and resolved text decide whether an accepted word is used.
 func vocabularyLints(vocab *vocabulary.Vocabulary, pages map[string]docs.Doc) []lints.LintResult {
 	texts := make([]string, 0, 2*len(pages))
@@ -281,10 +281,10 @@ func vocabularyLints(vocab *vocabulary.Vocabulary, pages map[string]docs.Doc) []
 		code     string
 		findings []vocabulary.Finding
 	}{
-		{"VOCAB001", vocabulary.UnusedAccepted(vocab.Project, texts)},
-		{"VOCAB002", vocabulary.DuplicateEntries(vocab)},
-		{"VOCAB003", vocabulary.CoveredAccepted(vocab)},
-		{"VOCAB005", vocabulary.UnsortedEntries(vocab.Project, vocab.Pending)},
+		{"unused-accepted-word", vocabulary.UnusedAccepted(vocab.Project, texts)},
+		{"duplicate-vocabulary-entry", vocabulary.DuplicateEntries(vocab)},
+		{"accepted-word-matches-rejected-pattern", vocabulary.CoveredAccepted(vocab)},
+		{"unsorted-vocabulary-entries", vocabulary.UnsortedEntries(vocab.Project, vocab.Pending)},
 	} {
 		for _, finding := range group.findings {
 			var line *int

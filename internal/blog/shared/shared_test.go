@@ -458,7 +458,7 @@ func TestAnAssemblyWithNoHomeProjectNeedsNoListing(t *testing.T) {
 	}
 }
 
-// TestHomepageNeverWritesAnAbsoluteOrRootedLink -- see LINK001.
+// TestHomepageNeverWritesAnAbsoluteOrRootedLink -- see broken-emitted-reference.
 func TestHomepageNeverWritesAnAbsoluteOrRootedLink(t *testing.T) {
 	t.Parallel()
 	for _, hop := range []string{"", "../", "../../"} {
@@ -503,7 +503,7 @@ func TestGenerateBlogIndex(t *testing.T) {
 	}
 }
 
-// TestBlogIndexNeverWritesAnAbsoluteOrRootedLink -- see LINK001. An
+// TestBlogIndexNeverWritesAnAbsoluteOrRootedLink -- see broken-emitted-reference. An
 // origin-absolute address names nothing when the site is served from a
 // subdirectory, and an absolute URL resolves on the deployed host alone.
 func TestBlogIndexNeverWritesAnAbsoluteOrRootedLink(t *testing.T) {

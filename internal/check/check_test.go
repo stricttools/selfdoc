@@ -415,9 +415,9 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 
 		result := checkFixture(t, root)
 
-		if hasCode(result.Lints, "LINK001") {
-			t.Errorf("LINK001 fired with no built tree: %v",
-				messagesOf(withCode(result.Lints, "LINK001")))
+		if hasCode(result.Lints, "broken-emitted-reference") {
+			t.Errorf("broken-emitted-reference fired with no built tree: %v",
+				messagesOf(withCode(result.Lints, "broken-emitted-reference")))
 		}
 	})
 
@@ -431,8 +431,8 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 
 		result := checkFixture(t, root)
 
-		if !hasCode(result.Lints, "LINK001") {
-			t.Fatalf("LINK001 missing; got %v", codes(result.Lints))
+		if !hasCode(result.Lints, "broken-emitted-reference") {
+			t.Fatalf("broken-emitted-reference missing; got %v", codes(result.Lints))
 		}
 	})
 
@@ -448,9 +448,9 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 
 		result := checkFixture(t, root)
 
-		if hasCode(result.Lints, "LINK001") {
-			t.Errorf("LINK001 fired on a resolving tree: %v",
-				messagesOf(withCode(result.Lints, "LINK001")))
+		if hasCode(result.Lints, "broken-emitted-reference") {
+			t.Errorf("broken-emitted-reference fired on a resolving tree: %v",
+				messagesOf(withCode(result.Lints, "broken-emitted-reference")))
 		}
 	})
 }
@@ -461,11 +461,11 @@ func TestFilterLints(t *testing.T) {
 	write(t, filepath.Join(fixture.DocsDir, "page.md"), "# Title\n\nText.\n")
 	result.Lints = runLintsOn(t, fixture, nil)
 
-	if !hasCode(result.Lints, "SEO006") {
-		t.Fatalf("the fixture produced no SEO006: %v", codes(result.Lints))
+	if !hasCode(result.Lints, "missing-frontmatter-description") {
+		t.Fatalf("the fixture produced no missing-frontmatter-description: %v", codes(result.Lints))
 	}
-	filtered := FilterLints(result.Lints, map[string]struct{}{"SEO006": {}})
-	if hasCode(filtered, "SEO006") {
+	filtered := FilterLints(result.Lints, map[string]struct{}{"missing-frontmatter-description": {}})
+	if hasCode(filtered, "missing-frontmatter-description") {
 		t.Error("a suppressed code survived the filter")
 	}
 	if len(FilterLints(result.Lints, nil)) != len(result.Lints) {

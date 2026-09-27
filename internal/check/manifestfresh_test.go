@@ -151,8 +151,8 @@ func TestManifestFreshness(t *testing.T) {
 					t.Errorf("diagnostic %d file = %q, want %q",
 						index, results[index].File(), wantFile)
 				}
-				if results[index].Code() != "STALE002" {
-					t.Errorf("diagnostic %d code = %q, want STALE002",
+				if results[index].Code() != "manifest-disagrees-with-disk" {
+					t.Errorf("diagnostic %d code = %q, want manifest-disagrees-with-disk",
 						index, results[index].Code())
 				}
 			}

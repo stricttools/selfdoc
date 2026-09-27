@@ -25,7 +25,7 @@
 //     actually carries, and llms.txt references every declared project's own
 //     llms.txt.
 //   - Every reference resolves. Internal links, canonicals, sitemap entries
-//     and feed links all go through the resolution package -- the same LINK001
+//     and feed links all go through the resolution package -- the same broken-emitted-reference
 //     pass a single project's build is checked with, run over the assembled
 //     tree.
 //   - Every page is addressable. A title, and a canonical under the site's

@@ -14,8 +14,8 @@ import (
 // checkVersionConsistency checks a project's version against its own
 // declarations.
 //
-// VER002: selfdoc.json's "version" differs from the version detected from the
-// project manifest. VER003: the last entry of the "versions" array does not
+// version-mismatch-with-project-manifest: selfdoc.json's "version" differs from the version detected from the
+// project manifest. version-mismatch-with-versions-array: the last entry of the "versions" array does not
 // match selfdoc.json's "version".
 func checkVersionConsistency(config map[string]any, dirPath string) []lints.LintResult {
 	var results []lints.LintResult
@@ -26,7 +26,7 @@ func checkVersionConsistency(config map[string]any, dirPath string) []lints.Lint
 		detected := util.DetectProjectVersion(dirPath, "")
 		if detected != "" && detected != configVersion {
 			results = append(results, lints.MustLintResult(
-				"selfdoc.json", nil, "VER002",
+				"selfdoc.json", nil, "version-mismatch-with-project-manifest",
 				fmt.Sprintf(
 					"Config version '%s' does not match detected project version '%s'",
 					configVersion, detected,
@@ -43,7 +43,7 @@ func checkVersionConsistency(config map[string]any, dirPath string) []lints.Lint
 		}
 		if lastVersion != "" && lastVersion != configVersion {
 			results = append(results, lints.MustLintResult(
-				"selfdoc.json", nil, "VER003",
+				"selfdoc.json", nil, "version-mismatch-with-versions-array",
 				fmt.Sprintf(
 					"Last entry in versions array ('%s') does not match config version ('%s')",
 					lastVersion, configVersion,
@@ -56,7 +56,7 @@ func checkVersionConsistency(config map[string]any, dirPath string) []lints.Lint
 }
 
 // checkVersionMatch checks that version-bearing generated content is not stale
-// (VER004).
+// (version-mismatch-in-generated-root-file).
 //
 // A root file generated from a template that interpolates
 // `var key="project.version"` carries a RESOLVED version literal on disk.
@@ -118,7 +118,7 @@ func checkVersionMatch(
 			continue
 		}
 		results = append(results, lints.MustLintResult(
-			outputName, nil, "VER004",
+			outputName, nil, "version-mismatch-in-generated-root-file",
 			fmt.Sprintf(
 				"Generated root file '%s' embeds the project version from '%s' "+
 					"but does not contain the expected version '%s'. Regenerate "+

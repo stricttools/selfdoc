@@ -13,82 +13,82 @@ import (
 func TestCodeBlocksAreNotProse(t *testing.T) {
 	runLintCases(t, []lintCase{
 		{
-			name: "SEO001 does not see an H1 inside a fence",
+			name: "multiple-top-level-headings does not see an H1 inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Real Title\n\n" +
 				"```markdown\n# Example Title\n```\n",
-			absent: []string{"SEO001"},
+			absent: []string{"multiple-top-level-headings"},
 		},
 		{
-			name: "SEO001 does not see several H1s inside a fence",
+			name: "multiple-top-level-headings does not see several H1s inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Real Title\n\n" +
 				"```markdown\n# One\n\n# Two\n```\n",
-			absent: []string{"SEO001"},
+			absent: []string{"multiple-top-level-headings"},
 		},
 		{
-			name: "SEO013 still fires when the only H1 is inside a fence",
+			name: "missing-page-title still fires when the only H1 is inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n" +
 				"```markdown\n# Example Title\n```\n\nText.\n",
-			want: []string{"SEO013"},
+			want: []string{"missing-page-title"},
 		},
 		{
-			name: "SEO003 does not see an empty alt inside a fence",
+			name: "empty-image-alt-text does not see an empty alt inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```markdown\n![](image.png)\n```\n",
-			absent: []string{"SEO003"},
+			absent: []string{"empty-image-alt-text"},
 		},
 		{
-			name: "SEO003 still fires outside a fence",
+			name: "empty-image-alt-text still fires outside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```markdown\n![](inside.png)\n```\n\n![](outside.png)\n",
-			want: []string{"SEO003"},
+			want: []string{"empty-image-alt-text"},
 			assert: func(t *testing.T, _ lintFixture, results []lints.LintResult) {
-				if len(withCode(results, "SEO003")) != 1 {
-					t.Errorf("SEO003 fired %d times, want once",
-						len(withCode(results, "SEO003")))
+				if len(withCode(results, "empty-image-alt-text")) != 1 {
+					t.Errorf("empty-image-alt-text fired %d times, want once",
+						len(withCode(results, "empty-image-alt-text")))
 				}
 			},
 		},
 		{
-			name: "SEO002 does not see a heading gap inside a fence",
+			name: "skipped-heading-level does not see a heading gap inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n## Section\n\nText.\n\n" +
 				"```markdown\n## Two\n\n#### Four\n```\n",
-			absent: []string{"SEO002"},
+			absent: []string{"skipped-heading-level"},
 		},
 		{
-			name: "SEO008 does not count the words inside a fence",
+			name: "low-numeric-data-density does not count the words inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```\n" + repeatWords("word", 300) + "\n```\n",
-			absent: []string{"SEO008"},
+			absent: []string{"low-numeric-data-density"},
 		},
 		{
-			name: "SEO008 counts prose beside a fence",
+			name: "low-numeric-data-density counts prose beside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				repeatWords("word", 250) + "\n\n```\ncode here\n```\n",
-			want: []string{"SEO008"},
+			want: []string{"low-numeric-data-density"},
 		},
 		{
-			name: "SEO007 does not see a heading inside a fence",
+			name: "first-paragraph-length-out-of-range does not see a heading inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```markdown\n## Section\n\nShort.\n```\n",
-			absent: []string{"SEO007"},
+			absent: []string{"first-paragraph-length-out-of-range"},
 		},
 		{
-			name: "SEO014 does not see meaningless alt inside a fence",
+			name: "meaningless-image-alt-text does not see meaningless alt inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```markdown\n![screenshot](a.png)\n```\n",
-			absent: []string{"SEO014"},
+			absent: []string{"meaningless-image-alt-text"},
 		},
 		{
-			name: "SEO011 does not see consecutive headings inside a fence",
+			name: "empty-heading-section does not see consecutive headings inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n## Real\n\nText.\n\n" +
 				"```markdown\n## One\n## Two\n```\n",
-			absent: []string{"SEO011"},
+			absent: []string{"empty-heading-section"},
 		},
 		{
-			name: "XREF001 does not see a link inside a fence",
+			name: "broken-page-link does not see a link inside a fence",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```markdown\n[Guide](missing.md)\n```\n",
-			absent: []string{"XREF001"},
+			absent: []string{"broken-page-link"},
 		},
 	})
 }

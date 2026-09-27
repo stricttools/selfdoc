@@ -40,7 +40,7 @@ func TestTheCommandTreeIsTheDeclaredOne(t *testing.T) {
 func TestTheGroupsCarryTheirHelp(t *testing.T) {
 	schema := New(Options{}).DumpSchemaDict()
 	for path, want := range map[string]string{
-		"baseline":    "Manage the content and description hash baselines that drive staleness (STALE001) and source-drift (DRIFT001) detection during selfdoc check",
+		"baseline":    "Manage the content and description hash baselines that drive staleness (stale-page-description) and source-drift (description-drifted-from-source) detection during selfdoc check",
 		"assembly":    "Manage the unified multi-project documentation assembly and deployment",
 		"blog":        "Blog posts, the authoring app, and publishing this project's documentation to the unified site",
 		"blog.post":   "Manage blog posts and chronological content for the documentation site",

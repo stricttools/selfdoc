@@ -11,7 +11,7 @@ import (
 type pythonSyntaxVerdict struct {
 	// Status is "ok" or "syntax".
 	Status string
-	// Message is what EXAMPLE001 reports after its own prefix, set only for
+	// Message is what code-block-syntax-error reports after its own prefix, set only for
 	// the "syntax" status.
 	Message string
 	// Line is the 1-based line within the snippet the error sits on.
@@ -20,7 +20,7 @@ type pythonSyntaxVerdict struct {
 
 // checkPythonSyntax parses source with the Python grammar.
 //
-// The message is always "invalid syntax". EXAMPLE001 used to report the
+// The message is always "invalid syntax". code-block-syntax-error used to report the
 // interpreter's own SyntaxError text, which named the cause ("'(' was never
 // closed"); no parser but CPython's produces those strings, and a documentation
 // check that needs an interpreter installed to report anything is worse than

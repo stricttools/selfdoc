@@ -72,7 +72,7 @@ var rootBlockPattern = regexp.MustCompile(`:root\s*\{([^}]+)\}`)
 // darkBlockPattern matches the dark-mode custom-property block.
 var darkBlockPattern = regexp.MustCompile(`\[data-theme="dark"\]\s*\{([^}]+)\}`)
 
-// contrastPair is one foreground/background pair SEO012 measures.
+// contrastPair is one foreground/background pair insufficient-theme-color-contrast measures.
 type contrastPair struct {
 	// Foreground and Background are the custom properties the pair reads.
 	Foreground, Background string
@@ -91,7 +91,7 @@ var contrastPairs = []contrastPair{
 	{"--sidebar-text", "--sidebar-bg", "sidebar text", 4.5},
 }
 
-// ThemeCSS returns the stylesheet SEO012 measures for a theme.
+// ThemeCSS returns the stylesheet insufficient-theme-color-contrast measures for a theme.
 //
 // The Python resolved a path on disk because the themes shipped as files in an
 // installed package; here they are embedded, so the bytes come out of the
@@ -111,7 +111,7 @@ func ThemeCSS(themeName string) (string, bool) {
 	return css, true
 }
 
-// checkContrast appends an SEO012 diagnostic for every theme colour pair whose
+// checkContrast appends an insufficient-theme-color-contrast diagnostic for every theme colour pair whose
 // contrast ratio is under its WCAG 2.1 threshold.
 //
 // The theme's own stylesheet is measured first, in both colour schemes, and
@@ -178,7 +178,7 @@ func mergeVars(base, overrides map[string]string) map[string]string {
 	return merged
 }
 
-// checkPairs measures each pair against cssVars and appends an SEO012
+// checkPairs measures each pair against cssVars and appends an insufficient-theme-color-contrast
 // diagnostic for every one below its threshold.
 func checkPairs(
 	results []lints.LintResult,
@@ -201,7 +201,7 @@ func checkPairs(
 			continue
 		}
 		results = append(results, lints.MustLintResult(
-			cssFile, nil, "SEO012",
+			cssFile, nil, "insufficient-theme-color-contrast",
 			fmt.Sprintf(
 				"Low contrast ratio %.1f:1 for %s%s on %s (WCAG AA requires %s:1)",
 				ratio, modePrefix, pair.Label, pair.Background,

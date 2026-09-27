@@ -44,8 +44,8 @@ func TestTheEncoderWritesThePythonsSpelling(t *testing.T) {
 	})
 
 	t.Run("an absent line is null", func(t *testing.T) {
-		assertEncodes(t, LintFinding{Code: "SEO010", Severity: "warn", Message: "x"},
-			`{"code": "SEO010", "severity": "warn", "line": null, "message": "x"}`)
+		assertEncodes(t, LintFinding{Code: "description-too-long-for-search-snippet", Severity: "warn", Message: "x"},
+			`{"code": "description-too-long-for-search-snippet", "severity": "warn", "line": null, "message": "x"}`)
 	})
 
 	t.Run("a page target carries no section members", func(t *testing.T) {

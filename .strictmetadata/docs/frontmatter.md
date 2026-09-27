@@ -32,8 +32,8 @@ consequences an author notices:
   (`2026-09-14`), tags are an array of strings, a switch is `true` or `false`,
   and `nav_order` is a whole number. A quoted date or a `draft = "yes"` is
   refused rather than coerced.
-- **A post's required keys are the schema's**, so the `POST001`, `POST002`,
-  `POST003` and `POST006` lints report what the validator found rather than
+- **A post's required keys are the schema's**, so the `missing-post-date`, `missing-post-title`,
+  `malformed-post-date` and `invalid-post-directives-declaration` lints report what the validator found rather than
   re-deciding it.
 
 ## The key registry

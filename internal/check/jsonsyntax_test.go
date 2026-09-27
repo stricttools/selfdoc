@@ -10,7 +10,7 @@ import (
 // jsonConformanceDocuments are the documents the JSON checker is measured
 // against CPython on. Each one exercises a distinct refusal of the decoder, so
 // a divergence in message or line is a divergence in the diagnostic
-// EXAMPLE001 reports.
+// code-block-syntax-error reports.
 var jsonConformanceDocuments = []string{
 	`{"a": 1}`,
 	`{"a": 1,}`,
@@ -112,7 +112,7 @@ sys.stdout.write(json.dumps(verdicts))
 `
 
 // TestJSONSyntaxMatchesCPython measures the JSON checker against the decoder
-// whose messages EXAMPLE001 reports.
+// whose messages code-block-syntax-error reports.
 //
 // The rule quotes the decoder's own message and blames the decoder's own line,
 // so this is the assertion that the Go reimplementation says what CPython

@@ -24,7 +24,7 @@ This page defines the key terms used throughout the selfdoc documentation.
 ::: **Atom feed**: An XML feed (`feed.xml`) that allows RSS readers to subscribe to documentation updates. Pages can opt out with `feed = false` in frontmatter.
 ::: **Canonical URL**: The definitive URL for a page, set via the `base_url` config field. Used in `<link rel="canonical">` tags and sitemaps to avoid duplicate content in search engines.
 ::: **JSON-LD**: Structured data embedded in each HTML page as a `<script type="application/ld+json">` block. Provides search engines with machine-readable metadata about the page.
-::: **Lint rule**: An SEO or content quality check run by `selfdoc check`. Each rule has a code (e.g., SEO001) and produces warnings or errors with file locations.
+::: **Lint rule**: An SEO or content quality check run by `selfdoc check`. Each rule has a name (e.g., multiple-top-level-headings), which is also the option that governs it, and produces warnings or errors with file locations.
 ::: **Coverage**: The proportion of public symbols in your source code that are documented through directives. Reported by `selfdoc check` and held to the `coverage_threshold` fraction in `selfdoc.json`.
 ::: **Staleness**: When a page's content has changed since the last build but its frontmatter description has not been updated. Detected by comparing content and description hashes.
 ::: **Build pipeline**: The seven-stage process that transforms Markdown templates into a static HTML site: scan, resolve, tokenize, render, post-process, generate HTML, auxiliary output.

@@ -1,6 +1,6 @@
 // The spelling engine and its vendored word list.
 //
-// One engine serves the check command (SPELL001) and the spell-corpus
+// One engine serves the check command (unknown-word) and the spell-corpus
 // command, so everything asserted here holds for both. The tests are grouped
 // by the things that can independently be wrong: what the word list contains
 // and whether it ships legally, how an accepted vocabulary is consulted, and

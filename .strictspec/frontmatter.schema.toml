@@ -209,7 +209,7 @@ type = "string"
 
 # -- What a post must carry ---------------------------------------------------
 #
-# These are the whole of the presence rules the POST001, POST002 and POST006
+# These are the whole of the presence rules the missing-post-date, missing-post-title and invalid-post-directives-declaration
 # lints report; the reader maps a diagnostic on one of these fields to its code
 # rather than checking the same fact again.
 

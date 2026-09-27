@@ -9,7 +9,7 @@
 //
 // # Post checks are here too
 //
-// The Python this ports split post validation (POST001-POST007) out into the
+// The Python this ports split post validation (the post lints) out into the
 // former blog package and reached it back through a registered hook, because
 // the two packages shipped as separate installs and the docs generator could
 // not import it.

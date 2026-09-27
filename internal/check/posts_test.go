@@ -58,9 +58,9 @@ func TestAPostIsHeldToThePageRules(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	matching := withCode(result.Lints, "SEO003")
+	matching := withCode(result.Lints, "empty-image-alt-text")
 	if len(matching) != 1 {
-		t.Fatalf("SEO003 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("empty-image-alt-text count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if matching[0].File() != postPath("hello.md") {
 		t.Errorf("file = %q, want %q", matching[0].File(), postPath("hello.md"))
@@ -114,14 +114,14 @@ func TestAPostMissingADescriptionIsAnError(t *testing.T) {
 	result := checkFixture(t, root)
 
 	found := false
-	for _, diagnostic := range withCode(result.Lints, "SEO006") {
+	for _, diagnostic := range withCode(result.Lints, "missing-frontmatter-description") {
 		if diagnostic.File() == postPath("hello.md") {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("SEO006 did not name the post: %v",
-			messagesOf(withCode(result.Lints, "SEO006")))
+		t.Errorf("missing-frontmatter-description did not name the post: %v",
+			messagesOf(withCode(result.Lints, "missing-frontmatter-description")))
 	}
 }
 
@@ -134,8 +134,8 @@ func TestADraftIsNotLinted(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "SEO003") {
-		t.Errorf("a draft was linted: %v", messagesOf(withCode(result.Lints, "SEO003")))
+	if hasCode(result.Lints, "empty-image-alt-text") {
+		t.Errorf("a draft was linted: %v", messagesOf(withCode(result.Lints, "empty-image-alt-text")))
 	}
 }
 
@@ -198,25 +198,25 @@ func TestCheckPostsCodeMapping(t *testing.T) {
 		{
 			name:        "a missing title",
 			frontmatter: []string{"date = 2025-01-01"},
-			wantCode:    "POST002",
+			wantCode:    "missing-post-title",
 			wantFile:    filepath.Join("blog", "p.md"),
 		},
 		{
 			name:        "a missing date",
 			frontmatter: []string{"title = \"No Date\""},
-			wantCode:    "POST001",
+			wantCode:    "missing-post-date",
 			wantFile:    filepath.Join("blog", "p.md"),
 		},
 		{
 			name:        "a date that is not YYYY-MM-DD",
 			frontmatter: []string{"title = \"Bad\"", `date = "Jan 15 2025"`},
-			wantCode:    "POST003",
+			wantCode:    "malformed-post-date",
 			wantFile:    filepath.Join("blog", "p.md"),
 		},
 		{
 			name:        "a directive declaration that is not a boolean",
 			frontmatter: []string{"title = \"Fine\"", "date = 2025-01-01", `directives = "maybe"`},
-			wantCode:    "POST006",
+			wantCode:    "invalid-post-directives-declaration",
 			wantFile:    filepath.Join("blog", "p.md"),
 		},
 		{
@@ -225,7 +225,7 @@ func TestCheckPostsCodeMapping(t *testing.T) {
 				"title = \"Prose\"", "date = 2025-01-01", "directives = false",
 			},
 			body:     "First line.\n\nSecond line.\n\n:-: ref path=\"x\"\n",
-			wantCode: "POST007",
+			wantCode: "directive-marker-in-post-without-directives",
 			wantFile: filepath.Join("blog", "p.md"),
 			// The frontmatter is five lines, then the two prose
 			// lines with their blank separators: the marker sits on
@@ -309,8 +309,8 @@ func TestCheckPostsDuplicateSlug(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckPosts: %v", err)
 	}
-	if len(results) != 1 || results[0].Code() != "POST004" {
-		t.Fatalf("diagnostics = %v, want one POST004", messagesOf(results))
+	if len(results) != 1 || results[0].Code() != "duplicate-post-slug" {
+		t.Fatalf("diagnostics = %v, want one duplicate-post-slug", messagesOf(results))
 	}
 	if results[0].File() != filepath.Join("blog", "a.md") &&
 		results[0].File() != filepath.Join("blog", "b.md") {
@@ -334,7 +334,7 @@ func TestCheckPostsWithNoPostsDirectory(t *testing.T) {
 func TestCheckPostsReadsTheConventionalDirectoryWithNoPostsBlock(t *testing.T) {
 	// A project with no "posts" block still keeps its posts at the
 	// conventional .strictmetadata/posts/, which is where the post-lint slice
-	// reads them from. An invalid one there is a POST diagnostic, not a
+	// reads them from. An invalid one there is a post lint diagnostic, not a
 	// hard error raised past the check's own reporting.
 	isolate(t)
 	root := t.TempDir()
@@ -347,8 +347,8 @@ func TestCheckPostsReadsTheConventionalDirectoryWithNoPostsBlock(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckPosts: %v", err)
 	}
-	if len(results) != 1 || results[0].Code() != "POST001" {
-		t.Fatalf("diagnostics = %v, want one POST001", messagesOf(results))
+	if len(results) != 1 || results[0].Code() != "missing-post-date" {
+		t.Fatalf("diagnostics = %v, want one missing-post-date", messagesOf(results))
 	}
 	want := filepath.Join(".strictmetadata", "posts", "p.md")
 	if results[0].File() != want {
@@ -363,8 +363,8 @@ func TestCheckDocsReportsPostValidation(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if !hasCode(result.Lints, "POST001") {
-		t.Fatalf("POST001 missing; got %v", codes(result.Lints))
+	if !hasCode(result.Lints, "missing-post-date") {
+		t.Fatalf("missing-post-date missing; got %v", codes(result.Lints))
 	}
 }
 
@@ -379,8 +379,8 @@ func TestLintPostBuffer(t *testing.T) {
 		t.Fatalf("LintPostBuffer: %v", err)
 	}
 
-	if !hasCode(results, "SEO003") {
-		t.Fatalf("SEO003 missing; got %v", messagesOf(results))
+	if !hasCode(results, "empty-image-alt-text") {
+		t.Fatalf("empty-image-alt-text missing; got %v", messagesOf(results))
 	}
 	for _, diagnostic := range results {
 		if diagnostic.File() != postPath("hello.md") {
@@ -399,7 +399,7 @@ func TestLintPostBufferJudgesDrafts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("LintPostBuffer: %v", err)
 	}
-	if !hasCode(results, "SEO003") {
+	if !hasCode(results, "empty-image-alt-text") {
 		t.Errorf("a draft buffer produced %v, want the defect reported",
 			messagesOf(results))
 	}

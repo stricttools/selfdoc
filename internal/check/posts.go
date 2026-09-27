@@ -32,7 +32,7 @@ var defaultPostsDirRel = layout.PostsDefault
 // caller. The check's surfaces must agree on where a post is: a validation
 // pass that answered "this project has no posts" while the lint slice read
 // the conventional directory made an invalid post there a hard error instead
-// of the POST diagnostic it is.
+// of the post lint diagnostic it is.
 func postsDirRel(projectConfig map[string]any) string {
 	return configString(configDict(projectConfig, "posts"), "dir", defaultPostsDirRel)
 }
@@ -55,7 +55,7 @@ func postsDirectory(projectConfig map[string]any, dirPath string) (string, strin
 
 // PostErrorLint turns one post refusal into its lint diagnostic.
 //
-// The mapping from a refusal to its POST code lives here and nowhere else, so
+// The mapping from a refusal to its post lint lives here and nowhere else, so
 // every surface that reports post validation -- the check, and the editor
 // judging an unsaved buffer -- says the same thing under the same code.
 //
@@ -69,7 +69,7 @@ func postsDirectory(projectConfig map[string]any, dirPath string) (string, strin
 // scan -- carry no kind of their own and are still matched by message.
 func PostErrorLint(err *posts.PostError, postsDirRelative string) lints.LintResult {
 	message := err.Error()
-	code := "POST001" // the fallback
+	code := "missing-post-date" // the fallback
 	switch {
 	// A refusal the frontmatter schema decided carries its own code: the
 	// missing title, the missing or mistyped date, the missing or
@@ -78,11 +78,11 @@ func PostErrorLint(err *posts.PostError, postsDirRelative string) lints.LintResu
 	case err.Code != "":
 		code = err.Code
 	case strings.Contains(message, "Duplicate slug"):
-		code = "POST004"
+		code = "duplicate-post-slug"
 	case strings.Contains(message, "Slug immutability violation"):
-		code = "POST005"
+		code = "changed-published-post-slug"
 	case strings.Contains(message, "declares 'directives = false'"):
-		code = "POST007"
+		code = "directive-marker-in-post-without-directives"
 	}
 
 	return lints.MustLintResult(
@@ -92,7 +92,7 @@ func PostErrorLint(err *posts.PostError, postsDirRelative string) lints.LintResu
 }
 
 // CheckPosts checks a project's blog posts for validation errors
-// (POST001-POST007), returning one diagnostic for the first invalid post.
+// (the post lints), returning one diagnostic for the first invalid post.
 //
 // The result is empty when the posts directory is not on disk and when every
 // post is valid. A project that declares no "posts" block is read at the
@@ -271,7 +271,7 @@ func postLintDocs(
 //     tree is not what the author is looking at.
 //
 // The rules run over the post slice alone, not the whole docs tree. The one
-// cross-page rule, XREF001, resolves a link against the page's own directory,
+// cross-page rule, broken-page-link, resolves a link against the page's own directory,
 // and a post's own directory is the posts directory -- so the docs pages could
 // never have matched a post's link anyway, and the slice is the universe the
 // whole-project run offers a post.

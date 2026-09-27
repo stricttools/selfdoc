@@ -237,7 +237,7 @@ func TestTheCheckFiresOnAnOriginAbsoluteReference(t *testing.T) {
 }
 
 func TestTheCheckFiresOnAShareAddressThatWasNotWritten(t *testing.T) {
-	// A share address is a reference, so LINK001 owns it too. This is the
+	// A share address is a reference, so broken-emitted-reference owns it too. This is the
 	// structural guard behind the share control's shape: a control offering
 	// the current version's v/<version>/ address -- which nothing writes
 	// until that version is superseded -- is not a judgement call the

@@ -22,7 +22,7 @@ import (
 // than from a second opinion written for the editor:
 //
 //   - spelling -- [github.com/stricttools/selfdoc/internal/spelling], the same
-//     engine the check runs (SPELL001) and the corpus sweep runs over the
+//     engine the check runs (unknown-word) and the corpus sweep runs over the
 //     fleet: the same masks, the same vendored word list, the same project
 //     vocabulary (selfdoc's built-in baseline and the repository's own
 //     .strictmetadata/vocabulary/terms.toml). Its coordinates are line and column, because
@@ -39,7 +39,7 @@ import (
 //   - Drafts are judged. The build excludes a draft because it is not on the
 //     site; the editor includes it because a draft is what is being written,
 //     and a defect found after publishing is found too late.
-//   - SPELL001 is dropped from the lint lane. It is the same engine's
+//   - unknown-word is dropped from the lint lane. It is the same engine's
 //     finding, and the spelling lane already carries it with the column the
 //     editor needs. Reporting it in both lanes would put one misspelling in
 //     two places -- an inline mark and a gutter marker -- for no added
@@ -52,7 +52,7 @@ import (
 
 // spellingCode is the lint code the spelling lane owns. Dropped from the lint
 // lane so one misspelling is one finding.
-const spellingCode = "SPELL001"
+const spellingCode = "unknown-word"
 
 // SpellingFinding is one unrecognized word, in both coordinate systems: Line
 // and Column (1-based, what a diagnostic reads like) and From / To (half-open

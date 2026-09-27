@@ -135,7 +135,7 @@ func splitPathParts(p string) []string {
 // this addressing -- links there cannot be fixed at source. A build of the
 // working tree never gets that tolerance: source under edit must name
 // pages the way the build emits them, and a stale ".html" link there is a
-// defect LINK001 reports.
+// defect broken-emitted-reference reports.
 func RewriteInternalLinks(bodyHTML, mdPath string, legacyHTMLLinks bool) string {
 	return replaceAllSubmatchFunc(pageRefRE, bodyHTML, func(whole string, groups []string) string {
 		attr, ref := groups[1], groups[2]

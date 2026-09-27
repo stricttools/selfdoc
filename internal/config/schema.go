@@ -366,10 +366,10 @@ var Schema = []FieldSpec{
 		ItemSpec: &FieldSpec{
 			Name:        "<item>",
 			Type:        FieldStr,
-			Pattern:     `^[A-Z]+\d+$`,
-			Description: "Warning-severity lint rule ID to ignore (e.g. SEO007, SEO008, XREF001).",
+			Pattern:     `^[a-z]+(-[a-z]+)*$`,
+			Description: "Warning-severity lint rule ID to ignore (e.g. first-paragraph-length-out-of-range, low-numeric-data-density, broken-page-link).",
 		},
-		Description: "List of warning-severity lint rule IDs to suppress (e.g. 'SEO007', 'SEO008'). Error-severity codes cannot be suppressed and are refused at load.",
+		Description: "List of warning-severity lint rule IDs to suppress (e.g. 'first-paragraph-length-out-of-range', 'low-numeric-data-density'). Error-severity codes cannot be suppressed and are refused at load.",
 	},
 	{
 		Name:           "root_files",

@@ -10,14 +10,14 @@ import (
 )
 
 func (c *cli) registerBaseline() {
-	group := c.app.Group("baseline", "Manage the content and description hash baselines that drive staleness (STALE001) and source-drift (DRIFT001) detection during selfdoc check")
+	group := c.app.Group("baseline", "Manage the content and description hash baselines that drive staleness (stale-page-description) and source-drift (description-drifted-from-source) detection during selfdoc check")
 
 	group.Command("accept",
-		"Accept a reviewed staleness or drift dead-end by advancing a page's stored content and description hash baseline to its current values. Use this only after a human has confirmed the page's content changed but its existing frontmatter description was reviewed and is still accurate. Each named page must currently be reporting a STALE001 or DRIFT001 error; accepting clears that error so selfdoc check passes without rewriting an already-correct description.",
+		"Accept a reviewed staleness or drift dead-end by advancing a page's stored content and description hash baseline to its current values. Use this only after a human has confirmed the page's content changed but its existing frontmatter description was reviewed and is still accurate. Each named page must currently be reporting a stale-page-description or description-drifted-from-source error; accepting clears that error so selfdoc check passes without rewriting an already-correct description.",
 		c.cmdBaselineAccept,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
-			strictcli.NewArg("page", "Page identifier(s) to accept, named exactly as shown in 'selfdoc check' output (e.g. 'en/index.md'). Each page must currently report a STALE001 or DRIFT001 error; pages are named explicitly with no glob or --all shortcut so acceptance stays a deliberate per-page action.",
+			strictcli.NewArg("page", "Page identifier(s) to accept, named exactly as shown in 'selfdoc check' output (e.g. 'en/index.md'). Each page must currently report a stale-page-description or description-drifted-from-source error; pages are named explicitly with no glob or --all shortcut so acceptance stays a deliberate per-page action.",
 				strictcli.Variadic(), strictcli.ArgRequired()),
 		),
 		strictcli.WithFlags(

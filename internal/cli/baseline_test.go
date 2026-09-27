@@ -10,9 +10,9 @@ import (
 	"github.com/stricttools/selfdoc/internal/testproject"
 )
 
-// `selfdoc baseline accept` -- the STALE001/DRIFT001 escape hatch.
+// `selfdoc baseline accept` -- the stale-page-description/description-drifted-from-source escape hatch.
 //
-// STALE001 fires when a page's resolved content changed versus its stored
+// stale-page-description fires when a page's resolved content changed versus its stored
 // baseline but its frontmatter description did not. The baseline is
 // deliberately frozen while a page is in an error state, so re-running
 // gen/check can never clear the error on its own -- the only other escape is
@@ -45,7 +45,7 @@ func staleIdentifiers(t *testing.T, dir string) []string {
 	var pages []string
 	for _, raw := range payload["lints"].([]any) {
 		lint := raw.(map[string]any)
-		if lint["code"] == "STALE001" {
+		if lint["code"] == "stale-page-description" {
 			pages = append(pages, lint["file"].(string))
 		}
 	}
@@ -62,7 +62,7 @@ func TestBaselineAcceptClearsTheDeadEnd(t *testing.T) {
 		t.Fatalf("a fresh page is reported stale: %v", stale)
 	}
 
-	// Change the content, keep the description: STALE001, and it persists
+	// Change the content, keep the description: stale-page-description, and it persists
 	// across runs because the baseline stays frozen.
 	writePage(t, dir, "Original description", "Completely rewritten content.", "page.md")
 	stale := staleIdentifiers(t, dir)
@@ -70,7 +70,7 @@ func TestBaselineAcceptClearsTheDeadEnd(t *testing.T) {
 		t.Fatalf("expected one stale page, got %v", stale)
 	}
 	if again := staleIdentifiers(t, dir); len(again) != 1 {
-		t.Fatalf("STALE001 did not persist across runs: %v", again)
+		t.Fatalf("stale-page-description did not persist across runs: %v", again)
 	}
 
 	result := run(t, dir, "baseline", "accept", stale[0], "--no-auto-commit")
@@ -83,12 +83,12 @@ func TestBaselineAcceptClearsTheDeadEnd(t *testing.T) {
 	if !strings.Contains(result.Stdout, stale[0]) {
 		t.Errorf("the report does not name the page:\n%s", result.Stdout)
 	}
-	if !strings.Contains(result.Stdout, "(cleared STALE001)") {
+	if !strings.Contains(result.Stdout, "(cleared stale-page-description)") {
 		t.Errorf("the report does not name what it cleared:\n%s", result.Stdout)
 	}
 
 	if after := staleIdentifiers(t, dir); len(after) != 0 {
-		t.Errorf("STALE001 survived the acceptance: %v", after)
+		t.Errorf("stale-page-description survived the acceptance: %v", after)
 	}
 }
 
@@ -115,7 +115,7 @@ func TestBaselineAcceptClearsSeveralPagesAtOnce(t *testing.T) {
 		t.Errorf("the summary is not the declared one:\n%s", result.Stdout)
 	}
 	if after := staleIdentifiers(t, dir); len(after) != 0 {
-		t.Errorf("STALE001 survived the acceptance: %v", after)
+		t.Errorf("stale-page-description survived the acceptance: %v", after)
 	}
 }
 
@@ -247,7 +247,7 @@ func TestBaselineAcceptCommitsNothingWhenTheFlagRefusesIt(t *testing.T) {
 		t.Fatalf("--no-auto-commit committed %q", after)
 	}
 	if stale := staleIdentifiers(t, dir); len(stale) != 0 {
-		t.Fatalf("the acceptance did not clear STALE001: %v", stale)
+		t.Fatalf("the acceptance did not clear stale-page-description: %v", stale)
 	}
 }
 
@@ -294,7 +294,7 @@ func driftIdentifiers(t *testing.T, dir string) []string {
 	var pages []string
 	for _, raw := range payload["lints"].([]any) {
 		lint := raw.(map[string]any)
-		if lint["code"] == "DRIFT001" {
+		if lint["code"] == "description-drifted-from-source" {
 			pages = append(pages, lint["file"].(string))
 		}
 	}
@@ -302,7 +302,7 @@ func driftIdentifiers(t *testing.T, dir string) []string {
 }
 
 // TestADescriptionEditClearsDriftThroughGen is the release order: a docstring
-// changes, check reports DRIFT001, the description is rewritten, and gen runs
+// changes, check reports description-drifted-from-source, the description is rewritten, and gen runs
 // before the next check. gen records the new description; it used to keep the
 // old source-docstring hash beside it, so the check after it reported the
 // rewritten page as drifted and only `baseline accept` cleared it -- against
@@ -336,6 +336,6 @@ func TestADescriptionEditClearsDriftThroughGen(t *testing.T) {
 		t.Fatalf("gen failed: %s\n%s", result.Stdout, result.Stderr)
 	}
 	if drift := driftIdentifiers(t, dir); len(drift) != 0 {
-		t.Errorf("DRIFT001 survived the description edit: %v", drift)
+		t.Errorf("description-drifted-from-source survived the description edit: %v", drift)
 	}
 }

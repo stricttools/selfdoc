@@ -3,6 +3,7 @@ package lints
 import (
 	"errors"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -70,7 +71,7 @@ func TestRegistryKeepsDocumentOrder(t *testing.T) {
 // -- Emission is structurally constrained -------------------------------------
 
 func TestLintResultDerivesSeverityFromTheRegistry(t *testing.T) {
-	for _, code := range []string{"SEO001", "SEO002"} {
+	for _, code := range []string{"multiple-top-level-headings", "skipped-heading-level"} {
 		want, err := LintSeverity(code)
 		if err != nil {
 			t.Fatalf("LintSeverity(%q) = %v", code, err)
@@ -110,7 +111,7 @@ func TestLintSeverityRefusesAnUnregisteredCode(t *testing.T) {
 
 func TestLintResultAccessorsReturnCopies(t *testing.T) {
 	line := 7
-	result := MustLintResult("a.md", &line, "SEO001", "m")
+	result := MustLintResult("a.md", &line, "multiple-top-level-headings", "m")
 	line = 99
 	if got := result.Line(); got == nil || *got != 7 {
 		t.Fatalf("Line() = %v, want 7 -- the constructor did not copy", got)
@@ -123,7 +124,7 @@ func TestLintResultAccessorsReturnCopies(t *testing.T) {
 }
 
 func TestLintResultLineIsOptional(t *testing.T) {
-	result := MustLintResult("a.md", nil, "SEO001", "m")
+	result := MustLintResult("a.md", nil, "multiple-top-level-headings", "m")
 	if result.Line() != nil {
 		t.Fatalf("Line() = %v, want nil", result.Line())
 	}
@@ -132,11 +133,11 @@ func TestLintResultLineIsOptional(t *testing.T) {
 // -- Suppression lists are checked against the registry -----------------------
 
 func TestParseIgnoreCodesAcceptsRegisteredCodes(t *testing.T) {
-	got, err := ParseIgnoreCodes("SEO007, SEO008", "--ignore")
+	got, err := ParseIgnoreCodes("first-paragraph-length-out-of-range, low-numeric-data-density", "--ignore")
 	if err != nil {
 		t.Fatalf("ParseIgnoreCodes returned %v", err)
 	}
-	want := map[string]struct{}{"SEO007": {}, "SEO008": {}}
+	want := map[string]struct{}{"first-paragraph-length-out-of-range": {}, "low-numeric-data-density": {}}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("ParseIgnoreCodes = %v, want %v", got, want)
 	}
@@ -153,7 +154,7 @@ func TestParseIgnoreCodesOfAnEmptyValueIsEmpty(t *testing.T) {
 }
 
 func TestParseIgnoreCodesRefusesAnUnregisteredCode(t *testing.T) {
-	_, err := ParseIgnoreCodes("SEO007,SEO0O8", "--ignore")
+	_, err := ParseIgnoreCodes("first-paragraph-length-out-of-range,SEO0O8", "--ignore")
 	var unknown *UnknownLintCodeError
 	if !errors.As(err, &unknown) {
 		t.Fatalf("error %T is not an *UnknownLintCodeError", err)
@@ -164,12 +165,12 @@ func TestParseIgnoreCodesRefusesAnUnregisteredCode(t *testing.T) {
 }
 
 func TestParseIgnoreCodesRefusesAnErrorSeverityCode(t *testing.T) {
-	_, err := ParseIgnoreCodes("SEO007,LINK001", "--ignore")
+	_, err := ParseIgnoreCodes("first-paragraph-length-out-of-range,broken-emitted-reference", "--ignore")
 	var unsuppressable *UnsuppressableLintCodeError
 	if !errors.As(err, &unsuppressable) {
 		t.Fatalf("error %T is not an *UnsuppressableLintCodeError", err)
 	}
-	if !strings.Contains(err.Error(), "LINK001") {
+	if !strings.Contains(err.Error(), "broken-emitted-reference") {
 		t.Errorf("message %q does not name the code", err.Error())
 	}
 }
@@ -210,7 +211,7 @@ func TestValidateLintCodesRefusals(t *testing.T) {
 	}{
 		{
 			label:  "every unregistered code is named, with the source",
-			codes:  []string{"SEO007", "NOPE001", "NOPE002"},
+			codes:  []string{"first-paragraph-length-out-of-range", "NOPE001", "NOPE002"},
 			source: "lint_ignore",
 			kind:   "unknown",
 			want: "lint_ignore names lint code(s) the registry does not carry: " +
@@ -219,28 +220,28 @@ func TestValidateLintCodesRefusals(t *testing.T) {
 		},
 		{
 			label:  "an error-severity code cannot be silenced",
-			codes:  []string{"LINK001"},
+			codes:  []string{"broken-emitted-reference"},
 			source: "'lint_ignore'",
 			kind:   "unsuppressable",
 			want: "'lint_ignore' names error-severity lint code(s), which cannot be " +
-				"suppressed: LINK001 (severity: error). An error says the build is " +
+				"suppressed: broken-emitted-reference (severity: error). An error says the build is " +
 				"wrong -- fix the defect it reports. Suppression reaches " +
 				"warning-severity codes only: " + suppressibleList + ".",
 		},
 		{
 			label:  "every error-severity code is named, not just the first",
-			codes:  []string{"SEO007", "LINK001", "STALE001"},
+			codes:  []string{"first-paragraph-length-out-of-range", "broken-emitted-reference", "stale-page-description"},
 			source: "--ignore",
 			kind:   "unsuppressable",
 			want: "--ignore names error-severity lint code(s), which cannot be " +
-				"suppressed: LINK001 (severity: error), STALE001 (severity: error). " +
+				"suppressed: broken-emitted-reference (severity: error), stale-page-description (severity: error). " +
 				"An error says the build is wrong -- fix the defect it reports. " +
 				"Suppression reaches warning-severity codes only: " +
 				suppressibleList + ".",
 		},
 		{
 			label:  "an unregistered code is reported before severity",
-			codes:  []string{"NOPE001", "LINK001"},
+			codes:  []string{"NOPE001", "broken-emitted-reference"},
 			source: "--ignore",
 			kind:   "unknown",
 			want: "--ignore names lint code(s) the registry does not carry: " +
@@ -282,9 +283,9 @@ func TestValidateLintCodesRefusals(t *testing.T) {
 
 func TestFilterLints(t *testing.T) {
 	all := []LintResult{
-		MustLintResult("a.md", intp(1), "SEO001", "one h1 too many"),
-		MustLintResult("a.md", intp(2), "SEO007", "a warning"),
-		MustLintResult("b.md", nil, "SEO008", "another warning"),
+		MustLintResult("a.md", intp(1), "multiple-top-level-headings", "one h1 too many"),
+		MustLintResult("a.md", intp(2), "first-paragraph-length-out-of-range", "a warning"),
+		MustLintResult("b.md", nil, "low-numeric-data-density", "another warning"),
 	}
 
 	tests := []struct {
@@ -294,27 +295,27 @@ func TestFilterLints(t *testing.T) {
 	}{
 		{
 			label: "no suppression list keeps everything",
-			want:  []string{"SEO001", "SEO007", "SEO008"},
+			want:  []string{"multiple-top-level-headings", "first-paragraph-length-out-of-range", "low-numeric-data-density"},
 		},
 		{
 			label:  "an empty suppression list keeps everything",
 			ignore: map[string]struct{}{},
-			want:   []string{"SEO001", "SEO007", "SEO008"},
+			want:   []string{"multiple-top-level-headings", "first-paragraph-length-out-of-range", "low-numeric-data-density"},
 		},
 		{
 			label:  "one suppressed code is dropped",
-			ignore: map[string]struct{}{"SEO007": {}},
-			want:   []string{"SEO001", "SEO008"},
+			ignore: map[string]struct{}{"first-paragraph-length-out-of-range": {}},
+			want:   []string{"multiple-top-level-headings", "low-numeric-data-density"},
 		},
 		{
 			label:  "several suppressed codes are dropped",
-			ignore: map[string]struct{}{"SEO007": {}, "SEO008": {}},
-			want:   []string{"SEO001"},
+			ignore: map[string]struct{}{"first-paragraph-length-out-of-range": {}, "low-numeric-data-density": {}},
+			want:   []string{"multiple-top-level-headings"},
 		},
 		{
 			label:  "a code no lint carries drops nothing",
-			ignore: map[string]struct{}{"SEO002": {}},
-			want:   []string{"SEO001", "SEO007", "SEO008"},
+			ignore: map[string]struct{}{"skipped-heading-level": {}},
+			want:   []string{"multiple-top-level-headings", "first-paragraph-length-out-of-range", "low-numeric-data-density"},
 		},
 	}
 
@@ -441,8 +442,8 @@ func TestCoverageBelowThreshold(t *testing.T) {
 }
 
 func TestCheckExitCode(t *testing.T) {
-	warning := MustLintResult("a.md", intp(1), "SEO007", "a warning")
-	errorLint := MustLintResult("a.md", intp(1), "LINK001", "a broken link")
+	warning := MustLintResult("a.md", intp(1), "first-paragraph-length-out-of-range", "a warning")
+	errorLint := MustLintResult("a.md", intp(1), "broken-emitted-reference", "a broken link")
 
 	tests := []struct {
 		label      string
@@ -504,7 +505,7 @@ func TestCheckExitCode(t *testing.T) {
 // malformed variant below is derived from.
 const validRegistry = "format_version = 1\n" +
 	"[[lints]]\n" +
-	"code = \"SEO001\"\n" +
+	"code = \"multiple-top-level-headings\"\n" +
 	"severity = \"error\"\n" +
 	"description = \"Multiple H1 headings on a page.\"\n"
 
@@ -532,7 +533,7 @@ func TestMalformedRegistriesAreRejected(t *testing.T) {
 	}{
 		{
 			label:    "a code outside the grammar",
-			document: strings.Replace(validRegistry, `code = "SEO001"`, `code = "seo1"`, 1),
+			document: strings.Replace(validRegistry, `code = "multiple-top-level-headings"`, `code = "seo1"`, 1),
 			want:     "STRICTSPEC_VALUE_STRING_REGEX",
 		},
 		{
@@ -559,7 +560,7 @@ func TestMalformedRegistriesAreRejected(t *testing.T) {
 		{
 			label: "a duplicate code",
 			document: validRegistry + "[[lints]]\n" +
-				"code = \"SEO001\"\n" +
+				"code = \"multiple-top-level-headings\"\n" +
 				"severity = \"warning\"\n" +
 				"description = \"dup\"\n",
 			want: "STRICTSPEC_INTRA_UNIQUE_BY",
@@ -598,12 +599,12 @@ func TestBuildRegistryBindsAValidDocument(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BuildRegistry returned %v", err)
 	}
-	if !reflect.DeepEqual(reg.Codes(), []string{"SEO001"}) {
-		t.Fatalf("codes = %v, want [SEO001]", reg.Codes())
+	if !reflect.DeepEqual(reg.Codes(), []string{"multiple-top-level-headings"}) {
+		t.Fatalf("codes = %v, want [multiple-top-level-headings]", reg.Codes())
 	}
-	spec, ok := reg.Spec("SEO001")
+	spec, ok := reg.Spec("multiple-top-level-headings")
 	if !ok {
-		t.Fatal("the bound registry does not carry SEO001")
+		t.Fatal("the bound registry does not carry multiple-top-level-headings")
 	}
 	if spec.Severity != "error" {
 		t.Errorf("severity = %q, want error", spec.Severity)
@@ -624,4 +625,15 @@ func containsString(haystack []string, needle string) bool {
 		}
 	}
 	return false
+}
+
+// A lint's name is also the name of the option that governs it, so it follows
+// the option-name grammar with no digits: lowercase words joined by hyphens.
+func TestEveryLintNameIsLowercaseKebabCaseWithoutDigits(t *testing.T) {
+	name := regexp.MustCompile(`^[a-z]+(-[a-z]+)*$`)
+	for _, code := range Registered().Codes() {
+		if !name.MatchString(code) {
+			t.Errorf("lint %q is not lowercase words joined by hyphens", code)
+		}
+	}
 }

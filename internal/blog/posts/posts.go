@@ -17,7 +17,7 @@
 //
 // Every refusal is a [PostError] naming the post's path relative to the posts
 // directory, and the line inside the post file when the defect sits at one.
-// The check surface turns one of these into a POST diagnostic, and a
+// The check surface turns one of these into a post lint diagnostic, and a
 // diagnostic's file and line are read by editors, CI annotations and the JSON
 // output -- none of which parse prose.
 package posts
@@ -45,7 +45,7 @@ import (
 // the post file's own line number, or nil for a defect that sits at no
 // particular line (a missing frontmatter field).
 //
-// Code is the POST lint code the refusal is reported under when the refusal
+// Code is the post lint the refusal is reported under when the refusal
 // came from the frontmatter schema -- the missing title, the missing or
 // misspelled date, the missing or non-boolean directive declaration. It is
 // empty for the refusals this package decides on its own (the slug rules and
@@ -147,7 +147,7 @@ func ManifestPosts(all []Post) []manifest.Post {
 func Parse(raw, relPath, publishedSlug string) (Post, error) {
 	// The frontmatter schema is what a post's title, date and directive
 	// declaration are required by: the block is validated as a post, and a
-	// refusal naming one of those keys becomes its POST code here. Nothing
+	// refusal naming one of those keys becomes its post lint here. Nothing
 	// below re-checks a fact the schema already decided.
 	block, readErr := util.ReadFrontmatter(raw, relPath, util.KindPost)
 	if readErr != nil {
@@ -239,7 +239,7 @@ func Parse(raw, relPath, publishedSlug string) (Post, error) {
 }
 
 // frontmatterRefusal turns the frontmatter reader's refusal into this
-// package's own, carrying the POST code the refused key decides.
+// package's own, carrying the post lint the refused key decides.
 //
 // The mapping is from the KEY the validator's diagnostic names, not from its
 // prose: a post's title, date and directive declaration are required by the
@@ -257,14 +257,14 @@ func frontmatterRefusal(err error, relPath string) *PostError {
 	}
 	switch {
 	case blockErr.Names("title"):
-		refusal.Code = "POST002"
+		refusal.Code = "missing-post-title"
 	case blockErr.Names("date"):
-		refusal.Code = "POST001"
+		refusal.Code = "missing-post-date"
 		if blockErr.HasCode("STRICTSPEC_TYPE_NOT_DATE") {
-			refusal.Code = "POST003"
+			refusal.Code = "malformed-post-date"
 		}
 	case blockErr.Names("directives"):
-		refusal.Code = "POST006"
+		refusal.Code = "invalid-post-directives-declaration"
 	}
 	return refusal
 }

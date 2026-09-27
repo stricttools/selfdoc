@@ -35,7 +35,7 @@ description = "Deploy your selfdoc site to Cloudflare Pages or GitHub Pages with
 +++
 ```
 
-If you omit `description`, selfdoc auto-extracts the first sentence from the page body. `selfdoc check` reports SEO006 as an **error** for a missing description -- it stops the run rather than warning -- and SEO009/SEO010 as warnings for descriptions that are too short or too long (aim for 110-160 characters). Nothing cuts a description short: what you write is what the page publishes, and 160 is where a search result stops rendering it.
+If you omit `description`, selfdoc auto-extracts the first sentence from the page body. `selfdoc check` reports missing-frontmatter-description as an **error** for a missing description -- it stops the run rather than warning -- and description-too-short-for-search-snippet/description-too-long-for-search-snippet as warnings for descriptions that are too short or too long (aim for 110-160 characters). Nothing cuts a description short: what you write is what the page publishes, and 160 is where a search result stops rendering it.
 
 ### The document title
 
@@ -43,7 +43,7 @@ A page's `<title>` is composed of written values only: the page's own title, the
 
 On a project deployed on its own there is no site above it, so an inner page renders `Deployment - selfdoc` and the index page renders its written title alone. On the unified site, the same inner page renders `Deployment - selfdoc - StrictTools` and the project's index page renders `selfdoc - StrictTools` -- the index page names no project, because it is the project's front page and its own title already says which project a reader arrived at.
 
-`og:title` and `twitter:title` carry the same string the `<title>` element does. The JSON-LD headline stays the page's own written title. `selfdoc check` measures the rendered title under SEO004 and warns past 60 characters, about what a search result displays.
+`og:title` and `twitter:title` carry the same string the `<title>` element does. The JSON-LD headline stays the page's own written title. `selfdoc check` measures the rendered title under page-title-too-long and warns past 60 characters, about what a search result displays.
 
 ### Author metadata
 
@@ -88,7 +88,7 @@ This accepts any BCP 47 tag (e.g., `en`, `en-US`, `pt-BR`).
 
 ## Lint Rules
 
-`selfdoc check` runs the `SEO` family of lint rules, covering heading structure, meta descriptions, image alt text, contrast ratios, title lengths, content density, and accessibility. Each rule has a code, a severity and an actionable fix suggestion, all declared once in the lint registry embedded in the binary. Most are warnings; SEO001 (multiple H1 headings), SEO006 (missing description) and SEO013 (no title source) are errors and stop the run. See the [Check Guide](../check-guide/) for every code with its severity and message.
+`selfdoc check` runs the search-engine and page-structure lint rules, covering heading structure, meta descriptions, image alt text, contrast ratios, title lengths, content density, and accessibility. Each rule has a name, a severity and an actionable fix suggestion, all declared once in the lint registry embedded in the binary. Most are warnings; multiple-top-level-headings (multiple H1 headings), missing-frontmatter-description (missing description) and missing-page-title (no title source) are errors and stop the run. See the [Check Guide](../check-guide/) for every code with its severity and message.
 
 ## llms.txt and llms-full.txt
 

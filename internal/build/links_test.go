@@ -212,8 +212,8 @@ func TestBuildRendersLegacyLinksInAnArchiveOnly(t *testing.T) {
 		}
 		named := false
 		for _, lint := range lints {
-			if lint.Code() != "LINK001" {
-				t.Errorf("the report carries %s, want only LINK001", lint.Code())
+			if lint.Code() != "broken-emitted-reference" {
+				t.Errorf("the report carries %s, want only broken-emitted-reference", lint.Code())
 			}
 			if strings.Contains(lint.Message(), "checks.html") {
 				named = true

@@ -34,9 +34,9 @@ func writePage(t *testing.T, root, description, body, name string) {
 		"+++\ndescription = \""+description+"\"\n+++\n# Page\n\n"+body+"\n")
 }
 
-// staleCount is how many STALE001 diagnostics a run produced.
+// staleCount is how many stale-page-description diagnostics a run produced.
 func staleCount(result *CheckResult) int {
-	return len(withCode(result.Lints, "STALE001"))
+	return len(withCode(result.Lints, "stale-page-description"))
 }
 
 func TestStaleFreezeIsSticky(t *testing.T) {
@@ -44,18 +44,18 @@ func TestStaleFreezeIsSticky(t *testing.T) {
 
 	writePage(t, root, "Original description", "Original content here.", "page.md")
 	if got := staleCount(checkFixture(t, root)); got != 0 {
-		t.Fatalf("a new page reported %d STALE001", got)
+		t.Fatalf("a new page reported %d stale-page-description", got)
 	}
 
 	writePage(t, root, "Original description", "Completely rewritten content.", "page.md")
 	if got := staleCount(checkFixture(t, root)); got != 1 {
-		t.Fatalf("changed content with an unchanged description reported %d STALE001", got)
+		t.Fatalf("changed content with an unchanged description reported %d stale-page-description", got)
 	}
 
 	// The baseline stays frozen, so the error persists -- the dead end
 	// baseline accept exists to break.
 	if got := staleCount(checkFixture(t, root)); got != 1 {
-		t.Errorf("a second run reported %d STALE001, want the frozen baseline to hold", got)
+		t.Errorf("a second run reported %d stale-page-description, want the frozen baseline to hold", got)
 	}
 }
 
@@ -65,19 +65,19 @@ func TestAcceptClearsStaleness(t *testing.T) {
 	checkFixture(t, root)
 	writePage(t, root, "Original description", "Completely rewritten content.", "page.md")
 	if got := staleCount(checkFixture(t, root)); got != 1 {
-		t.Fatalf("STALE001 count = %d, want 1", got)
+		t.Fatalf("stale-page-description count = %d, want 1", got)
 	}
 
 	accepted, err := AcceptBaselines([]string{"page.md"}, root, nil, handle())
 	if err != nil {
 		t.Fatalf("AcceptBaselines: %v", err)
 	}
-	if len(accepted) != 1 || accepted[0].Page != "page.md" || accepted[0].Code != "STALE001" {
+	if len(accepted) != 1 || accepted[0].Page != "page.md" || accepted[0].Code != "stale-page-description" {
 		t.Fatalf("accepted = %+v", accepted)
 	}
 
 	if got := staleCount(checkFixture(t, root)); got != 0 {
-		t.Errorf("STALE001 count after accept = %d, want 0", got)
+		t.Errorf("stale-page-description count after accept = %d, want 0", got)
 	}
 }
 
@@ -158,7 +158,7 @@ func TestAcceptAfterADescriptionEditSaysWhatHappened(t *testing.T) {
 	checkFixture(t, root)
 	writePage(t, root, "Original description", "Completely rewritten content.", "page.md")
 	if got := staleCount(checkFixture(t, root)); got != 1 {
-		t.Fatalf("STALE001 count = %d, want 1", got)
+		t.Fatalf("stale-page-description count = %d, want 1", got)
 	}
 
 	// The remedy: the description is rewritten to describe the new content.
@@ -299,7 +299,7 @@ func TestAcceptMultiplePagesInOneCall(t *testing.T) {
 	writePage(t, root, "Desc A original", "Body A rewritten.", "a.md")
 	writePage(t, root, "Desc B original", "Body B rewritten.", "b.md")
 	if got := staleCount(checkFixture(t, root)); got != 2 {
-		t.Fatalf("STALE001 count = %d, want 2", got)
+		t.Fatalf("stale-page-description count = %d, want 2", got)
 	}
 
 	accepted, err := AcceptBaselines([]string{"a.md", "b.md"}, root, nil, handle())
@@ -314,7 +314,7 @@ func TestAcceptMultiplePagesInOneCall(t *testing.T) {
 		t.Errorf("accepted = %+v, want both pages", accepted)
 	}
 	if got := staleCount(checkFixture(t, root)); got != 0 {
-		t.Errorf("STALE001 count after accept = %d, want 0", got)
+		t.Errorf("stale-page-description count after accept = %d, want 0", got)
 	}
 }
 
@@ -326,9 +326,9 @@ func TestAcceptUsesLocalePrefixedIdentifiers(t *testing.T) {
 	writePage(t, root, "Original description", "Rewritten content.", "page.md")
 
 	result := checkFixture(t, root)
-	stale := withCode(result.Lints, "STALE001")
+	stale := withCode(result.Lints, "stale-page-description")
 	if len(stale) != 1 {
-		t.Fatalf("STALE001 count = %d, want 1", len(stale))
+		t.Fatalf("stale-page-description count = %d, want 1", len(stale))
 	}
 	if stale[0].File() != "en/page.md" {
 		t.Errorf("file = %q, want the locale-prefixed identifier", stale[0].File())
@@ -345,7 +345,7 @@ func TestAcceptUsesLocalePrefixedIdentifiers(t *testing.T) {
 		t.Fatalf("accepted = %+v", accepted)
 	}
 	if got := staleCount(checkFixture(t, root)); got != 0 {
-		t.Errorf("STALE001 count after accept = %d, want 0", got)
+		t.Errorf("stale-page-description count after accept = %d, want 0", got)
 	}
 }
 
@@ -365,8 +365,8 @@ func TestComputeStalenessStateWritesNothing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ComputeStalenessState: %v", err)
 	}
-	if state.ErrorPages["page.md"] != "STALE001" {
-		t.Errorf("error pages = %v, want page.md frozen in STALE001", state.ErrorPages)
+	if state.ErrorPages["page.md"] != "stale-page-description" {
+		t.Errorf("error pages = %v, want page.md frozen in stale-page-description", state.ErrorPages)
 	}
 	if _, present := state.Current["page.md"]; !present {
 		t.Error("the current hashes do not carry the page")

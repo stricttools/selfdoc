@@ -50,7 +50,7 @@ func TestResolveTableLintsIsDispatched(t *testing.T) {
 	if !handled {
 		t.Fatal("table-lints is not dispatched by ResolveContent")
 	}
-	if !strings.Contains(rendered, "SEO001") {
+	if !strings.Contains(rendered, "multiple-top-level-headings") {
 		t.Errorf("the dispatched directive rendered no registry row:\n%s", rendered)
 	}
 }

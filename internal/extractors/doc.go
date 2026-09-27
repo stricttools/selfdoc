@@ -28,5 +28,5 @@
 // rather than silently answered with a stub. A name that is not on the list is
 // a language selfdoc has no extractor for, and NewStub answers it in band -- an
 // unsupported-language directive renders an error marker on the page instead of
-// aborting the build, which is what the LANG001 lint reports at check time.
+// aborting the build, which is what the unsupported-source-language lint reports at check time.
 package extractors

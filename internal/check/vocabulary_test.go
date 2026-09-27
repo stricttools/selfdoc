@@ -50,11 +50,11 @@ func noLint(t *testing.T, root, code string) {
 	}
 }
 
-// SPELL001's remedy names the accept command and the project's terms file,
+// unknown-word's remedy names the accept command and the project's terms file,
 // and running it clears the finding.
 func TestSpellRemedyNamesAcceptAndClears(t *testing.T) {
 	root := vocabularyProject(t, "The frobnitz turns.", "")
-	message := onlyLint(t, root, "SPELL001")
+	message := onlyLint(t, root, "unknown-word")
 	for _, want := range []string{"selfdoc vocabulary accept frobnitz --meaning", layout.TermsRel} {
 		if !strings.Contains(message, want) {
 			t.Errorf("the remedy does not carry %q: %s", want, message)
@@ -63,7 +63,7 @@ func TestSpellRemedyNamesAcceptAndClears(t *testing.T) {
 	if _, err := vocabulary.Accept(effects.Unbound(), root, "frobnitz", "The widget that turns."); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
-	noLint(t, root, "SPELL001")
+	noLint(t, root, "unknown-word")
 }
 
 // The spell check reads no file outside the repository: a machine-wide list
@@ -73,7 +73,7 @@ func TestSpellCheckReadsNoMachineList(t *testing.T) {
 	home := t.TempDir()
 	t.Setenv("HOME", home)
 	write(t, filepath.Join(home, "Projects", "ark", "spelling-accept.txt"), "frobnitz\n")
-	onlyLint(t, root, "SPELL001")
+	onlyLint(t, root, "unknown-word")
 }
 
 // A word pending review is still unknown; its remedy names the review
@@ -107,7 +107,7 @@ evidence = [".strictmetadata/docs/index.md:7: The frobnitz turns."]
 		t.Run(testCase.name, func(t *testing.T) {
 			root := vocabularyProject(t, "The frobnitz turns.", "")
 			write(t, layout.Path(root, layout.ReviewRel), pending)
-			message := onlyLint(t, root, "SPELL001")
+			message := onlyLint(t, root, "unknown-word")
 			for _, want := range []string{
 				layout.ReviewRel,
 				"selfdoc vocabulary approve frobnitz'",
@@ -124,12 +124,12 @@ evidence = [".strictmetadata/docs/index.md:7: The frobnitz turns."]
 			if testCase.spell {
 				// Dropped, the word is an ordinary unknown word again,
 				// with the accept remedy.
-				if message := onlyLint(t, root, "SPELL001"); !strings.Contains(message, "selfdoc vocabulary accept frobnitz") {
+				if message := onlyLint(t, root, "unknown-word"); !strings.Contains(message, "selfdoc vocabulary accept frobnitz") {
 					t.Errorf("after the drop, the remedy is %s", message)
 				}
 				return
 			}
-			noLint(t, root, "SPELL001")
+			noLint(t, root, "unknown-word")
 		})
 	}
 }
@@ -140,14 +140,14 @@ func TestAnUnusedAcceptedWordIsReportedAndItsRemedyClears(t *testing.T) {
 word = "frobnitz"
 meaning = "The widget that turns."
 `)
-	message := onlyLint(t, root, "VOCAB001")
+	message := onlyLint(t, root, "unused-accepted-word")
 	if !strings.Contains(message, "selfdoc vocabulary remove frobnitz") {
 		t.Errorf("the remedy does not name the remove command: %s", message)
 	}
 	if _, err := vocabulary.Remove(effects.Unbound(), root, "frobnitz"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
-	noLint(t, root, "VOCAB001")
+	noLint(t, root, "unused-accepted-word")
 }
 
 func TestAnAcceptedWordAPageUsesThroughAnAliasIsUsed(t *testing.T) {
@@ -157,8 +157,8 @@ word = "frobnitz"
 meaning = "The widget that turns."
 aliases = ["frobnitzes"]
 `)
-	noLint(t, root, "VOCAB001")
-	noLint(t, root, "SPELL001")
+	noLint(t, root, "unused-accepted-word")
+	noLint(t, root, "unknown-word")
 }
 
 func TestADuplicateEntryIsReportedAndItsRemedyClears(t *testing.T) {
@@ -171,7 +171,7 @@ meaning = "The widget that turns."
 word = "Frobnitz"
 meaning = "The same widget."
 `)
-	message := onlyLint(t, root, "VOCAB002")
+	message := onlyLint(t, root, "duplicate-vocabulary-entry")
 	if !strings.Contains(message, "selfdoc vocabulary remove Frobnitz") {
 		t.Errorf("the remedy does not name the remove command: %s", message)
 	}
@@ -181,7 +181,7 @@ meaning = "The same widget."
 	if _, err := vocabulary.Accept(effects.Unbound(), root, "frobnitz", "The widget that turns."); err != nil {
 		t.Fatalf("adding the entry back failed: %v", err)
 	}
-	noLint(t, root, "VOCAB002")
+	noLint(t, root, "duplicate-vocabulary-entry")
 }
 
 func TestAnAcceptedWordARejectedSuffixCoversIsReportedAndItsRemedyClears(t *testing.T) {
@@ -195,7 +195,7 @@ pattern = "-ish"
 kind = "suffix"
 reason = "Say the color."
 `)
-	message := onlyLint(t, root, "VOCAB003")
+	message := onlyLint(t, root, "accepted-word-matches-rejected-pattern")
 	for _, want := range []string{"selfdoc vocabulary remove blue-ish", "selfdoc vocabulary remove -ish"} {
 		if !strings.Contains(message, want) {
 			t.Errorf("the remedy does not carry %q: %s", want, message)
@@ -204,10 +204,10 @@ reason = "Say the color."
 	if _, err := vocabulary.Remove(effects.Unbound(), root, "blue-ish"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
-	noLint(t, root, "VOCAB003")
+	noLint(t, root, "accepted-word-matches-rejected-pattern")
 }
 
-// The other remedy VOCAB003 names for a word the project accepts: narrow the
+// The other remedy accepted-word-matches-rejected-pattern names for a word the project accepts: narrow the
 // pattern, removing the rejection and rejecting the specific words meant.
 func TestVOCAB003NarrowingRemedyClearsForAProjectWord(t *testing.T) {
 	root := vocabularyProject(t, "The blue-ish part turns.", vocabulary.EmptyTerms+`
@@ -220,7 +220,7 @@ pattern = "-ish"
 kind = "suffix"
 reason = "Say the color."
 `)
-	message := onlyLint(t, root, "VOCAB003")
+	message := onlyLint(t, root, "accepted-word-matches-rejected-pattern")
 	if !strings.Contains(message, "selfdoc vocabulary reject <word> --kind word --reason <text>") {
 		t.Errorf("the remedy does not name narrowing the pattern: %s", message)
 	}
@@ -230,12 +230,12 @@ reason = "Say the color."
 	if _, err := vocabulary.Reject(effects.Unbound(), root, "red-ish", vocabulary.KindWord, "Say the color."); err != nil {
 		t.Fatalf("the narrowed rejection failed: %v", err)
 	}
-	noLint(t, root, "VOCAB003")
+	noLint(t, root, "accepted-word-matches-rejected-pattern")
 }
 
 // A rejected suffix covering words selfdoc's built-in baseline accepts can
 // only be resolved by narrowing the pattern: a project cannot remove a
-// baseline word, so VOCAB003 never names that.
+// baseline word, so accepted-word-matches-rejected-pattern never names that.
 func TestVOCAB003ForABaselineWordNamesNarrowingAndItClears(t *testing.T) {
 	root := vocabularyProject(t, "The part turns.", vocabulary.EmptyTerms+`
 [[rejected]]
@@ -243,9 +243,9 @@ pattern = "ish"
 kind = "suffix"
 reason = "Say what it is."
 `)
-	matching := withCode(checkFixture(t, root).Lints, "VOCAB003")
+	matching := withCode(checkFixture(t, root).Lints, "accepted-word-matches-rejected-pattern")
 	if len(matching) != 2 {
-		t.Fatalf("VOCAB003 = %v, want one finding each for treeish and unpublish", messagesOf(matching))
+		t.Fatalf("accepted-word-matches-rejected-pattern = %v, want one finding each for treeish and unpublish", messagesOf(matching))
 	}
 	for _, finding := range matching {
 		message := finding.Message()
@@ -268,7 +268,7 @@ reason = "Say what it is."
 	if _, err := vocabulary.Reject(effects.Unbound(), root, "youngish", vocabulary.KindWord, "Say the age."); err != nil {
 		t.Fatalf("the narrowed rejection failed: %v", err)
 	}
-	noLint(t, root, "VOCAB003")
+	noLint(t, root, "accepted-word-matches-rejected-pattern")
 }
 
 func TestARejectedTermInAPageIsReportedAndItsRemedyClears(t *testing.T) {
@@ -282,7 +282,7 @@ pattern = "leverage"
 kind = "word"
 reason = "Say use."
 `)
-	message := onlyLint(t, root, "VOCAB004")
+	message := onlyLint(t, root, "rejected-term-in-prose")
 	for _, want := range []string{"'leverage' (col 4)", "Say use.", "selfdoc vocabulary remove leverage"} {
 		if !strings.Contains(message, want) {
 			t.Errorf("the diagnostic does not carry %q: %s", want, message)
@@ -291,7 +291,7 @@ reason = "Say use."
 	if _, err := vocabulary.Remove(effects.Unbound(), root, "leverage"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
-	noLint(t, root, "VOCAB004")
+	noLint(t, root, "rejected-term-in-prose")
 }
 
 func TestAnUnsortedArrayIsReported(t *testing.T) {
@@ -304,12 +304,12 @@ meaning = "The last."
 word = "frobnitz"
 meaning = "The widget that turns."
 `)
-	matching := withCode(checkFixture(t, root).Lints, "VOCAB005")
+	matching := withCode(checkFixture(t, root).Lints, "unsorted-vocabulary-entries")
 	if len(matching) != 1 || !strings.Contains(matching[0].Message(), `"frobnitz" sorts before "zeta"`) {
-		t.Fatalf("VOCAB005 = %v", messagesOf(matching))
+		t.Fatalf("unsorted-vocabulary-entries = %v", messagesOf(matching))
 	}
 	if line := matching[0].Line(); line == nil || *line != 7 {
-		t.Errorf("VOCAB005 line = %v, want 7", line)
+		t.Errorf("unsorted-vocabulary-entries line = %v, want 7", line)
 	}
 
 	// The remedy: move the named entry up to its place.
@@ -322,7 +322,7 @@ meaning = "The widget that turns."
 word = "zeta"
 meaning = "The last."
 `)
-	noLint(t, root, "VOCAB005")
+	noLint(t, root, "unsorted-vocabulary-entries")
 }
 
 // A word both accepted and rejected stops the check before any page is

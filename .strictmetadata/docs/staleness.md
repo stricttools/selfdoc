@@ -1,6 +1,6 @@
 +++
 title = "Staleness Detection"
-description = "How selfdoc detects stale frontmatter descriptions by hashing page content, which command records each stored hash, the two alternative ways to clear a STALE001 or DRIFT001 finding, and how to accept a reviewed dead-end."
+description = "How selfdoc detects stale frontmatter descriptions by hashing page content, which command records each stored hash, the two alternative ways to clear a stale-page-description or description-drifted-from-source finding, and how to accept a reviewed dead-end."
 nav_group = "Guides"
 nav_order = 18
 +++
@@ -29,16 +29,16 @@ On each run of `selfdoc check`, the current hashes are compared against the stor
 | No | No | OK -- nothing changed |
 | No | Yes | OK -- description updated independently |
 | Yes | Yes | OK -- both updated together |
-| Yes | No | **STALE** -- content changed but description did not |
+| Yes | No | **stale-page-description** -- content changed but description did not |
 
 Only the last case triggers a staleness error.
 
-## The STALE001 Error
+## The stale-page-description Error
 
 When staleness is detected, `selfdoc check` reports an error-level diagnostic with the affected filename and a clear message explaining that the content changed but the description did not. This is classified as an error (not a warning) because stale descriptions degrade search results, social cards, and AI summaries:
 
 ```
-STALE001 [error] getting-started.md: content changed but frontmatter
+stale-page-description [error] getting-started.md: content changed but frontmatter
 description was not updated (possible stale description)
 ```
 
@@ -70,9 +70,9 @@ selfdoc baseline accept en/index.md en/cli-index.md
 Acceptance is intentionally per-page and unforgiving:
 
 - Name each page explicitly, exactly as it appears in `selfdoc check` output (e.g. `en/cli-index.md`). There is no `--all`, no glob, and no `--force`.
-- Accepting a page that does not exist, has no recorded baseline, or is not currently reporting STALE001 or DRIFT001 is a hard error -- "nothing to accept" never silently succeeds.
+- Accepting a page that does not exist, has no recorded baseline, or is not currently reporting stale-page-description or description-drifted-from-source is a hard error -- "nothing to accept" never silently succeeds.
 - The two courses are alternatives, not steps. Editing the description clears the finding on its own, so a page whose description was just rewritten is already cleared and accepting it afterwards is the "nothing to accept" error. Accept is for the other course: the description was reviewed against the change and deliberately left as it is.
-- The same guardrails apply to DRIFT001 (source-docstring and CLI-schema drift); accepting advances every tracked hash for the page.
+- The same guardrails apply to description-drifted-from-source (source-docstring and CLI-schema drift); accepting advances every tracked hash for the page.
 
 Like `selfdoc check`, the command commits the updated `.strictmetadata/.docs-state/hashes/hashes.json` by default; pass `--no-auto-commit` to stage the change for a larger manual commit.
 
@@ -114,9 +114,9 @@ Descriptions are handwritten; machine-emitted text is only ever a placeholder. T
 }
 ```
 
-Only `selfdoc gen` writes `seed_hash`. The `content` and `description` hashes are recorded by every command that writes the store -- `selfdoc gen` and `selfdoc build` as well as `selfdoc check` -- and each of them holds the baseline of a page with an outstanding STALE001. Only `selfdoc check` measures the drift hashes (`source_docstring` and `schema_hash`). A description certifies the drift hashes stored beside it, so a command that records a changed description pairs it with the drift hashes it measured: `selfdoc check` records the current ones, while `selfdoc gen` and `selfdoc build` drop them, and the next `selfdoc check` records them again without a finding. An edited description therefore clears DRIFT001 whichever of these commands runs first after the edit. Each writer merges rather than overwriting, so none of them clobbers a field it does not write.
+Only `selfdoc gen` writes `seed_hash`. The `content` and `description` hashes are recorded by every command that writes the store -- `selfdoc gen` and `selfdoc build` as well as `selfdoc check` -- and each of them holds the baseline of a page with an outstanding stale-page-description. Only `selfdoc check` measures the drift hashes (`source_docstring` and `schema_hash`). A description certifies the drift hashes stored beside it, so a command that records a changed description pairs it with the drift hashes it measured: `selfdoc check` records the current ones, while `selfdoc gen` and `selfdoc build` drop them, and the next `selfdoc check` records them again without a finding. An edited description therefore clears description-drifted-from-source whichever of these commands runs first after the edit. Each writer merges rather than overwriting, so none of them clobbers a field it does not write.
 
-This is what lets `selfdoc gen` safely regenerate: a description is reseeded only when it is machine-owned (it matches the recorded `seed_hash` or a known machine template), and a description you rewrote by hand is preserved -- even if a stale `seeded: true` marker was left in the frontmatter. The same predicate drives the STALE001/DRIFT001 exemption: only genuinely machine-generated descriptions are exempt from the staleness hold, so a generated page you describe by hand is checked like any other page.
+This is what lets `selfdoc gen` safely regenerate: a description is reseeded only when it is machine-owned (it matches the recorded `seed_hash` or a known machine template), and a description you rewrote by hand is preserved -- even if a stale `seeded: true` marker was left in the frontmatter. The same predicate drives the stale-page-description/description-drifted-from-source exemption: only genuinely machine-generated descriptions are exempt from the staleness hold, so a generated page you describe by hand is checked like any other page.
 
 ## Dry Run Mode
 
@@ -139,6 +139,6 @@ selfdoc check --no-auto-commit
 This is useful when you want to update hashes as part of a larger change that you will commit manually.
 
 > [!TIP]
-> New pages (ones not yet in the hash store) never trigger STALE001. Staleness is only detected on subsequent runs after the initial hashes are recorded. Run `selfdoc check` once after adding new pages to establish the baseline.
+> New pages (ones not yet in the hash store) never trigger stale-page-description. Staleness is only detected on subsequent runs after the initial hashes are recorded. Run `selfdoc check` once after adding new pages to establish the baseline.
 
 Next: [Glossary](../glossary-terms/)

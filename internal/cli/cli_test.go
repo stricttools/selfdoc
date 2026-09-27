@@ -26,7 +26,7 @@ func requirePython3(t *testing.T) string {
 
 // requirePagefind makes a Pagefind installation reachable, skipping the test
 // when there is none: without one the build refuses and every project-level
-// check reports SEARCH001, which is a different run than the one under test.
+// check reports search-indexer-not-installed, which is a different run than the one under test.
 //
 // It runs BEFORE the isolation floor, because the shim it may write names an
 // interpreter under the real home directory.
@@ -220,7 +220,7 @@ func TestBuildExitsOneOnErrors(t *testing.T) {
 	isolate(t)
 	requirePython3(t)
 	dir := initialized(t)
-	// Removing the description from the frontmatter triggers SEO006, whose
+	// Removing the description from the frontmatter triggers missing-frontmatter-description, whose
 	// severity is error.
 	writeText(t, filepath.Join(dir, ".strictmetadata", "docs", "index.md"), "# Test\n\nContent.\n")
 
@@ -231,8 +231,8 @@ func TestBuildExitsOneOnErrors(t *testing.T) {
 	if !strings.Contains(result.Stdout, "error:") {
 		t.Errorf("no error-severity line printed:\n%s", result.Stdout)
 	}
-	if !strings.Contains(result.Stdout, "SEO006") {
-		t.Errorf("SEO006 not reported:\n%s", result.Stdout)
+	if !strings.Contains(result.Stdout, "missing-frontmatter-description") {
+		t.Errorf("missing-frontmatter-description not reported:\n%s", result.Stdout)
 	}
 }
 
@@ -269,8 +269,8 @@ func TestCheckAlwaysRunsSEOLints(t *testing.T) {
 	if result.ExitCode != 0 {
 		t.Fatalf("exit code is %d, want 0\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
-	if !strings.Contains(result.Stdout, "SEO") {
-		t.Errorf("no SEO lint reported:\n%s", result.Stdout)
+	if !strings.Contains(result.Stdout, "[first-paragraph-length-out-of-range]") {
+		t.Errorf("no search-engine lint reported:\n%s", result.Stdout)
 	}
 }
 
@@ -293,8 +293,8 @@ func TestCheckAcceptsARegisteredIgnoreCode(t *testing.T) {
 	requirePython3(t)
 	dir := initialized(t)
 
-	result := run(t, dir, "check", "--ignore", "SEO009", "--no-auto-commit")
-	if strings.Contains(result.Stdout, "SEO009") {
+	result := run(t, dir, "check", "--ignore", "description-too-short-for-search-snippet", "--no-auto-commit")
+	if strings.Contains(result.Stdout, "description-too-short-for-search-snippet") {
 		t.Errorf("the suppressed rule still reported:\n%s", result.Stdout)
 	}
 }
@@ -310,8 +310,8 @@ func TestCheckExitsOneOnErrors(t *testing.T) {
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code is %d, want 1\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
-	if !strings.Contains(result.Stdout, "SEO006") {
-		t.Errorf("SEO006 not reported:\n%s", result.Stdout)
+	if !strings.Contains(result.Stdout, "missing-frontmatter-description") {
+		t.Errorf("missing-frontmatter-description not reported:\n%s", result.Stdout)
 	}
 }
 
@@ -362,8 +362,8 @@ func TestCheckExitsOneOnABrokenValidatedExample(t *testing.T) {
 	if len(errors) != 1 {
 		t.Fatalf("expected exactly one error-severity lint, got %d: %v", len(errors), errors)
 	}
-	if errors[0]["code"] != "EXAMPLE002" {
-		t.Errorf("the error is %v, want EXAMPLE002", errors[0]["code"])
+	if errors[0]["code"] != "code-block-validation-failed" {
+		t.Errorf("the error is %v, want code-block-validation-failed", errors[0]["code"])
 	}
 	if errors[0]["file"] != "broken.md" {
 		t.Errorf("the error names %v, want broken.md", errors[0]["file"])

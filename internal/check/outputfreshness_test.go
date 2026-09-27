@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// The emitted-reference pass (LINK001) reads the built tree under
+// The emitted-reference pass (broken-emitted-reference) reads the built tree under
 // the build output directory, which no check invalidates. A page's body there is whatever
 // the last build rendered, so after a source doc comment changes, the built
 // page still carries the old rendering -- and a link that rendering named is
@@ -63,9 +63,9 @@ func TestAStaleBuiltBodyIsNotEvidenceAboutTheSources(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "LINK001") {
-		t.Fatalf("LINK001 reported a reference the current source does not carry: %v",
-			withCode(result.Lints, "LINK001")[0].Message())
+	if hasCode(result.Lints, "broken-emitted-reference") {
+		t.Fatalf("broken-emitted-reference reported a reference the current source does not carry: %v",
+			withCode(result.Lints, "broken-emitted-reference")[0].Message())
 	}
 }
 
@@ -84,9 +84,9 @@ func TestAStaleBuiltBodyIsNotEvidenceUnderADeclaredLocale(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "LINK001") {
-		t.Fatalf("LINK001 reported a reference the current source does not carry: %v",
-			withCode(result.Lints, "LINK001")[0].Message())
+	if hasCode(result.Lints, "broken-emitted-reference") {
+		t.Fatalf("broken-emitted-reference reported a reference the current source does not carry: %v",
+			withCode(result.Lints, "broken-emitted-reference")[0].Message())
 	}
 }
 
@@ -97,8 +97,8 @@ func TestALinkTheCurrentSourceCarriesIsStillReported(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if !hasCode(result.Lints, "LINK001") {
-		t.Fatalf("LINK001 missing for a link the source carries: %v", codes(result.Lints))
+	if !hasCode(result.Lints, "broken-emitted-reference") {
+		t.Fatalf("broken-emitted-reference missing for a link the source carries: %v", codes(result.Lints))
 	}
 }
 
@@ -117,11 +117,11 @@ func TestALinkTheCurrentSourceWritesAsMarkdownIsStillReported(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if !hasCode(result.Lints, "LINK001") {
-		t.Fatalf("LINK001 missing for a link the source writes as Markdown: %v",
+	if !hasCode(result.Lints, "broken-emitted-reference") {
+		t.Fatalf("broken-emitted-reference missing for a link the source writes as Markdown: %v",
 			codes(result.Lints))
 	}
-	if message := withCode(result.Lints, "LINK001")[0].Message(); !strings.Contains(
+	if message := withCode(result.Lints, "broken-emitted-reference")[0].Message(); !strings.Contains(
 		message, "manual") {
 		t.Errorf("message = %q", message)
 	}

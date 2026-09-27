@@ -1019,7 +1019,7 @@ func TestSchemaDriftPersistsUntilTheDescriptionIsRewritten(t *testing.T) {
 // and build pass nil for both drift inputs -- must still clear the drift. The
 // description is what certifies the recorded source hashes, so advancing it
 // while keeping the old source hashes left the rewritten description paired
-// with sources it was never reviewed against: the next check reported DRIFT001
+// with sources it was never reviewed against: the next check reported description-drifted-from-source
 // forever, and only `selfdoc baseline accept` could clear it.
 
 func TestSchemaDriftClearsWhenAnUnmeasuringPassRecordsTheRewrite(t *testing.T) {

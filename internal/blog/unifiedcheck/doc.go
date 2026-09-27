@@ -12,8 +12,8 @@
 // # A project the check cannot reach is a diagnostic, not a crash
 //
 // Two conditions belong to the unified run rather than to any one project:
-// a constituent directory carrying no selfdoc.json (UNIFIED001) and a
-// constituent whose check refuses to run at all (UNIFIED002, carrying the
+// a constituent directory carrying no selfdoc.json (unified-project-without-config) and a
+// constituent whose check refuses to run at all (unified-project-check-failed, carrying the
 // refusal's own message). Either one is recorded against the project and the
 // remaining projects are still checked, because a monorepo's report is worth
 // more than the first thing wrong with it.

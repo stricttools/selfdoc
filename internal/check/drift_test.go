@@ -30,14 +30,14 @@ func TestDRIFT001SourceDocstringChanged(t *testing.T) {
 	root := t.TempDir()
 
 	driftProject(t, root, "Original docstring.", "Library docs")
-	if got := withCode(checkFixture(t, root).Lints, "DRIFT001"); len(got) != 0 {
+	if got := withCode(checkFixture(t, root).Lints, "description-drifted-from-source"); len(got) != 0 {
 		t.Fatalf("the first run reported drift: %v", messagesOf(got))
 	}
 
 	driftProject(t, root, "Completely rewritten docstring.", "Library docs")
-	drift := withCode(checkFixture(t, root).Lints, "DRIFT001")
+	drift := withCode(checkFixture(t, root).Lints, "description-drifted-from-source")
 	if len(drift) != 1 {
-		t.Fatalf("DRIFT001 count = %d, want 1: %v", len(drift), messagesOf(drift))
+		t.Fatalf("description-drifted-from-source count = %d, want 1: %v", len(drift), messagesOf(drift))
 	}
 	if !strings.Contains(drift[0].Message(), "source docstrings changed") {
 		t.Errorf("message = %q", drift[0].Message())
@@ -59,9 +59,9 @@ func TestDRIFT001HintNamesAWorkingRemedy(t *testing.T) {
 	driftProject(t, root, "Original docstring.", "Library docs")
 	checkFixture(t, root)
 	driftProject(t, root, "Completely rewritten docstring.", "Library docs")
-	drift := withCode(checkFixture(t, root).Lints, "DRIFT001")
+	drift := withCode(checkFixture(t, root).Lints, "description-drifted-from-source")
 	if len(drift) != 1 {
-		t.Fatalf("DRIFT001 count = %d, want 1", len(drift))
+		t.Fatalf("description-drifted-from-source count = %d, want 1", len(drift))
 	}
 
 	// Perform the remedy the diagnostic prescribes and assert the error
@@ -70,7 +70,7 @@ func TestDRIFT001HintNamesAWorkingRemedy(t *testing.T) {
 	if _, err := AcceptBaselines([]string{drift[0].File()}, root, nil, handle()); err != nil {
 		t.Fatalf("the prescribed accept failed: %v", err)
 	}
-	if got := withCode(checkFixture(t, root).Lints, "DRIFT001"); len(got) != 0 {
+	if got := withCode(checkFixture(t, root).Lints, "description-drifted-from-source"); len(got) != 0 {
 		t.Errorf("drift persisted after the prescribed remedy: %v", messagesOf(got))
 	}
 }
@@ -106,7 +106,7 @@ func TestDRIFT001SkeletonExemptionIsScoped(t *testing.T) {
 
 	dualDriftProject(t, root, "Rewritten one.", "Rewritten two.")
 	driftFiles := map[string]bool{}
-	for _, diagnostic := range withCode(checkFixture(t, root).Lints, "DRIFT001") {
+	for _, diagnostic := range withCode(checkFixture(t, root).Lints, "description-drifted-from-source") {
 		driftFiles[diagnostic.File()] = true
 	}
 	if !driftFiles["mylib.md"] {
@@ -117,7 +117,7 @@ func TestDRIFT001SkeletonExemptionIsScoped(t *testing.T) {
 	}
 
 	// The exempt page's baseline advanced, so a re-check keeps it clean.
-	for _, diagnostic := range withCode(checkFixture(t, root).Lints, "DRIFT001") {
+	for _, diagnostic := range withCode(checkFixture(t, root).Lints, "description-drifted-from-source") {
 		if diagnostic.File() == "mylib-other.md" {
 			t.Error("the machine-owned page's baseline did not advance")
 		}
@@ -167,8 +167,8 @@ func TestDRIFT001Silences(t *testing.T) {
 			if testCase.rewrite != nil {
 				testCase.rewrite(t, root)
 			}
-			if got := withCode(checkFixture(t, root).Lints, "DRIFT001"); len(got) != 0 {
-				t.Errorf("DRIFT001 fired: %v", messagesOf(got))
+			if got := withCode(checkFixture(t, root).Lints, "description-drifted-from-source"); len(got) != 0 {
+				t.Errorf("description-drifted-from-source fired: %v", messagesOf(got))
 			}
 		})
 	}
@@ -178,7 +178,7 @@ func TestDRIFT001FirstRunIsSilent(t *testing.T) {
 	isolate(t)
 	root := t.TempDir()
 	driftProject(t, root, "Initial docstring.", "Desc")
-	if got := withCode(checkFixture(t, root).Lints, "DRIFT001"); len(got) != 0 {
+	if got := withCode(checkFixture(t, root).Lints, "description-drifted-from-source"); len(got) != 0 {
 		t.Errorf("the first run reported drift: %v", messagesOf(got))
 	}
 }

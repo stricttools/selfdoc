@@ -96,9 +96,9 @@ Every post requires a frontmatter block -- TOML between `+++` fences, validated 
 | --- | --- | --- |
 | `title` | string | Post title. Must be non-empty. |
 | `date` | date | Publication date, written as a bare TOML local date (`2026-07-29`). |
-| `directives` | boolean | Whether the post may carry directive markers. No default: a post that omits the key raises `POST006` at discovery. |
+| `directives` | boolean | Whether the post may carry directive markers. No default: a post that omits the key raises `invalid-post-directives-declaration` at discovery. |
 
-A post is authored content that may or may not embed code-extracted material, and a post *about* directive syntax reads exactly like a post that uses it. So the author declares which it is rather than the reader guessing. Declaring `directives = false` and then writing a marker raises `POST007`, naming the marker and the line it sits on -- markers inside fenced code blocks and backtick code spans are examples of the syntax, not uses of it, and are never counted. Declaring `directives = true` resolves the post's directives exactly as a documentation page's are resolved.
+A post is authored content that may or may not embed code-extracted material, and a post *about* directive syntax reads exactly like a post that uses it. So the author declares which it is rather than the reader guessing. Declaring `directives = false` and then writing a marker raises `directive-marker-in-post-without-directives`, naming the marker and the line it sits on -- markers inside fenced code blocks and backtick code spans are examples of the syntax, not uses of it, and are never counted. Declaring `directives = true` resolves the post's directives exactly as a documentation page's are resolved.
 
 Documentation pages carry no such key. The whole `.strictmetadata/docs/` tree is directive territory by construction; only posts declare.
 
@@ -125,7 +125,7 @@ These fields are set by `selfdoc blog post generate --from-release` and are not 
 
 ### Slug immutability
 
-Once a post is published (appears in the manifest), its slug cannot change. The `selfdoc check` command enforces this: if a post file's slug differs from what was recorded in the manifest, it raises a `POST005` error. This prevents broken URLs in the unified site.
+Once a post is published (appears in the manifest), its slug cannot change. The `selfdoc check` command enforces this: if a post file's slug differs from what was recorded in the manifest, it raises a `changed-published-post-slug` error. This prevents broken URLs in the unified site.
 
 ## Listing Posts
 
@@ -210,18 +210,18 @@ The revisions sidecar is published to the assembly alongside the post-manifest, 
 
 | Code | Description |
 | --- | --- |
-| `POST001` | Missing `date` field in frontmatter |
-| `POST002` | Missing or empty `title` field |
-| `POST003` | `date` field is not in `YYYY-MM-DD` format |
-| `POST004` | Duplicate slug across posts |
-| `POST005` | Slug changed after publication (immutability violation) |
+| `missing-post-date` | Missing `date` field in frontmatter |
+| `missing-post-title` | Missing or empty `title` field |
+| `malformed-post-date` | `date` field is not in `YYYY-MM-DD` format |
+| `duplicate-post-slug` | Duplicate slug across posts |
+| `changed-published-post-slug` | Slug changed after publication (immutability violation) |
 
 These checks run as part of `selfdoc check` for standalone blog projects. For unified docs-site projects, post checks run alongside the full documentation validation suite.
 
 Suppress specific checks with `--ignore`:
 
 ```bash
-selfdoc check --ignore POST003
+selfdoc check --ignore malformed-post-date
 ```
 
 ## Integration with the Assembly

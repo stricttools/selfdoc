@@ -31,8 +31,8 @@ const CommonSlug = "common"
 // projectConfig may be nil, in which case it is loaded from selfdoc.json in
 // dirPath. dryRun reports staleness without writing the hash store.
 //
-// A project directory with no selfdoc.json becomes a UNIFIED001 diagnostic
-// and a project whose check refuses becomes a UNIFIED002 diagnostic carrying
+// A project directory with no selfdoc.json becomes a unified-project-without-config diagnostic
+// and a project whose check refuses becomes a unified-project-check-failed diagnostic carrying
 // the refusal's message; in both cases the remaining projects are still
 // checked. A config that cannot be read, and a declared project path that
 // does not name a directory, are errors: the whole run is described by those
@@ -77,7 +77,7 @@ func CheckUnified(
 		}
 		if projConfig == nil {
 			aggregate.Lints = append(aggregate.Lints, lints.MustLintResult(
-				"["+slug+"]", nil, "UNIFIED001",
+				"["+slug+"]", nil, "unified-project-without-config",
 				"No selfdoc.json in project '"+slug+"'",
 			))
 			continue
@@ -88,7 +88,7 @@ func CheckUnified(
 		)
 		if err != nil {
 			aggregate.Lints = append(aggregate.Lints, lints.MustLintResult(
-				"["+slug+"]", nil, "UNIFIED002", err.Error(),
+				"["+slug+"]", nil, "unified-project-check-failed", err.Error(),
 			))
 			continue
 		}
@@ -103,7 +103,7 @@ func CheckUnified(
 	)
 	if err != nil {
 		aggregate.Lints = append(aggregate.Lints, lints.MustLintResult(
-			"["+CommonSlug+"]", nil, "UNIFIED002", err.Error(),
+			"["+CommonSlug+"]", nil, "unified-project-check-failed", err.Error(),
 		))
 		return aggregate, nil
 	}

@@ -93,9 +93,9 @@ func TestAMisspellingOnAPageIsReported(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	matching := withCode(result.Lints, "SPELL001")
+	matching := withCode(result.Lints, "unknown-word")
 	if len(matching) != 1 {
-		t.Fatalf("SPELL001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("unknown-word count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if !strings.Contains(matching[0].Message(), "corectly") {
 		t.Errorf("message = %q", matching[0].Message())
@@ -121,8 +121,8 @@ func TestCleanProseProducesNoSpellingDiagnostic(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "SPELL001") {
-		t.Errorf("SPELL001 fired: %v", messagesOf(withCode(result.Lints, "SPELL001")))
+	if hasCode(result.Lints, "unknown-word") {
+		t.Errorf("unknown-word fired: %v", messagesOf(withCode(result.Lints, "unknown-word")))
 	}
 }
 
@@ -134,9 +134,9 @@ func TestAMisspellingInTheCVDocumentIsReported(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	matching := withCode(result.Lints, "SPELL001")
+	matching := withCode(result.Lints, "unknown-word")
 	if len(matching) != 1 {
-		t.Fatalf("SPELL001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("unknown-word count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if !strings.Contains(matching[0].Message(), "discovring") {
 		t.Errorf("message = %q", matching[0].Message())
@@ -169,8 +169,8 @@ func TestACleanCVDocumentProducesNoSpellingDiagnostic(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "SPELL001") {
-		t.Errorf("SPELL001 fired: %v", messagesOf(withCode(result.Lints, "SPELL001")))
+	if hasCode(result.Lints, "unknown-word") {
+		t.Errorf("unknown-word fired: %v", messagesOf(withCode(result.Lints, "unknown-word")))
 	}
 }
 
@@ -182,9 +182,9 @@ func TestADocumentIsReportedOnceHoweverItWasFound(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	matching := withCode(result.Lints, "SPELL001")
+	matching := withCode(result.Lints, "unknown-word")
 	if len(matching) != 1 {
-		t.Fatalf("SPELL001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("unknown-word count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if CheckResultExitCode(result, nil) != 1 {
 		t.Error("a misspelling in the document did not fail the check")
@@ -201,7 +201,7 @@ func TestACopyInTheBuildOutputIsNotReported(t *testing.T) {
 	result := checkFixture(t, root)
 
 	var files []string
-	for _, diagnostic := range withCode(result.Lints, "SPELL001") {
+	for _, diagnostic := range withCode(result.Lints, "unknown-word") {
 		files = append(files, diagnostic.File())
 	}
 	if len(files) != 1 || files[0] != ".strictmetadata/docs/cv.toml" {
@@ -221,9 +221,9 @@ func TestASymbolNameADirectiveExtractedIsNotAMisspelling(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "SPELL001") {
-		t.Errorf("SPELL001 fired for an extracted identifier: %v",
-			messagesOf(withCode(result.Lints, "SPELL001")))
+	if hasCode(result.Lints, "unknown-word") {
+		t.Errorf("unknown-word fired for an extracted identifier: %v",
+			messagesOf(withCode(result.Lints, "unknown-word")))
 	}
 }
 
@@ -236,9 +236,9 @@ func TestThePagesOwnProseIsNotReportedTwice(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	matching := withCode(result.Lints, "SPELL001")
+	matching := withCode(result.Lints, "unknown-word")
 	if len(matching) != 1 {
-		t.Fatalf("SPELL001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+		t.Fatalf("unknown-word count = %d, want 1: %v", len(matching), messagesOf(matching))
 	}
 	if matching[0].File() != "cv.md" {
 		t.Errorf("file = %q, want cv.md -- the page's own prose", matching[0].File())

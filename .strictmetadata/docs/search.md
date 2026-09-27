@@ -33,7 +33,7 @@ or, where a Python toolchain is already present:
 pip install 'pagefind[bin]'
 ```
 
-`selfdoc check` reports `SEARCH001` when it is missing, and `selfdoc build` stops rather than writing a site whose search dialog answers nothing.
+`selfdoc check` reports `search-indexer-not-installed` when it is missing, and `selfdoc build` stops rather than writing a site whose search dialog answers nothing.
 
 ## UI Modes
 

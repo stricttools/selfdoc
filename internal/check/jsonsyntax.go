@@ -8,7 +8,7 @@ import (
 
 // A CPython-compatible JSON syntax checker.
 //
-// EXAMPLE001 reports a failing JSON block with the decoder's own message and
+// code-block-syntax-error reports a failing JSON block with the decoder's own message and
 // the line the decoder blamed. Go's encoding/json says different things in a
 // different vocabulary and reports a byte offset rather than a line, so the
 // diagnostic is produced here instead: this is a position-tracking port of
@@ -31,7 +31,7 @@ type jsonSyntaxError struct {
 }
 
 // Error renders the refusal with the position it was raised at. The message
-// alone is what EXAMPLE001 reports; this spelling exists for a caller that
+// alone is what code-block-syntax-error reports; this spelling exists for a caller that
 // prints the error whole.
 func (e *jsonSyntaxError) Error() string {
 	return fmt.Sprintf("%s (char %d)", e.Message, e.Pos)

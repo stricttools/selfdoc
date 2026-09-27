@@ -46,7 +46,7 @@ var embeddedSchema = map[string]string{
 # and rejected (within one file or across the baseline and the project), or
 # whether any page uses an accepted word; those are selfdoc-native, because
 # they span entries, files or pages: a load-time refusal for the conflict, and
-# the VOCAB lints for the rest.
+# the vocabulary lints for the rest.
 
 name = "selfdoc-vocabulary-terms"
 meta_version = 1

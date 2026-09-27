@@ -15,7 +15,7 @@ import (
 )
 
 // checkManifestFreshness checks the manifest's pages and posts against the
-// files on disk (STALE002).
+// files on disk (manifest-disagrees-with-disk).
 //
 // A project with no manifest has nothing to disagree with, and neither does a
 // manifest that cannot be read.
@@ -82,25 +82,25 @@ func checkManifestFreshness(config map[string]any, dirPath string) ([]lints.Lint
 
 	for _, path := range sortedDifference(diskPages, manifestPages) {
 		results = append(results, lints.MustLintResult(
-			path, nil, "STALE002",
+			path, nil, "manifest-disagrees-with-disk",
 			"page exists on disk but not in manifest (run 'selfdoc gen' to update)",
 		))
 	}
 	for _, path := range sortedDifference(manifestPages, diskPages) {
 		results = append(results, lints.MustLintResult(
-			path, nil, "STALE002",
+			path, nil, "manifest-disagrees-with-disk",
 			fmt.Sprintf("manifest lists page '%s' but file not found on disk", path),
 		))
 	}
 	for _, path := range sortedDifference(diskPosts, manifestPosts) {
 		results = append(results, lints.MustLintResult(
-			path, nil, "STALE002",
+			path, nil, "manifest-disagrees-with-disk",
 			"post exists on disk but not in manifest (run 'selfdoc gen' to update)",
 		))
 	}
 	for _, path := range sortedDifference(manifestPosts, diskPosts) {
 		results = append(results, lints.MustLintResult(
-			path, nil, "STALE002",
+			path, nil, "manifest-disagrees-with-disk",
 			fmt.Sprintf("manifest lists post '%s' but file not found on disk", path),
 		))
 	}

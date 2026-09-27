@@ -58,12 +58,12 @@ func TestTheSpellRemedyRunsAsPrintedAndClears(t *testing.T) {
 	isolate(t)
 	dir := vocabularyCLIProject(t, "The frobnitz turns.")
 	diagnostics := diagnosticsOf(t, dir)
-	if !strings.Contains(diagnostics, "SPELL001") {
-		t.Fatalf("no SPELL001:\n%s", diagnostics)
+	if !strings.Contains(diagnostics, "unknown-word") {
+		t.Fatalf("no unknown-word:\n%s", diagnostics)
 	}
 	runRemedy(t, dir, diagnostics, "selfdoc vocabulary accept frobnitz")
-	if after := diagnosticsOf(t, dir); strings.Contains(after, "SPELL001") {
-		t.Errorf("SPELL001 is still reported:\n%s", after)
+	if after := diagnosticsOf(t, dir); strings.Contains(after, "unknown-word") {
+		t.Errorf("unknown-word is still reported:\n%s", after)
 	}
 	terms := readText(t, layout.Path(dir, layout.TermsRel))
 	if !strings.Contains(terms, `word = "frobnitz"`) || !strings.Contains(terms, `meaning = "Filled-in."`) {
@@ -88,8 +88,8 @@ evidence = [".strictmetadata/docs/index.md:9: The frobnitz turns."]
 `)
 			diagnostics := diagnosticsOf(t, dir)
 			runRemedy(t, dir, diagnostics, prefix)
-			if after := diagnosticsOf(t, dir); strings.Contains(after, "SPELL001") {
-				t.Errorf("SPELL001 is still reported:\n%s", after)
+			if after := diagnosticsOf(t, dir); strings.Contains(after, "unknown-word") {
+				t.Errorf("unknown-word is still reported:\n%s", after)
 			}
 		})
 	}
@@ -121,7 +121,7 @@ func TestTheRemoveRemediesRunAsPrintedAndClear(t *testing.T) {
 		t.Fatalf("reject failed:\n%s", result.Stderr)
 	}
 	diagnostics := diagnosticsOf(t, dir)
-	for _, code := range []string{"VOCAB001", "VOCAB004"} {
+	for _, code := range []string{"unused-accepted-word", "rejected-term-in-prose"} {
 		if !strings.Contains(diagnostics, code) {
 			t.Fatalf("no %s:\n%s", code, diagnostics)
 		}
@@ -129,7 +129,7 @@ func TestTheRemoveRemediesRunAsPrintedAndClear(t *testing.T) {
 	runRemedy(t, dir, diagnostics, "selfdoc vocabulary remove frobnitz")
 	runRemedy(t, dir, diagnostics, "selfdoc vocabulary remove leverage")
 	after := diagnosticsOf(t, dir)
-	for _, code := range []string{"VOCAB001", "VOCAB004"} {
+	for _, code := range []string{"unused-accepted-word", "rejected-term-in-prose"} {
 		if strings.Contains(after, code) {
 			t.Errorf("%s is still reported:\n%s", code, after)
 		}

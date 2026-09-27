@@ -283,7 +283,7 @@ SEO: 0 warnings, 0 errors
 To suppress specific SEO warnings, pass `--ignore` with a comma-separated list of codes:
 
 ```bash
-selfdoc check --ignore SEO007,SEO008
+selfdoc check --ignore first-paragraph-length-out-of-range,low-numeric-data-density
 ```
 
 For machine-readable output (useful in CI):

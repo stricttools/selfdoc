@@ -133,4 +133,4 @@ The `examples` key maps a fenced-block language to the command that validates a 
 }
 ```
 
-Every command template must contain the `{file}` placeholder; a template without it is rejected when the config loads, since it would validate nothing. Keys are language names exactly as they appear after the opening fence, so a block opened with ` ```py ` needs a `py` entry, not a `python` one. Omitting `examples` entirely turns the feature off, and any `validate` marker in the docs then reports `EXAMPLE003`. See the [Check Guide](../check-guide/) for the full behavior.
+Every command template must contain the `{file}` placeholder; a template without it is rejected when the config loads, since it would validate nothing. Keys are language names exactly as they appear after the opening fence, so a block opened with ` ```py ` needs a `py` entry, not a `python` one. Omitting `examples` entirely turns the feature off, and any `validate` marker in the docs then reports `code-block-validator-not-configured`. See the [Check Guide](../check-guide/) for the full behavior.

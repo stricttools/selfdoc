@@ -2,7 +2,6 @@ package cli
 
 import (
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/testproject"
@@ -120,7 +119,7 @@ func TestTheCheckRunsThePostLintsForAnOrdinaryProject(t *testing.T) {
 	})
 	writeText(t, filepath.Join(dir, ".strictmetadata", "docs", "index.md"),
 		"+++\ntitle = \"Home\"\ndescription = \""+longDescription+"\"\n+++\n\n# Home\n")
-	// A post whose date is not YYYY-MM-DD is POST003.
+	// A post whose date is not YYYY-MM-DD is malformed-post-date.
 	writeText(t, filepath.Join(dir, ".strictmetadata", "posts", "broken.md"),
 		"+++\ntitle = \"Broken\"\ndate = \"15-01-2024\"\ndirectives = false\n+++\n\nBad date.\n")
 
@@ -128,11 +127,11 @@ func TestTheCheckRunsThePostLintsForAnOrdinaryProject(t *testing.T) {
 	payload := payloadOf(t, result)
 	found := false
 	for _, raw := range payload["lints"].([]any) {
-		if strings.HasPrefix(raw.(map[string]any)["code"].(string), "POST") {
+		if raw.(map[string]any)["code"].(string) == "malformed-post-date" {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("the check reported no POST diagnostic for a broken post: %v", payload["lints"])
+		t.Errorf("the check reported no malformed-post-date diagnostic for a broken post: %v", payload["lints"])
 	}
 }

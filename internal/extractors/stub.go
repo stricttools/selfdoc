@@ -4,7 +4,7 @@ package extractors
 //
 // Discovery returns empty and extraction returns an error marker, so a project
 // declaring an unsupported language builds -- with the unresolved directives
-// visible on the page -- instead of failing at the first directive. The LANG001
+// visible on the page -- instead of failing at the first directive. The unsupported-source-language
 // lint is what reports the declaration itself, at check time.
 type stubExtractor struct {
 	Base

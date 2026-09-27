@@ -1,7 +1,7 @@
 // Package spelling is the spelling engine: one word checker serving every
 // surface that needs one.
 //
-// The check command runs it over a project's docs and posts (SPELL001), and
+// The check command runs it over a project's docs and posts (unknown-word), and
 // the spell-corpus command runs the same engine over every sibling project on
 // the machine. There is one engine; a surface that wants spelling asks this
 // package, and no surface carries a second opinion about what a word is.
@@ -219,7 +219,7 @@ func WordlistCopyright() string {
 // RendererVocabulary is the fixed vocabulary selfdoc's own renderers write
 // into generated pages.
 //
-// A generated page is checked by the same SPELL001 that checks an authored
+// A generated page is checked by the same unknown-word that checks an authored
 // one, so a heading, a column header or a type word a renderer invents is
 // judged against this engine in every project that renders one. The consumer
 // cannot fix such a finding: the text is not theirs. Fixed renderer vocabulary

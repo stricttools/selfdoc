@@ -23,7 +23,7 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 `selfdoc` carries every command the three former Python packages exposed:
 
 - top level: `init`, `build`, `serve`, `deploy`, `check`, `gen`, `gen-data`, `spell-corpus`, `quality`
-- `baseline` -- accept the content and description hash baselines that drive STALE001 and DRIFT001
+- `baseline` -- accept the content and description hash baselines that drive stale-page-description and description-drifted-from-source
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
 - `assembly` -- initialize, push, inspect, rebuild, republish, retire, and verify the unified multi-project site
 - `layout` -- dump selfdoc's claim on the `.strictmetadata/` directory, validate a repository against it, and migrate a repository off the previous `stricttools/` and `.stricttools/` layouts
@@ -86,13 +86,13 @@ lookup.
 
 ### Vocabulary
 
-The spell check (SPELL001) accepts a word when selfdoc's built-in baseline or
+The spell check (unknown-word) accepts a word when selfdoc's built-in baseline or
 the project's `.strictmetadata/vocabulary/terms.toml` accepts it, and reads nothing
 outside the repository. `terms.toml` holds `[[accepted]]` words, each with a
 required meaning, and `[[rejected]]` terms, each with a kind and a reason;
 `review.toml` holds `[[pending]]` words nobody has approved yet, which the spell
 check still reports. Both files are strictspec-validated and kept sorted, and
-edited through `selfdoc vocabulary`. The VOCAB lints report unused, duplicated,
+edited through `selfdoc vocabulary`. The vocabulary lints report unused, duplicated,
 disagreeing and unsorted entries, and rejected terms in page prose.
 
 ### Multi-version builds

@@ -110,9 +110,9 @@ Validators are declared per language in `selfdoc.json` under `examples`. Each va
 }
 ```
 
-Commands run from the project root, with a 60-second timeout. selfdoc writes the block's raw text to a scratch file whose extension names the language (`.py`, `.go`, `.ts`), passes the path in, and reports a non-zero exit as an `EXAMPLE002` error carrying the last five lines of the validator's output. A `validate` marker whose language has no configured command is an `EXAMPLE003` error -- never a silent skip, because a marker that validates nothing is indistinguishable from a passing one.
+Commands run from the project root, with a 60-second timeout. selfdoc writes the block's raw text to a scratch file whose extension names the language (`.py`, `.go`, `.ts`), passes the path in, and reports a non-zero exit as an `code-block-validation-failed` error carrying the last five lines of the validator's output. A `validate` marker whose language has no configured command is an `code-block-validator-not-configured` error -- never a silent skip, because a marker that validates nothing is indistinguishable from a passing one.
 
-Blocks without the marker are untouched: they still get the `EXAMPLE001` syntax check and are never executed.
+Blocks without the marker are untouched: they still get the `code-block-syntax-error` syntax check and are never executed.
 
 > [!NOTE]
 > There is no sandbox. Validators compile, type-check, and register -- they are not a harness for untrusted code, and the snippets they run are your own documentation.

@@ -46,9 +46,9 @@ func TestSEARCH001ReportsAMissingIndexer(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	matching := withCode(result.Lints, "SEARCH001")
+	matching := withCode(result.Lints, "search-indexer-not-installed")
 	if len(matching) != 1 {
-		t.Fatalf("SEARCH001 count = %d, want 1: %v", len(matching), codes(result.Lints))
+		t.Fatalf("search-indexer-not-installed count = %d, want 1: %v", len(matching), codes(result.Lints))
 	}
 	if matching[0].Severity() != "error" {
 		t.Errorf("severity = %q, want error", matching[0].Severity())
@@ -64,8 +64,8 @@ func TestSEARCH001IsSilentWhenTheIndexerAnswers(t *testing.T) {
 
 	result := checkFixture(t, root)
 
-	if hasCode(result.Lints, "SEARCH001") {
-		t.Errorf("SEARCH001 fired with an indexer on PATH: %v",
-			messagesOf(withCode(result.Lints, "SEARCH001")))
+	if hasCode(result.Lints, "search-indexer-not-installed") {
+		t.Errorf("search-indexer-not-installed fired with an indexer on PATH: %v",
+			messagesOf(withCode(result.Lints, "search-indexer-not-installed")))
 	}
 }

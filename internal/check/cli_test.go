@@ -82,9 +82,9 @@ func TestCLI001(t *testing.T) {
 			map[string]string{"cli-index.md": cliIndexPage},
 		)
 		result := checkFixture(t, root)
-		matching := withCode(result.Lints, "CLI001")
+		matching := withCode(result.Lints, "undocumented-cli-command-or-flag")
 		if len(matching) != 1 {
-			t.Fatalf("CLI001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+			t.Fatalf("undocumented-cli-command-or-flag count = %d, want 1: %v", len(matching), messagesOf(matching))
 		}
 		if !strings.Contains(matching[0].Message(), "missing CLI page") ||
 			!strings.Contains(matching[0].Message(), "run") {
@@ -116,9 +116,9 @@ func TestCLI001(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		matching := withCode(result.Lints, "CLI001")
+		matching := withCode(result.Lints, "undocumented-cli-command-or-flag")
 		if len(matching) != 1 {
-			t.Fatalf("CLI001 count = %d, want 1: %v", len(matching), messagesOf(matching))
+			t.Fatalf("undocumented-cli-command-or-flag count = %d, want 1: %v", len(matching), messagesOf(matching))
 		}
 		if !strings.Contains(matching[0].Message(), "--output") ||
 			!strings.Contains(matching[0].Message(), "not documented") {
@@ -147,8 +147,8 @@ func TestCLI001(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		if hasCode(result.Lints, "CLI001") {
-			t.Errorf("CLI001 fired: %v", messagesOf(withCode(result.Lints, "CLI001")))
+		if hasCode(result.Lints, "undocumented-cli-command-or-flag") {
+			t.Errorf("undocumented-cli-command-or-flag fired: %v", messagesOf(withCode(result.Lints, "undocumented-cli-command-or-flag")))
 		}
 	})
 
@@ -158,7 +158,7 @@ func TestCLI001(t *testing.T) {
 			"+++\ndescription = \"A guide covering everything the project does for a "+
 				"reader.\"\n+++\n# Guide\n\nText.\n")
 		result := checkFixture(t, root)
-		if hasCode(result.Lints, "CLI001") || hasCode(result.Lints, "CLI002") {
+		if hasCode(result.Lints, "undocumented-cli-command-or-flag") || hasCode(result.Lints, "cli-help-text-too-short") {
 			t.Errorf("a CLI rule fired for a project with no schema: %v",
 				codes(result.Lints))
 		}
@@ -182,9 +182,9 @@ func TestCLI002HelpLength(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		matching := withCode(result.Lints, "CLI002")
+		matching := withCode(result.Lints, "cli-help-text-too-short")
 		if len(matching) != 1 {
-			t.Fatalf("CLI002 count = %d, want 1: %v", len(matching), messagesOf(matching))
+			t.Fatalf("cli-help-text-too-short count = %d, want 1: %v", len(matching), messagesOf(matching))
 		}
 		for _, fragment := range []string{"command 'run'", "minimum 50"} {
 			if !strings.Contains(matching[0].Message(), fragment) {
@@ -212,8 +212,8 @@ func TestCLI002HelpLength(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		if hasCode(result.Lints, "CLI002") {
-			t.Errorf("CLI002 fired: %v", messagesOf(withCode(result.Lints, "CLI002")))
+		if hasCode(result.Lints, "cli-help-text-too-short") {
+			t.Errorf("cli-help-text-too-short fired: %v", messagesOf(withCode(result.Lints, "cli-help-text-too-short")))
 		}
 	})
 
@@ -234,9 +234,9 @@ func TestCLI002HelpLength(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		matching := withCode(result.Lints, "CLI002")
+		matching := withCode(result.Lints, "cli-help-text-too-short")
 		if len(matching) != 1 {
-			t.Fatalf("CLI002 count = %d, want 1: %v", len(matching), messagesOf(matching))
+			t.Fatalf("cli-help-text-too-short count = %d, want 1: %v", len(matching), messagesOf(matching))
 		}
 		if !strings.Contains(matching[0].Message(), "flag '--verbose'") {
 			t.Errorf("message = %q", matching[0].Message())
@@ -263,9 +263,9 @@ func TestCLI002HelpLength(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		matching := withCode(result.Lints, "CLI002")
+		matching := withCode(result.Lints, "cli-help-text-too-short")
 		if len(matching) != 2 {
-			t.Fatalf("CLI002 count = %d, want 2: %v", len(matching), messagesOf(matching))
+			t.Fatalf("cli-help-text-too-short count = %d, want 2: %v", len(matching), messagesOf(matching))
 		}
 		joined := strings.Join(messagesOf(matching), "\n")
 		if !strings.Contains(joined, "group 'release'") {
@@ -293,9 +293,9 @@ func TestCLI002HelpLength(t *testing.T) {
 			},
 		)
 		result := checkFixture(t, root)
-		matching := withCode(result.Lints, "CLI002")
+		matching := withCode(result.Lints, "cli-help-text-too-short")
 		if len(matching) != 1 {
-			t.Fatalf("CLI002 count = %d, want 1: %v", len(matching), messagesOf(matching))
+			t.Fatalf("cli-help-text-too-short count = %d, want 1: %v", len(matching), messagesOf(matching))
 		}
 		if !strings.Contains(matching[0].Message(), "arg 'target'") {
 			t.Errorf("message = %q", matching[0].Message())
@@ -303,7 +303,7 @@ func TestCLI002HelpLength(t *testing.T) {
 	})
 }
 
-// TestCLIPagesResolveAcrossBothDocsRoots pins that CLI001 looks for a CLI
+// TestCLIPagesResolveAcrossBothDocsRoots pins that undocumented-cli-command-or-flag looks for a CLI
 // reference page in both roots a project's pages come from: the generated root
 // gen writes them into, and the handwritten root a project may author one in
 // instead.
@@ -331,9 +331,9 @@ func TestCLIPagesResolveAcrossBothDocsRoots(t *testing.T) {
 			t.Fatal("fixture wrote the page into the handwritten root too")
 		}
 		result := checkFixture(t, root)
-		if hasCode(result.Lints, "CLI001") {
-			t.Errorf("CLI001 fired for a page in the generated root: %v",
-				messagesOf(withCode(result.Lints, "CLI001")))
+		if hasCode(result.Lints, "undocumented-cli-command-or-flag") {
+			t.Errorf("undocumented-cli-command-or-flag fired for a page in the generated root: %v",
+				messagesOf(withCode(result.Lints, "undocumented-cli-command-or-flag")))
 		}
 	})
 
@@ -341,9 +341,9 @@ func TestCLIPagesResolveAcrossBothDocsRoots(t *testing.T) {
 		root := strictcliProject(t, schema, map[string]string{"cli-index.md": cliIndexPage})
 		write(t, filepath.Join(root, ".strictmetadata", "docs", "cli-run.md"), runPage)
 		result := checkFixture(t, root)
-		if hasCode(result.Lints, "CLI001") {
-			t.Errorf("CLI001 fired for a page in the handwritten root: %v",
-				messagesOf(withCode(result.Lints, "CLI001")))
+		if hasCode(result.Lints, "undocumented-cli-command-or-flag") {
+			t.Errorf("undocumented-cli-command-or-flag fired for a page in the handwritten root: %v",
+				messagesOf(withCode(result.Lints, "undocumented-cli-command-or-flag")))
 		}
 	})
 }
