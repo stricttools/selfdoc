@@ -122,20 +122,20 @@ func TestManifestFreshness(t *testing.T) {
 			isolate(t)
 			root := t.TempDir()
 			for _, page := range testCase.diskPages {
-				write(t, filepath.Join(root, "stricttools", "docs", page), "# Page\n")
+				write(t, filepath.Join(root, ".strictmetadata", "docs", page), "# Page\n")
 			}
 			for _, post := range testCase.diskPosts {
-				write(t, filepath.Join(root, "stricttools", "posts", post), "# Post\n")
+				write(t, filepath.Join(root, ".strictmetadata", "posts", post), "# Post\n")
 			}
 			if testCase.writeManifestFile {
 				writeManifest(t,
-					filepath.Join(root, "stricttools", ".docs-state", "manifest.json"),
+					filepath.Join(root, ".strictmetadata", ".docs-state", "manifest.json"),
 					testCase.manifestPages, testCase.manifestPosts,
 				)
 			}
 			projectConfig := map[string]any{
-				"docs":  "stricttools/docs/",
-				"posts": map[string]any{"dir": "stricttools/posts/"},
+				"docs":  ".strictmetadata/docs/",
+				"posts": map[string]any{"dir": ".strictmetadata/posts/"},
 			}
 
 			results, err := checkManifestFreshness(projectConfig, root)
@@ -172,10 +172,10 @@ func TestManifestFreshness(t *testing.T) {
 func TestManifestFreshnessRefusesAnOutdatedManifest(t *testing.T) {
 	isolate(t)
 	root := t.TempDir()
-	write(t, filepath.Join(root, "stricttools", "docs", "index.md"), "# Page\n")
-	path := filepath.Join(root, "stricttools", ".docs-state", "manifest.json")
+	write(t, filepath.Join(root, ".strictmetadata", "docs", "index.md"), "# Page\n")
+	path := filepath.Join(root, ".strictmetadata", ".docs-state", "manifest.json")
 	write(t, path, `{"schema_version": 1, "name": "test", "pages": [{"path": "index.md", "title": "Index", "type": "doc"}], "posts": []}`)
-	projectConfig := map[string]any{"docs": "stricttools/docs/"}
+	projectConfig := map[string]any{"docs": ".strictmetadata/docs/"}
 	_, err := checkManifestFreshness(projectConfig, root)
 	if err == nil || !strings.Contains(err.Error(), "'selfdoc layout migrate'") {
 		t.Fatalf("err = %v, want the outdated-manifest refusal naming the conversion", err)

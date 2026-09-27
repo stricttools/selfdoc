@@ -233,7 +233,7 @@ func TestRepublishAllDryRunBuildsAndChecksAndPublishesNothing(t *testing.T) {
 	if s.count("/git/blobs") != 0 || s.count("/dispatches") != 0 {
 		t.Errorf("the dry run published or dispatched: %v", s.calls())
 	}
-	if !exists(filepath.Join(s.alpha, "stricttools", ".docs-cache", "build", "index.html")) {
+	if !exists(filepath.Join(s.alpha, ".strictmetadata", ".docs-cache", "build", "index.html")) {
 		t.Error("the dry run did not build alpha")
 	}
 }
@@ -280,7 +280,7 @@ func TestRepublishAllRefusesAnOutdatedManifestAndMigrateClearsIt(t *testing.T) {
 			t.Errorf("the refusal does not name %q:\n%s", want, result.Stderr)
 		}
 	}
-	if exists(filepath.Join(s.alpha, "stricttools", ".docs-cache", "build")) {
+	if exists(filepath.Join(s.alpha, ".strictmetadata", ".docs-cache", "build")) {
 		t.Error("the refused run built alpha")
 	}
 
@@ -364,7 +364,7 @@ reason = "Say tree-like."
 			t.Errorf("the refusal does not name %q:\n%s", want, result.Stderr)
 		}
 	}
-	if exists(filepath.Join(s.alpha, "stricttools", ".docs-cache", "build")) {
+	if exists(filepath.Join(s.alpha, ".strictmetadata", ".docs-cache", "build")) {
 		t.Error("the refused run built alpha")
 	}
 

@@ -26,8 +26,8 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 - `baseline` -- accept the content and description hash baselines that drive STALE001 and DRIFT001
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
 - `assembly` -- initialize, push, inspect, rebuild, republish, retire, and verify the unified multi-project site
-- `layout` -- dump selfdoc's claim on the `stricttools/` directory, validate a repository against it, and migrate a repository off the previous `.stricttools/` layout
-- `vocabulary` -- accept, reject and remove words in the project's `stricttools/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
+- `layout` -- dump selfdoc's claim on the `.strictmetadata/` directory, validate a repository against it, and migrate a repository off the previous `stricttools/` and `.stricttools/` layouts
+- `vocabulary` -- accept, reject and remove words in the project's `.strictmetadata/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
 
 ### Stable addresses, archived versions
 
@@ -66,24 +66,28 @@ version badge, offer no version search filter and no version picker.
 `versions` at the version the project's manifest states, or 0.0.0 for a new
 project that states none, so a site that later gains source code needs no
 re-declaration. Init also writes the ownership manifests of
-`stricttools/docs/`, `stricttools/.docs-state/`, `stricttools/.docs-cache/` and
-`stricttools/vocabulary/` (the repository adopting selfdoc), and refuses a
+`.strictmetadata/docs/`, `.strictmetadata/.docs-state/`, `.strictmetadata/.docs-cache/` and
+`.strictmetadata/vocabulary/` (the repository adopting selfdoc), and refuses a
 directory whose manifest names another tool.
 
-### The stricttools/ layout
+### The .strictmetadata/ layout
 
-Everything selfdoc keeps in a repository lives under `stricttools/`, in
+Everything selfdoc keeps in a repository lives under `.strictmetadata/`, in
 function-named directories: the ones a person writes (`docs`, `posts`,
 `vocabulary`) under their names, the ones selfdoc generates behind a dot
 (`.docs-state`, `.docs-cache`). The dot is derived from the side the layout
 declaration states, and `selfdoc layout validate` refuses a directory whose dot
-disagrees. A repository still on the previous hidden `.stricttools/` root is
-refused by every command until `selfdoc layout migrate` moves it.
+disagrees. A repository still on the previous visible `stricttools/` root, or
+the hidden `.stricttools/` root before it, is refused by every command until
+`selfdoc layout migrate` moves it. The directories several tools share
+(`.strictmetadata/options/` and `.strictmetadata/upstream/`) name `strictspec`
+as their owner, and `selfdoc layout validate` accepts them without a PATH
+lookup.
 
 ### Vocabulary
 
 The spell check (SPELL001) accepts a word when selfdoc's built-in baseline or
-the project's `stricttools/vocabulary/terms.toml` accepts it, and reads nothing
+the project's `.strictmetadata/vocabulary/terms.toml` accepts it, and reads nothing
 outside the repository. `terms.toml` holds `[[accepted]]` words, each with a
 required meaning, and `[[rejected]]` terms, each with a kind and a reason;
 `review.toml` holds `[[pending]]` words nobody has approved yet, which the spell
@@ -93,11 +97,11 @@ disagreeing and unsorted entries, and rejected terms in page prose.
 
 ### Multi-version builds
 
-Builds documentation from git tags. Tagged versions are checked out and built from cache (`stricttools/.docs-cache/versions/`), while the latest version builds from the working tree. The version picker's links are computed by the build from each page's own address, and archived pages carry a dismissable notice keyed per version.
+Builds documentation from git tags. Tagged versions are checked out and built from cache (`.strictmetadata/.docs-cache/versions/`), while the latest version builds from the working tree. The version picker's links are computed by the build from each page's own address, and archived pages carry a dismissable notice keyed per version.
 
 ### Localization
 
-Parallel `stricttools/docs/<locale>/` directories with per-locale templates. Generates hreflang tags, per-locale sitemaps, and locale picker UI.
+Parallel `.strictmetadata/docs/<locale>/` directories with per-locale templates. Generates hreflang tags, per-locale sitemaps, and locale picker UI.
 
 ### Monorepo unified sites
 
@@ -127,7 +131,7 @@ Sandboxed script execution via bubblewrap (bwrap). Runs scripts in isolated envi
 
 ### Root file templates
 
-`stricttools/docs/_CLAUDE.md` and `stricttools/docs/_README.md` are templates that generate the project root `CLAUDE.md` and `README.md` via `selfdoc gen`. They support directives like any other template.
+`.strictmetadata/docs/_CLAUDE.md` and `.strictmetadata/docs/_README.md` are templates that generate the project root `CLAUDE.md` and `README.md` via `selfdoc gen`. They support directives like any other template.
 
 ## Release workflow
 

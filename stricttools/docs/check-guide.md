@@ -13,7 +13,7 @@ nav_order = 10
 
 A single `selfdoc check` run performs three categories of analysis that together cover directive correctness, API documentation coverage, and SEO best practices. Each category produces structured output with file paths, line numbers, and actionable messages:
 
-1. **Directive validation** -- resolves every directive marker in your `stricttools/docs/` templates and reports whether each one succeeds or fails.
+1. **Directive validation** -- resolves every directive marker in your `.strictmetadata/docs/` templates and reports whether each one succeeds or fails.
 2. **Coverage analysis** -- counts public/exported symbols in your source code and checks how many are referenced by directives.
 3. **SEO linting** -- scans templates for heading structure, meta description, alt text, contrast ratio, and other best practices.
 
@@ -50,7 +50,7 @@ Skeleton-only symbols:
   rewriting them changes nothing here: edit each page's frontmatter
   description instead.
   Pages whose description to edit:
-    stricttools/.docs-state/pages/mypackage-core.md
+    .strictmetadata/.docs-state/pages/mypackage-core.md
   Symbols they leave undocumented:
   mypackage/core.py: Pipeline
 ```
@@ -108,7 +108,7 @@ line, the column, and an edit-distance-one suggestion when one exists.
 Genuine terms the general word list cannot know -- project names, tool names,
 technical vocabulary -- belong in the project's vocabulary. The spell check
 accepts a word when selfdoc's built-in baseline or the project's own
-`stricttools/vocabulary/terms.toml` accepts it, in any casing, and reads no
+`.strictmetadata/vocabulary/terms.toml` accepts it, in any casing, and reads no
 file outside the repository: the same committed docs get the same verdict on
 every machine.
 
@@ -125,7 +125,7 @@ projects it visits.
 
 ### The vocabulary (VOCAB)
 
-`stricttools/vocabulary/terms.toml` holds the words the project's pages may use
+`.strictmetadata/vocabulary/terms.toml` holds the words the project's pages may use
 and the terms they may not. Each accepted word carries its meaning; each
 rejected term carries how it matches and why it is rejected:
 
@@ -169,7 +169,7 @@ place of the suffix `ish`, which would also reject the baseline's `treeish`). A
 pattern that covers a word the project itself accepts is refused with the
 command that removes that word.
 
-`stricttools/vocabulary/review.toml` holds words proposed for acceptance that
+`.strictmetadata/vocabulary/review.toml` holds words proposed for acceptance that
 nobody has reviewed yet, each with a guessed meaning, a confidence from 0 to 1,
 and the doc lines the guess came from:
 
@@ -180,7 +180,7 @@ format_version = 1
 word = "frobnitz"
 meaning = "The widget the release pipeline turns."
 confidence = 0.8
-evidence = ["stricttools/docs/index.md:12: The frobnitz turns once per release."]
+evidence = [".strictmetadata/docs/index.md:12: The frobnitz turns once per release."]
 ```
 
 A pending word is not accepted: the spell check reports it like any unknown
@@ -224,7 +224,7 @@ Suppression reaches warning-severity codes only. Naming an error-severity code -
 
 selfdoc tracks SHA-256 hashes of each page's raw template body (directives unresolved) and its frontmatter description. When the content changes but the description stays the same, it raises a STALE001 error. This catches the common case where you update a page's content but forget to revise the description that feeds into meta tags and search results.
 
-Hashes are stored in `stricttools/.docs-state/hashes/hashes.json` and auto-committed after each check (unless you pass `--no-auto-commit` or `--dry-run`).
+Hashes are stored in `.strictmetadata/.docs-state/hashes/hashes.json` and auto-committed after each check (unless you pass `--no-auto-commit` or `--dry-run`).
 
 ## Example Validation
 

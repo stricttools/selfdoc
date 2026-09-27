@@ -336,7 +336,7 @@ const pendingFrobnitz = EmptyReview + `
 word = "frobnitz"
 meaning = "The widget that frobs."
 confidence = 0.8
-evidence = ["stricttools/docs/index.md:3: The frobnitz frobs."]
+evidence = [".strictmetadata/docs/index.md:3: The frobnitz frobs."]
 `
 
 func TestApproveMovesThePendingWordWithItsMeaning(t *testing.T) {

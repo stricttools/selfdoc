@@ -79,8 +79,8 @@ func TestTheOnDiskNameIsDerivedFromTheSide(t *testing.T) {
 			t.Errorf("%s: the dot of %q disagrees with side %s", dir.Name, dir.DiskName(), dir.Side)
 		}
 	}
-	if Root != "stricttools" {
-		t.Errorf("Root = %q, want the visible stricttools", Root)
+	if Root != ".strictmetadata" {
+		t.Errorf("Root = %q, want the hidden .strictmetadata", Root)
 	}
 }
 
@@ -344,19 +344,62 @@ func TestTheOldLayoutRefusalPrintsTheWholeMigrationProcedure(t *testing.T) {
 	}
 }
 
-// A repository still keeping selfdoc's directories under the previous hidden
+// A repository still keeping selfdoc's directories under the earlier hidden
 // root, with none under the new one, is refused, naming the migrate command.
-func TestTheUnmigratedLayoutIsRefused(t *testing.T) {
+func TestTheEarlierHiddenLayoutIsRefused(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := t.TempDir()
+	write(t, filepath.Join(dir, EarlierRoot, DocsName, ManifestFileName), DirectoryManifestContent(Owner))
+	write(t, filepath.Join(dir, EarlierRoot, DocsStateName, ManifestFileName), DirectoryManifestContent(Owner))
+	err := RefuseOldLayout(dir, EarlierRoot+"/docs/", "", "")
+	var unmigrated *UnmigratedError
+	if !errors.As(err, &unmigrated) {
+		t.Fatalf("err = %v, want the unmigrated refusal", err)
+	}
+	for _, want := range []string{MigrateCommand, EarlierRoot + "/docs", EarlierRoot + "/docs-state"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal does not carry %q: %v", want, err)
+		}
+	}
+	// A directory another tool owns there is not selfdoc's to move.
+	other := t.TempDir()
+	write(t, filepath.Join(other, EarlierRoot, "other-state", ManifestFileName), DirectoryManifestContent("othertool"))
+	if err := RefuseUnmigrated(other); err != nil {
+		t.Errorf("a previous root holding only another tool's directory was refused: %v", err)
+	}
+}
+
+// A declared path under the previous root is refused with the path to declare
+// instead.
+func TestAPathDeclaredUnderTheEarlierRootIsRefused(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := owned(t)
+	err := RefuseOldLayout(dir, "", EarlierRoot+"/docs-cache/build/", "")
+	if err == nil {
+		t.Fatal("a path under the previous root was accepted")
+	}
+	if !strings.Contains(err.Error(), `"`+OutputDefault+`"`) {
+		t.Errorf("the refusal does not name the path to declare: %v", err)
+	}
+	if err := RefuseOldLayout(dir, "", OutputDefault, ""); err != nil {
+		t.Errorf("the declared replacement was refused: %v", err)
+	}
+}
+
+// A repository still keeping selfdoc's directories under the visible
+// stricttools/ root, with none under the hidden one, is refused, naming the
+// root and the migrate command.
+func TestTheVisibleRootLayoutIsRefused(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := t.TempDir()
 	write(t, filepath.Join(dir, PreviousRoot, DocsName, ManifestFileName), DirectoryManifestContent(Owner))
-	write(t, filepath.Join(dir, PreviousRoot, DocsStateName, ManifestFileName), DirectoryManifestContent(Owner))
+	write(t, filepath.Join(dir, PreviousRoot, "."+DocsStateName, ManifestFileName), DirectoryManifestContent(Owner))
 	err := RefuseOldLayout(dir, PreviousRoot+"/docs/", "", "")
 	var unmigrated *UnmigratedError
 	if !errors.As(err, &unmigrated) {
 		t.Fatalf("err = %v, want the unmigrated refusal", err)
 	}
-	for _, want := range []string{MigrateCommand, PreviousRoot + "/docs", PreviousRoot + "/docs-state"} {
+	for _, want := range []string{MigrateCommand, "stricttools/docs", "stricttools/.docs-state", ".strictmetadata/"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("the refusal does not carry %q: %v", want, err)
 		}
@@ -369,17 +412,17 @@ func TestTheUnmigratedLayoutIsRefused(t *testing.T) {
 	}
 }
 
-// A declared path under the previous root is refused with the path to declare
-// instead.
-func TestAPathDeclaredUnderThePreviousRootIsRefused(t *testing.T) {
+// A declared path under the visible root is refused with the path to declare
+// instead, and declaring it clears the refusal.
+func TestAPathDeclaredUnderTheVisibleRootIsRefused(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := owned(t)
-	err := RefuseOldLayout(dir, "", PreviousRoot+"/docs-cache/build/", "")
+	err := RefuseOldLayout(dir, "", PreviousRoot+"/.docs-cache/build/", "")
 	if err == nil {
-		t.Fatal("a path under the previous root was accepted")
+		t.Fatal("a path under the visible root was accepted")
 	}
-	if !strings.Contains(err.Error(), `"`+OutputDefault+`"`) {
-		t.Errorf("the refusal does not name the path to declare: %v", err)
+	if !strings.Contains(err.Error(), `"`+OutputDefault+`"`) || !strings.Contains(err.Error(), "stricttools/") {
+		t.Errorf("the refusal does not name the root and the path to declare: %v", err)
 	}
 	if err := RefuseOldLayout(dir, "", OutputDefault, ""); err != nil {
 		t.Errorf("the declared replacement was refused: %v", err)
@@ -389,12 +432,17 @@ func TestAPathDeclaredUnderThePreviousRootIsRefused(t *testing.T) {
 func TestMigratedPathMapsOntoTheDerivedNames(t *testing.T) {
 	hygiene.Isolate(t)
 	for previous, want := range map[string]string{
-		".stricttools/docs/":             "stricttools/docs/",
-		".stricttools/docs/_README.md":   "stricttools/docs/_README.md",
-		".stricttools/docs-state/pages":  "stricttools/.docs-state/pages",
-		".stricttools/docs-cache/build/": "stricttools/.docs-cache/build/",
-		".stricttools/docs-cache":        "stricttools/.docs-cache",
+		".stricttools/docs/":             ".strictmetadata/docs/",
+		".stricttools/docs/_README.md":   ".strictmetadata/docs/_README.md",
+		".stricttools/docs-state/pages":  ".strictmetadata/.docs-state/pages",
+		".stricttools/docs-cache/build/": ".strictmetadata/.docs-cache/build/",
+		".stricttools/docs-cache":        ".strictmetadata/.docs-cache",
 		".stricttools/other-state/x":     ".stricttools/other-state/x",
+		"stricttools/docs/":              ".strictmetadata/docs/",
+		"stricttools/.docs-state/pages":  ".strictmetadata/.docs-state/pages",
+		"stricttools/docs-cache/build/":  ".strictmetadata/.docs-cache/build/",
+		"stricttools/vocabulary":         ".strictmetadata/vocabulary",
+		"stricttools/other-state/x":      "stricttools/other-state/x",
 		"docs/":                          "docs/",
 	} {
 		if got := MigratedPath(previous); got != want {

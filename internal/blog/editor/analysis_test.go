@@ -450,7 +450,7 @@ func TestAnalyzeBuffer(t *testing.T) {
 			t.Errorf("words = %v, want frobnitz, which only a machine-wide list accepts", words)
 		}
 
-		terms := filepath.Join(project, "stricttools", "vocabulary", "terms.toml")
+		terms := filepath.Join(project, ".strictmetadata", "vocabulary", "terms.toml")
 		if err := os.MkdirAll(filepath.Dir(terms), 0o755); err != nil {
 			t.Fatal(err)
 		}

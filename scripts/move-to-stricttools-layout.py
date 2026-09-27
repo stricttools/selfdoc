@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Move one repository onto selfdoc's stricttools/ layout.
+"""Move one repository onto selfdoc's .strictmetadata/ layout.
 
 selfdoc keeps every directory it owns under one directory at the
-repository root: the handwritten pages at stricttools/docs/, the generated
+repository root: the handwritten pages at .strictmetadata/docs/, the generated
 pages and the rest of the generated-and-committed state at
-stricttools/.docs-state/, the build output and the version cache at
-stricttools/.docs-cache/, the posts at stricttools/posts/, and the vocabulary
-at stricttools/vocabulary/. A generated directory's name starts with a dot; a
+.strictmetadata/.docs-state/, the build output and the version cache at
+.strictmetadata/.docs-cache/, the posts at .strictmetadata/posts/, and the vocabulary
+at .strictmetadata/vocabulary/. A generated directory's name starts with a dot; a
 handwritten one's does not. There is no migrator inside selfdoc for this move
 and no dual reading: a repository is moved once, by hand, with this script, and
 every selfdoc command refuses it until it is.
 
-The script never creates stricttools/ itself: the directory is the
+The script never creates .strictmetadata/ itself: the directory is the
 repository's own grant of permission, so it refuses when it is absent. What it
 DOES write is the ownership manifest of each function directory it needs --
 one line, 'owner = "selfdoc"' -- because a manifest is the permission to write
@@ -23,7 +23,7 @@ What it does, in order:
 
   1. Reads selfdoc.json for the paths the repository declares today.
   2. Captures the site's current URL set from the sitemap the last build wrote,
-     keeping a copy under stricttools/.docs-cache/, so the same set can be
+     keeping a copy under .strictmetadata/.docs-cache/, so the same set can be
      demanded of the build that follows the move.
   3. Writes the ownership manifests and moves every tracked file as ONE commit,
      through 'safegit commit --moved': a page carrying selfdoc's generated-page
@@ -72,7 +72,7 @@ import sys
 import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
-ROOT_DIR = "stricttools"
+ROOT_DIR = ".strictmetadata"
 MANIFEST_FILE = "manifest.toml"
 OWNER_KEY = "owner"
 OWNER = "selfdoc"
@@ -602,7 +602,7 @@ def perform_moves(project: Path, moves: list[tuple[str, str]], manifests: list[s
         shutil.move(str(project / old), str(destination))
 
     argv = ["safegit", "commit",
-            "-m", "layout: move selfdoc's directories under stricttools/"]
+            "-m", "layout: move selfdoc's directories under .strictmetadata/"]
     for old, new in moves:
         argv += ["--moved", f"{old} -> {new}"]
     argv.append("--")
@@ -659,7 +659,7 @@ def perform_rewrites(project: Path, rewrites, output_rel: str) -> None:
         print("no content rewrite was needed.")
         return
     argv = ["safegit", "commit", "-m",
-            "layout: name the stricttools/ paths in the moved content", "--"] + written
+            "layout: name the .strictmetadata/ paths in the moved content", "--"] + written
     result = run(argv, project)
     sys.stdout.write(result.stdout)
     sys.stderr.write(result.stderr)
@@ -674,7 +674,7 @@ def print_followups(project: Path) -> None:
           f"safegit commit -m \"layout: the derived ignore file\" -- {ROOT_DIR}/.gitignore")
     print("  delete what the old layout left behind (build output, caches), for example:")
     print("    saferm delete -r --on-error abort --description \"superseded by the "
-          "stricttools layout\" docs/_build")
+          ".strictmetadata layout\" docs/_build")
 
 
 def remove_emptied_root(project: Path) -> None:
@@ -700,7 +700,7 @@ def remove_emptied_root(project: Path) -> None:
             f"refuses a repository that still has that directory:\n  {listed}\n"
             "The move and the rewrite commits are in place. Delete what is regenerable "
             "with 'saferm delete -r --on-error abort --description \"superseded by the "
-            f"stricttools layout\" <path>', or commit what is not, remove the emptied "
+            f".strictmetadata layout\" <path>', or commit what is not, remove the emptied "
             f"{DEPRECATED_ROOT}/, then run 'selfdoc layout migrate' in the repository, "
             "then build."
         )

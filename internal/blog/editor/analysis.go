@@ -25,7 +25,7 @@ import (
 //     engine the check runs (SPELL001) and the corpus sweep runs over the
 //     fleet: the same masks, the same vendored word list, the same project
 //     vocabulary (selfdoc's built-in baseline and the repository's own
-//     stricttools/vocabulary/terms.toml). Its coordinates are line and column, because
+//     .strictmetadata/vocabulary/terms.toml). Its coordinates are line and column, because
 //     that is what a diagnostic in a terminal needs; the editor's decoration
 //     interface takes flat character offsets over the buffer, so the one
 //     thing this adds is that mapping.

@@ -307,3 +307,29 @@ func TestValidateReportsAStaleIgnoreFile(t *testing.T) {
 		t.Errorf("the other tool's lines were dropped:\n%s", ignore)
 	}
 }
+
+// A directory several tools share names strictspec as its owner. strictspec is
+// a library every reading tool links, not a command, so the directory passes
+// without any strictspec on PATH.
+func TestValidateAcceptsSharedDirectoriesOwnedByStrictspecWithoutAPathLookup(t *testing.T) {
+	hygiene.Isolate(t)
+	t.Setenv("PATH", t.TempDir())
+	dir := validated(t)
+	for _, shared := range []string{"options", "upstream"} {
+		grant(t, dir, shared, "strictspec")
+	}
+
+	if problems := problemsOf(t, dir, CheckOwnership); len(problems) != 0 {
+		t.Errorf("ownership problems = %v, want none for directories strictspec owns", problems)
+	}
+}
+
+// The root is hidden, as .git is.
+func TestTheRootIsTheHiddenStrictmetadataDirectory(t *testing.T) {
+	if Root != ".strictmetadata" {
+		t.Errorf("Root = %q, want %q", Root, ".strictmetadata")
+	}
+	if DocsRel != ".strictmetadata/docs" || DocsStateRel != ".strictmetadata/.docs-state" {
+		t.Errorf("DocsRel = %q, DocsStateRel = %q", DocsRel, DocsStateRel)
+	}
+}

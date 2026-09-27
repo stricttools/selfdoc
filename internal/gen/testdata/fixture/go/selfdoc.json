@@ -5,8 +5,8 @@
       "language": "go"
     }
   ],
-  "docs": "stricttools/docs/",
-  "output": "stricttools/.docs-cache/build/",
+  "docs": ".strictmetadata/docs/",
+  "output": ".strictmetadata/.docs-cache/build/",
   "base_url": "https://example.com",
   "search_engine": "pagefind"
 }

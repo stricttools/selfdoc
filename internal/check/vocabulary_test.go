@@ -84,7 +84,7 @@ func TestAPendingWordIsUnknownAndItsRemedyNamesTheReviewCommands(t *testing.T) {
 word = "frobnitz"
 meaning = "The widget that turns."
 confidence = 0.7
-evidence = ["stricttools/docs/index.md:7: The frobnitz turns."]
+evidence = [".strictmetadata/docs/index.md:7: The frobnitz turns."]
 `
 	for _, testCase := range []struct {
 		name   string

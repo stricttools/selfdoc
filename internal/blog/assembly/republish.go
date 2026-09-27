@@ -74,7 +74,7 @@ type RepublishSummary struct {
 // with one on the current manifest schema, and it refuses before building
 // anything when:
 //
-//   - a checkout is not on the stricttools/ layout, or its manifest is missing
+//   - a checkout is not on the .strictmetadata/ layout, or its manifest is missing
 //     or on an older schema (each named, with its fix);
 //   - the checkouts do not declare one assembly repository;
 //   - the slugs given are not the roster's slugs, exactly, or the home checkout

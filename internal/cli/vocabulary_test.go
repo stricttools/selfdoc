@@ -84,7 +84,7 @@ func TestThePendingRemediesRunAsPrintedAndClear(t *testing.T) {
 word = "frobnitz"
 meaning = "The widget that turns."
 confidence = 0.9
-evidence = ["stricttools/docs/index.md:9: The frobnitz turns."]
+evidence = [".strictmetadata/docs/index.md:9: The frobnitz turns."]
 `)
 			diagnostics := diagnosticsOf(t, dir)
 			runRemedy(t, dir, diagnostics, prefix)
@@ -103,7 +103,7 @@ func TestTheDropRemedyRunsAsPrinted(t *testing.T) {
 word = "frobnitz"
 meaning = "The widget that turns."
 confidence = 0.2
-evidence = ["stricttools/docs/index.md:9: The frobnitz turns."]
+evidence = [".strictmetadata/docs/index.md:9: The frobnitz turns."]
 `)
 	runRemedy(t, dir, diagnosticsOf(t, dir), "selfdoc vocabulary drop frobnitz")
 	if review := readText(t, layout.Path(dir, layout.ReviewRel)); strings.Contains(review, "frobnitz") {

@@ -82,7 +82,7 @@ func Load(dir string) (Config, error) {
 }
 
 // refuseOldLayout is where every command that reads project state meets the
-// repository that has not been moved to the stricttools/ layout yet.
+// repository that has not been moved to the .strictmetadata/ layout yet.
 //
 // The check sits in the loader because the loader is what every such command
 // runs first, and because the paths it judges are the config's own. There is

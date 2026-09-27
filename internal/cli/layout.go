@@ -34,7 +34,7 @@ func (c *cli) registerLayout() {
 	)
 
 	group.Command("migrate",
-		"Move this repository off the layout before this one: every directory under "+layout.PreviousRoot+"/ whose "+layout.ManifestFileName+" names selfdoc moves under "+layout.Root+"/, a generated one behind a dot ("+migrationExample()+"). It creates "+layout.Root+"/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from "+layout.PreviousRoot+"/"+layout.IgnoreFileName+" (the file and "+layout.PreviousRoot+"/ go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes "+layout.TermsRel+" empty when the project has none, converts the manifests ("+layout.ManifestRel+" and "+layout.PostManifestRel+") from schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" to "+strconv.Itoa(manifest.SchemaVersion)+", which records the project's accepted words and rejected patterns from "+layout.TermsRel+", and commits. A repository already on "+layout.Root+"/ whose manifests are on schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" gets the manifest conversion alone, and one whose "+layout.VocabularyRel+"/ carries no "+layout.ManifestFileName+" -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and "+layout.TermsRel+" empty when the project has none. Another tool's directories stay where they are. Refuses a repository already migrated with its manifests converted and its vocabulary directory granted, part-way through a move, or never on the previous layout; --dry-run prints the plan and changes nothing",
+		"Move this repository off a layout before this one: every directory whose "+layout.ManifestFileName+" names selfdoc under "+layout.PreviousRoot+"/ (the layout before this one, whose generated directories already start with a dot) or under "+layout.EarlierRoot+"/ (the layout before that, which named every directory bare) moves under "+layout.Root+"/, a generated one behind a dot ("+migrationExample()+"). It creates "+layout.Root+"/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from the previous root's "+layout.IgnoreFileName+" (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes "+layout.TermsRel+" empty when the project has none, converts the manifests ("+layout.ManifestRel+" and "+layout.PostManifestRel+") from schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" to "+strconv.Itoa(manifest.SchemaVersion)+", which records the project's accepted words and rejected patterns from "+layout.TermsRel+", and commits. A repository already on "+layout.Root+"/ whose manifests are on schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" gets the manifest conversion alone, and one whose "+layout.VocabularyRel+"/ carries no "+layout.ManifestFileName+" -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and "+layout.TermsRel+" empty when the project has none. Another tool's directories stay where they are. Refuses a repository already migrated with its manifests converted and its vocabulary directory granted, part-way through a move, holding selfdoc's directories under both previous roots, or never on a previous layout; --dry-run prints the plan and changes nothing",
 		c.cmdLayoutMigrate,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.LayoutMigrate()),
@@ -48,9 +48,11 @@ func (c *cli) registerLayout() {
 // help states it: derived from the declaration, so the help cannot drift from
 // the names the move writes.
 func migrationExample() string {
-	moves := make([]string, 0, len(layout.Declared()))
-	for _, dir := range layout.Declared() {
-		moves = append(moves, layout.PreviousRoot+"/"+dir.Name+" -> "+dir.Rel())
+	var moves []string
+	for _, previousLayout := range layout.PreviousLayouts {
+		for _, dir := range layout.Declared() {
+			moves = append(moves, previousLayout.Root+"/"+previousLayout.EntryName(dir)+" -> "+dir.Rel())
+		}
 	}
 	return strings.Join(moves, ", ")
 }
@@ -83,7 +85,7 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 	}
 	committed := false
 	if autoCommit {
-		message := "selfdoc layout migrate: move selfdoc's directories from " + layout.PreviousRoot + "/ to " + layout.Root + "/"
+		message := "selfdoc layout migrate: move selfdoc's directories from " + plan.PreviousRoot + "/ to " + layout.Root + "/"
 		switch {
 		case len(plan.Moves) > 0:
 		case len(plan.Writes) > 0 && len(plan.Rewrites) > 0:
@@ -120,7 +122,7 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 		deletes = append(deletes, deleted)
 	}
 	ctx.Payload(map[string]any{
-		"previous_root":         layout.PreviousRoot,
+		"previous_root":         plan.PreviousRoot,
 		"root":                  layout.Root,
 		"moves":                 moves,
 		"writes":                writes,

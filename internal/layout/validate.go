@@ -36,7 +36,7 @@ const (
 // in check order.
 //
 // The rules: every directory under [Root] carries a [ManifestFileName] naming
-// a tool this machine has, and every directory selfdoc claims that exists
+// a tool this machine has ([KnownOwner]), and every directory selfdoc claims that exists
 // names selfdoc; every directory selfdoc owns carries the leading dot its side
 // calls for; every directory selfdoc owns holds only what its side allows;
 // nothing inside selfdoc's committed directories starts with a dot; and the
@@ -122,8 +122,8 @@ func ownershipProblems(baseDir string) (map[string]string, []Problem) {
 			problems = append(problems, Problem{
 				Check: CheckOwnership,
 				Message: fmt.Sprintf(
-					"%s declares %q as the owner of %s, and this machine has no such tool. An owner is %q itself, or a name PATH answers with an executable.",
-					entryManifestRel(name), manifest.Owner, shown, Owner),
+					"%s declares %q as the owner of %s, and this machine has no such tool. An owner is %q itself, %q (the owner of a directory several tools share), or a name PATH answers with an executable.",
+					entryManifestRel(name), manifest.Owner, shown, Owner, SharedOwner),
 			})
 		}
 		if !claimed {

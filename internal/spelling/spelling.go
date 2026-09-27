@@ -40,7 +40,7 @@
 // Genuine terms the general English list cannot know -- project names, tool
 // names, technical vocabulary -- are accepted by the project's vocabulary: the
 // baseline embedded in the binary and the project's own
-// stricttools/vocabulary/terms.toml, both loaded by package vocabulary and
+// .strictmetadata/vocabulary/terms.toml, both loaded by package vocabulary and
 // handed to [CheckText] as one set. This package reads no file outside the
 // binary: the caller decides the vocabulary, so the same committed docs get
 // the same verdict on every machine.

@@ -1,7 +1,7 @@
 # strictspec schema -- a project's vocabulary review list: words proposed for
 # acceptance that nobody has approved yet.
 #
-# Governs stricttools/vocabulary/review.toml. The generated validator
+# Governs .strictmetadata/vocabulary/review.toml. The generated validator
 # (internal/vocabulary/reviewschema/selfdoc_vocabulary_review_gen.go) is what
 # vocabulary.Load validates the file against. A pending word is NOT accepted:
 # the spell check treats it as unknown until `selfdoc vocabulary approve` moves

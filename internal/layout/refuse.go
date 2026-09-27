@@ -12,38 +12,81 @@ import (
 	"github.com/stricttools/selfdoc/internal/scripts"
 )
 
-// DeprecatedRoot is the directory selfdoc kept a repository's state in two
+// DeprecatedRoot is the directory selfdoc kept a repository's state in three
 // layouts ago. Its presence is what a refusal recognizes: nothing reads it.
 const DeprecatedRoot = ".selfdoc"
 
-// PreviousRoot is the hidden directory the layout before this one kept every
-// function directory in, each under its bare function name. Nothing reads it:
-// `selfdoc layout migrate` moves a repository off it, and every other command
-// refuses a repository still on it.
-const PreviousRoot = ".stricttools"
+// PreviousRoot is the visible directory the layout before this one kept every
+// function directory in, each under the name it carries under [Root] today.
+// Nothing reads it: `selfdoc layout migrate` moves a repository off it, and
+// every other command refuses a repository still on it.
+const PreviousRoot = "stricttools"
 
-// MigrateCommand is the command that moves a repository off [PreviousRoot].
+// EarlierRoot is the hidden directory the layout two before this one kept
+// every function directory in, each under its bare function name, generated
+// ones included. Like [PreviousRoot], nothing reads it but the move.
+const EarlierRoot = ".stricttools"
+
+// MigrateCommand is the command that moves a repository off a previous root.
 const MigrateCommand = "selfdoc layout migrate"
 
+// PreviousLayout is one root a repository may still keep selfdoc's
+// directories in, and how the directories were named there.
+type PreviousLayout struct {
+	// Root is the directory, relative to the repository root.
+	Root string
+	// DottedGenerated reports whether a generated directory's name started
+	// with a dot under this root, as it does under [Root].
+	DottedGenerated bool
+}
+
+// PreviousLayouts are the roots `selfdoc layout migrate` moves a repository
+// off, newest first.
+var PreviousLayouts = []PreviousLayout{
+	{Root: PreviousRoot, DottedGenerated: true},
+	{Root: EarlierRoot, DottedGenerated: false},
+}
+
+// EntryName is the name a claimed directory carried under this root.
+func (p PreviousLayout) EntryName(dir Directory) string {
+	if p.DottedGenerated {
+		return dir.DiskName()
+	}
+	return dir.Name
+}
+
+// Lookup returns the claimed directory an entry under this root is. Under a
+// root that dotted generated directories, an entry whose dot disagrees with
+// its side is still that directory, misnamed; the move names it correctly.
+func (p PreviousLayout) Lookup(entry string) (Directory, bool) {
+	if p.DottedGenerated {
+		return LookupFunction(entry)
+	}
+	return Lookup(entry)
+}
+
 // UnmigratedError is a repository refused for still keeping selfdoc's
-// directories under [PreviousRoot].
+// directories under a previous root.
 type UnmigratedError struct {
-	// Found are the directories under [PreviousRoot] whose manifest names
-	// selfdoc, as paths relative to the repository root.
+	// Root is the previous root the directories are under.
+	Root string
+	// Found are the directories under Root whose manifest names selfdoc, as
+	// paths relative to the repository root.
 	Found []string
 }
 
 func (e *UnmigratedError) Error() string {
 	return fmt.Sprintf(
-		"This repository keeps selfdoc's directories under %s/ (%s), the layout before this one, which selfdoc no longer reads. selfdoc keeps them under %s/ now, and a generated directory's name starts with a dot there. Run '%s', which moves them, rewrites the paths selfdoc.json and the generated root files name, and commits the move; '%s --dry-run' prints the plan first.",
-		PreviousRoot, strings.Join(e.Found, ", "), Root, MigrateCommand, MigrateCommand)
+		"This repository keeps selfdoc's directories under %s/ (%s), a layout before this one, which selfdoc no longer reads. selfdoc keeps them under %s/ now, and a generated directory's name starts with a dot there. Run '%s', which moves them, rewrites the paths selfdoc.json and the generated root files name, and commits the move; '%s --dry-run' prints the plan first.",
+		e.Root, strings.Join(e.Found, ", "), Root, MigrateCommand, MigrateCommand)
 }
 
-// PreviousSelfdocEntries returns the directories under [PreviousRoot] whose
-// manifest names selfdoc, by name, sorted. A directory with no manifest, or one
-// naming another tool, is not selfdoc's to move and is not returned.
-func PreviousSelfdocEntries(baseDir string) ([]string, error) {
-	entries, err := os.ReadDir(filepath.Join(baseDir, PreviousRoot))
+// PreviousSelfdocEntries returns the directories under a previous root whose
+// manifest names selfdoc, by the name each carries there, sorted. A directory
+// with no manifest, or one naming another tool, is not selfdoc's to move and
+// is not returned.
+func PreviousSelfdocEntries(baseDir, previousRoot string) ([]string, error) {
+	entries, err := os.ReadDir(filepath.Join(baseDir, previousRoot))
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, nil
 	}
@@ -55,7 +98,7 @@ func PreviousSelfdocEntries(baseDir string) ([]string, error) {
 		if !entry.IsDir() {
 			continue
 		}
-		manifestPath := filepath.Join(baseDir, PreviousRoot, entry.Name(), ManifestFileName)
+		manifestPath := filepath.Join(baseDir, previousRoot, entry.Name(), ManifestFileName)
 		manifest, readErr := readManifestFile(manifestPath)
 		if errors.Is(readErr, os.ErrNotExist) {
 			continue
@@ -94,20 +137,13 @@ func CurrentSelfdocEntries(baseDir string) ([]string, error) {
 }
 
 // RefuseUnmigrated returns an [UnmigratedError] when a repository still keeps
-// selfdoc's directories under [PreviousRoot] and none under [Root]: the
+// selfdoc's directories under a previous root and none under [Root]: the
 // repository `selfdoc layout migrate` is for.
 //
-// A repository holding selfdoc's directories in both places is part-way
-// through a move, which only the migrate command judges; every other command
-// reads the new layout alone.
+// A repository holding selfdoc's directories under [Root] and a previous root
+// is part-way through a move, which only the migrate command judges; every
+// other command reads the current layout alone.
 func RefuseUnmigrated(baseDir string) error {
-	previous, err := PreviousSelfdocEntries(baseDir)
-	if err != nil {
-		return err
-	}
-	if len(previous) == 0 {
-		return nil
-	}
 	current, err := CurrentSelfdocEntries(baseDir)
 	if err != nil {
 		return err
@@ -115,11 +151,21 @@ func RefuseUnmigrated(baseDir string) error {
 	if len(current) > 0 {
 		return nil
 	}
-	found := make([]string, 0, len(previous))
-	for _, name := range previous {
-		found = append(found, PreviousRoot+"/"+name)
+	for _, previousLayout := range PreviousLayouts {
+		previous, err := PreviousSelfdocEntries(baseDir, previousLayout.Root)
+		if err != nil {
+			return err
+		}
+		if len(previous) == 0 {
+			continue
+		}
+		found := make([]string, 0, len(previous))
+		for _, name := range previous {
+			found = append(found, previousLayout.Root+"/"+name)
+		}
+		return &UnmigratedError{Root: previousLayout.Root, Found: found}
 	}
-	return &UnmigratedError{Found: found}
+	return nil
 }
 
 // OldLayoutError is a repository refused for still being laid out the way
@@ -224,10 +270,10 @@ func RefuseOldLayout(baseDir, docsDeclared, outputDeclared, postsDeclared string
 		if strings.TrimSpace(declaredKey.value) == "" || UnderRoot(declaredKey.value) {
 			continue
 		}
-		if underPreviousRoot(declaredKey.value) {
+		if previousRoot, under := underPreviousRoot(declaredKey.value); under {
 			return fmt.Errorf(
-				"selfdoc.json declares %q: %q, which is under %s/, the layout before this one. Declare %q: %q instead.",
-				declaredKey.key, declaredKey.value, PreviousRoot,
+				"selfdoc.json declares %q: %q, which is under %s/, a layout before this one. Declare %q: %q instead.",
+				declaredKey.key, declaredKey.value, previousRoot,
 				declaredKey.key, MigratedPath(declaredKey.value))
 		}
 		return &OldLayoutError{
@@ -241,30 +287,39 @@ func RefuseOldLayout(baseDir, docsDeclared, outputDeclared, postsDeclared string
 	return nil
 }
 
-// underPreviousRoot reports whether a declared path names something inside
-// [PreviousRoot].
-func underPreviousRoot(declaredPath string) bool {
+// underPreviousRoot returns the one of the [PreviousLayouts] roots a declared
+// path names something inside, reporting whether there is one.
+func underPreviousRoot(declaredPath string) (string, bool) {
 	clean := path.Clean(strings.TrimRight(filepath.ToSlash(declaredPath), "/"))
-	return clean == PreviousRoot || strings.HasPrefix(clean, PreviousRoot+"/")
+	for _, previousLayout := range PreviousLayouts {
+		if clean == previousLayout.Root || strings.HasPrefix(clean, previousLayout.Root+"/") {
+			return previousLayout.Root, true
+		}
+	}
+	return "", false
 }
 
-// MigratedPath maps a path under [PreviousRoot] onto this layout: a directory
-// selfdoc claims moves under [Root] with the name its side calls for, and the
-// rest of the path is kept, trailing slash included. A path that is not inside
-// one of selfdoc's directories under [PreviousRoot] is returned unchanged.
+// MigratedPath maps a path under one of the [PreviousLayouts] roots onto this
+// layout: a directory selfdoc claims moves under [Root] with the name its side
+// calls for, and the rest of the path is kept, trailing slash included. A path
+// that is not inside one of selfdoc's directories under a previous root is
+// returned unchanged.
 func MigratedPath(previous string) string {
 	slashed := filepath.ToSlash(previous)
-	rest, found := strings.CutPrefix(slashed, PreviousRoot+"/")
-	if !found {
-		return previous
+	for _, previousLayout := range PreviousLayouts {
+		rest, found := strings.CutPrefix(slashed, previousLayout.Root+"/")
+		if !found {
+			continue
+		}
+		head, tail, hasTail := strings.Cut(rest, "/")
+		dir, claimed := previousLayout.Lookup(head)
+		if !claimed {
+			return previous
+		}
+		if hasTail {
+			return dir.Rel() + "/" + tail
+		}
+		return dir.Rel()
 	}
-	head, tail, hasTail := strings.Cut(rest, "/")
-	dir, claimed := Lookup(head)
-	if !claimed {
-		return previous
-	}
-	if hasTail {
-		return dir.Rel() + "/" + tail
-	}
-	return dir.Rel()
+	return previous
 }

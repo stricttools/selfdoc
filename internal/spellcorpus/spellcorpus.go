@@ -4,7 +4,7 @@
 // `selfdoc check` spell-checks the project it is run in. This runs the
 // identical engine over every selfdoc project that lives beside it, each
 // against its own vocabulary -- selfdoc's built-in baseline and the project's
-// stricttools/vocabulary/terms.toml -- so one sweep shows what every project's
+// .strictmetadata/vocabulary/terms.toml -- so one sweep shows what every project's
 // check would report.
 //
 // Strictly read-only over the projects it visits. Directives are not resolved

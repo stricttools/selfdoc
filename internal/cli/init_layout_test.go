@@ -36,7 +36,7 @@ func TestInitWritesTheOwnershipManifestsOfAFreshRepository(t *testing.T) {
 			t.Errorf("%s names %q as its owner", name, manifest.Owner)
 		}
 	}
-	if !exists(filepath.Join(dir, "stricttools", layout.IgnoreFileName)) {
+	if !exists(filepath.Join(dir, ".strictmetadata", layout.IgnoreFileName)) {
 		t.Error("init wrote no derived ignore file")
 	}
 

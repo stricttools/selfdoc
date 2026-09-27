@@ -29,11 +29,11 @@ func readmeHeader(template string) string {
 func previousLayoutProject(t *testing.T, withOtherTool bool) string {
 	t.Helper()
 	dir := filepath.Join(t.TempDir(), "project")
-	previous := filepath.Join(dir, layout.PreviousRoot)
+	previous := filepath.Join(dir, layout.EarlierRoot)
 	testproject.WriteJSON(t, filepath.Join(dir, "selfdoc.json"), testproject.DefaultConfig(map[string]any{
-		"docs":       layout.PreviousRoot + "/docs/",
-		"output":     layout.PreviousRoot + "/docs-cache/build/",
-		"root_files": []any{layout.PreviousRoot + "/docs/_README.md"},
+		"docs":       layout.EarlierRoot + "/docs/",
+		"output":     layout.EarlierRoot + "/docs-cache/build/",
+		"root_files": []any{layout.EarlierRoot + "/docs/_README.md"},
 	}))
 	testproject.WriteText(t, filepath.Join(dir, "src", "__init__.py"), `"""Example package."""`+"\n")
 	for _, name := range []string{layout.DocsName, layout.DocsStateName, layout.DocsCacheName} {
@@ -51,12 +51,12 @@ func previousLayoutProject(t *testing.T, withOtherTool bool) string {
 	}
 	testproject.WriteText(t, filepath.Join(previous, layout.IgnoreFileName), ignore)
 	testproject.WriteText(t, filepath.Join(dir, "README.md"),
-		readmeHeader(layout.PreviousRoot+"/docs/_README.md")+"\n\n# Test Project\n")
+		readmeHeader(layout.EarlierRoot+"/docs/_README.md")+"\n\n# Test Project\n")
 	if err := os.Chmod(filepath.Join(dir, "README.md"), 0o444); err != nil {
 		t.Fatal(err)
 	}
 	testproject.Git(t, dir, "init", "-q")
-	testproject.Git(t, dir, "add", "selfdoc.json", "src", "README.md", layout.PreviousRoot)
+	testproject.Git(t, dir, "add", "selfdoc.json", "src", "README.md", layout.EarlierRoot)
 	testproject.Git(t, dir, "commit", "-q", "-m", "previous layout")
 	return dir
 }
@@ -99,13 +99,13 @@ func TestMigrateDryRunPrintsThePlanAndChangesNothing(t *testing.T) {
 		t.Fatalf("the dry run failed:\n%s\n%s", result.Stdout, result.Stderr)
 	}
 	for _, want := range []string{
-		"move .stricttools/docs/ -> stricttools/docs/",
-		"move .stricttools/docs-state/ -> stricttools/.docs-state/",
-		"move .stricttools/docs-cache/ -> stricttools/.docs-cache/",
-		"write stricttools/.gitignore",
+		"move .stricttools/docs/ -> .strictmetadata/docs/",
+		"move .stricttools/docs-state/ -> .strictmetadata/.docs-state/",
+		"move .stricttools/docs-cache/ -> .strictmetadata/.docs-cache/",
+		"write .strictmetadata/.gitignore",
 		"write " + layout.TermsRel,
-		`rewrite selfdoc.json: ".stricttools/docs/" -> "stricttools/docs/"`,
-		"rewrite README.md: header names stricttools/docs/_README.md",
+		`rewrite selfdoc.json: ".stricttools/docs/" -> ".strictmetadata/docs/"`,
+		"rewrite README.md: header names .strictmetadata/docs/_README.md",
 		"rewrite .stricttools/.gitignore",
 	} {
 		if !strings.Contains(result.Stdout, want) {
@@ -124,9 +124,9 @@ func TestMigrateMovesSelfdocsDirectoriesAndLeavesAnotherToolsAlone(t *testing.T)
 	if result.ExitCode != 0 {
 		t.Fatalf("the move failed:\n%s\n%s", result.Stdout, result.Stderr)
 	}
-	for _, moved := range []string{"stricttools/docs/index.md", "stricttools/docs/_README.md",
-		"stricttools/.docs-state/manifest.toml", "stricttools/.docs-cache/manifest.toml",
-		"stricttools/.docs-cache/build/index.html", "stricttools/vocabulary/manifest.toml"} {
+	for _, moved := range []string{".strictmetadata/docs/index.md", ".strictmetadata/docs/_README.md",
+		".strictmetadata/.docs-state/manifest.toml", ".strictmetadata/.docs-cache/manifest.toml",
+		".strictmetadata/.docs-cache/build/index.html", ".strictmetadata/vocabulary/manifest.toml"} {
 		if !exists(filepath.Join(dir, filepath.FromSlash(moved))) {
 			t.Errorf("%s is missing after the move", moved)
 		}
@@ -149,14 +149,14 @@ func TestMigrateMovesSelfdocsDirectoriesAndLeavesAnotherToolsAlone(t *testing.T)
 		t.Errorf("the derived ignore file is\n%s", ignore)
 	}
 	config := readJSON(t, filepath.Join(dir, "selfdoc.json"))
-	if config["docs"] != "stricttools/docs/" || config["output"] != "stricttools/.docs-cache/build/" {
+	if config["docs"] != ".strictmetadata/docs/" || config["output"] != ".strictmetadata/.docs-cache/build/" {
 		t.Errorf("selfdoc.json docs/output = %v / %v", config["docs"], config["output"])
 	}
-	if files, _ := config["root_files"].([]any); len(files) != 1 || files[0] != "stricttools/docs/_README.md" {
+	if files, _ := config["root_files"].([]any); len(files) != 1 || files[0] != ".strictmetadata/docs/_README.md" {
 		t.Errorf("selfdoc.json root_files = %v", config["root_files"])
 	}
 	readme := readText(t, filepath.Join(dir, "README.md"))
-	if !strings.HasPrefix(readme, readmeHeader("stricttools/docs/_README.md")+"\n") {
+	if !strings.HasPrefix(readme, readmeHeader(".strictmetadata/docs/_README.md")+"\n") {
 		t.Errorf("README.md header is\n%s", readme)
 	}
 	if info, err := os.Stat(filepath.Join(dir, "README.md")); err != nil || info.Mode().Perm() != 0o444 {
@@ -210,17 +210,17 @@ func TestMigrateRefusesARepositoryWithNothingToMove(t *testing.T) {
 func TestMigrateRefusesAPartialMoveAndItsRemedyClears(t *testing.T) {
 	isolate(t)
 	dir := previousLayoutProject(t, false)
-	testproject.MkdirAll(t, filepath.Join(dir, "stricttools"))
-	testproject.Git(t, dir, "mv", ".stricttools/docs", "stricttools/docs")
+	testproject.MkdirAll(t, filepath.Join(dir, ".strictmetadata"))
+	testproject.Git(t, dir, "mv", ".stricttools/docs", ".strictmetadata/docs")
 	result := run(t, dir, "layout", "migrate")
 	if result.ExitCode == 0 {
 		t.Fatal("a partial move was accepted")
 	}
-	remedy := "git mv stricttools/docs .stricttools/docs"
+	remedy := "git mv .strictmetadata/docs .stricttools/docs"
 	if !strings.Contains(result.Stderr, remedy) {
 		t.Fatalf("the refusal does not name %q:\n%s", remedy, result.Stderr)
 	}
-	testproject.Git(t, dir, "mv", "stricttools/docs", ".stricttools/docs")
+	testproject.Git(t, dir, "mv", ".strictmetadata/docs", ".stricttools/docs")
 	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
 		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
 	}
@@ -287,6 +287,185 @@ func TestMigrateRefusesAPathSpelledWithEscapedSlashes(t *testing.T) {
 		t.Fatalf("exit %d, want a refusal carrying %q:\n%s", result.ExitCode, want, result.Stderr)
 	}
 	writeText(t, configPath, plain)
+	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
+		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
+	}
+}
+
+// visibleRootProject is a committed repository on the layout before this one:
+// selfdoc's directories under the visible stricttools/ root, named as they are
+// named now, with another tool's directory beside them, selfdoc's block in
+// that root's ignore file next to the other tool's lines, a selfdoc.json
+// naming the old paths, and a generated README whose header names the old
+// template path.
+func visibleRootProject(t *testing.T, withOtherTool bool) string {
+	t.Helper()
+	dir := filepath.Join(t.TempDir(), "project")
+	previous := filepath.Join(dir, layout.PreviousRoot)
+	testproject.WriteJSON(t, filepath.Join(dir, "selfdoc.json"), testproject.DefaultConfig(map[string]any{
+		"docs":       layout.PreviousRoot + "/docs/",
+		"output":     layout.PreviousRoot + "/.docs-cache/build/",
+		"root_files": []any{layout.PreviousRoot + "/docs/_README.md"},
+	}))
+	testproject.WriteText(t, filepath.Join(dir, "src", "__init__.py"), `"""Example package."""`+"\n")
+	for _, entry := range []string{"docs", ".docs-state", ".docs-cache", "vocabulary"} {
+		testproject.WriteText(t, filepath.Join(previous, entry, layout.ManifestFileName),
+			layout.DirectoryManifestContent(layout.Owner))
+	}
+	testproject.WriteText(t, filepath.Join(previous, "vocabulary", "terms.toml"), vocabulary.EmptyTerms)
+	testproject.WriteText(t, filepath.Join(previous, "docs", "index.md"), "# Test Project\n\nWelcome to the docs.\n")
+	testproject.WriteText(t, filepath.Join(previous, "docs", "_README.md"), "# Test Project\n")
+	testproject.WriteText(t, filepath.Join(previous, ".docs-cache", "build", "index.html"), "<html></html>\n")
+	ignore := "# BEGIN selfdoc -- derived from selfdoc's layout declaration\n.docs-cache/*\n!.docs-cache/manifest.toml\n# END selfdoc\n"
+	if withOtherTool {
+		testproject.WriteText(t, filepath.Join(previous, "other-state", layout.ManifestFileName),
+			layout.DirectoryManifestContent("othertool"))
+		ignore += "\n# BEGIN othertool\nother-state/cache/\n# END othertool\n"
+	}
+	testproject.WriteText(t, filepath.Join(previous, layout.IgnoreFileName), ignore)
+	testproject.WriteText(t, filepath.Join(dir, "README.md"),
+		readmeHeader(layout.PreviousRoot+"/docs/_README.md")+"\n\n# Test Project\n")
+	if err := os.Chmod(filepath.Join(dir, "README.md"), 0o444); err != nil {
+		t.Fatal(err)
+	}
+	testproject.Git(t, dir, "init", "-q")
+	testproject.Git(t, dir, "add", "-f", "selfdoc.json", "src", "README.md", layout.PreviousRoot)
+	testproject.Git(t, dir, "commit", "-q", "-m", "visible root layout")
+	return dir
+}
+
+// Every command but the move refuses a repository still on stricttools/,
+// naming the root and the move; running the move clears the refusal.
+func TestARepositoryOnTheVisibleRootIsRefusedNamingTheMove(t *testing.T) {
+	isolate(t)
+	dir := visibleRootProject(t, false)
+	for _, argv := range [][]string{
+		{"check", "--no-auto-commit"},
+		{"gen", "--no-auto-commit"},
+		{"build", "--no-auto-commit"},
+		{"layout", "validate"},
+		{"vocabulary", "accept", "frobnitz", "--meaning", "The widget.", "--no-auto-commit"},
+	} {
+		result := run(t, dir, argv...)
+		if result.ExitCode == 0 || !strings.Contains(result.Stderr, "selfdoc layout migrate") ||
+			!strings.Contains(result.Stderr, "stricttools/") {
+			t.Errorf("%v exited %d without naming stricttools/ and the move:\n%s", argv, result.ExitCode, result.Stderr)
+		}
+	}
+
+	if result := run(t, dir, "layout", "migrate"); result.ExitCode != 0 {
+		t.Fatalf("the move failed:\n%s\n%s", result.Stdout, result.Stderr)
+	}
+	if result := run(t, dir, "layout", "validate"); result.ExitCode != 0 {
+		t.Errorf("layout validate after the move exited %d:\n%s", result.ExitCode, result.Stderr)
+	}
+	if result := run(t, dir, "gen", "--no-auto-commit"); strings.Contains(result.Stderr, "selfdoc layout migrate") {
+		t.Errorf("gen still refuses after the move:\n%s", result.Stderr)
+	}
+}
+
+func TestMigrateMovesTheVisibleRootUnderTheHiddenOne(t *testing.T) {
+	isolate(t)
+	dir := visibleRootProject(t, true)
+	dry := run(t, dir, "layout", "migrate", "--dry-run")
+	if dry.ExitCode != 0 {
+		t.Fatalf("the dry run failed:\n%s\n%s", dry.Stdout, dry.Stderr)
+	}
+	for _, want := range []string{
+		"move stricttools/docs/ -> .strictmetadata/docs/",
+		"move stricttools/.docs-state/ -> .strictmetadata/.docs-state/",
+		"move stricttools/.docs-cache/ -> .strictmetadata/.docs-cache/",
+		"move stricttools/vocabulary/ -> .strictmetadata/vocabulary/",
+		"write .strictmetadata/.gitignore",
+		`rewrite selfdoc.json: "stricttools/docs/" -> ".strictmetadata/docs/"`,
+		`rewrite selfdoc.json: "stricttools/.docs-cache/build/" -> ".strictmetadata/.docs-cache/build/"`,
+		"rewrite README.md: header names .strictmetadata/docs/_README.md",
+		"rewrite stricttools/.gitignore",
+	} {
+		if !strings.Contains(dry.Stdout, want) {
+			t.Errorf("the plan does not carry %q:\n%s", want, dry.Stdout)
+		}
+	}
+
+	result := run(t, dir, "--json", "layout", "migrate")
+	if result.ExitCode != 0 {
+		t.Fatalf("the move failed:\n%s\n%s", result.Stdout, result.Stderr)
+	}
+	for _, moved := range []string{".strictmetadata/docs/index.md", ".strictmetadata/.docs-state/manifest.toml",
+		".strictmetadata/.docs-cache/manifest.toml", ".strictmetadata/.docs-cache/build/index.html",
+		".strictmetadata/vocabulary/terms.toml"} {
+		if !exists(filepath.Join(dir, filepath.FromSlash(moved))) {
+			t.Errorf("%s is missing after the move", moved)
+		}
+	}
+	if !exists(filepath.Join(dir, "stricttools", "other-state", layout.ManifestFileName)) {
+		t.Error("another tool's directory was moved or removed")
+	}
+	previousIgnore := readText(t, filepath.Join(dir, "stricttools", layout.IgnoreFileName))
+	if strings.Contains(previousIgnore, "BEGIN selfdoc") || !strings.Contains(previousIgnore, "other-state/cache/") {
+		t.Errorf("the previous ignore file is\n%s", previousIgnore)
+	}
+	config := readJSON(t, filepath.Join(dir, "selfdoc.json"))
+	if config["docs"] != ".strictmetadata/docs/" || config["output"] != ".strictmetadata/.docs-cache/build/" {
+		t.Errorf("selfdoc.json docs/output = %v / %v", config["docs"], config["output"])
+	}
+	payload := payloadOf(t, result)
+	if payload["previous_root"] != "stricttools" || payload["root"] != ".strictmetadata" {
+		t.Errorf("payload roots = %v -> %v", payload["previous_root"], payload["root"])
+	}
+	if subject := gitOutput(t, dir, "log", "-1", "--format=%s"); !strings.Contains(subject, "from stricttools/ to .strictmetadata/") {
+		t.Errorf("the last commit is %q", subject)
+	}
+	if status := gitOutput(t, dir, "status", "--porcelain"); strings.TrimSpace(status) != "" {
+		t.Errorf("the move left uncommitted changes:\n%s", status)
+	}
+}
+
+// With nothing else under it, the visible root goes with the move.
+func TestMigrateRemovesAnEmptiedVisibleRoot(t *testing.T) {
+	isolate(t)
+	dir := visibleRootProject(t, false)
+	if result := run(t, dir, "layout", "migrate"); result.ExitCode != 0 {
+		t.Fatalf("the move failed:\n%s\n%s", result.Stdout, result.Stderr)
+	}
+	if exists(filepath.Join(dir, "stricttools")) {
+		t.Error("the emptied stricttools/ is still there")
+	}
+}
+
+// A move from the visible root begun by hand is refused with the commands
+// that put it back, and running them lets the move go through.
+func TestMigrateRefusesAPartialMoveOffTheVisibleRootAndItsRemedyClears(t *testing.T) {
+	isolate(t)
+	dir := visibleRootProject(t, false)
+	testproject.MkdirAll(t, filepath.Join(dir, ".strictmetadata"))
+	testproject.Git(t, dir, "mv", "stricttools/.docs-state", ".strictmetadata/.docs-state")
+	result := run(t, dir, "layout", "migrate")
+	remedy := "git mv .strictmetadata/.docs-state stricttools/.docs-state"
+	if result.ExitCode == 0 || !strings.Contains(result.Stderr, remedy) {
+		t.Fatalf("exit %d, want a refusal naming %q:\n%s", result.ExitCode, remedy, result.Stderr)
+	}
+	testproject.Git(t, dir, "mv", ".strictmetadata/.docs-state", "stricttools/.docs-state")
+	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
+		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
+	}
+}
+
+// selfdoc's directories under both previous roots are refused: which copy is
+// the project's is not the move's to guess. Deleting one clears it.
+func TestMigrateRefusesDirectoriesUnderBothPreviousRootsAndItsRemedyClears(t *testing.T) {
+	isolate(t)
+	dir := visibleRootProject(t, false)
+	testproject.WriteText(t, filepath.Join(dir, layout.EarlierRoot, "docs", layout.ManifestFileName),
+		layout.DirectoryManifestContent(layout.Owner))
+	result := run(t, dir, "layout", "migrate", "--no-auto-commit")
+	if result.ExitCode == 0 || !strings.Contains(result.Stderr, ".stricttools/docs") ||
+		!strings.Contains(result.Stderr, "stricttools/docs") || !strings.Contains(result.Stderr, "Delete the copy") {
+		t.Fatalf("exit %d, want a refusal naming both copies:\n%s", result.ExitCode, result.Stderr)
+	}
+	if err := os.RemoveAll(filepath.Join(dir, layout.EarlierRoot)); err != nil {
+		t.Fatal(err)
+	}
 	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
 		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
 	}

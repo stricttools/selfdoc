@@ -58,7 +58,7 @@ func TestIntegrateRefusesAPatternCoveringAnotherProjectsWordAndTheFixClearsIt(t 
 	tree.WriteJSON("manifests/beta.json", withVocabulary(
 		integrateManifest("beta", "Beta", "2.0.0", nil), []any{acceptedWord("gizmo")}, nil))
 	tree.Commit()
-	tree.WriteJSON("source/alpha/stricttools/.docs-state/manifest.json", withVocabulary(
+	tree.WriteJSON("source/alpha/.strictmetadata/.docs-state/manifest.json", withVocabulary(
 		integrateManifest("alpha", "Alpha", "1.0.0", nil), nil, []any{rejectedPattern("gizmo", "word")}))
 
 	_, err := tree.Integrate(nil)
@@ -74,7 +74,7 @@ func TestIntegrateRefusesAPatternCoveringAnotherProjectsWordAndTheFixClearsIt(t 
 
 	// The fix in alpha: remove the rejection, which is what regenerating the
 	// manifest after 'selfdoc vocabulary remove gizmo' publishes.
-	tree.WriteJSON("source/alpha/stricttools/.docs-state/manifest.json", withVocabulary(
+	tree.WriteJSON("source/alpha/.strictmetadata/.docs-state/manifest.json", withVocabulary(
 		integrateManifest("alpha", "Alpha", "1.0.0", nil), nil, nil))
 	tree.MustIntegrate(nil)
 }
@@ -84,7 +84,7 @@ func TestIntegrateRefusesAnotherProjectsPatternCoveringTheIncomingWord(t *testin
 	tree.WriteJSON("manifests/beta.json", withVocabulary(
 		integrateManifest("beta", "Beta", "2.0.0", nil), nil, []any{rejectedPattern("ify", "suffix")}))
 	tree.Commit()
-	tree.WriteJSON("source/alpha/stricttools/.docs-state/manifest.json", withVocabulary(
+	tree.WriteJSON("source/alpha/.strictmetadata/.docs-state/manifest.json", withVocabulary(
 		integrateManifest("alpha", "Alpha", "1.0.0", nil), []any{acceptedWord("gizmify")}, nil))
 
 	_, err := tree.Integrate(nil)
@@ -92,14 +92,14 @@ func TestIntegrateRefusesAnotherProjectsPatternCoveringTheIncomingWord(t *testin
 		"'selfdoc vocabulary remove gizmify'")
 
 	// The fix in alpha: remove the word.
-	tree.WriteJSON("source/alpha/stricttools/.docs-state/manifest.json", withVocabulary(
+	tree.WriteJSON("source/alpha/.strictmetadata/.docs-state/manifest.json", withVocabulary(
 		integrateManifest("alpha", "Alpha", "1.0.0", nil), nil, nil))
 	tree.MustIntegrate(nil)
 }
 
 func TestIntegrateRefusesAPatternCoveringABaselineWord(t *testing.T) {
 	tree := newAssemblyTree(t)
-	tree.WriteJSON("source/alpha/stricttools/.docs-state/manifest.json", withVocabulary(
+	tree.WriteJSON("source/alpha/.strictmetadata/.docs-state/manifest.json", withVocabulary(
 		integrateManifest("alpha", "Alpha", "1.0.0", nil), nil, []any{rejectedPattern("treeish", "word")}))
 	_, err := tree.Integrate(nil)
 	requireConflict(t, err, "alpha rejects the word \"treeish\"", vocabulary.BaselineSource,

@@ -264,7 +264,8 @@ func LayoutDump() map[string]any {
 
 // LayoutMigrate is the payload of `selfdoc layout migrate`: every step of the
 // move, whether a dry run recorded it or a live run performed it, and whether
-// the move was committed.
+// the move was committed. previous_root is the root the directories move
+// from, and empty when the plan moves nothing.
 func LayoutMigrate() map[string]any {
 	move := strictcli.SchemaObject(
 		map[string]any{

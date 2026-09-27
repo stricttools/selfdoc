@@ -57,8 +57,8 @@ func corpusProject(t *testing.T, root, name string, pages map[string]string) str
 		"locales":       []any{map[string]any{"code": "en", "label": "English", "default": true}},
 		"search_engine": "pagefind",
 		"author":        map[string]any{"name": "Test Author", "url": "https://author.example"},
-		"docs":          "stricttools/docs/",
-		"output":        "stricttools/.docs-cache/build/",
+		"docs":          ".strictmetadata/docs/",
+		"output":        ".strictmetadata/.docs-cache/build/",
 	}
 	encoded, err := json.Marshal(projectConfig)
 	if err != nil {
@@ -66,9 +66,9 @@ func corpusProject(t *testing.T, root, name string, pages map[string]string) str
 	}
 	write(t, filepath.Join(projectDir, "selfdoc.json"), string(encoded))
 	write(t, filepath.Join(projectDir, "src", "__init__.py"), `"""Example package."""`+"\n")
-	write(t, filepath.Join(projectDir, "stricttools", "docs", ".keep"), "")
+	write(t, filepath.Join(projectDir, ".strictmetadata", "docs", ".keep"), "")
 	for relPath, content := range pages {
-		write(t, filepath.Join(projectDir, "stricttools", "docs", relPath), content)
+		write(t, filepath.Join(projectDir, ".strictmetadata", "docs", relPath), content)
 	}
 	return projectDir
 }
@@ -131,7 +131,7 @@ func TestScanProjectReportsAMissingDocsDirectory(t *testing.T) {
 	isolate(t)
 	root := t.TempDir()
 	projectDir := corpusProject(t, root, "alpha", nil)
-	if err := os.RemoveAll(filepath.Join(projectDir, "stricttools", "docs")); err != nil {
+	if err := os.RemoveAll(filepath.Join(projectDir, ".strictmetadata", "docs")); err != nil {
 		t.Fatalf("remove the docs tree: %v", err)
 	}
 
@@ -155,7 +155,7 @@ func TestScanProjectSurveysPostsAtTheirOwnPaths(t *testing.T) {
 	// A draft is surveyed too: a draft's prose is still prose, and a term
 	// it introduces belongs in the project's vocabulary before the draft
 	// ships.
-	write(t, filepath.Join(projectDir, "stricttools", "posts", "hello.md"),
+	write(t, filepath.Join(projectDir, ".strictmetadata", "posts", "hello.md"),
 		"+++\ntitle = \"Hello\"\ndate = 2024-01-15\ndraft = true\ndirectives = false\n+++\n"+
 			"This post says correclty.\n")
 
@@ -173,7 +173,7 @@ func TestScanProjectSurveysPostsAtTheirOwnPaths(t *testing.T) {
 	if len(report.Misspellings) != 1 {
 		t.Fatalf("misspellings = %v, want one", report.Misspellings)
 	}
-	want := filepath.Join("stricttools", "posts", "hello.md")
+	want := filepath.Join(".strictmetadata", "posts", "hello.md")
 	if report.Misspellings[0].File != want {
 		t.Errorf("file = %q, want %q", report.Misspellings[0].File, want)
 	}
@@ -318,7 +318,7 @@ func TestCorpusReportRowShape(t *testing.T) {
 
 	lines := strings.Split(RenderCorpusText(document, true), "\n")
 	want := []string{
-		"Word list: 170000 words. Baseline: 3 accepted terms, and each project's own stricttools/vocabulary/terms.toml.",
+		"Word list: 170000 words. Baseline: 3 accepted terms, and each project's own .strictmetadata/vocabulary/terms.toml.",
 		"",
 		"project                      pages accepted  flagged  unique",
 		"alpha                            4        7        2       1",
@@ -441,7 +441,7 @@ func TestEachProjectIsJudgedAgainstItsOwnVocabulary(t *testing.T) {
 	page := strings.ReplaceAll(cleanPage, "spelled correctly", "spelled by the frobnitz")
 	alpha := corpusProject(t, root, "alpha", map[string]string{"index.md": page})
 	corpusProject(t, root, "beta", map[string]string{"index.md": page})
-	write(t, filepath.Join(alpha, "stricttools", "vocabulary", "terms.toml"),
+	write(t, filepath.Join(alpha, ".strictmetadata", "vocabulary", "terms.toml"),
 		"format_version = 1\n\n[[accepted]]\nword = \"frobnitz\"\nmeaning = \"The widget.\"\n")
 	home, err := os.UserHomeDir()
 	if err != nil {

@@ -30,7 +30,7 @@ var embeddedSchema = map[string]string{
 	"vocabulary-terms.schema.toml": `# strictspec schema -- a project's vocabulary: the words its pages may use that
 # the English word list does not carry, and the terms its pages may not use.
 #
-# Governs stricttools/vocabulary/terms.toml, and the baseline of the same shape
+# Governs .strictmetadata/vocabulary/terms.toml, and the baseline of the same shape
 # embedded in the selfdoc binary (internal/vocabulary/baseline.toml). The
 # generated validator (internal/vocabulary/termsschema/selfdoc_vocabulary_terms_gen.go) is
 # what vocabulary.Load validates each file against, so a list that reaches the

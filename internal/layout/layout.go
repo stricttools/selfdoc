@@ -1,7 +1,7 @@
 // Package layout is selfdoc's declaration of the per-repository directories it
 // owns, and the single authority for every path it reads or writes inside them.
 //
-// A repository keeps one visible directory at its root, [Root], holding
+// A repository keeps one hidden directory at its root, [Root], holding
 // function-named directories rather than tool-named ones: docs/ is the pages a
 // person writes, .docs-state/ is what selfdoc generates and the repository
 // commits, .docs-cache/ is what selfdoc generates and the repository does not
@@ -66,8 +66,10 @@ import (
 )
 
 // Root is the one directory a repository's tool-owned state lives in,
-// relative to the repository root.
-const Root = "stricttools"
+// relative to the repository root. It starts with a dot as .git does: the
+// tools that make a project commit these files hide them, so the project's own
+// top level stays tidy.
+const Root = ".strictmetadata"
 
 // Owner is the name selfdoc is declared under in a directory's manifest.
 const Owner = "selfdoc"
@@ -207,35 +209,35 @@ var declared = []Directory{
 		Side:            Handwritten,
 		Commitment:      Committed,
 		Description:     "The pages a person writes, the underscore-prefixed templates they include, and the docs configuration that sits beside them.",
-		DeprecatedNames: []string{"docs/", PreviousRoot + "/" + DocsName + "/"},
+		DeprecatedNames: []string{"docs/", EarlierRoot + "/" + DocsName + "/", PreviousRoot + "/" + DocsName + "/"},
 	},
 	{
 		Name:            DocsStateName,
 		Side:            Generated,
 		Commitment:      Committed,
 		Description:     "What selfdoc generates and the repository keeps: the manifests, the hash baselines, the post revisions, the generated data files, and the generated pages.",
-		DeprecatedNames: []string{".selfdoc/", PreviousRoot + "/" + DocsStateName + "/"},
+		DeprecatedNames: []string{".selfdoc/", EarlierRoot + "/" + DocsStateName + "/", PreviousRoot + "/." + DocsStateName + "/"},
 	},
 	{
 		Name:            DocsCacheName,
 		Side:            Generated,
 		Commitment:      Uncommitted,
 		Description:     "What selfdoc generates and the repository throws away: the built site and one extracted checkout per archived version.",
-		DeprecatedNames: []string{"docs/_build/", ".selfdoc/cache/", PreviousRoot + "/" + DocsCacheName + "/"},
+		DeprecatedNames: []string{"docs/_build/", ".selfdoc/cache/", EarlierRoot + "/" + DocsCacheName + "/", PreviousRoot + "/." + DocsCacheName + "/"},
 	},
 	{
 		Name:            PostsName,
 		Side:            Handwritten,
 		Commitment:      Committed,
 		Description:     "The project's blog posts.",
-		DeprecatedNames: []string{".selfdoc/posts/", PreviousRoot + "/" + PostsName + "/"},
+		DeprecatedNames: []string{".selfdoc/posts/", EarlierRoot + "/" + PostsName + "/", PreviousRoot + "/" + PostsName + "/"},
 	},
 	{
 		Name:            VocabularyName,
 		Side:            Handwritten,
 		Commitment:      Committed,
 		Description:     "The project's accepted and rejected vocabulary and its review list, read by the spell check.",
-		DeprecatedNames: []string{PreviousRoot + "/" + VocabularyName + "/"},
+		DeprecatedNames: []string{EarlierRoot + "/" + VocabularyName + "/", PreviousRoot + "/" + VocabularyName + "/"},
 	},
 }
 
@@ -448,10 +450,17 @@ func declaresFormatVersion(text string) bool {
 	return false
 }
 
-// KnownOwner reports whether a manifest names a tool this machine has: selfdoc
-// itself, or any name PATH answers with an executable.
+// SharedOwner is the owner a directory several tools share names in its
+// manifest (the options directory and the upstream directory). strictspec
+// holds the schemas those directories are validated against, and it is a
+// library every reading tool links rather than a command, so no PATH lookup
+// can answer for it.
+const SharedOwner = "strictspec"
+
+// KnownOwner reports whether a manifest names an owner this machine has:
+// selfdoc itself, [SharedOwner], or any name PATH answers with an executable.
 func KnownOwner(owner string) bool {
-	if owner == Owner {
+	if owner == Owner || owner == SharedOwner {
 		return true
 	}
 	_, err := exec.LookPath(owner)

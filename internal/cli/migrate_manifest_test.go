@@ -72,12 +72,12 @@ var wantProjectVocabulary = map[string]any{
 func TestMigrateConvertsTheManifestInTheSameCommitAsTheMove(t *testing.T) {
 	isolate(t)
 	dir := previousLayoutProject(t, false)
-	previous := filepath.Join(dir, layout.PreviousRoot)
+	previous := filepath.Join(dir, layout.EarlierRoot)
 	testproject.WriteText(t, filepath.Join(previous, layout.DocsStateName, "manifest.json"), outdatedManifest)
 	testproject.WriteText(t, filepath.Join(previous, layout.VocabularyName, layout.ManifestFileName),
 		layout.DirectoryManifestContent(layout.Owner))
 	testproject.WriteText(t, filepath.Join(previous, layout.VocabularyName, "terms.toml"), projectTerms)
-	testproject.Git(t, dir, "add", layout.PreviousRoot)
+	testproject.Git(t, dir, "add", layout.EarlierRoot)
 	testproject.Git(t, dir, "commit", "-q", "-m", "a manifest and a vocabulary")
 
 	dry := run(t, dir, "layout", "migrate", "--dry-run")
@@ -109,7 +109,7 @@ func outdatedCurrentLayoutProject(t *testing.T) string {
 	testproject.WriteText(t, filepath.Join(dir, filepath.FromSlash(layout.ManifestRel)), outdatedManifest)
 	testproject.WriteText(t, filepath.Join(dir, filepath.FromSlash(layout.PostManifestRel)), outdatedManifest)
 	testproject.WriteText(t, filepath.Join(dir, filepath.FromSlash(layout.TermsRel)), projectTerms)
-	testproject.WriteText(t, filepath.Join(dir, "stricttools", "posts", "2026-01-01-hello.md"),
+	testproject.WriteText(t, filepath.Join(dir, ".strictmetadata", "posts", "2026-01-01-hello.md"),
 		"---\ntitle = \"Hello\"\ndate = \"2026-01-01\"\n---\n\nHello.\n")
 	testproject.Git(t, dir, "init", "-q")
 	testproject.Git(t, dir, "add", ".")
@@ -142,7 +142,7 @@ func TestAnOutdatedManifestIsRefusedNamingMigrateAndMigrateConvertsIt(t *testing
 			t.Errorf("the plan does not carry %q (exit %d):\n%s\n%s", want, dry.ExitCode, dry.Stdout, dry.Stderr)
 		}
 	}
-	if strings.Contains(dry.Stdout, "move "+layout.PreviousRoot) {
+	if strings.Contains(dry.Stdout, "move "+layout.EarlierRoot) {
 		t.Errorf("a repository already on the layout was planned a move:\n%s", dry.Stdout)
 	}
 	if after := treeListing(t, dir); after != before {

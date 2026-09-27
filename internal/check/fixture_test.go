@@ -86,8 +86,8 @@ func configForSource(entries ...map[string]any) map[string]any {
 	return map[string]any{
 		"version":       "1.0.0",
 		"source":        source,
-		"docs":          "stricttools/docs/",
-		"output":        "stricttools/.docs-cache/build/",
+		"docs":          ".strictmetadata/docs/",
+		"output":        ".strictmetadata/.docs-cache/build/",
 		"base_url":      "https://example.com",
 		"author":        map[string]any{"name": "Test Author", "url": "https://author.example"},
 		"search_engine": "pagefind",
@@ -128,7 +128,7 @@ def helper():
     """Help."""
     pass
 `)
-	if err := os.MkdirAll(filepath.Join(root, "stricttools", "docs"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(root, ".strictmetadata", "docs"), 0o755); err != nil {
 		t.Fatalf("mkdir docs: %v", err)
 	}
 	return root
@@ -150,7 +150,7 @@ func lintProject(t *testing.T) lintFixture {
 	t.Helper()
 	isolate(t)
 	root := t.TempDir()
-	docsDir := filepath.Join(root, "stricttools", "docs")
+	docsDir := filepath.Join(root, ".strictmetadata", "docs")
 	if err := os.MkdirAll(docsDir, 0o755); err != nil {
 		t.Fatalf("mkdir docs: %v", err)
 	}

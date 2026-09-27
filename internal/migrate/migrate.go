@@ -1,7 +1,8 @@
-// Package migrate moves a repository off the layout before this one: selfdoc's
-// directories under the hidden .stricttools/ root, each under its bare
-// function name, onto the visible stricttools/ root, where a generated
-// directory's name starts with a dot.
+// Package migrate moves a repository off a layout before this one onto the
+// hidden .strictmetadata/ root, where a generated directory's name starts with
+// a dot: selfdoc's directories under the visible stricttools/ root, named as
+// they are named now, or under the hidden .stricttools/ root before it, each
+// under its bare function name.
 //
 // It is the engine of `selfdoc layout migrate`. [PlanMigration] reads the
 // repository and returns every step the move takes, or refuses; [Apply]
@@ -9,8 +10,8 @@
 // steps it prints.
 //
 // Only the directories whose manifest names selfdoc move. Another tool's
-// directory under .stricttools/ stays where it is, and so does the rest of
-// that directory's ignore file.
+// directory under the previous root stays where it is, and so does the rest of
+// that root's ignore file.
 //
 // The move also converts the repository's manifests -- the build manifest and
 // the post manifest -- from the schema before the vocabulary to the current
@@ -70,6 +71,9 @@ type Write struct {
 // Plan is every step of one repository's move, in the order [Apply] takes
 // them.
 type Plan struct {
+	// PreviousRoot is the root the directories move from, and empty when
+	// nothing moves.
+	PreviousRoot string
 	// Moves are the directories that move, in name order.
 	Moves []Move
 	// Writes are the files the move creates: the derived ignore file under
@@ -113,7 +117,7 @@ func (p Plan) Lines() []string {
 		lines = append(lines, fmt.Sprintf("delete %s (it held only selfdoc's block)", deleted))
 	}
 	if p.RemovePreviousRoot {
-		lines = append(lines, fmt.Sprintf("remove %s/ (nothing else is left in it)", layout.PreviousRoot))
+		lines = append(lines, fmt.Sprintf("remove %s/ (nothing else is left in it)", p.PreviousRoot))
 	}
 	return lines
 }
@@ -129,10 +133,12 @@ type NotNeededError struct {
 
 func (e *NotNeededError) Error() string { return e.Message }
 
-// PartialError is a repository holding selfdoc's directories under both
-// roots: a move that was begun and not finished, which this command refuses to
-// guess the rest of.
+// PartialError is a repository holding selfdoc's directories under a previous
+// root and the current one: a move that was begun and not finished, which this
+// command refuses to guess the rest of.
 type PartialError struct {
+	// From is the previous layout the directories still under it are in.
+	From layout.PreviousLayout
 	// Previous are selfdoc's directories still under the previous root, by
 	// name.
 	Previous []string
@@ -145,13 +151,28 @@ func (e *PartialError) Error() string {
 	var back []string
 	for _, entry := range e.Current {
 		dir, _ := layout.LookupFunction(entry)
-		back = append(back, fmt.Sprintf("  git mv %s/%s %s/%s", layout.Root, entry, layout.PreviousRoot, dir.Name))
+		back = append(back, fmt.Sprintf("  git mv %s/%s %s/%s", layout.Root, entry, e.From.Root, e.From.EntryName(dir)))
 	}
 	return fmt.Sprintf(
 		"This repository is part-way through the move: %s still holds %s, and %s already holds %s. selfdoc layout migrate moves a repository in one step and will not guess how the rest was meant to go. Put selfdoc's directories back under %s/ and run it again:\n%s",
-		layout.PreviousRoot+"/", strings.Join(e.Previous, ", "),
+		e.From.Root+"/", strings.Join(e.Previous, ", "),
 		layout.Root+"/", strings.Join(e.Current, ", "),
-		layout.PreviousRoot, strings.Join(back, "\n"))
+		e.From.Root, strings.Join(back, "\n"))
+}
+
+// SeveralPreviousRootsError is a repository holding selfdoc's directories
+// under more than one previous root, and none under the current one: which
+// copy is the project's is not the move's to guess.
+type SeveralPreviousRootsError struct {
+	// Found are selfdoc's directories, as paths relative to the repository
+	// root, under every previous root that holds any.
+	Found []string
+}
+
+func (e *SeveralPreviousRootsError) Error() string {
+	return fmt.Sprintf(
+		"This repository keeps selfdoc's directories under more than one layout before this one (%s). selfdoc layout migrate moves a repository off one of them and will not guess which copy is the project's. Delete the copy that is not, and run it again.",
+		strings.Join(e.Found, ", "))
 }
 
 // PlanMigration reads a repository and returns its move, or refuses.
@@ -159,13 +180,26 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 	if _, err := os.Stat(filepath.Join(baseDir, layout.DeprecatedRoot)); err == nil {
 		return Plan{}, layout.RefuseOldLayout(baseDir, "", "", "")
 	}
-	previous, err := layout.PreviousSelfdocEntries(baseDir)
-	if err != nil {
-		return Plan{}, err
-	}
 	current, err := layout.CurrentSelfdocEntries(baseDir)
 	if err != nil {
 		return Plan{}, err
+	}
+	var from layout.PreviousLayout
+	var previous, everyPrevious []string
+	for _, previousLayout := range layout.PreviousLayouts {
+		entries, err := layout.PreviousSelfdocEntries(baseDir, previousLayout.Root)
+		if err != nil {
+			return Plan{}, err
+		}
+		if len(entries) == 0 {
+			continue
+		}
+		if previous == nil {
+			from, previous = previousLayout, entries
+		}
+		for _, entry := range entries {
+			everyPrevious = append(everyPrevious, previousLayout.Root+"/"+entry)
+		}
 	}
 	switch {
 	case len(previous) == 0 && len(current) > 0:
@@ -173,41 +207,43 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 		if err := plan.planMissingVocabulary(baseDir); err != nil {
 			return Plan{}, err
 		}
-		if err := plan.planManifests(baseDir, h, false, false); err != nil {
+		if err := plan.planManifests(baseDir, h, from, false, false); err != nil {
 			return Plan{}, err
 		}
 		if len(plan.Writes) > 0 || len(plan.Rewrites) > 0 {
 			return plan, nil
 		}
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
-			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), %s/ holds none, %s carries its grant, and the manifests are on schema_version %d.",
-			layout.Root, strings.Join(current, ", "), layout.PreviousRoot, layout.VocabularyRel+"/", manifest.SchemaVersion)}
+			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), no layout before it (%s) holds any, %s carries its grant, and the manifests are on schema_version %d.",
+			layout.Root, strings.Join(current, ", "), previousRootsList(), layout.VocabularyRel+"/", manifest.SchemaVersion)}
 	case len(previous) == 0:
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
-			"Nothing to migrate: this repository has no %s/ directory holding one whose %s names selfdoc. A repository that has not adopted selfdoc runs 'selfdoc init'.",
-			layout.PreviousRoot, layout.ManifestFileName)}
+			"Nothing to migrate: this repository has no directory under a layout before this one (%s) whose %s names selfdoc. A repository that has not adopted selfdoc runs 'selfdoc init'.",
+			previousRootsList(), layout.ManifestFileName)}
 	case len(current) > 0:
-		return Plan{}, &PartialError{Previous: previous, Current: current}
+		return Plan{}, &PartialError{From: from, Previous: previous, Current: current}
+	case len(everyPrevious) > len(previous):
+		return Plan{}, &SeveralPreviousRootsError{Found: everyPrevious}
 	}
 
-	var plan Plan
+	plan := Plan{PreviousRoot: from.Root}
 	moved := map[string]bool{}
 	for _, name := range previous {
-		dir, claimed := layout.Lookup(name)
+		dir, claimed := from.Lookup(name)
 		if !claimed {
 			return Plan{}, fmt.Errorf(
 				"%s/%s names selfdoc as its owner, and selfdoc claims no directory by that name. Resolve its ownership before migrating: it is not selfdoc's to move",
-				layout.PreviousRoot, name)
+				from.Root, name)
 		}
-		from := layout.PreviousRoot + "/" + name
-		plan.Moves = append(plan.Moves, Move{From: from, To: dir.Rel()})
+		fromRel := from.Root + "/" + name
+		plan.Moves = append(plan.Moves, Move{From: fromRel, To: dir.Rel()})
 		moved[name] = true
-		tracked, err := trackedFiles(baseDir, from, h)
+		tracked, err := trackedFiles(baseDir, fromRel, h)
 		if err != nil {
 			return Plan{}, err
 		}
 		for _, file := range tracked {
-			plan.Commit = append(plan.Commit, file, dir.Rel()+strings.TrimPrefix(file, from))
+			plan.Commit = append(plan.Commit, file, dir.Rel()+strings.TrimPrefix(file, fromRel))
 		}
 	}
 
@@ -224,16 +260,16 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 	})
 	plan.Commit = append(plan.Commit, ignoreRel)
 
-	if err := plan.planVocabulary(baseDir, moved); err != nil {
+	if err := plan.planVocabulary(baseDir, from, moved); err != nil {
 		return Plan{}, err
 	}
-	if err := plan.planManifests(baseDir, h, moved[layout.DocsStateName], moved[layout.VocabularyName]); err != nil {
+	if err := plan.planManifests(baseDir, h, from, movedFunction(from, moved, layout.DocsStateName), movedFunction(from, moved, layout.VocabularyName)); err != nil {
 		return Plan{}, err
 	}
-	if err := plan.planPreviousIgnore(baseDir, moved); err != nil {
+	if err := plan.planPreviousIgnore(baseDir, from, moved); err != nil {
 		return Plan{}, err
 	}
-	configPaths, err := plan.planConfig(baseDir, moved)
+	configPaths, err := plan.planConfig(baseDir, from, moved)
 	if err != nil {
 		return Plan{}, err
 	}
@@ -243,12 +279,29 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 	return plan, nil
 }
 
+// previousRootsList names every previous root, the way a refusal lists them.
+func previousRootsList() string {
+	roots := make([]string, 0, len(layout.PreviousLayouts))
+	for _, previousLayout := range layout.PreviousLayouts {
+		roots = append(roots, previousLayout.Root+"/")
+	}
+	return strings.Join(roots, ", ")
+}
+
+// movedFunction reports whether the claimed directory with the given function
+// name moves in this plan: whether its entry under the previous root moved.
+func movedFunction(from layout.PreviousLayout, moved map[string]bool, name string) bool {
+	dir, _ := layout.Lookup(name)
+	return moved[from.EntryName(dir)]
+}
+
 // planVocabulary adds the vocabulary directory's manifest when the previous
 // root had no vocabulary directory, and an empty terms file when the
 // vocabulary directory holds none. The previous root's manifests naming
 // selfdoc are the grant for both.
-func (p *Plan) planVocabulary(baseDir string, moved map[string]bool) error {
-	if !moved[layout.VocabularyName] {
+func (p *Plan) planVocabulary(baseDir string, from layout.PreviousLayout, moved map[string]bool) error {
+	vocabularyMoves := movedFunction(from, moved, layout.VocabularyName)
+	if !vocabularyMoves {
 		manifestRel := layout.DirectoryManifestRel(layout.VocabularyName)
 		p.Writes = append(p.Writes, Write{
 			Path: manifestRel, Why: "the vocabulary directory's grant",
@@ -256,8 +309,8 @@ func (p *Plan) planVocabulary(baseDir string, moved map[string]bool) error {
 		})
 		p.Commit = append(p.Commit, manifestRel)
 	}
-	previousTerms := filepath.Join(baseDir, layout.PreviousRoot, layout.VocabularyName, filepath.Base(layout.TermsRel))
-	if _, err := os.Stat(previousTerms); err == nil && moved[layout.VocabularyName] {
+	previousTerms := filepath.Join(baseDir, from.Root, layout.VocabularyName, filepath.Base(layout.TermsRel))
+	if _, err := os.Stat(previousTerms); err == nil && vocabularyMoves {
 		return nil
 	} else if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
@@ -316,16 +369,17 @@ var convertedManifests = []string{layout.ManifestRel, layout.PostManifestRel}
 // A manifest already on the current schema on disk whose committed copy is
 // not gets committed as it is: the committed copy is what every reader of the
 // project's history reads.
-func (p *Plan) planManifests(baseDir string, h *effects.Handle, stateMoves, vocabularyMoves bool) error {
+func (p *Plan) planManifests(baseDir string, h *effects.Handle, from layout.PreviousLayout, stateMoves, vocabularyMoves bool) error {
 	termsRel := layout.TermsRel
 	if vocabularyMoves {
-		termsRel = layout.PreviousRoot + "/" + layout.VocabularyName + "/" + filepath.Base(layout.TermsRel)
+		termsRel = from.Root + "/" + layout.VocabularyName + "/" + filepath.Base(layout.TermsRel)
 	}
+	stateDir, _ := layout.Lookup(layout.DocsStateName)
 	var terms *vocabulary.List
 	for _, rel := range convertedManifests {
 		readRel := rel
 		if stateMoves {
-			readRel = layout.PreviousRoot + "/" + layout.DocsStateName + strings.TrimPrefix(rel, layout.DocsStateRel)
+			readRel = from.Root + "/" + from.EntryName(stateDir) + strings.TrimPrefix(rel, layout.DocsStateRel)
 		}
 		readPath := filepath.Join(baseDir, filepath.FromSlash(readRel))
 		raw, err := os.ReadFile(readPath)
@@ -404,8 +458,8 @@ func committedSchema(baseDir, rel string, h *effects.Handle) (int64, bool) {
 // planPreviousIgnore removes selfdoc's block from the previous root's ignore
 // file: the file goes when the block was all it held, and the previous root
 // goes when nothing else is left in it.
-func (p *Plan) planPreviousIgnore(baseDir string, moved map[string]bool) error {
-	ignoreRel := layout.PreviousRoot + "/" + layout.IgnoreFileName
+func (p *Plan) planPreviousIgnore(baseDir string, from layout.PreviousLayout, moved map[string]bool) error {
+	ignoreRel := from.Root + "/" + layout.IgnoreFileName
 	ignorePath := filepath.Join(baseDir, filepath.FromSlash(ignoreRel))
 	ignoreGone := true
 	raw, err := os.ReadFile(ignorePath)
@@ -430,7 +484,7 @@ func (p *Plan) planPreviousIgnore(baseDir string, moved map[string]bool) error {
 		}
 		p.Commit = append(p.Commit, ignoreRel)
 	}
-	entries, err := os.ReadDir(filepath.Join(baseDir, layout.PreviousRoot))
+	entries, err := os.ReadDir(filepath.Join(baseDir, from.Root))
 	if err != nil {
 		return err
 	}
@@ -447,7 +501,7 @@ func (p *Plan) planPreviousIgnore(baseDir string, moved map[string]bool) error {
 // planConfig rewrites every string value in selfdoc.json that names a path
 // inside one of the moved directories, and returns the root-file template
 // paths as the config declared them, for the header rewrite.
-func (p *Plan) planConfig(baseDir string, moved map[string]bool) ([]string, error) {
+func (p *Plan) planConfig(baseDir string, from layout.PreviousLayout, moved map[string]bool) ([]string, error) {
 	configPath := filepath.Join(baseDir, "selfdoc.json")
 	raw, err := os.ReadFile(configPath)
 	if errors.Is(err, os.ErrNotExist) {
@@ -464,7 +518,7 @@ func (p *Plan) planConfig(baseDir string, moved map[string]bool) ([]string, erro
 	collectStrings(document, values)
 	var olds []string
 	for value := range values {
-		if movedPath(value, moved) {
+		if movedPath(value, from, moved) {
 			olds = append(olds, value)
 		}
 	}
@@ -547,8 +601,8 @@ func (p *Plan) planRootFileHeaders(baseDir string, templates []string) error {
 
 // movedPath reports whether a value names a path inside one of the moved
 // directories: the directory itself, or something under it.
-func movedPath(value string, moved map[string]bool) bool {
-	rest, found := strings.CutPrefix(value, layout.PreviousRoot+"/")
+func movedPath(value string, from layout.PreviousLayout, moved map[string]bool) bool {
+	rest, found := strings.CutPrefix(value, from.Root+"/")
 	if !found {
 		return false
 	}
@@ -643,7 +697,7 @@ func Apply(h *effects.Handle, baseDir string, plan Plan) error {
 		}
 	}
 	if plan.RemovePreviousRoot {
-		return h.Rmdir(filepath.Join(baseDir, layout.PreviousRoot))
+		return h.Rmdir(filepath.Join(baseDir, plan.PreviousRoot))
 	}
 	return nil
 }
