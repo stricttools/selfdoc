@@ -54,3 +54,8 @@ target/
 .rlsbl-monorepo/lock
 .rlsbl-monorepo/releasables/*/releases/in-progress.json
 .rlsbl-monorepo/releasables/*/releases/scrub-result.json
+
+# Local co-development overlay of sibling checkouts (for example an unreleased
+# strictspec). Never committed: a release builds against the published modules.
+/go.work
+/go.work.sum
