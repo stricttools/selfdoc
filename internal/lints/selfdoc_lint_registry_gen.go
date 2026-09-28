@@ -27,22 +27,22 @@ const SCHEMA_FORMAT_VERSION = 1
 // embeddedSchema carries the compiled schema (and its imported type-definition
 // files and scalar manifest) so the validator is self-contained and does no IO.
 var embeddedSchema = map[string]string{
-	"lint-registry.schema.toml": `# strictspec schema -- selfdoc lint-code registry.
+	"lint-registry.schema.toml": `# strictspec schema -- selfdoc lint registry.
 #
 # Governs internal/lints/lints.toml: the declarative document that is the single
-# source of truth for every lint code selfdoc can emit, with its severity and
+# source of truth for every lint selfdoc can emit, with its severity and
 # its one-line description. The generated validator
 # (selfdoc_lint_registry_gen.go) validates the document at load time in package
 # lints; a malformed registry is a hard error at startup, before any check
 # runs.
 #
 # SCOPE (honest subset): this schema owns the raw DOCUMENT SHAPE of the registry
-# -- the code grammar, the severity enum, per-entry required fields,
-# unknown-key rejection, and unique codes. It does NOT model where a code is
+# -- the name grammar, the severity enum, per-entry required fields,
+# unknown-key rejection, and unique names. It does NOT model where a lint is
 # emitted from, which condition raises it, or whether the JSON output schema
 # and the documentation table agree with it. Those are selfdoc-native and both
 # enforced structurally: LintResult derives severity from this registry and
-# refuses an unregistered code, the JSON output schema's code enum is pinned to
+# refuses an unregistered name, the JSON output schema's name enum is pinned to
 # the registry by a test, and the documentation table is rendered from the
 # registry by the "table-lints" directive rather than written out beside it.
 
@@ -52,7 +52,7 @@ format_version = 1
 document_syntax = "toml"
 role = "schema"
 root = "LintRegistry"
-description = "The selfdoc lint-code registry: one entry per emittable lint code (code, severity, description)."
+description = "The selfdoc lint registry: one entry per emittable lint (name, severity, description)."
 
 [types.LintRegistry]
 type = "record"
@@ -66,24 +66,24 @@ description = "Document format-version gate. v1 documents carry 1."
 type = "array"
 required = true
 min_len = 1
-description = "The registered lint codes, in documentation order."
+description = "The registered lints, in documentation order."
 [types.LintRegistry.fields.lints.item]
 type = "LintDescriptor"
 
-# Codes are unique across the registry (the loader keys a dict by them).
+# Names are unique across the registry (the loader keys a map by them).
 [[types.LintRegistry.constraints]]
 form = "unique-by"
 collection = "lints"
-field = "code"
+field = "name"
 normalization = "none"
 
 # --- named types ---
 
 [types.LintDescriptor]
 type = "record"
-description = "Registry entry for a single lint code."
+description = "Registry entry for a single lint."
 
-[types.LintDescriptor.fields.code]
+[types.LintDescriptor.fields.name]
 type = "string"
 required = true
 non_empty = true
@@ -195,7 +195,7 @@ func (x *LintRegistry) WithLints(v []*LintDescriptor) *LintRegistry {
 // LintDescriptor is the frozen typed binding of the "LintDescriptor" record. Fields are immutable by
 // convention (shallow-plus-generated-immutability); use With* for copy-on-write.
 type LintDescriptor struct {
-	Code        string
+	Name        string
 	Severity    string
 	Description string
 }
@@ -205,8 +205,8 @@ func bindLintDescriptor(v strictspec.Value) *LintDescriptor {
 		return nil
 	}
 	out := &LintDescriptor{}
-	if fv, ok := v.Field("code"); ok {
-		out.Code = func() string { r, _ := fv.AsString(); return r }()
+	if fv, ok := v.Field("name"); ok {
+		out.Name = func() string { r, _ := fv.AsString(); return r }()
 	}
 	if fv, ok := v.Field("severity"); ok {
 		out.Severity = func() string { r, _ := fv.AsString(); return r }()
@@ -217,10 +217,10 @@ func bindLintDescriptor(v strictspec.Value) *LintDescriptor {
 	return out
 }
 
-// WithCode returns a copy of LintDescriptor with Code set to the given value.
-func (x *LintDescriptor) WithCode(v string) *LintDescriptor {
+// WithName returns a copy of LintDescriptor with Name set to the given value.
+func (x *LintDescriptor) WithName(v string) *LintDescriptor {
 	c := *x
-	c.Code = v
+	c.Name = v
 	return &c
 }
 

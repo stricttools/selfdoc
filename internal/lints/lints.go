@@ -1,11 +1,11 @@
-// Package lints owns the lint-code registry and the verdict rules every check
+// Package lints owns the lint registry and the verdict rules every check
 // entry point shares.
 //
-// The embedded lints.toml is the single authority for every lint code selfdoc
-// can emit: its severity and its one-line description are declared there and
+// The embedded lints.toml is the single authority for every lint selfdoc can
+// emit, keyed by its name: its severity and its one-line description are declared there and
 // nowhere else. [LintResult] derives its severity from the registry, so a
 // construction site cannot state a severity and cannot emit an unregistered
-// code -- both are refused rather than discouraged. The lint-code enum in the
+// lint -- both are refused rather than discouraged. The lint-name enum in the
 // declared check payload schema is pinned to the registry by a test, and the
 // check guide's lint-rule table is rendered from the registry by the
 // "table-lints" directive rather than repeated by hand. Each lint is also an
@@ -38,16 +38,16 @@ const registryDocumentName = "lints.toml"
 //go:embed lints.toml
 var registryDocument []byte
 
-// LintSpec is the registry entry for a single lint code.
+// LintSpec is the registry entry for a single lint.
 type LintSpec struct {
-	Code        string
+	Name        string
 	Severity    string // "error" or "warning"
 	Description string
 }
 
 // LintRegistryError reports a registry document that failed strictspec
 // validation: the lint registry is malformed, so selfdoc cannot know what its
-// own lint codes are.
+// own lints are.
 type LintRegistryError struct {
 	Message string
 }
@@ -57,33 +57,34 @@ func (e *LintRegistryError) Error() string { return e.Message }
 // Registry is a loaded, validated lint registry.
 //
 // It keeps the document's order, which is documentation order: the lint-rule
-// table renders in it, grouping the families rather than sorting the codes
+// table renders in it, grouping the families rather than sorting the names
 // alphabetically.
 type Registry struct {
 	order []string
 	specs map[string]LintSpec
 }
 
-// Codes returns every registered code in registry (documentation) order.
-func (r *Registry) Codes() []string {
+// Names returns every registered lint's name in registry (documentation)
+// order.
+func (r *Registry) Names() []string {
 	out := make([]string, len(r.order))
 	copy(out, r.order)
 	return out
 }
 
-// Len returns how many codes the registry carries.
+// Len returns how many lints the registry carries.
 func (r *Registry) Len() int { return len(r.order) }
 
-// Spec returns the code's registry entry, reporting whether the registry
-// carries it.
-func (r *Registry) Spec(code string) (LintSpec, bool) {
-	spec, ok := r.specs[code]
+// Spec returns the named lint's registry entry, reporting whether the
+// registry carries it.
+func (r *Registry) Spec(name string) (LintSpec, bool) {
+	spec, ok := r.specs[name]
 	return spec, ok
 }
 
-// Has reports whether the registry carries code.
-func (r *Registry) Has(code string) bool {
-	_, ok := r.specs[code]
+// Has reports whether the registry carries a lint of that name.
+func (r *Registry) Has(name string) bool {
+	_, ok := r.specs[name]
 	return ok
 }
 
@@ -109,9 +110,9 @@ func BuildRegistry(raw []byte) (*Registry, error) {
 		specs: make(map[string]LintSpec, len(document.Lints)),
 	}
 	for _, entry := range document.Lints {
-		reg.order = append(reg.order, entry.Code)
-		reg.specs[entry.Code] = LintSpec{
-			Code:        entry.Code,
+		reg.order = append(reg.order, entry.Name)
+		reg.specs[entry.Name] = LintSpec{
+			Name:        entry.Name,
 			Severity:    entry.Severity,
 			Description: entry.Description,
 		}
@@ -137,7 +138,7 @@ var (
 // It panics when the document is malformed, which is the Go counterpart of the
 // Python surface's import-time crash: the document is embedded in the binary,
 // so a diagnostic here means this build of selfdoc does not know what its own
-// lint codes are. Use [Load] where an error is wanted.
+// lints are. Use [Load] where an error is wanted.
 func Registered() *Registry {
 	registeredOnce.Do(func() { registered, registeredErr = Load() })
 	if registeredErr != nil {
@@ -146,27 +147,27 @@ func Registered() *Registry {
 	return registered
 }
 
-// UnknownLintCodeError reports a code the registry does not carry.
+// UnknownLintNameError reports a lint name the registry does not carry.
 //
-// Every emittable code is declared in the registry document. An undeclared
-// code would carry no severity, would be rejected by the JSON output schema,
+// Every emittable lint is declared in the registry document. An undeclared
+// lint would carry no severity, would be rejected by the JSON output schema,
 // and would be invisible to the documentation table -- so it is refused at the
 // construction site instead.
-type UnknownLintCodeError struct {
+type UnknownLintNameError struct {
 	Message string
 }
 
-func (e *UnknownLintCodeError) Error() string { return e.Message }
+func (e *UnknownLintNameError) Error() string { return e.Message }
 
-// LintSeverity returns the registered severity for code, or an
-// [UnknownLintCodeError].
-func LintSeverity(code string) (string, error) {
-	spec, ok := Registered().Spec(code)
+// LintSeverity returns the registered severity of the named lint, or an
+// [UnknownLintNameError].
+func LintSeverity(name string) (string, error) {
+	spec, ok := Registered().Spec(name)
 	if !ok {
-		return "", &UnknownLintCodeError{Message: fmt.Sprintf(
-			"lint code '%s' is not in the registry. Every emittable code "+
+		return "", &UnknownLintNameError{Message: fmt.Sprintf(
+			"lint '%s' is not in the registry. Every emittable lint "+
 				"must be declared in the lint registry (internal/lints/%s) "+
-				"with its severity and description.", code, registryDocumentName)}
+				"with its name, severity and description.", name, registryDocumentName)}
 	}
 	return spec.Severity, nil
 }
@@ -174,26 +175,26 @@ func LintSeverity(code string) (string, error) {
 // LintResult is a single lint diagnostic.
 //
 // Its severity is not a construction argument: it is read from the registry
-// for the given code. That is what keeps severities out of the construction
+// for the named lint. That is what keeps severities out of the construction
 // sites scattered across the check modules, and what makes an unregistered
-// code impossible to emit. Every field is read-only through an accessor,
-// because a diagnostic's severity is the registry's answer for its code and
+// lint impossible to emit. Every field is read-only through an accessor,
+// because a diagnostic's severity is the registry's answer for its lint and
 // nothing downstream may rewrite it after the fact.
 type LintResult struct {
 	file     string
 	line     *int
-	code     string
+	name     string
 	message  string
 	severity string
 }
 
-// NewLintResult builds a diagnostic for code, deriving its severity from the
-// registry.
+// NewLintResult builds a diagnostic of the named lint, deriving its severity
+// from the registry.
 //
 // line is nil for a diagnostic that belongs to a file rather than to one of
-// its lines. An unregistered code is an [UnknownLintCodeError].
-func NewLintResult(file string, line *int, code, message string) (LintResult, error) {
-	severity, err := LintSeverity(code)
+// its lines. An unregistered name is an [UnknownLintNameError].
+func NewLintResult(file string, line *int, name, message string) (LintResult, error) {
+	severity, err := LintSeverity(name)
 	if err != nil {
 		return LintResult{}, err
 	}
@@ -205,21 +206,21 @@ func NewLintResult(file string, line *int, code, message string) (LintResult, er
 	return LintResult{
 		file:     file,
 		line:     lineCopy,
-		code:     code,
+		name:     name,
 		message:  message,
 		severity: severity,
 	}, nil
 }
 
-// MustLintResult is [NewLintResult] for a call site whose code is a literal
+// MustLintResult is [NewLintResult] for a call site whose lint name is a literal
 // declared in the registry document, and panics when it is not.
 //
 // The panic is the point: an unregistered literal is a defect in this
 // repository rather than a condition a run can encounter, and the alternative
 // -- an error return threaded through every emission site -- would make the
-// emission sites decide what to do about a code that cannot exist.
-func MustLintResult(file string, line *int, code, message string) LintResult {
-	result, err := NewLintResult(file, line, code, message)
+// emission sites decide what to do about a lint that cannot exist.
+func MustLintResult(file string, line *int, name, message string) LintResult {
+	result, err := NewLintResult(file, line, name, message)
 	if err != nil {
 		panic(err)
 	}
@@ -239,18 +240,18 @@ func (l LintResult) Line() *int {
 	return &v
 }
 
-// Code returns the diagnostic's registered lint code.
-func (l LintResult) Code() string { return l.code }
+// Name returns the name of the registered lint the diagnostic reports.
+func (l LintResult) Name() string { return l.name }
 
 // Message returns the diagnostic's human-readable message.
 func (l LintResult) Message() string { return l.message }
 
-// Severity returns the registry's severity for this diagnostic's code.
+// Severity returns the registry's severity for this diagnostic's lint.
 func (l LintResult) Severity() string { return l.severity }
 
 // LintTableRow is one row of the rendered lint-rule table.
 type LintTableRow struct {
-	Code        string
+	Name        string
 	Severity    string
 	Description string
 }
@@ -261,10 +262,10 @@ type LintTableRow struct {
 func LintTableRows() []LintTableRow {
 	reg := Registered()
 	out := make([]LintTableRow, 0, reg.Len())
-	for _, code := range reg.Codes() {
-		spec, _ := reg.Spec(code)
+	for _, name := range reg.Names() {
+		spec, _ := reg.Spec(name)
 		out = append(out, LintTableRow{
-			Code:        spec.Code,
+			Name:        spec.Name,
 			Severity:    spec.Severity,
 			Description: spec.Description,
 		})
@@ -276,12 +277,12 @@ func LintTableRows() []LintTableRow {
 // carries.
 func RenderLintTable() string {
 	lines := []string{
-		"| Code | Severity | What it checks |",
+		"| Name | Severity | What it checks |",
 		"| ---- | -------- | -------------- |",
 	}
 	for _, row := range LintTableRows() {
 		lines = append(lines, fmt.Sprintf("| %s | %s | %s |",
-			row.Code, row.Severity, row.Description))
+			row.Name, row.Severity, row.Description))
 	}
 	return strings.Join(lines, "\n")
 }

@@ -178,7 +178,7 @@ Unrecognized words are marked in the text itself. The engine is the one `selfdoc
 
 ### Lint marks
 
-Lint findings appear twice. Once in the gutter, as a marker on the line, coloured by the severity the lint registry assigns the code. And once in a **Findings** list below the editor, as a button per finding that moves the caret to what it describes.
+Lint findings appear twice. Once in the gutter, as a marker on the line, coloured by the severity the lint registry assigns the lint. And once in a **Findings** list below the editor, as a button per finding that moves the caret to what it describes.
 
 The pairing is deliberate, not decoration: the gutter lane is hidden from assistive technology and nothing in it can take focus, so a surface that shows diagnostics there owes them somewhere a keyboard can reach.
 

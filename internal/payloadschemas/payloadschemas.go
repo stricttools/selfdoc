@@ -37,18 +37,18 @@ func merge(fragments ...map[string]any) map[string]any {
 	return out
 }
 
-// LintCodes is the sorted set of lint codes selfdoc check can emit, derived
+// LintNames is the sorted set of lint names selfdoc check can emit, derived
 // from the shipped registry rather than restated here.
 //
 // Deriving it is the whole point: internal/lints's embedded document is the
-// single place a code is declared, so registering one cannot leave the
+// single place a lint is declared, so registering one cannot leave the
 // published contract behind.
-func LintCodes() []any {
-	codes := append([]string(nil), lints.Registered().Codes()...)
-	sort.Strings(codes)
-	out := make([]any, len(codes))
-	for i, code := range codes {
-		out[i] = code
+func LintNames() []any {
+	names := append([]string(nil), lints.Registered().Names()...)
+	sort.Strings(names)
+	out := make([]any, len(names))
+	for i, name := range names {
+		out[i] = name
 	}
 	return out
 }
@@ -100,9 +100,9 @@ func Check() map[string]any {
 		map[string]any{
 			"file": strictcli.SchemaType("string"),
 			"line": strictcli.SchemaType("integer", "null"),
-			"code": merge(
+			"name": merge(
 				strictcli.SchemaType("string"),
-				map[string]any{"enum": LintCodes()},
+				map[string]any{"enum": LintNames()},
 			),
 			"message": strictcli.SchemaType("string"),
 			"severity": merge(
@@ -110,7 +110,7 @@ func Check() map[string]any {
 				map[string]any{"enum": LintSeverities()},
 			),
 		},
-		[]string{"file", "line", "code", "message", "severity"},
+		[]string{"file", "line", "name", "message", "severity"},
 		false,
 	)
 

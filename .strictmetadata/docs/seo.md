@@ -88,7 +88,7 @@ This accepts any BCP 47 tag (e.g., `en`, `en-US`, `pt-BR`).
 
 ## Lint Rules
 
-`selfdoc check` runs the search-engine and page-structure lint rules, covering heading structure, meta descriptions, image alt text, contrast ratios, title lengths, content density, and accessibility. Each rule has a name, a severity and an actionable fix suggestion, all declared once in the lint registry embedded in the binary. Most are warnings; multiple-top-level-headings (multiple H1 headings), missing-frontmatter-description (missing description) and missing-page-title (no title source) are errors and stop the run. See the [Check Guide](../check-guide/) for every code with its severity and message.
+`selfdoc check` runs the search-engine and page-structure lint rules, covering heading structure, meta descriptions, image alt text, contrast ratios, title lengths, content density, and accessibility. Each rule has a name, a severity and an actionable fix suggestion, all declared once in the lint registry embedded in the binary. Most are warnings; multiple-top-level-headings (multiple H1 headings), missing-frontmatter-description (missing description) and missing-page-title (no title source) are errors and stop the run. See the [Check Guide](../check-guide/) for every lint with its severity and message.
 
 ## llms.txt and llms-full.txt
 

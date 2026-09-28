@@ -32,8 +32,9 @@ func (e *AcceptError) Error() string { return e.Message }
 type AcceptedBaseline struct {
 	// Page is the page identifier, exactly as `selfdoc check` shows it.
 	Page string
-	// Code is the error that was cleared: "stale-page-description" or "description-drifted-from-source".
-	Code string
+	// Lint is the name of the lint whose error was cleared:
+	// "stale-page-description" or "description-drifted-from-source".
+	Lint string
 }
 
 // StalenessState is what [ComputeStalenessState] measured.
@@ -44,7 +45,7 @@ type StalenessState struct {
 	Current staleness.Store
 	// Stored is the loaded baseline, the hash store's own contents.
 	Stored staleness.Store
-	// ErrorPages maps a page identifier to the lint code of its
+	// ErrorPages maps a page identifier to the name of the lint of its
 	// outstanding error: "stale-page-description" or "description-drifted-from-source".
 	ErrorPages map[string]string
 }
@@ -333,7 +334,7 @@ func AcceptBaselines(
 		// measures, and the stored one also holds gen's seed_hash.
 		state.Stored[page] = staleness.Merge(state.Stored[page], state.Current[page])
 		accepted = append(accepted, AcceptedBaseline{
-			Page: page, Code: state.ErrorPages[page],
+			Page: page, Lint: state.ErrorPages[page],
 		})
 	}
 	if err := staleness.SaveHashes(state.Stored, dirPath, handle); err != nil {

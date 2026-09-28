@@ -42,11 +42,11 @@ func check(
 	return results
 }
 
-// codes are the lint codes of results, joined for comparison.
+// codes are the names of the lints of results, joined for comparison.
 func codes(results []lints.LintResult) string {
 	parts := make([]string, 0, len(results))
 	for _, result := range results {
-		parts = append(parts, result.Code())
+		parts = append(parts, result.Name())
 	}
 	return strings.Join(parts, ",")
 }
@@ -62,8 +62,8 @@ func TestAnAbsoluteAnchorIntoThisSiteIsReported(t *testing.T) {
 	write(t, filepath.Join(out, "blog", "hello", "index.html"), "<p>hi</p>")
 
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "absolute") {
 		t.Errorf("message = %q", results[0].Message())
@@ -85,8 +85,8 @@ func TestAnAbsoluteAnchorIsReportedEvenThoughThePageExists(t *testing.T) {
 	write(t, filepath.Join(out, "index.html"), `<a href="`+base+`/guide/">G</a>`)
 	write(t, filepath.Join(out, "guide", "index.html"), "<p>guide</p>")
 
-	if got := codes(check(t, out, base, "")); got != LintCode {
-		t.Fatalf("codes = %q, want %q", got, LintCode)
+	if got := codes(check(t, out, base, "")); got != LintName {
+		t.Fatalf("codes = %q, want %q", got, LintName)
 	}
 }
 
@@ -157,8 +157,8 @@ func TestAReferenceClimbingPastTheMountIsStillAnEscape(t *testing.T) {
 	write(t, filepath.Join(out, "guide", "index.html"),
 		`<a href="../../../elsewhere/">Out</a>`)
 	results := check(t, out, base, "alpha/")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "escapes the output root") {
 		t.Errorf("message = %q", results[0].Message())
@@ -203,8 +203,8 @@ func TestTheCheckFiresOnABrokenReference(t *testing.T) {
 	write(t, filepath.Join(out, "guide", "index.html"),
 		`<a href="../nowhere/">gone</a>`)
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if results[0].File() != "guide/index.html" {
 		t.Errorf("file = %q", results[0].File())
@@ -225,8 +225,8 @@ func TestTheCheckFiresOnAnOriginAbsoluteReference(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "out")
 	write(t, filepath.Join(out, "index.html"), `<img src="/assets/x.png">`)
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "is origin-absolute") {
 		t.Errorf("message = %q", results[0].Message())
@@ -247,8 +247,8 @@ func TestTheCheckFiresOnAShareAddressThatWasNotWritten(t *testing.T) {
 	write(t, filepath.Join(out, "guide", "index.html"),
 		`<button data-share-url="`+base+`/v/0.2.0/guide/">Copy</button>`)
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "share address") {
 		t.Errorf("message = %q", results[0].Message())
@@ -267,8 +267,8 @@ func TestTheCheckFiresOnABrokenCanonical(t *testing.T) {
 	write(t, filepath.Join(out, "index.html"),
 		`<link rel="canonical" href="`+base+`/ghost/">`)
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "canonical") {
 		t.Errorf("message = %q", results[0].Message())
@@ -282,8 +282,8 @@ func TestTheCheckFiresOnABrokenSitemapEntry(t *testing.T) {
 	write(t, filepath.Join(out, "sitemap.xml"),
 		"<urlset><url><loc>"+base+"/ghost/</loc></url></urlset>")
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "ghost") {
 		t.Errorf("message = %q", results[0].Message())
@@ -301,8 +301,8 @@ func TestTheCheckFiresOnASitemapIndexEntryThatWasNotWritten(t *testing.T) {
 		"<sitemapindex><sitemap><loc>"+base+
 			"/sitemap-en.xml</loc></sitemap></sitemapindex>")
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "sitemap index entry") {
 		t.Errorf("message = %q", results[0].Message())
@@ -316,8 +316,8 @@ func TestTheCheckFiresOnABrokenFeedLink(t *testing.T) {
 	write(t, filepath.Join(out, "feed.xml"),
 		`<feed><link href="`+base+`/feed.xml"/><link href="`+base+`/ghost/"/></feed>`)
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "feed link") {
 		t.Errorf("message = %q", results[0].Message())
@@ -350,8 +350,8 @@ func TestCompressedCopiesAreNotEmittedFiles(t *testing.T) {
 	write(t, filepath.Join(out, "guide", "index.html.gz"), "compressed")
 	write(t, filepath.Join(out, "guide", "index.html.br"), "compressed")
 	results := check(t, out, base, "")
-	if codes(results) != LintCode {
-		t.Fatalf("codes = %q, want %q", codes(results), LintCode)
+	if codes(results) != LintName {
+		t.Fatalf("codes = %q, want %q", codes(results), LintName)
 	}
 }
 
@@ -589,9 +589,9 @@ func TestABrokenLinkTheCurrentSourceWritesIsReported(t *testing.T) {
 	results := checkSourced(t, out, map[string]string{
 		"guide/index.html": "# Guide\n\nSee the [Guide](missing.md).\n",
 	})
-	if codes(results) != LintCode {
+	if codes(results) != LintName {
 		t.Fatalf("codes = %q, want %q -- the source still writes the "+
-			"reference the built page carries", codes(results), LintCode)
+			"reference the built page carries", codes(results), LintName)
 	}
 	if !strings.Contains(results[0].Message(), "missing") {
 		t.Errorf("message = %q", results[0].Message())
@@ -605,7 +605,7 @@ func TestAFragmentTheCurrentSourceWritesIsReported(t *testing.T) {
 		`<main id="tm-content"><a href="../missing/#detail">Guide</a></main>`)
 	if codes(checkSourced(t, out, map[string]string{
 		"guide/index.html": "# Guide\n\n[Guide](missing.md#detail)\n",
-	})) != LintCode {
+	})) != LintName {
 		t.Fatal("a reference the source writes with a fragment is still checked")
 	}
 }
@@ -627,7 +627,7 @@ func TestAPageWithNoCurrentSourceIsCheckedAsBefore(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "out")
 	write(t, filepath.Join(out, "guide", "index.html"),
 		`<main id="tm-content"><a href="../missing/">Gone</a></main>`)
-	if codes(checkSourced(t, out, map[string]string{})) != LintCode {
+	if codes(checkSourced(t, out, map[string]string{})) != LintName {
 		t.Fatal("a page this run did not resolve is checked as it always was")
 	}
 }
@@ -639,7 +639,7 @@ func TestAReferenceThatIsNotAPageIsTakenFromTheSourceAsWritten(t *testing.T) {
 		`<main id="tm-content"><img src="../assets/logo.png"></main>`)
 	if codes(checkSourced(t, out, map[string]string{
 		"guide/index.html": "# Guide\n\n![Logo](../assets/logo.png)\n",
-	})) != LintCode {
+	})) != LintName {
 		t.Fatal("an asset reference the source writes is still checked")
 	}
 }

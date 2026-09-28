@@ -20,35 +20,35 @@ func TestEmbeddedDocumentValidates(t *testing.T) {
 	}
 }
 
-func TestEveryEntryIsKeyedByItsOwnCode(t *testing.T) {
+func TestEveryEntryIsKeyedByItsOwnName(t *testing.T) {
 	reg := Registered()
-	for _, code := range reg.Codes() {
-		spec, ok := reg.Spec(code)
+	for _, name := range reg.Names() {
+		spec, ok := reg.Spec(name)
 		if !ok {
-			t.Fatalf("%s is not retrievable from the registry", code)
+			t.Fatalf("%s is not retrievable from the registry", name)
 		}
-		if spec.Code != code {
-			t.Errorf("entry keyed %s carries code %s", code, spec.Code)
+		if spec.Name != name {
+			t.Errorf("entry keyed %s carries the name %s", name, spec.Name)
 		}
 	}
 }
 
 func TestEverySeverityIsErrorOrWarning(t *testing.T) {
 	reg := Registered()
-	for _, code := range reg.Codes() {
-		spec, _ := reg.Spec(code)
+	for _, name := range reg.Names() {
+		spec, _ := reg.Spec(name)
 		if spec.Severity != "error" && spec.Severity != "warning" {
-			t.Errorf("%s: severity %q is outside the closed set", code, spec.Severity)
+			t.Errorf("%s: severity %q is outside the closed set", name, spec.Severity)
 		}
 	}
 }
 
 func TestEveryEntryHasADescription(t *testing.T) {
 	reg := Registered()
-	for _, code := range reg.Codes() {
-		spec, _ := reg.Spec(code)
+	for _, name := range reg.Names() {
+		spec, _ := reg.Spec(name)
 		if strings.TrimSpace(spec.Description) == "" {
-			t.Errorf("%s: no description for the documentation table", code)
+			t.Errorf("%s: no description for the documentation table", name)
 		}
 	}
 }
@@ -60,49 +60,49 @@ func TestRegistryKeepsDocumentOrder(t *testing.T) {
 	}
 	want := make([]string, 0, len(document.Lints))
 	for _, entry := range document.Lints {
-		want = append(want, entry.Code)
+		want = append(want, entry.Name)
 	}
-	if !reflect.DeepEqual(Registered().Codes(), want) {
-		t.Fatalf("Codes() = %v, want the document order %v", Registered().Codes(), want)
+	if !reflect.DeepEqual(Registered().Names(), want) {
+		t.Fatalf("Names() = %v, want the document order %v", Registered().Names(), want)
 	}
 }
 
 // -- Emission is structurally constrained -------------------------------------
 
 func TestLintResultDerivesSeverityFromTheRegistry(t *testing.T) {
-	for _, code := range []string{"multiple-top-level-headings", "skipped-heading-level"} {
-		want, err := LintSeverity(code)
+	for _, name := range []string{"multiple-top-level-headings", "skipped-heading-level"} {
+		want, err := LintSeverity(name)
 		if err != nil {
-			t.Fatalf("LintSeverity(%q) = %v", code, err)
+			t.Fatalf("LintSeverity(%q) = %v", name, err)
 		}
-		got := MustLintResult("a.md", intp(1), code, "m")
+		got := MustLintResult("a.md", intp(1), name, "m")
 		if got.Severity() != want {
-			t.Errorf("%s: severity %q, want %q", code, got.Severity(), want)
+			t.Errorf("%s: severity %q, want %q", name, got.Severity(), want)
 		}
 	}
 }
 
-func TestLintResultRefusesAnUnregisteredCode(t *testing.T) {
+func TestLintResultRefusesAnUnregisteredName(t *testing.T) {
 	_, err := NewLintResult("a.md", intp(1), "NOPE001", "m")
 	if err == nil {
 		t.Fatal("expected a refusal, got nil")
 	}
-	var unknown *UnknownLintCodeError
+	var unknown *UnknownLintNameError
 	if !errors.As(err, &unknown) {
-		t.Fatalf("error %T is not an *UnknownLintCodeError", err)
+		t.Fatalf("error %T is not an *UnknownLintNameError", err)
 	}
 	if !strings.Contains(err.Error(), "NOPE001") {
-		t.Errorf("message %q does not name the code", err.Error())
+		t.Errorf("message %q does not name the lint", err.Error())
 	}
 	if !strings.Contains(err.Error(), "lints.toml") {
 		t.Errorf("message %q does not name the registry document", err.Error())
 	}
 }
 
-func TestLintSeverityRefusesAnUnregisteredCode(t *testing.T) {
+func TestLintSeverityRefusesAnUnregisteredName(t *testing.T) {
 	_, err := LintSeverity("NOPE001")
-	want := "lint code 'NOPE001' is not in the registry. Every emittable code " +
-		"must be declared in the lint registry (internal/lints/lints.toml) with its severity and description."
+	want := "lint 'NOPE001' is not in the registry. Every emittable lint " +
+		"must be declared in the lint registry (internal/lints/lints.toml) with its name, severity and description."
 	if err == nil || err.Error() != want {
 		t.Fatalf("error = %v, want %q", err, want)
 	}
@@ -134,7 +134,7 @@ func TestLintResultLineIsOptional(t *testing.T) {
 func TestRenderLintTableIsTheRegistry(t *testing.T) {
 	rendered := RenderLintTable()
 	rows := strings.Split(rendered, "\n")
-	if rows[0] != "| Code | Severity | What it checks |" {
+	if rows[0] != "| Name | Severity | What it checks |" {
 		t.Fatalf("header row = %q", rows[0])
 	}
 	if rows[1] != "| ---- | -------- | -------------- |" {
@@ -144,9 +144,9 @@ func TestRenderLintTableIsTheRegistry(t *testing.T) {
 	if len(rows) != reg.Len()+2 {
 		t.Fatalf("table has %d rows, want %d", len(rows), reg.Len()+2)
 	}
-	for i, code := range reg.Codes() {
-		spec, _ := reg.Spec(code)
-		want := "| " + spec.Code + " | " + spec.Severity + " | " + spec.Description + " |"
+	for i, name := range reg.Names() {
+		spec, _ := reg.Spec(name)
+		want := "| " + spec.Name + " | " + spec.Severity + " | " + spec.Description + " |"
 		if rows[i+2] != want {
 			t.Errorf("row %d = %q, want %q", i+2, rows[i+2], want)
 		}
@@ -156,10 +156,10 @@ func TestRenderLintTableIsTheRegistry(t *testing.T) {
 func TestLintTableRowsIsRegistryOrder(t *testing.T) {
 	got := make([]string, 0)
 	for _, row := range LintTableRows() {
-		got = append(got, row.Code)
+		got = append(got, row.Name)
 	}
-	if !reflect.DeepEqual(got, Registered().Codes()) {
-		t.Fatalf("LintTableRows order = %v, want %v", got, Registered().Codes())
+	if !reflect.DeepEqual(got, Registered().Names()) {
+		t.Fatalf("LintTableRows order = %v, want %v", got, Registered().Names())
 	}
 }
 
@@ -301,7 +301,7 @@ func TestCheckExitCode(t *testing.T) {
 // malformed variant below is derived from.
 const validRegistry = "format_version = 1\n" +
 	"[[lints]]\n" +
-	"code = \"multiple-top-level-headings\"\n" +
+	"name = \"multiple-top-level-headings\"\n" +
 	"severity = \"error\"\n" +
 	"description = \"Multiple H1 headings on a page.\"\n"
 
@@ -328,8 +328,8 @@ func TestMalformedRegistriesAreRejected(t *testing.T) {
 		want     string
 	}{
 		{
-			label:    "a code outside the grammar",
-			document: strings.Replace(validRegistry, `code = "multiple-top-level-headings"`, `code = "seo1"`, 1),
+			label:    "a name outside the grammar",
+			document: strings.Replace(validRegistry, `name = "multiple-top-level-headings"`, `name = "seo1"`, 1),
 			want:     "STRICTSPEC_VALUE_STRING_REGEX",
 		},
 		{
@@ -354,9 +354,9 @@ func TestMalformedRegistriesAreRejected(t *testing.T) {
 			want:     "STRICTSPEC_GATE_ABSENT",
 		},
 		{
-			label: "a duplicate code",
+			label: "a duplicate name",
 			document: validRegistry + "[[lints]]\n" +
-				"code = \"multiple-top-level-headings\"\n" +
+				"name = \"multiple-top-level-headings\"\n" +
 				"severity = \"warning\"\n" +
 				"description = \"dup\"\n",
 			want: "STRICTSPEC_INTRA_UNIQUE_BY",
@@ -395,8 +395,8 @@ func TestBuildRegistryBindsAValidDocument(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BuildRegistry returned %v", err)
 	}
-	if !reflect.DeepEqual(reg.Codes(), []string{"multiple-top-level-headings"}) {
-		t.Fatalf("codes = %v, want [multiple-top-level-headings]", reg.Codes())
+	if !reflect.DeepEqual(reg.Names(), []string{"multiple-top-level-headings"}) {
+		t.Fatalf("names = %v, want [multiple-top-level-headings]", reg.Names())
 	}
 	spec, ok := reg.Spec("multiple-top-level-headings")
 	if !ok {
@@ -426,10 +426,10 @@ func containsString(haystack []string, needle string) bool {
 // A lint's name is also the name of the option that governs it, so it follows
 // the option-name grammar with no digits: lowercase words joined by hyphens.
 func TestEveryLintNameIsLowercaseKebabCaseWithoutDigits(t *testing.T) {
-	name := regexp.MustCompile(`^[a-z]+(-[a-z]+)*$`)
-	for _, code := range Registered().Codes() {
-		if !name.MatchString(code) {
-			t.Errorf("lint %q is not lowercase words joined by hyphens", code)
+	grammar := regexp.MustCompile(`^[a-z]+(-[a-z]+)*$`)
+	for _, name := range Registered().Names() {
+		if !grammar.MatchString(name) {
+			t.Errorf("lint %q is not lowercase words joined by hyphens", name)
 		}
 	}
 }

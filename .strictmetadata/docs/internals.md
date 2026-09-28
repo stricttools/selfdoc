@@ -138,7 +138,7 @@ The driver runs as a declared read through the effects handle, so `--dry-run` re
 
 **Package:** `internal/check` -- validates documentation quality across three dimensions: directive correctness, API coverage measurement, and content and SEO best practices. The lint system operates on tokens rather than raw Markdown text, which lets it distinguish content inside code blocks from content in the page body and produce accurate line numbers in diagnostics.
 
-The registry of codes is `internal/lints/lints.toml`, another embedded declarative document with its own strictspec-generated validator. Each entry declares the code, its severity and its message, so a rule's severity is a fact of the document rather than a constant somewhere in the checker.
+The registry of lints is `internal/lints/lints.toml`, another embedded declarative document with its own strictspec-generated validator. Each entry declares the lint's name, its severity, and its message, so a rule's severity is a fact of the document rather than a constant somewhere in the checker.
 
 ### Directive validation
 

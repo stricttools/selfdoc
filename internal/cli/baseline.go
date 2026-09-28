@@ -50,7 +50,7 @@ func (c *cli) cmdBaselineAccept(ctx *strictcli.Context, kwargs map[string]any) s
 	c.printf("Accepted new baseline for %d page(s):\n", len(accepted))
 	names := make([]string, 0, len(accepted))
 	for _, entry := range accepted {
-		c.printf("  %s (cleared %s)\n", entry.Page, entry.Code)
+		c.printf("  %s (cleared %s)\n", entry.Page, entry.Lint)
 		names = append(names, entry.Page)
 	}
 

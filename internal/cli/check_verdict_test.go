@@ -127,7 +127,7 @@ func TestTheCheckRunsThePostLintsForAnOrdinaryProject(t *testing.T) {
 	payload := payloadOf(t, result)
 	found := false
 	for _, raw := range payload["lints"].([]any) {
-		if raw.(map[string]any)["code"].(string) == "malformed-post-date" {
+		if raw.(map[string]any)["name"].(string) == "malformed-post-date" {
 			found = true
 		}
 	}

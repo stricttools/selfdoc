@@ -116,7 +116,7 @@ func CheckUnified(
 // the aggregate, with the project's slug prefixed onto every file.
 //
 // A diagnostic is immutable -- its severity is the registry's answer for its
-// code -- so relabelling one produces a new diagnostic for the same code,
+// lint -- so relabelling one produces a new diagnostic of the same lint,
 // which reads its severity out of the registry again.
 func mergeAttributed(aggregate, projResult *check.CheckResult, slug string) {
 	prefix := "[" + slug + "] "
@@ -128,7 +128,7 @@ func mergeAttributed(aggregate, projResult *check.CheckResult, slug string) {
 	}
 	for _, lint := range projResult.Lints {
 		aggregate.Lints = append(aggregate.Lints, lints.MustLintResult(
-			prefix+lint.File(), lint.Line(), lint.Code(), lint.Message(),
+			prefix+lint.File(), lint.Line(), lint.Name(), lint.Message(),
 		))
 	}
 }

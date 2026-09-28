@@ -418,13 +418,13 @@ Produces a bullet list of user-agent names, in the order `robots.txt` names them
 
 #### `table-lints`
 
-Every lint code `selfdoc check` can emit, as a table. Takes no attributes -- reads the same lint registry the check runs from, so a page documenting the codes cannot go out of step with the ones selfdoc actually emits.
+Every lint `selfdoc check` can emit, by name, as a table. Takes no attributes -- reads the same lint registry the check runs from, so a page documenting the lints cannot go out of step with the ones selfdoc actually emits.
 
 ```markdown
 :-: table-lints
 ```
 
-Produces a table with "Code", "Severity" and "What it checks" columns, one row per registered code, in the registry's own documentation order (families grouped, not sorted alphabetically).
+Produces a table with "Name", "Severity", and "What it checks" columns, one row per registered lint, in the registry's own documentation order (families grouped, not sorted alphabetically).
 
 #### `var`
 

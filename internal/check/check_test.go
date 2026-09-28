@@ -511,7 +511,7 @@ func TestTheProjectDescriptionIsNotJudgedAgainstATitleForm(t *testing.T) {
 			if lint.File() == "selfdoc.json" &&
 				strings.Contains(lint.Message(), " that ") {
 				t.Errorf("description %q drew %s: %q",
-					description, lint.Code(), lint.Message())
+					description, lint.Name(), lint.Message())
 			}
 		}
 	}

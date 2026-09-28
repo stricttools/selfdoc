@@ -92,18 +92,18 @@ func lintsOf(t *testing.T, project, rel, content string) []LintFinding {
 	return findings
 }
 
-// codesOf returns the codes a lint run reported.
-func codesOf(findings []LintFinding) []string {
-	codes := []string{}
+// namesOf returns the names of the lints a lint run reported.
+func namesOf(findings []LintFinding) []string {
+	names := []string{}
 	for _, finding := range findings {
-		codes = append(codes, finding.Code)
+		names = append(names, finding.Name)
 	}
-	return codes
+	return names
 }
 
-// hasCode reports whether a lint run reported one code.
-func hasCode(findings []LintFinding, code string) bool {
-	return contains(codesOf(findings), code)
+// hasLint reports whether a lint run reported the named lint.
+func hasLint(findings []LintFinding, name string) bool {
+	return contains(namesOf(findings), name)
 }
 
 // analysisProject writes the project the analysis fixtures name.
@@ -256,13 +256,13 @@ func TestLintMarks(t *testing.T) {
 
 	t.Run("a clean post reports nothing", func(t *testing.T) {
 		if findings := lintsOf(t, project, postHelloName, cleanPost); len(findings) != 0 {
-			t.Errorf("findings = %v", codesOf(findings))
+			t.Errorf("findings = %v", namesOf(findings))
 		}
 	})
 
-	t.Run("a second h1 is reported under its registered code", func(t *testing.T) {
+	t.Run("a second h1 is reported under its registered lint", func(t *testing.T) {
 		content := analysisPost("# Hello World\n\n# Second Title\n\nBody.\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
+		if !hasLint(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
 			t.Error("the second heading was not reported")
 		}
 	})
@@ -274,7 +274,7 @@ func TestLintMarks(t *testing.T) {
 			t.Fatalf("LintSeverity: %v", err)
 		}
 		for _, finding := range lintsOf(t, project, postHelloName, content) {
-			if finding.Code == "multiple-top-level-headings" && finding.Severity != want {
+			if finding.Name == "multiple-top-level-headings" && finding.Severity != want {
 				t.Errorf("severity = %q, want %q", finding.Severity, want)
 			}
 		}
@@ -285,7 +285,7 @@ func TestLintMarks(t *testing.T) {
 		lines := strings.Split(content, "\n")
 		found := false
 		for _, finding := range lintsOf(t, project, postHelloName, content) {
-			if finding.Code != "skipped-heading-level" {
+			if finding.Name != "skipped-heading-level" {
 				continue
 			}
 			found = true
@@ -305,7 +305,7 @@ func TestLintMarks(t *testing.T) {
 		// The build skips a draft; the editor is where a draft is written.
 		content := analysisPostAs("Hello World", "hello-world", true,
 			"# Hello World\n\n# Second Title\n\nBody.\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
+		if !hasLint(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
 			t.Error("the draft was not judged")
 		}
 	})
@@ -313,18 +313,18 @@ func TestLintMarks(t *testing.T) {
 	t.Run("the buffer is judged, not the saved file", func(t *testing.T) {
 		// The saved post is clean; only the unsaved buffer has the defect.
 		content := analysisPost("# Hello World\n\n# Second Title\n\nBody.\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
+		if !hasLint(lintsOf(t, project, postHelloName, content), "multiple-top-level-headings") {
 			t.Error("the buffer's own defect was not reported")
 		}
 		if findings := lintsOf(t, project, postHelloName, cleanPost); len(findings) != 0 {
-			t.Errorf("the saved post reports %v", codesOf(findings))
+			t.Errorf("the saved post reports %v", namesOf(findings))
 		}
 	})
 
 	t.Run("spelling is not reported twice", func(t *testing.T) {
 		// One misspelling is one finding, in the lane that has its columns.
 		content := analysisPost("# Hello World\n\nThis is teh post content.\n")
-		if hasCode(lintsOf(t, project, postHelloName, content), "unknown-word") {
+		if hasLint(lintsOf(t, project, postHelloName, content), "unknown-word") {
 			t.Error("the lint lane restated the spelling finding")
 		}
 		if words := wordsOf(spellingOf(t, content)); strings.Join(words, ",") != "teh" {
@@ -354,7 +354,7 @@ func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
 		project := twoPostProject(t)
 		content := analysisPost("# Hello World\n\n" + analysisBody +
 			"\n\nSee [it](sibling.md).\n")
-		if hasCode(lintsOf(t, project, postHelloName, content), "broken-page-link") {
+		if hasLint(lintsOf(t, project, postHelloName, content), "broken-page-link") {
 			t.Error("a link to a saved sibling was called unknown")
 		}
 	})
@@ -363,7 +363,7 @@ func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
 		project := twoPostProject(t)
 		content := analysisPost("# Hello World\n\n" + analysisBody +
 			"\n\nSee [it](ghost.md).\n")
-		if !hasCode(lintsOf(t, project, postHelloName, content), "broken-page-link") {
+		if !hasLint(lintsOf(t, project, postHelloName, content), "broken-page-link") {
 			t.Error("a link to nothing was not reported")
 		}
 	})
@@ -373,7 +373,7 @@ func TestTheSliceIsTheUniverseALinkIsJudgedAgainst(t *testing.T) {
 		project := twoPostProject(t)
 		content := analysisPost("# Hello World\n\n" + analysisBody +
 			"\n\nSee [the guide](../../alpha/guide/).\n")
-		if hasCode(lintsOf(t, project, postHelloName, content), "broken-page-link") {
+		if hasLint(lintsOf(t, project, postHelloName, content), "broken-page-link") {
 			t.Error("a site-level address was judged as a file link")
 		}
 	})
@@ -385,7 +385,7 @@ func TestABufferThatIsNotAValidPost(t *testing.T) {
 
 	t.Run("a missing date is the post check's own code", func(t *testing.T) {
 		broken := "+++\ntitle = \"No Date\"\nslug = \"no-date\"\ndirectives = false\n+++\nBody\n"
-		codes := codesOf(lintsOf(t, project, postHelloName, broken))
+		codes := namesOf(lintsOf(t, project, postHelloName, broken))
 		if strings.Join(codes, ",") != "missing-post-date" {
 			t.Errorf("codes = %v, want missing-post-date", codes)
 		}
@@ -393,7 +393,7 @@ func TestABufferThatIsNotAValidPost(t *testing.T) {
 
 	t.Run("a missing title is reported rather than raised", func(t *testing.T) {
 		broken := "+++\ndate = 2024-01-15\nslug = \"no-title\"\ndirectives = false\n+++\nB\n"
-		codes := codesOf(lintsOf(t, project, postHelloName, broken))
+		codes := namesOf(lintsOf(t, project, postHelloName, broken))
 		if strings.Join(codes, ",") != "missing-post-title" {
 			t.Errorf("codes = %v, want missing-post-title", codes)
 		}
@@ -424,8 +424,8 @@ func TestAnalyzeBuffer(t *testing.T) {
 		if words := wordsOf(findings.Spelling); strings.Join(words, ",") != "teh" {
 			t.Errorf("words = %v, want only teh", words)
 		}
-		if !hasCode(findings.Lints, "multiple-top-level-headings") {
-			t.Errorf("lints = %v", codesOf(findings.Lints))
+		if !hasLint(findings.Lints, "multiple-top-level-headings") {
+			t.Errorf("lints = %v", namesOf(findings.Lints))
 		}
 	})
 
@@ -511,8 +511,8 @@ func TestTheAnalysisEndpoint(t *testing.T) {
 		if words := jsonWords(t, body); strings.Join(words, ",") != "teh" {
 			t.Errorf("words = %v, want only teh", words)
 		}
-		if !contains(jsonCodes(t, body), "multiple-top-level-headings") {
-			t.Errorf("lints = %v", jsonCodes(t, body))
+		if !contains(jsonNames(t, body), "multiple-top-level-headings") {
+			t.Errorf("lints = %v", jsonNames(t, body))
 		}
 	})
 
@@ -539,7 +539,7 @@ func TestTheAnalysisEndpoint(t *testing.T) {
 		if words := jsonWords(t, body); strings.Join(words, ",") != "teh" {
 			t.Errorf("words = %v, want only teh", words)
 		}
-		if codes := jsonCodes(t, body); strings.Join(codes, ",") != "missing-post-date" {
+		if codes := jsonNames(t, body); strings.Join(codes, ",") != "missing-post-date" {
 			t.Errorf("codes = %v, want missing-post-date", codes)
 		}
 
@@ -591,14 +591,14 @@ func jsonWords(t *testing.T, body map[string]any) []string {
 	return words
 }
 
-// jsonCodes returns the codes an analysis body reported.
-func jsonCodes(t *testing.T, body map[string]any) []string {
+// jsonNames returns the lint names an analysis body reported.
+func jsonNames(t *testing.T, body map[string]any) []string {
 	t.Helper()
 	raw, _ := body["lints"].([]any)
 	codes := []string{}
 	for _, item := range raw {
 		finding, _ := item.(map[string]any)
-		codes = append(codes, finding["code"].(string))
+		codes = append(codes, finding["name"].(string))
 	}
 	return codes
 }

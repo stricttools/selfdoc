@@ -87,7 +87,7 @@ func TestBuildRewritesMarkdownLinks(t *testing.T) {
 		}
 		if len(lints) != 0 {
 			for _, lint := range lints {
-				t.Errorf("%s: %s", lint.Code(), lint.Message())
+				t.Errorf("%s: %s", lint.Name(), lint.Message())
 			}
 		}
 	})
@@ -189,7 +189,7 @@ func TestBuildRendersLegacyLinksInAnArchiveOnly(t *testing.T) {
 			t.Fatalf("CheckOutputResolution: %v", err)
 		}
 		for _, lint := range lints {
-			t.Errorf("%s: %s", lint.Code(), lint.Message())
+			t.Errorf("%s: %s", lint.Name(), lint.Message())
 		}
 		hrefs := bodyHrefs(t, built, "v/0.1.0/guide/index.html")
 		for _, want := range []string{
@@ -212,8 +212,8 @@ func TestBuildRendersLegacyLinksInAnArchiveOnly(t *testing.T) {
 		}
 		named := false
 		for _, lint := range lints {
-			if lint.Code() != "broken-emitted-reference" {
-				t.Errorf("the report carries %s, want only broken-emitted-reference", lint.Code())
+			if lint.Name() != "broken-emitted-reference" {
+				t.Errorf("the report carries %s, want only broken-emitted-reference", lint.Name())
 			}
 			if strings.Contains(lint.Message(), "checks.html") {
 				named = true

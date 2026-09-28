@@ -337,8 +337,8 @@ func TestCheckExitsOneOnABrokenValidatedExample(t *testing.T) {
 	if len(errors) != 1 {
 		t.Fatalf("expected exactly one error-severity lint, got %d: %v", len(errors), errors)
 	}
-	if errors[0]["code"] != "code-block-validation-failed" {
-		t.Errorf("the error is %v, want code-block-validation-failed", errors[0]["code"])
+	if errors[0]["name"] != "code-block-validation-failed" {
+		t.Errorf("the error is %v, want code-block-validation-failed", errors[0]["name"])
 	}
 	if errors[0]["file"] != "broken.md" {
 		t.Errorf("the error names %v, want broken.md", errors[0]["file"])

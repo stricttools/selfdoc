@@ -216,20 +216,20 @@ func runLintsOn(t *testing.T, fixture lintFixture, resolved []ResolvedDirective)
 	return results
 }
 
-// codes returns the lint codes of a diagnostic list, in order.
+// codes returns the lint names of a diagnostic list, in order.
 func codes(diagnostics []lints.LintResult) []string {
 	found := make([]string, 0, len(diagnostics))
 	for _, diagnostic := range diagnostics {
-		found = append(found, diagnostic.Code())
+		found = append(found, diagnostic.Name())
 	}
 	return found
 }
 
-// withCode returns the diagnostics carrying code.
+// withCode returns the diagnostics of the named lint.
 func withCode(diagnostics []lints.LintResult, code string) []lints.LintResult {
 	var matching []lints.LintResult
 	for _, diagnostic := range diagnostics {
-		if diagnostic.Code() == code {
+		if diagnostic.Name() == code {
 			matching = append(matching, diagnostic)
 		}
 	}

@@ -365,8 +365,8 @@ func TestParseRefusalsNameTheFieldAndThePost(t *testing.T) {
 					t.Errorf("message %q does not mention %q", postError.Message, part)
 				}
 			}
-			if postError.Code != testCase.wantCode {
-				t.Errorf("code = %q, want %q", postError.Code, testCase.wantCode)
+			if postError.Lint != testCase.wantCode {
+				t.Errorf("code = %q, want %q", postError.Lint, testCase.wantCode)
 			}
 			if postError.Path != "p.md" {
 				t.Errorf("path = %q, want p.md", postError.Path)

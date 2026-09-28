@@ -14,7 +14,7 @@ import (
 )
 
 // The declared payload schema of `selfdoc check`, held to three things: it is
-// what the command actually declares, its lint-code enum stays exactly the
+// what the command actually declares, its lint-name enum stays exactly the
 // shipped registry, and its coverage block states exactly the fields the
 // command emits.
 
@@ -89,25 +89,25 @@ func TestTheCheckCommandDeclaresTheSchema(t *testing.T) {
 
 func TestSchemaLintEnumIsDerivedFromTheRegistry(t *testing.T) {
 	// The declaration is a DERIVED surface: the embedded lint registry is the
-	// single place a code exists. Registering a code without extending the
+	// single place a lint exists. Registering a lint without extending the
 	// declaration fails here, and so does an enum entry no longer registered.
-	declared := stringEnum(t, property(t, checkSchema(t), "lints", "items", "code"))
-	expected := append([]string(nil), lints.Registered().Codes()...)
+	declared := stringEnum(t, property(t, checkSchema(t), "lints", "items", "name"))
+	expected := append([]string(nil), lints.Registered().Names()...)
 	sort.Strings(expected)
 
 	if strings.Join(declared, ",") != strings.Join(expected, ",") {
-		t.Errorf("the declaration's lint-code enum has drifted from the "+
+		t.Errorf("the declaration's lint-name enum has drifted from the "+
 			"registry.\ndeclared: %v\nregistry: %v", declared, expected)
 	}
 }
 
 func TestSchemaLintEnumIsUnique(t *testing.T) {
 	seen := map[string]bool{}
-	for _, code := range stringEnum(t, property(t, checkSchema(t), "lints", "items", "code")) {
-		if seen[code] {
-			t.Errorf("duplicate code in the enum: %s", code)
+	for _, name := range stringEnum(t, property(t, checkSchema(t), "lints", "items", "name")) {
+		if seen[name] {
+			t.Errorf("duplicate lint name in the enum: %s", name)
 		}
-		seen[code] = true
+		seen[name] = true
 	}
 }
 
@@ -117,10 +117,10 @@ func TestSchemaSeverityEnumMatchesTheRegistrySeverities(t *testing.T) {
 
 	used := map[string]bool{}
 	registry := lints.Registered()
-	for _, code := range registry.Codes() {
-		spec, ok := registry.Spec(code)
+	for _, name := range registry.Names() {
+		spec, ok := registry.Spec(name)
 		if !ok {
-			t.Fatalf("the registry lost %s between listing and lookup", code)
+			t.Fatalf("the registry lost %s between listing and lookup", name)
 		}
 		used[spec.Severity] = true
 	}
@@ -210,22 +210,22 @@ func TestADeviatingPayloadIsRefused(t *testing.T) {
 	}
 }
 
-func TestTheDeclarationAcceptsEveryRegisteredCode(t *testing.T) {
-	for _, code := range lints.Registered().Codes() {
+func TestTheDeclarationAcceptsEveryRegisteredName(t *testing.T) {
+	for _, name := range lints.Registered().Names() {
 		finding := probePayload(t, map[string]any{
 			"directives": []any{},
 			"coverage":   nil,
 			"lints": []any{map[string]any{
 				"file":     "docs/index.md",
 				"line":     nil,
-				"code":     code,
+				"name":     name,
 				"message":  "example message",
 				"severity": "warning",
 			}},
 			"exit_code": 0,
 		})
 		if finding != "" {
-			t.Errorf("the declaration refuses the registered code %s: %s", code, finding)
+			t.Errorf("the declaration refuses the registered lint %s: %s", name, finding)
 		}
 	}
 }

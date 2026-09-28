@@ -1,293 +1,293 @@
-# selfdoc lint-code registry -- the single source of truth for every lint code
-# selfdoc can emit. Governed by .strictspec/lint-registry.schema.toml and
-# validated at load time by the generated validator
-# (internal/lints/selfdoc_lint_registry_gen.go).
+# selfdoc lint registry -- the single source of truth for every lint selfdoc
+# can emit, each keyed by its name. Governed by
+# .strictspec/lint-registry.schema.toml and validated at load time by the
+# generated validator (internal/lints/selfdoc_lint_registry_gen.go).
 #
 # A lint's severity lives here and nowhere else: LintResult derives it from
 # this document, so a construction site cannot state a severity and cannot
-# emit an unregistered code. The lint-code enum in selfdoc's declared check
+# emit an unregistered lint. The lint-name enum in selfdoc's declared check
 # payload schema (internal/payloadschemas) is pinned to this document by a
 # test, and the check guide's lint-rule table is not a copy at all: the page
 # carries the "table-lints" directive, which renders this document.
 #
 # Entries are in documentation order (the order the table renders in), which
-# groups the families rather than sorting the codes alphabetically.
+# groups the families rather than sorting the names alphabetically.
 
 format_version = 1
 
 # -- SEO and page structure ---------------------------------------------------
 
 [[lints]]
-code = "multiple-top-level-headings"
+name = "multiple-top-level-headings"
 severity = "error"
 description = "Multiple H1 headings on a page. Use a single `#` heading."
 
 [[lints]]
-code = "skipped-heading-level"
+name = "skipped-heading-level"
 severity = "warning"
 description = "Heading level gaps (e.g., H2 followed by H4 skipping H3)."
 
 [[lints]]
-code = "empty-image-alt-text"
+name = "empty-image-alt-text"
 severity = "warning"
 description = "Image with empty alt text (`![](...)`). Add descriptive alt text."
 
 [[lints]]
-code = "page-title-too-long"
+name = "page-title-too-long"
 severity = "warning"
 description = "The document title this page renders exceeds 60 characters, which is past what a search result renders. Shorten the page title."
 
 [[lints]]
-code = "missing-frontmatter-description"
+name = "missing-frontmatter-description"
 severity = "error"
 description = "Missing `description` in frontmatter. Add one for meta tags."
 
 [[lints]]
-code = "first-paragraph-length-out-of-range"
+name = "first-paragraph-length-out-of-range"
 severity = "warning"
 description = "First paragraph after a heading is outside the 30-80 word range. Every page type is held to the same band, generated pages included."
 
 [[lints]]
-code = "low-numeric-data-density"
+name = "low-numeric-data-density"
 severity = "warning"
 description = "Low numeric data density. Pages with 200+ words should include concrete quantities; version strings and calendar years do not count."
 
 [[lints]]
-code = "description-too-short-for-search-snippet"
+name = "description-too-short-for-search-snippet"
 severity = "warning"
 description = "Description is shorter than 110 characters. Aim for 110-160."
 
 [[lints]]
-code = "description-too-long-for-search-snippet"
+name = "description-too-long-for-search-snippet"
 severity = "warning"
 description = "Frontmatter description exceeds 160 characters, which is past what a search result renders. Trim it."
 
 [[lints]]
-code = "empty-heading-section"
+name = "empty-heading-section"
 severity = "warning"
 description = "Empty heading section (heading followed by another heading with no content between)."
 
 [[lints]]
-code = "insufficient-theme-color-contrast"
+name = "insufficient-theme-color-contrast"
 severity = "warning"
 description = "WCAG contrast ratio below threshold for theme colors. Fix in CSS custom properties."
 
 [[lints]]
-code = "missing-page-title"
+name = "missing-page-title"
 severity = "error"
 description = "No title source: neither frontmatter `title` nor an H1 heading exists on the page."
 
 [[lints]]
-code = "meaningless-image-alt-text"
+name = "meaningless-image-alt-text"
 severity = "warning"
 description = "Meaningless image alt text (e.g., \"image\", \"screenshot\", or a bare filename). Write something descriptive."
 
 [[lints]]
-code = "generic-link-text"
+name = "generic-link-text"
 severity = "warning"
 description = "Generic anchor text like \"click here\" or \"read more\". Use descriptive link text."
 
 # -- Staleness, drift and description quality ---------------------------------
 
 [[lints]]
-code = "stale-page-description"
+name = "stale-page-description"
 severity = "error"
 description = "Page content changed but frontmatter description was not updated. Review and update the description."
 
 [[lints]]
-code = "manifest-disagrees-with-disk"
+name = "manifest-disagrees-with-disk"
 severity = "warning"
 description = "Manifest and disk disagree: a page or post exists on disk but is missing from `.strictmetadata/.docs-state/manifest.json`, or the manifest lists one that is gone. Run `selfdoc gen`."
 
 [[lints]]
-code = "description-drifted-from-source"
+name = "description-drifted-from-source"
 severity = "error"
 description = "The source docstrings (or CLI schema) a page documents changed while its description did not. Update the description, or run `selfdoc baseline accept <page>` if it is still accurate."
 
 [[lints]]
-code = "description-restates-name"
+name = "description-restates-name"
 severity = "warning"
 description = "The frontmatter description restates the page or symbol name instead of describing it."
 
 [[lints]]
-code = "description-too-short"
+name = "description-too-short"
 severity = "warning"
 description = "Frontmatter description is shorter than 20 characters."
 
 [[lints]]
-code = "reference-page-description-too-short"
+name = "reference-page-description-too-short"
 severity = "warning"
 description = "A page carrying a `ref` directive has a description shorter than 30 characters."
 
 # -- Cross-references and symbol documentation --------------------------------
 
 [[lints]]
-code = "broken-page-link"
+name = "broken-page-link"
 severity = "warning"
 description = "A Markdown link points at a `.md` page that does not exist in the docs tree."
 
 [[lints]]
-code = "directive-path-not-on-disk"
+name = "directive-path-not-on-disk"
 severity = "error"
 description = "A directive's `path` resolves but names a file that is not on disk."
 
 [[lints]]
-code = "undocumented-parameter"
+name = "undocumented-parameter"
 severity = "warning"
 description = "A referenced symbol has a parameter its docstring never documents."
 
 [[lints]]
-code = "undocumented-return-value"
+name = "undocumented-return-value"
 severity = "warning"
 description = "A referenced symbol returns a value its docstring never documents."
 
 # -- Example validation -------------------------------------------------------
 
 [[lints]]
-code = "code-block-syntax-error"
+name = "code-block-syntax-error"
 severity = "warning"
 description = "A Python or JSON code block does not parse. Fix the snippet's syntax."
 
 [[lints]]
-code = "code-block-validation-failed"
+name = "code-block-validation-failed"
 severity = "error"
 description = "A code block marked `validate` failed its configured validator. The message carries the validator's exit code and output tail."
 
 [[lints]]
-code = "code-block-validator-not-configured"
+name = "code-block-validator-not-configured"
 severity = "error"
 description = "A code block is marked `validate` but no `examples` command is configured for its language. Add one, or drop the marker."
 
 # -- CLI reference, extractors and search -------------------------------------
 
 [[lints]]
-code = "undocumented-cli-command-or-flag"
+name = "undocumented-cli-command-or-flag"
 severity = "warning"
 description = "strictcli project: a CLI reference page is missing for a command, or a flag in the schema is not documented on its page."
 
 [[lints]]
-code = "cli-help-text-too-short"
+name = "cli-help-text-too-short"
 severity = "warning"
 description = "strictcli project: a command, group, or flag help text is shorter than 50 characters."
 
 [[lints]]
-code = "unsupported-source-language"
+name = "unsupported-source-language"
 severity = "error"
 description = "A configured source entry names a language selfdoc has no extractor for."
 
 [[lints]]
-code = "search-indexer-not-installed"
+name = "search-indexer-not-installed"
 severity = "error"
 description = "pagefind is not installed, so the build cannot index the site."
 
 # -- Version consistency ------------------------------------------------------
 
 [[lints]]
-code = "version-tag-not-extractable"
+name = "version-tag-not-extractable"
 severity = "error"
 description = "A version listed in `versions` could not be extracted from its git tag, so it could not be validated."
 
 [[lints]]
-code = "version-mismatch-with-project-manifest"
+name = "version-mismatch-with-project-manifest"
 severity = "error"
 description = "`version` in selfdoc.json does not match the version detected from the project manifest (pyproject.toml, package.json, or a `VERSION` file)."
 
 [[lints]]
-code = "version-mismatch-with-versions-array"
+name = "version-mismatch-with-versions-array"
 severity = "error"
 description = "The last entry of the `versions` array does not match `version` in selfdoc.json."
 
 [[lints]]
-code = "version-mismatch-in-generated-root-file"
+name = "version-mismatch-in-generated-root-file"
 severity = "error"
 description = "A generated root file that embeds `project.version` does not contain the expected version. Regenerate with `selfdoc gen --version-override <v>`."
 
 # -- Spelling -----------------------------------------------------------------
 
 [[lints]]
-code = "unknown-word"
+name = "unknown-word"
 severity = "error"
 description = "A word in page prose is in neither the vendored English word list nor the project's accepted vocabulary (selfdoc's built-in baseline and .strictmetadata/vocabulary/terms.toml). Fix the misspelling, or accept a genuine term with `selfdoc vocabulary accept <word> --meaning <text>`; a word pending in .strictmetadata/vocabulary/review.toml is resolved with `selfdoc vocabulary approve <word>` or `selfdoc vocabulary drop <word>`."
 
 # -- Vocabulary ---------------------------------------------------------------
 
 [[lints]]
-code = "unused-accepted-word"
+name = "unused-accepted-word"
 severity = "error"
 description = "A word .strictmetadata/vocabulary/terms.toml accepts is used by no page, as itself or as an alias. Remove it with `selfdoc vocabulary remove <word>`."
 
 [[lints]]
-code = "duplicate-vocabulary-entry"
+name = "duplicate-vocabulary-entry"
 severity = "error"
 description = ".strictmetadata/vocabulary/terms.toml accepts or rejects the same word twice, in the file or on top of selfdoc's built-in baseline. Remove the project's entries with `selfdoc vocabulary remove <word>` and add the one that is needed back."
 
 [[lints]]
-code = "accepted-word-matches-rejected-pattern"
+name = "accepted-word-matches-rejected-pattern"
 severity = "error"
 description = "An accepted word is covered by a rejected suffix or prefix, so the two lists disagree about it. A word of selfdoc's built-in baseline is changed only in selfdoc itself, so the project narrows its pattern: `selfdoc vocabulary remove <pattern>`, then `selfdoc vocabulary reject <word> --kind word --reason <text>` for each word meant. A word the project accepts is resolved by removing it with `selfdoc vocabulary remove <word>`, or by narrowing the pattern."
 
 [[lints]]
-code = "rejected-term-in-prose"
+name = "rejected-term-in-prose"
 severity = "error"
 description = "A page's prose uses a rejected term. Rewrite the passage without it; a rejection the project declared and no longer wants is removed with `selfdoc vocabulary remove <pattern>`."
 
 [[lints]]
-code = "unsorted-vocabulary-entries"
+name = "unsorted-vocabulary-entries"
 severity = "error"
 description = "An array in .strictmetadata/vocabulary/terms.toml or review.toml is not sorted by word, case-folded. Move the named entry to its place."
 
 # -- Blog posts --------------------------------------------------------------
 
 [[lints]]
-code = "missing-post-date"
+name = "missing-post-date"
 severity = "error"
 description = "A post is missing the required `date` field in its frontmatter."
 
 [[lints]]
-code = "missing-post-title"
+name = "missing-post-title"
 severity = "error"
 description = "A post is missing the required `title` field in its frontmatter."
 
 [[lints]]
-code = "malformed-post-date"
+name = "malformed-post-date"
 severity = "error"
 description = "A post's `date` is not written as YYYY-MM-DD."
 
 [[lints]]
-code = "duplicate-post-slug"
+name = "duplicate-post-slug"
 severity = "error"
 description = "Two posts resolve to the same slug."
 
 [[lints]]
-code = "changed-published-post-slug"
+name = "changed-published-post-slug"
 severity = "error"
 description = "A published post's slug changed, which would break its permalink."
 
 [[lints]]
-code = "invalid-post-directives-declaration"
+name = "invalid-post-directives-declaration"
 severity = "error"
 description = "A post is missing the required `directives` declaration, or declares something other than `true`/`false`. Every post states whether it may carry directive markers; there is no default."
 
 [[lints]]
-code = "directive-marker-in-post-without-directives"
+name = "directive-marker-in-post-without-directives"
 severity = "error"
 description = "A post declaring `directives = false` carries a directive marker. The message names the marker and the line it sits on."
 
 # -- Emitted references -------------------------------------------------------
 
 [[lints]]
-code = "broken-emitted-reference"
+name = "broken-emitted-reference"
 severity = "error"
 description = "An emitted reference -- a link, a canonical, a sitemap entry or a feed link -- names a file the build did not write."
 
 # -- Unified multi-project sites ----------------------------------------------
 
 [[lints]]
-code = "unified-project-without-config"
+name = "unified-project-without-config"
 severity = "error"
 description = "A project listed in the `unified` section has no selfdoc.json."
 
 [[lints]]
-code = "unified-project-check-failed"
+name = "unified-project-check-failed"
 severity = "error"
 description = "A constituent project, or the docs-site's own content, could not be checked."

@@ -3,7 +3,7 @@
 //
 // The build derives every address from the address package, and the test suite
 // walks a built tree asserting that each emitted reference lands on an emitted
-// file. This package is that assertion as a user-facing check: one lint code,
+// file. This package is that assertion as a user-facing check: one lint,
 // broken-emitted-reference, over the output directory.
 //
 // Five kinds of reference are covered, which is every kind the build emits:
@@ -67,8 +67,9 @@ import (
 	"github.com/stricttools/selfdoc/internal/lints"
 )
 
-// LintCode is the lint code every unresolvable reference is reported under.
-const LintCode = "broken-emitted-reference"
+// LintName is the name of the lint every unresolvable reference is reported
+// under.
+const LintName = "broken-emitted-reference"
 
 var (
 	refAttrRE = regexp.MustCompile(`\b(href|src|data-search-base)="([^"]*)"`)
@@ -386,7 +387,7 @@ var (
 )
 
 // CheckOutputResolution checks every emitted reference in outputDir against
-// what the build wrote, returning one LintCode diagnostic per unresolvable
+// what the build wrote, returning one LintName diagnostic per unresolvable
 // reference.
 //
 // exemptElements names the elements whose content this build does not answer
@@ -463,7 +464,7 @@ func CheckProjectOutputResolution(
 
 	var results []lints.LintResult
 	fail := func(where, message string) {
-		results = append(results, lints.MustLintResult(where, nil, LintCode, message))
+		results = append(results, lints.MustLintResult(where, nil, LintName, message))
 	}
 	checkAbsolute := func(where, kind, url string) {
 		target, ours := SiteRelativePath(url, baseURL)

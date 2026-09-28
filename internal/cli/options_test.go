@@ -58,7 +58,7 @@ func lintsNamed(t *testing.T, payload map[string]any, name string) []map[string]
 	var found []map[string]any
 	for _, raw := range payload["lints"].([]any) {
 		lint := raw.(map[string]any)
-		if lint["code"] == name {
+		if lint["name"] == name {
 			found = append(found, lint)
 		}
 	}

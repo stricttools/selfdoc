@@ -175,7 +175,7 @@ example = ':-: list-crawlers'
 
 [[directives]]
 name = "table-lints"
-description = "Table of every lint code selfdoc can emit, with its severity"
+description = "Table of every lint selfdoc can emit, by name, with its severity"
 category = "content"
 required_attrs = []
 optional_attrs = []

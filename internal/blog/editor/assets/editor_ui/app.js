@@ -323,7 +323,7 @@ function repoView(repo) {
     for (const lint of lints) {
       const where = lint.line == null ? "page" : `line ${lint.line}`;
       const button = el("button", "btn ed-finding",
-        `${lint.code} · ${where}: ${lint.message}`);
+        `${lint.name} · ${where}: ${lint.message}`);
       button.type = "button";
       button.dataset.severity = lint.severity;
       button.addEventListener("click", () => {

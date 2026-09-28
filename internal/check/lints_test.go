@@ -910,7 +910,7 @@ func TestSEO012CustomCSS(t *testing.T) {
 func messagesOf(diagnostics []lints.LintResult) []string {
 	rendered := make([]string, 0, len(diagnostics))
 	for _, diagnostic := range diagnostics {
-		rendered = append(rendered, fmt.Sprintf("%s %s", diagnostic.Code(), diagnostic.Message()))
+		rendered = append(rendered, fmt.Sprintf("%s %s", diagnostic.Name(), diagnostic.Message()))
 	}
 	return rendered
 }

@@ -29,7 +29,7 @@ func TestEveryLintIsAnOptionRankedByItsSeverity(t *testing.T) {
 	if got, want := len(options.Names()), Registered().Len(); got != want {
 		t.Fatalf("the options registry declares %d options, the lint registry %d lints", got, want)
 	}
-	for _, name := range Registered().Codes() {
+	for _, name := range Registered().Names() {
 		option, found := options.Option(name)
 		if !found {
 			t.Errorf("lint %s has no option", name)
@@ -75,7 +75,7 @@ func TestSettingsWithNoOptionsDirectoryRunEveryLintAtItsSeverity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range Registered().Codes() {
+	for _, name := range Registered().Names() {
 		spec, _ := Registered().Spec(name)
 		want := SettingWarn
 		if spec.Severity == "error" {
@@ -116,11 +116,11 @@ reason = "reference pages list no quantities"
 	if len(applied) != 2 {
 		t.Fatalf("applied = %v, want the off lint dropped", applied)
 	}
-	if applied[0].Code() != "missing-frontmatter-description" || applied[0].Severity() != "warning" {
-		t.Errorf("the lint at warn is %s/%s", applied[0].Code(), applied[0].Severity())
+	if applied[0].Name() != "missing-frontmatter-description" || applied[0].Severity() != "warning" {
+		t.Errorf("the lint at warn is %s/%s", applied[0].Name(), applied[0].Severity())
 	}
-	if applied[1].Code() != "missing-page-title" || applied[1].Severity() != "error" {
-		t.Errorf("a lint without an entry is %s/%s", applied[1].Code(), applied[1].Severity())
+	if applied[1].Name() != "missing-page-title" || applied[1].Severity() != "error" {
+		t.Errorf("a lint without an entry is %s/%s", applied[1].Name(), applied[1].Severity())
 	}
 	if CheckExitCode(applied[:1], nil, nil, nil) != 0 {
 		t.Error("a lint at warn blocks the run")

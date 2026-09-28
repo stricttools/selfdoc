@@ -39,7 +39,7 @@ func SerializeCheckResult(result *CheckResult, exitCode int) map[string]any {
 		lintDocuments = append(lintDocuments, map[string]any{
 			"file":     lint.File(),
 			"line":     line,
-			"code":     lint.Code(),
+			"name":     lint.Name(),
 			"message":  lint.Message(),
 			"severity": lint.Severity(),
 		})
@@ -146,9 +146,9 @@ func PrintResults(out io.Writer, result *CheckResult, color bool) {
 			case "warning":
 				severityString = colorize(severityString, "33", color)
 			}
-			codeString := colorize("["+lint.Code()+"]", "36", color)
+			nameString := colorize("["+lint.Name()+"]", "36", color)
 			fmt.Fprintf(out, "  %s: %s %s%s - %s\n",
-				severityString, codeString, lint.File(), linePart, lint.Message(),
+				severityString, nameString, lint.File(), linePart, lint.Message(),
 			)
 		}
 	} else {

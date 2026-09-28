@@ -9,7 +9,7 @@ import (
 
 // TestResolveTableLintsRendersTheWholeRegistry pins the directive that keeps
 // the check guide's lint table from being a second copy of the registry: every
-// registered code renders, in the registry's own documentation order, with the
+// registered lint renders, in the registry's own documentation order, with the
 // severity and description the registry declares.
 func TestResolveTableLintsRendersTheWholeRegistry(t *testing.T) {
 	rendered, err := ResolveTableLints()
@@ -23,18 +23,18 @@ func TestResolveTableLintsRendersTheWholeRegistry(t *testing.T) {
 		t.Fatalf("rendered %d lines, want %d rows plus a header and its rule",
 			len(lines), registry.Len())
 	}
-	for _, want := range []string{"Code", "Severity", "What it checks"} {
+	for _, want := range []string{"Name", "Severity", "What it checks"} {
 		if !strings.Contains(lines[0], want) {
 			t.Errorf("the header does not name %q: %s", want, lines[0])
 		}
 	}
 
-	for index, code := range registry.Codes() {
+	for index, name := range registry.Names() {
 		row := lines[index+2]
-		spec, _ := registry.Spec(code)
-		for _, want := range []string{code, spec.Severity, spec.Description} {
+		spec, _ := registry.Spec(name)
+		for _, want := range []string{name, spec.Severity, spec.Description} {
 			if !strings.Contains(row, want) {
-				t.Errorf("the row for %s does not carry %q: %s", code, want, row)
+				t.Errorf("the row for %s does not carry %q: %s", name, want, row)
 			}
 		}
 	}

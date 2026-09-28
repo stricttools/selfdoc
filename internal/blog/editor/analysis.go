@@ -50,9 +50,9 @@ import (
 // through the same mapping
 // ([github.com/stricttools/selfdoc/internal/check.PostErrorLint]).
 
-// spellingCode is the lint code the spelling lane owns. Dropped from the lint
+// spellingLintName is the lint the spelling lane owns. Dropped from the lint
 // lane so one misspelling is one finding.
-const spellingCode = "unknown-word"
+const spellingLintName = "unknown-word"
 
 // SpellingFinding is one unrecognized word, in both coordinate systems: Line
 // and Column (1-based, what a diagnostic reads like) and From / To (half-open
@@ -71,7 +71,7 @@ type SpellingFinding struct {
 // LintFinding is one lint the project's rules report for a buffer. Line is
 // nil for a page-level finding.
 type LintFinding struct {
-	Code     string `json:"code"`
+	Name     string `json:"name"`
 	Severity string `json:"severity"`
 	Line     *int   `json:"line"`
 	Message  string `json:"message"`
@@ -203,11 +203,11 @@ func LintFindings(
 
 	findings := make([]LintFinding, 0, len(diagnostics))
 	for _, diagnostic := range diagnostics {
-		if diagnostic.Code() == spellingCode {
+		if diagnostic.Name() == spellingLintName {
 			continue
 		}
 		findings = append(findings, LintFinding{
-			Code:     diagnostic.Code(),
+			Name:     diagnostic.Name(),
 			Severity: diagnostic.Severity(),
 			Line:     diagnostic.Line(),
 			Message:  diagnostic.Message(),

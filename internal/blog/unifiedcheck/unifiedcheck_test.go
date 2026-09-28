@@ -75,7 +75,7 @@ func containsSubstring(files []string, substring string) bool {
 func withCode(diagnostics []lints.LintResult, code string) []lints.LintResult {
 	var matching []lints.LintResult
 	for _, diagnostic := range diagnostics {
-		if diagnostic.Code() == code {
+		if diagnostic.Name() == code {
 			matching = append(matching, diagnostic)
 		}
 	}
@@ -317,7 +317,7 @@ func writePostsProject(t *testing.T, root string, posts map[string]string) {
 func messagesOf(diagnostics []lints.LintResult) []string {
 	found := make([]string, 0, len(diagnostics))
 	for _, diagnostic := range diagnostics {
-		found = append(found, diagnostic.Code()+": "+diagnostic.Message())
+		found = append(found, diagnostic.Name()+": "+diagnostic.Message())
 	}
 	return found
 }

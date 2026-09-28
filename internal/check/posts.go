@@ -57,37 +57,37 @@ func postsDirectory(projectConfig map[string]any, dirPath string) (string, strin
 //
 // The mapping from a refusal to its post lint lives here and nowhere else, so
 // every surface that reports post validation -- the check, and the editor
-// judging an unsaved buffer -- says the same thing under the same code.
+// judging an unsaved buffer -- says the same thing under the same lint name.
 //
 // The coordinates come off the error, not out of the message: the detection
 // site knew the post's path (and, for a stray marker, its line), and
 // everything downstream that positions a diagnostic reads the structured
-// fields rather than parsing prose. The CODE comes off the error too for
+// fields rather than parsing prose. The lint name comes off the error too for
 // every refusal the frontmatter schema decided, which is where a post's
 // required fields and its date's spelling are declared. The refusals this
 // repository decides on its own -- the slug rules and the directive-marker
 // scan -- carry no kind of their own and are still matched by message.
 func PostErrorLint(err *posts.PostError, postsDirRelative string) lints.LintResult {
 	message := err.Error()
-	code := "missing-post-date" // the fallback
+	name := "missing-post-date" // the fallback
 	switch {
-	// A refusal the frontmatter schema decided carries its own code: the
+	// A refusal the frontmatter schema decided carries its own lint: the
 	// missing title, the missing or mistyped date, the missing or
 	// non-boolean directive declaration are the schema's facts, and the
 	// post parser read them off the validator's verdict.
-	case err.Code != "":
-		code = err.Code
+	case err.Lint != "":
+		name = err.Lint
 	case strings.Contains(message, "Duplicate slug"):
-		code = "duplicate-post-slug"
+		name = "duplicate-post-slug"
 	case strings.Contains(message, "Slug immutability violation"):
-		code = "changed-published-post-slug"
+		name = "changed-published-post-slug"
 	case strings.Contains(message, "declares 'directives = false'"):
-		code = "directive-marker-in-post-without-directives"
+		name = "directive-marker-in-post-without-directives"
 	}
 
 	return lints.MustLintResult(
 		util.PathJoin(postsDirRelative, filepath.ToSlash(err.Path)),
-		err.Line, code, message,
+		err.Line, name, message,
 	)
 }
 

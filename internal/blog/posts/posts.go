@@ -45,16 +45,16 @@ import (
 // the post file's own line number, or nil for a defect that sits at no
 // particular line (a missing frontmatter field).
 //
-// Code is the post lint the refusal is reported under when the refusal
-// came from the frontmatter schema -- the missing title, the missing or
+// Lint is the name of the post lint the refusal is reported under when the
+// refusal came from the frontmatter schema -- the missing title, the missing or
 // misspelled date, the missing or non-boolean directive declaration. It is
 // empty for the refusals this package decides on its own (the slug rules and
-// the directive-marker scan), which the check surface codes by their message.
+// the directive-marker scan), which the check surface names by their message.
 type PostError struct {
 	Message string
 	Path    string
 	Line    *int
-	Code    string
+	Lint    string
 }
 
 // Error renders the refusal.
@@ -257,14 +257,14 @@ func frontmatterRefusal(err error, relPath string) *PostError {
 	}
 	switch {
 	case blockErr.Names("title"):
-		refusal.Code = "missing-post-title"
+		refusal.Lint = "missing-post-title"
 	case blockErr.Names("date"):
-		refusal.Code = "missing-post-date"
+		refusal.Lint = "missing-post-date"
 		if blockErr.HasCode("STRICTSPEC_TYPE_NOT_DATE") {
-			refusal.Code = "malformed-post-date"
+			refusal.Lint = "malformed-post-date"
 		}
 	case blockErr.Names("directives"):
-		refusal.Code = "invalid-post-directives-declaration"
+		refusal.Lint = "invalid-post-directives-declaration"
 	}
 	return refusal
 }

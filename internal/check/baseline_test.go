@@ -72,7 +72,7 @@ func TestAcceptClearsStaleness(t *testing.T) {
 	if err != nil {
 		t.Fatalf("AcceptBaselines: %v", err)
 	}
-	if len(accepted) != 1 || accepted[0].Page != "page.md" || accepted[0].Code != "stale-page-description" {
+	if len(accepted) != 1 || accepted[0].Page != "page.md" || accepted[0].Lint != "stale-page-description" {
 		t.Fatalf("accepted = %+v", accepted)
 	}
 

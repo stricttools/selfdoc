@@ -425,11 +425,11 @@ func CheckDocs(
 			for _, lint := range versionLints {
 				// A relabelled diagnostic is a new one: a
 				// LintResult's severity is the registry's answer
-				// for its code and nothing rewrites a diagnostic
+				// for its lint and nothing rewrites a diagnostic
 				// after the fact.
 				result.Lints = append(result.Lints, lints.MustLintResult(
 					"["+versionString+"] "+lint.File(),
-					lint.Line(), lint.Code(), lint.Message(),
+					lint.Line(), lint.Name(), lint.Message(),
 				))
 			}
 		}

@@ -284,7 +284,7 @@ The marker is opt-in per block: unmarked blocks are never executed and keep the 
 
 ### Text (default)
 
-Human-readable output with colored status indicators, file paths, line numbers, and rule codes. This is the default format designed for local development where you read the output directly in a terminal and fix issues one by one:
+Human-readable output with colored status indicators, file paths, line numbers, and lint names. This is the default format designed for local development where you read the output directly in a terminal and fix issues one by one:
 
 ```bash
 selfdoc check
@@ -309,7 +309,7 @@ The payload is an object with `directives`, `coverage`, `lints`, and `exit_code`
   "payload": {
     "directives": [{"file": "index.md", "line": 12, "status": "OK", ...}],
     "coverage": {"total_public": 23, "referenced": 15, ...},
-    "lints": [{"code": "missing-frontmatter-description", "severity": "error", ...}],
+    "lints": [{"name": "missing-frontmatter-description", "severity": "error", ...}],
     "exit_code": 0
   }
 }

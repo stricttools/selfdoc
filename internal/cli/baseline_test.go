@@ -45,7 +45,7 @@ func staleIdentifiers(t *testing.T, dir string) []string {
 	var pages []string
 	for _, raw := range payload["lints"].([]any) {
 		lint := raw.(map[string]any)
-		if lint["code"] == "stale-page-description" {
+		if lint["name"] == "stale-page-description" {
 			pages = append(pages, lint["file"].(string))
 		}
 	}
@@ -294,7 +294,7 @@ func driftIdentifiers(t *testing.T, dir string) []string {
 	var pages []string
 	for _, raw := range payload["lints"].([]any) {
 		lint := raw.(map[string]any)
-		if lint["code"] == "description-drifted-from-source" {
+		if lint["name"] == "description-drifted-from-source" {
 			pages = append(pages, lint["file"].(string))
 		}
 	}

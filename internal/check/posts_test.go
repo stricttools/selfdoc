@@ -148,7 +148,7 @@ func TestTheGeneratedListingPageIsNotLinted(t *testing.T) {
 	for _, diagnostic := range result.Lints {
 		if diagnostic.File() == "blog" || diagnostic.File() == "blog.md" {
 			t.Errorf("the listing was linted: %s %s",
-				diagnostic.Code(), diagnostic.Message())
+				diagnostic.Name(), diagnostic.Message())
 		}
 	}
 }
@@ -252,9 +252,9 @@ func TestCheckPostsCodeMapping(t *testing.T) {
 			if len(results) != 1 {
 				t.Fatalf("diagnostics = %v, want one", messagesOf(results))
 			}
-			if results[0].Code() != testCase.wantCode {
+			if results[0].Name() != testCase.wantCode {
 				t.Errorf("code = %q, want %q (%s)",
-					results[0].Code(), testCase.wantCode, results[0].Message())
+					results[0].Name(), testCase.wantCode, results[0].Message())
 			}
 			if results[0].File() != testCase.wantFile {
 				t.Errorf("file = %q, want %q", results[0].File(), testCase.wantFile)
@@ -309,7 +309,7 @@ func TestCheckPostsDuplicateSlug(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckPosts: %v", err)
 	}
-	if len(results) != 1 || results[0].Code() != "duplicate-post-slug" {
+	if len(results) != 1 || results[0].Name() != "duplicate-post-slug" {
 		t.Fatalf("diagnostics = %v, want one duplicate-post-slug", messagesOf(results))
 	}
 	if results[0].File() != filepath.Join("blog", "a.md") &&
@@ -347,7 +347,7 @@ func TestCheckPostsReadsTheConventionalDirectoryWithNoPostsBlock(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckPosts: %v", err)
 	}
-	if len(results) != 1 || results[0].Code() != "missing-post-date" {
+	if len(results) != 1 || results[0].Name() != "missing-post-date" {
 		t.Fatalf("diagnostics = %v, want one missing-post-date", messagesOf(results))
 	}
 	want := filepath.Join(".strictmetadata", "posts", "p.md")

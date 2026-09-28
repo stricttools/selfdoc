@@ -184,7 +184,7 @@ func formatLint(lint lints.LintResult) string {
 	var b strings.Builder
 	b.WriteString(lint.Severity())
 	b.WriteString(": [")
-	b.WriteString(lint.Code())
+	b.WriteString(lint.Name())
 	b.WriteString("] ")
 	b.WriteString(lint.File())
 	b.WriteString(linePart)

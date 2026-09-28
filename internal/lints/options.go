@@ -67,11 +67,11 @@ func RenderOptionsRegistry(reg *Registry) string {
 	out.WriteString("# built-in options-registry schema. Generated from lints.toml by\n")
 	out.WriteString("# `go run ./internal/lints/genoptions`; never edit it by hand.\n\n")
 	out.WriteString("format_version = 1\n")
-	for _, code := range reg.Codes() {
-		spec, _ := reg.Spec(code)
+	for _, name := range reg.Names() {
+		spec, _ := reg.Spec(name)
 		values, def := optionRanking(spec.Severity)
 		fmt.Fprintf(&out, "\n[[option]]\nname = %s\nsubject = %s\nvalues = %s\ndefault = %s\nscope = \"none\"\ndescription = %s\n",
-			strconv.Quote(code), strconv.Quote(OptionsSubject), strconv.Quote(values),
+			strconv.Quote(name), strconv.Quote(OptionsSubject), strconv.Quote(values),
 			strconv.Quote(def), strconv.Quote(spec.Description))
 	}
 	return out.String()
@@ -196,7 +196,7 @@ func plural(n int, one, many string) string {
 func (s Settings) Apply(results []LintResult) []LintResult {
 	out := make([]LintResult, 0, len(results))
 	for _, result := range results {
-		switch s.Current(result.code) {
+		switch s.Current(result.name) {
 		case SettingOff:
 			continue
 		case SettingWarn:
