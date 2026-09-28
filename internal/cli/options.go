@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/smm-h/strictcli/go/strictcli"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/gitcommit"
@@ -13,7 +15,14 @@ import (
 
 func (c *cli) registerOptions() {
 	group := c.app.Group("options",
-		"Write this repository's entries for selfdoc's options in "+strictspec.OptionsDir+"/. Each lint is an option, "+lints.OptionsTool+":<lint name>, filed under "+lints.OptionsSubject+".toml: an error lint runs at error > warn > off, a warning lint at warn > off, and the check applies each entry's current value (off: not reported; warn: reported, never blocking; error: as registered)")
+		"Print selfdoc's options registry, and write this repository's entries for selfdoc's options in "+strictspec.OptionsDir+"/. Each lint is an option, "+lints.OptionsTool+":<lint name>, filed under "+lints.OptionsSubject+".toml: an error lint runs at error > warn > off, a warning lint at warn > off, and the check applies each entry's current value (off: not reported; warn: reported, never blocking; error: as registered)")
+
+	group.Command("registry",
+		"Print selfdoc's options registry: one option per lint, "+lints.OptionsTool+":<lint name>, with the subject it is filed under, the values it ranks strongest first, its default, its scope, and what the lint checks. The TOML printed is the registry document selfdoc ships, in the shape of strictspec's built-in options-registry schema, so a tool that reads every tool's options learns selfdoc's rankings from it; with --json the same declarations are the payload. Needs no selfdoc project",
+		c.cmdOptionsRegistry,
+		strictcli.WithEffect(strictcli.EffectReadOnly),
+		strictcli.PayloadSchema(payloadschemas.OptionsRegistry()),
+	)
 
 	group.Command("set",
 		"Write one selfdoc entry into "+strictspec.OptionsDir+"/"+lints.OptionsSubject+".toml, or update the entry already there for the same option, keeping every other line of the document. Creates "+strictspec.OptionsDir+"/ and its "+layout.ManifestFileName+", naming "+layout.SharedOwner+" as the owner, when absent. strictspec validates the result before anything is written -- every document's shape, and every selfdoc entry with this one in place -- and each refusal is its catalogued diagnostic: a value the option does not declare, a current ranked above the ideal, an entry equal to the default, an empty reason. Refuses an id outside the selfdoc namespace and a directory whose manifest names another owner",
@@ -88,6 +97,50 @@ func (c *cli) cmdOptionsSet(ctx *strictcli.Context, kwargs map[string]any) stric
 			}
 			c.println()
 		}
+	}
+	return strictcli.Exit(0)
+}
+
+// optionsRegistryPayload is selfdoc's options registry as the payload of
+// `selfdoc options registry` carries it: the declarations strictspec reads out
+// of the shipped document, in the document's order.
+func optionsRegistryPayload() (map[string]any, error) {
+	document, diags := strictspec.ReadOptionsRegistry(lints.OptionsRegistryDocument())
+	if len(diags) > 0 {
+		return nil, fmt.Errorf("selfdoc's shipped options registry is not a valid options registry: %v", diags)
+	}
+	declared := make([]any, 0, len(document.Options))
+	for _, option := range document.Options {
+		declared = append(declared, map[string]any{
+			"name":        option.Name,
+			"subject":     option.Subject,
+			"values":      option.Values,
+			"default":     option.Default,
+			"scope":       option.Scope,
+			"description": option.Description,
+		})
+	}
+	return map[string]any{
+		"format_version": lints.OptionsRegistryFormatVersion,
+		"option":         declared,
+	}, nil
+}
+
+// cmdOptionsRegistry prints the shipped options registry document as it is
+// embedded, byte for byte, after strictspec has validated it.
+func (c *cli) cmdOptionsRegistry(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
+	// The registry is validated, shape and ranking rules alike, before it is
+	// published: a malformed one is refused rather than printed.
+	if _, err := lints.BuildOptionsRegistry(lints.OptionsRegistryDocument()); err != nil {
+		return c.fail(err)
+	}
+	payload, err := optionsRegistryPayload()
+	if err != nil {
+		return c.fail(err)
+	}
+	ctx.Payload(payload)
+	if !ctx.JSON() {
+		c.printf("%s", lints.OptionsRegistryDocument())
 	}
 	return strictcli.Exit(0)
 }

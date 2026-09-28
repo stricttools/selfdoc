@@ -343,3 +343,30 @@ func OptionsSet() map[string]any {
 		false,
 	)
 }
+
+// OptionsRegistry is the payload of `selfdoc options registry`: selfdoc's
+// options registry as strictspec's built-in options-registry schema shapes
+// it, the format version and one declaration per option, in the document's
+// order. It carries the same declarations the command prints as TOML.
+func OptionsRegistry() map[string]any {
+	option := strictcli.SchemaObject(
+		map[string]any{
+			"name":        strictcli.SchemaType("string"),
+			"subject":     strictcli.SchemaType("string"),
+			"values":      strictcli.SchemaType("string"),
+			"default":     strictcli.SchemaType("string"),
+			"scope":       strictcli.SchemaType("string"),
+			"description": strictcli.SchemaType("string"),
+		},
+		[]string{"name", "subject", "values", "default", "scope", "description"},
+		false,
+	)
+	return strictcli.SchemaObject(
+		map[string]any{
+			"format_version": strictcli.SchemaType("integer"),
+			"option":         strictcli.SchemaArray(option),
+		},
+		[]string{"format_version", "option"},
+		false,
+	)
+}

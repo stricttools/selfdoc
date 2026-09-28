@@ -248,6 +248,13 @@ default, a repeated entry, or a `current` ranked above its `ideal` stops the
 run with strictspec's diagnostic, naming the file and the fix. Another tool's
 entries are held to the schema and nothing else.
 
+`selfdoc options registry` prints the registry every selfdoc option is declared
+in: the TOML document selfdoc ships, in the shape of strictspec's built-in
+options-registry schema, with each option's subject, ranked values, default,
+scope, and description. A tool that reads every tool's options, such as
+strictcode, learns selfdoc's rankings by running it. It needs no selfdoc
+project, and with `--json` the same declarations are the payload.
+
 ## Staleness Detection
 
 selfdoc tracks SHA-256 hashes of each page's raw template body (directives unresolved) and its frontmatter description. When the content changes but the description stays the same, it raises a stale-page-description error. This catches the common case where you update a page's content but forget to revise the description that feeds into meta tags and search results.

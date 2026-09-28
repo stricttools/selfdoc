@@ -38,12 +38,24 @@ const (
 	SettingOff   = "off"
 )
 
+// OptionsRegistryFormatVersion is the format version of the options registry
+// selfdoc ships: the document's format_version, the one strictspec's built-in
+// options-registry schema reads.
+const OptionsRegistryFormatVersion = 1
+
 // optionsRegistryName is the shipped registry's file name, as the messages and
 // the generator spell it.
 const optionsRegistryName = "options.toml"
 
 //go:embed options.toml
 var optionsRegistryDocument []byte
+
+// OptionsRegistryDocument returns the shipped options registry exactly as it
+// is embedded: the bytes of options.toml, which `selfdoc options registry`
+// prints. The caller gets a copy, so the embedded document cannot be altered.
+func OptionsRegistryDocument() []byte {
+	return append([]byte(nil), optionsRegistryDocument...)
+}
 
 // OptionID is the id an entry names a lint's option by.
 func OptionID(name string) string { return OptionsTool + ":" + name }
@@ -66,7 +78,7 @@ func RenderOptionsRegistry(reg *Registry) string {
 	out.WriteString("# selfdoc's options registry: one option per lint, validated by strictspec's\n")
 	out.WriteString("# built-in options-registry schema. Generated from lints.toml by\n")
 	out.WriteString("# `go run ./internal/lints/genoptions`; never edit it by hand.\n\n")
-	out.WriteString("format_version = 1\n")
+	fmt.Fprintf(&out, "format_version = %d\n", OptionsRegistryFormatVersion)
 	for _, name := range reg.Names() {
 		spec, _ := reg.Spec(name)
 		values, def := optionRanking(spec.Severity)

@@ -1,8 +1,7 @@
 +++
 title = "selfdoc options"
-description = "Write this repository's entries for selfdoc's options in .strictmetadata/options/."
+description = "Print selfdoc's options registry, one option per lint, and write this repository's entries for those options in .strictmetadata/options/docs.toml."
 generated = true
-seeded = true
 nav_group = "CLI Reference"
 nav_order = 11
 +++
@@ -10,7 +9,13 @@ nav_order = 11
 
 # selfdoc options
 
-Write this repository's entries for selfdoc's options in .strictmetadata/options/. Each lint is an option, selfdoc:<lint name>, filed under docs.toml: an error lint runs at error > warn > off, a warning lint at warn > off, and the check applies each entry's current value (off: not reported; warn: reported, never blocking; error: as registered)
+Print selfdoc's options registry, and write this repository's entries for selfdoc's options in .strictmetadata/options/. Each lint is an option, selfdoc:<lint name>, filed under docs.toml: an error lint runs at error > warn > off, a warning lint at warn > off, and the check applies each entry's current value (off: not reported; warn: reported, never blocking; error: as registered)
+
+## options registry
+
+Print selfdoc's options registry: one option per lint, selfdoc:<lint name>, with the subject it is filed under, the values it ranks strongest first, its default, its scope, and what the lint checks. The TOML printed is the registry document selfdoc ships, in the shape of strictspec's built-in options-registry schema, so a tool that reads every tool's options learns selfdoc's rankings from it; with --json the same declarations are the payload. Needs no selfdoc project
+
+**Effect:** read_only
 
 ## options set
 
