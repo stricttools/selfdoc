@@ -105,6 +105,7 @@
   "en/cli-baseline.md": {
     "content": "813ad19c57ae6090b0c6f464fa6def3ebc7cf623de3c1dde7ed56d4192f6737d",
     "description": "45975ba6c5a286b9cbde034423c05c026d519be48d293ef7470744b6f7c004bd",
+    "schema_hash": "7d80a19d76bb5afe1a45b8a4a10d74e85ba7fa254e5c87abaf2e581fd76d89b8",
     "seed_hash": "45975ba6c5a286b9cbde034423c05c026d519be48d293ef7470744b6f7c004bd"
   },
   "en/cli-blog.md": {
@@ -161,7 +162,8 @@
   },
   "en/cli-layout.md": {
     "content": "62cbbf4abb1fcd7fe2d9c90f98c6fa7605f6abdabc4c1fb74b3fad0a3454526b",
-    "description": "3fd6f5ea1a2257af03d5256df8846406893c69d4987ca34305aca1c42534b9b2"
+    "description": "3fd6f5ea1a2257af03d5256df8846406893c69d4987ca34305aca1c42534b9b2",
+    "schema_hash": "9283b439088f4d30341ed721bb8ad10f1625247afc7dadc89a29f10a1084d96e"
   },
   "en/cli-options.md": {
     "content": "0c7e76c134c8d7f6a6081431241e398b3161b9af374fb4d05f3c62143d632a90",
@@ -188,7 +190,8 @@
   },
   "en/cli-spell-corpus.md": {
     "content": "05de86d00308d67657fab18c9a8b7f762ee37aec130ce5b29d93b2a438f49cb7",
-    "description": "a706264e39f0e2ef58168d1cfe9eb63a7c496fea5ca08280fc7cf7e0538490f2"
+    "description": "a706264e39f0e2ef58168d1cfe9eb63a7c496fea5ca08280fc7cf7e0538490f2",
+    "schema_hash": "ba9ae09c4ba3ca80d7330e1be41c5560c6e27a392a0d9f9192114e739f3860ad"
   },
   "en/cli-vocabulary.md": {
     "content": "d4d08be5d27d64f551e1c099218e9890fa1d36f3fc4d684f3bb5740d5b17a2fe",
@@ -532,7 +535,8 @@
   },
   "en/internal-layout.md": {
     "content": "52f92ef04414261f2f49481d476762ebd38a5b6a8947ed602f3b647d8d28bdd8",
-    "description": "2d70aa93731438b4f43b758ce1cd1e6bc85a047c3fcbb5899141bf06b419cd78"
+    "description": "2d70aa93731438b4f43b758ce1cd1e6bc85a047c3fcbb5899141bf06b419cd78",
+    "source_docstring": "3e7cd6751bce229109c73025483ae356cf64e4d750b20dadc38a4de1ef8f49a5"
   },
   "en/internal-lints-genoptions.md": {
     "content": "8a835dd44abd5569ef10489045a3488b790a6a96d6b0d9f88b3fc66e1cff2fb9",
@@ -552,7 +556,8 @@
   },
   "en/internal-migrate.md": {
     "content": "fa922969a57523d1c0fe70a3d1832d544144b4e968a71be2390f11f8f966d524",
-    "description": "f703c332ba7e4caf3c97daf99931c578aadfb2bd86a641550a82d77da353945a"
+    "description": "f703c332ba7e4caf3c97daf99931c578aadfb2bd86a641550a82d77da353945a",
+    "source_docstring": "1b6b8b64d16705b342364eb2b17da7c2786c8ce20610cdcdd030fe19ee72d24a"
   },
   "en/internal-options.md": {
     "content": "7b5fb96e8e5a5772a3d4ae4f9823ccc1c53979850e09c9536bea517280d57294",
