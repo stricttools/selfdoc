@@ -36,6 +36,10 @@ word = "safegit"
 meaning = "The concurrency-safe git wrapper whose commit command auto-commit uses when rlsbl is absent."
 
 [[accepted]]
+word = "strictcode"
+meaning = "The family tool that reports every option entry in debt or waiting on a tool, across all tools' namespaces."
+
+[[accepted]]
 word = "strictspec"
 meaning = "The schema tool whose generated validators check selfdoc's declarative documents."
 
