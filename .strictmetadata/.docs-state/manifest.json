@@ -11878,7 +11878,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-28T00:09:02.124081+00:00",
+  "last_gen": "2026-09-28T00:09:58.220193+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
@@ -11912,6 +11912,10 @@
       },
       {
         "word": "safegit",
+        "aliases": []
+      },
+      {
+        "word": "strictcode",
         "aliases": []
       },
       {

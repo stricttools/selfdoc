@@ -1,7 +1,8 @@
 +++
 title = "selfdoc baseline"
-description = "Manage the content and description hash baselines that drive staleness (STALE001) and source-drift (DRIFT001) detection during selfdoc check"
+description = "Manage the content and description hash baselines that drive staleness (stale-page-description) and source-drift (description-drifted-from-source) detection during selfdoc check"
 generated = true
+seeded = true
 nav_group = "CLI Reference"
 nav_order = 2
 +++

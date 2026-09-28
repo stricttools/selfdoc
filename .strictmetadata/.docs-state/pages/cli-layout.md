@@ -1,6 +1,6 @@
 +++
 title = "selfdoc layout"
-description = "Inspect, check and migrate the directories selfdoc owns under stricttools/: dump the claim, validate a tree, and move one off .stricttools/ while converting its manifests to the schema that records the vocabulary."
+description = "Inspect, check and migrate the directories selfdoc owns under .strictmetadata/: dump the claim, validate a tree, and move one off stricttools/ or .stricttools/ while converting its manifests."
 generated = true
 nav_group = "CLI Reference"
 nav_order = 10

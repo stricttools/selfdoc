@@ -1,6 +1,6 @@
 +++
 title = "selfdoc spell-corpus"
-description = "Spell-check the docs of every selfdoc project beside this one, with the engine 'selfdoc check' runs (SPELL001), each against its own vocabulary."
+description = "Spell-check the docs of every selfdoc project beside this one, with the engine 'selfdoc check' runs (unknown-word), each against its own vocabulary."
 generated = true
 nav_group = "CLI Reference"
 nav_order = 14
