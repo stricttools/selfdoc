@@ -701,6 +701,33 @@
       ]
     },
     {
+      "path": "cli-options.md",
+      "title": "selfdoc options",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "selfdoc options",
+          "anchor": "selfdoc-options"
+        },
+        {
+          "level": 2,
+          "text": "options set",
+          "anchor": "options-set"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags"
+        },
+        {
+          "level": 3,
+          "text": "Arguments",
+          "anchor": "arguments"
+        }
+      ]
+    },
+    {
       "path": "cli-quality.md",
       "title": "selfdoc quality",
       "type": "doc",
@@ -11851,7 +11878,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-28T00:08:40.097924+00:00",
+  "last_gen": "2026-09-28T00:09:02.124081+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [

@@ -105,8 +105,7 @@
   "en/cli-baseline.md": {
     "content": "bccef3a4a0d5d8a7b2a498c9d8cd4e143586e1b7ff25341cc4657e41062cb2d8",
     "description": "23dacc6a507ddbae1b28943eaa285afc7b6bc28370eeda974843a76a4194da1a",
-    "schema_hash": "c51e58d4f9897a447e066cf014387d900cbd156bf7dbc248f88e5694ce4349d1",
-    "seed_hash": "23dacc6a507ddbae1b28943eaa285afc7b6bc28370eeda974843a76a4194da1a"
+    "schema_hash": "c51e58d4f9897a447e066cf014387d900cbd156bf7dbc248f88e5694ce4349d1"
   },
   "en/cli-blog.md": {
     "content": "812631b931d8b170405923b0993be54d9768fcf681842d9b5a67c46e7d7ae226",
@@ -164,6 +163,11 @@
     "content": "d28fb80dfd29489aa183519dd22c94d77f551d4af177efd3d2cfecaaad752135",
     "description": "8c0273ccd58c3a5722b31a78a1255077d5aaf815ffb40a3892fd113bb7b4445d",
     "schema_hash": "6ac5c0471555c2e6e7a014cfc5f513f98ee956f7cbf24667afecb1ef7c7f12c8"
+  },
+  "en/cli-options.md": {
+    "content": "0c7e76c134c8d7f6a6081431241e398b3161b9af374fb4d05f3c62143d632a90",
+    "description": "b9e19950720793e2f9d5e629823e4c71fb33546e62fbb1a90579582849efb674",
+    "seed_hash": "b9e19950720793e2f9d5e629823e4c71fb33546e62fbb1a90579582849efb674"
   },
   "en/cli-post.md": {
     "content": "86fe01520f627c2342a68880aa7adc42438729597461260c9693e5c99cff1a15",
@@ -535,7 +539,8 @@
   "en/internal-lints-genoptions.md": {
     "content": "8a835dd44abd5569ef10489045a3488b790a6a96d6b0d9f88b3fc66e1cff2fb9",
     "description": "a5000115b9dd6801d0f8ad5f92fbba214376686f30b7cc7e215c80c7d215efa1",
-    "seed_hash": "a5000115b9dd6801d0f8ad5f92fbba214376686f30b7cc7e215c80c7d215efa1"
+    "seed_hash": "a5000115b9dd6801d0f8ad5f92fbba214376686f30b7cc7e215c80c7d215efa1",
+    "source_docstring": "827019d1ea7a51211585dc4f2b3fd21cdf32ee2871a7a971d69203016496d551"
   },
   "en/internal-lints.md": {
     "content": "7911da93c39e1c1946c429f921a8ec87c3f58e00e93165f136b092d3ae5aa2e4",
@@ -555,7 +560,8 @@
   "en/internal-options.md": {
     "content": "7b5fb96e8e5a5772a3d4ae4f9823ccc1c53979850e09c9536bea517280d57294",
     "description": "231cc1ca3a320c8611471fd3aef454ff36f64875639b16b5cad9ef875f44860d",
-    "seed_hash": "231cc1ca3a320c8611471fd3aef454ff36f64875639b16b5cad9ef875f44860d"
+    "seed_hash": "231cc1ca3a320c8611471fd3aef454ff36f64875639b16b5cad9ef875f44860d",
+    "source_docstring": "4cb12e1a8db91506d234e1aa8791fd012bac784d323c591234c8174906afcc01"
   },
   "en/internal-ownership.md": {
     "content": "bbf6559f35ab251e4033f07de1139db21b724b293062c770a5bde8f73b314824",
