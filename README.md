@@ -25,7 +25,7 @@ selfdoc init --base-url https://myproject.pages.dev
 # Auto-generate API and CLI reference pages
 selfdoc gen
 
-# Edit stricttools/docs/ pages -- add directives referencing your code
+# Edit .strictmetadata/docs/ pages -- add directives referencing your code
 
 # Build HTML output
 selfdoc build
@@ -164,8 +164,8 @@ Dispatch order is content directives, then custom directives, then the language 
 ```json
 {
   "source": [{"path": "internal/", "language": "go"}],
-  "docs": "stricttools/docs/",
-  "output": "stricttools/.docs-cache/build/",
+  "docs": ".strictmetadata/docs/",
+  "output": ".strictmetadata/.docs-cache/build/",
   "base_url": "https://my-project.example.com",
   "versions": [{"version": "1.0.0"}],
   "locales": [{"code": "en", "label": "English", "default": true}],
@@ -201,7 +201,6 @@ Dispatch order is content directives, then custom directives, then the language 
 | `glossary` | no | Auto-generate a glossary page from dfn terms. |
 | `coverage_threshold` | no | Minimum fraction of public symbols that must be documented for selfdoc check to pass (0.0-1.0). Default 1.0 requires 100% coverage. |
 | `feed_max_entries` | no | Maximum number of entries in the Atom feed, sorted by most recent. |
-| `lint_ignore` | no | List of warning-severity lint rule IDs to suppress (e.g. 'SEO007', 'SEO008'). Error-severity codes cannot be suppressed and are refused at load. |
 | `root_files` | no | List of underscore-prefixed template paths in docs/ for root file generation. |
 | `redirects` | no | Page-level redirects expanded across all locale/version combos. |
 | `deploy` | no | Deployment configuration for publishing the generated site. |
@@ -305,7 +304,7 @@ Enable GitHub Pages in your repo settings (source: `gh-pages` branch).
 
 ## Integration with rlsbl
 
-When [rlsbl](https://github.com/smm-h/rlsbl) detects a `selfdoc.json` in the project, it can trigger `selfdoc build` and `selfdoc deploy` as part of the release lifecycle via the `.rlsbl/hooks/post-release.sh` hook.
+When [rlsbl](https://github.com/stricttools/rlsbl) detects a `selfdoc.json` in the project, it can trigger `selfdoc build` and `selfdoc deploy` as part of the release lifecycle via the `.rlsbl/hooks/post-release.sh` hook.
 
 ## Documentation
 

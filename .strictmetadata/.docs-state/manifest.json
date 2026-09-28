@@ -2,7 +2,7 @@
   "schema_version": 2,
   "name": "selfdoc",
   "slug": "selfdoc",
-  "version": "0.45.0",
+  "version": "0.45.1",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -298,18 +298,18 @@
         },
         {
           "level": 3,
-          "text": "Spelling (SPELL001)",
-          "anchor": "spelling-spell001"
+          "text": "Spelling (unknown-word)",
+          "anchor": "spelling-unknown-word"
         },
         {
           "level": 3,
-          "text": "The vocabulary (VOCAB)",
-          "anchor": "the-vocabulary-vocab"
+          "text": "The vocabulary",
+          "anchor": "the-vocabulary"
         },
         {
           "level": 3,
-          "text": "Suppressing rules",
-          "anchor": "suppressing-rules"
+          "text": "Lint options",
+          "anchor": "lint-options"
         },
         {
           "level": 2,
@@ -4706,11 +4706,6 @@
         },
         {
           "level": 3,
-          "text": "`FilterLints`",
-          "anchor": "filterlints"
-        },
-        {
-          "level": 3,
           "text": "`PrintResults`",
           "anchor": "printresults"
         },
@@ -4897,11 +4892,6 @@
           "level": 3,
           "text": "`FieldList`",
           "anchor": "fieldlist"
-        },
-        {
-          "level": 3,
-          "text": "`LintCodeValidator`",
-          "anchor": "lintcodevalidator"
         },
         {
           "level": 3,
@@ -7407,6 +7397,11 @@
         },
         {
           "level": 3,
+          "text": "`SharedOwner`",
+          "anchor": "sharedowner"
+        },
+        {
+          "level": 3,
           "text": "`DeprecatedRoot`",
           "anchor": "deprecatedroot"
         },
@@ -7414,6 +7409,11 @@
           "level": 3,
           "text": "`PreviousRoot`",
           "anchor": "previousroot"
+        },
+        {
+          "level": 3,
+          "text": "`EarlierRoot`",
+          "anchor": "earlierroot"
         },
         {
           "level": 3,
@@ -7567,6 +7567,11 @@
         },
         {
           "level": 3,
+          "text": "`PreviousLayouts`",
+          "anchor": "previouslayouts"
+        },
+        {
+          "level": 3,
           "text": "`Side`",
           "anchor": "side"
         },
@@ -7579,6 +7584,11 @@
           "level": 3,
           "text": "`Directory`",
           "anchor": "directory"
+        },
+        {
+          "level": 3,
+          "text": "`PreviousLayout`",
+          "anchor": "previouslayout"
         },
         {
           "level": 3,
@@ -7777,6 +7787,16 @@
         },
         {
           "level": 3,
+          "text": "`PreviousLayout.EntryName`",
+          "anchor": "previouslayoutentryname"
+        },
+        {
+          "level": 3,
+          "text": "`PreviousLayout.Lookup`",
+          "anchor": "previouslayoutlookup"
+        },
+        {
+          "level": 3,
           "text": "`UnmigratedError.Error`",
           "anchor": "unmigratederrorerror"
         },
@@ -7803,6 +7823,23 @@
       ]
     },
     {
+      "path": "internal-lints-genoptions.md",
+      "title": "internal/lints/genoptions",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/lints/genoptions",
+          "anchor": "internallintsgenoptions"
+        },
+        {
+          "level": 2,
+          "text": "`internal/lints/genoptions`",
+          "anchor": "internallintsgenoptions"
+        }
+      ]
+    },
+    {
       "path": "internal-lints.md",
       "title": "internal/lints",
       "type": "doc",
@@ -7824,6 +7861,31 @@
         },
         {
           "level": 3,
+          "text": "`OptionsTool`",
+          "anchor": "optionstool"
+        },
+        {
+          "level": 3,
+          "text": "`OptionsSubject`",
+          "anchor": "optionssubject"
+        },
+        {
+          "level": 3,
+          "text": "`SettingError`",
+          "anchor": "settingerror"
+        },
+        {
+          "level": 3,
+          "text": "`SettingWarn`",
+          "anchor": "settingwarn"
+        },
+        {
+          "level": 3,
+          "text": "`SettingOff`",
+          "anchor": "settingoff"
+        },
+        {
+          "level": 3,
           "text": "`GENERATED_BY`",
           "anchor": "generated_by"
         },
@@ -7836,11 +7898,6 @@
           "level": 3,
           "text": "`SCHEMA_FORMAT_VERSION`",
           "anchor": "schema_format_version"
-        },
-        {
-          "level": 3,
-          "text": "`ErrLintSuppression`",
-          "anchor": "errlintsuppression"
         },
         {
           "level": 3,
@@ -7864,11 +7921,6 @@
         },
         {
           "level": 3,
-          "text": "`UnsuppressableLintCodeError`",
-          "anchor": "unsuppressablelintcodeerror"
-        },
-        {
-          "level": 3,
           "text": "`LintResult`",
           "anchor": "lintresult"
         },
@@ -7886,6 +7938,16 @@
           "level": 3,
           "text": "`DirectiveOutcome`",
           "anchor": "directiveoutcome"
+        },
+        {
+          "level": 3,
+          "text": "`OptionsError`",
+          "anchor": "optionserror"
+        },
+        {
+          "level": 3,
+          "text": "`Settings`",
+          "anchor": "settings"
         },
         {
           "level": 3,
@@ -7919,16 +7981,6 @@
         },
         {
           "level": 3,
-          "text": "`ValidateLintCodes`",
-          "anchor": "validatelintcodes"
-        },
-        {
-          "level": 3,
-          "text": "`ParseIgnoreCodes`",
-          "anchor": "parseignorecodes"
-        },
-        {
-          "level": 3,
           "text": "`NewLintResult`",
           "anchor": "newlintresult"
         },
@@ -7936,11 +7988,6 @@
           "level": 3,
           "text": "`MustLintResult`",
           "anchor": "mustlintresult"
-        },
-        {
-          "level": 3,
-          "text": "`FilterLints`",
-          "anchor": "filterlints"
         },
         {
           "level": 3,
@@ -7961,6 +8008,31 @@
           "level": 3,
           "text": "`CheckExitCode`",
           "anchor": "checkexitcode"
+        },
+        {
+          "level": 3,
+          "text": "`OptionID`",
+          "anchor": "optionid"
+        },
+        {
+          "level": 3,
+          "text": "`RenderOptionsRegistry`",
+          "anchor": "renderoptionsregistry"
+        },
+        {
+          "level": 3,
+          "text": "`BuildOptionsRegistry`",
+          "anchor": "buildoptionsregistry"
+        },
+        {
+          "level": 3,
+          "text": "`OptionsRegistry`",
+          "anchor": "optionsregistry"
+        },
+        {
+          "level": 3,
+          "text": "`LoadSettings`",
+          "anchor": "loadsettings"
         },
         {
           "level": 3,
@@ -8009,21 +8081,6 @@
         },
         {
           "level": 3,
-          "text": "`UnknownLintCodeError.Unwrap`",
-          "anchor": "unknownlintcodeerrorunwrap"
-        },
-        {
-          "level": 3,
-          "text": "`UnsuppressableLintCodeError.Error`",
-          "anchor": "unsuppressablelintcodeerrorerror"
-        },
-        {
-          "level": 3,
-          "text": "`UnsuppressableLintCodeError.Unwrap`",
-          "anchor": "unsuppressablelintcodeerrorunwrap"
-        },
-        {
-          "level": 3,
           "text": "`LintResult.File`",
           "anchor": "lintresultfile"
         },
@@ -8046,6 +8103,21 @@
           "level": 3,
           "text": "`LintResult.Severity`",
           "anchor": "lintresultseverity"
+        },
+        {
+          "level": 3,
+          "text": "`OptionsError.Error`",
+          "anchor": "optionserrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`Settings.Current`",
+          "anchor": "settingscurrent"
+        },
+        {
+          "level": 3,
+          "text": "`Settings.Apply`",
+          "anchor": "settingsapply"
         },
         {
           "level": 3,
@@ -8273,6 +8345,11 @@
         },
         {
           "level": 3,
+          "text": "`SeveralPreviousRootsError`",
+          "anchor": "severalpreviousrootserror"
+        },
+        {
+          "level": 3,
           "text": "`PlanMigration`",
           "anchor": "planmigration"
         },
@@ -8295,6 +8372,63 @@
           "level": 3,
           "text": "`PartialError.Error`",
           "anchor": "partialerrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`SeveralPreviousRootsError.Error`",
+          "anchor": "severalpreviousrootserrorerror"
+        }
+      ]
+    },
+    {
+      "path": "internal-options.md",
+      "title": "internal/options",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/options",
+          "anchor": "internaloptions"
+        },
+        {
+          "level": 2,
+          "text": "`internal/options`",
+          "anchor": "internaloptions"
+        },
+        {
+          "level": 3,
+          "text": "`ActionCreated`",
+          "anchor": "actioncreated"
+        },
+        {
+          "level": 3,
+          "text": "`ActionUpdated`",
+          "anchor": "actionupdated"
+        },
+        {
+          "level": 3,
+          "text": "`ActionUnchanged`",
+          "anchor": "actionunchanged"
+        },
+        {
+          "level": 3,
+          "text": "`Result`",
+          "anchor": "result"
+        },
+        {
+          "level": 3,
+          "text": "`NamespaceError`",
+          "anchor": "namespaceerror"
+        },
+        {
+          "level": 3,
+          "text": "`Set`",
+          "anchor": "set"
+        },
+        {
+          "level": 3,
+          "text": "`NamespaceError.Error`",
+          "anchor": "namespaceerrorerror"
         }
       ]
     },
@@ -8616,6 +8750,11 @@
           "level": 3,
           "text": "`LayoutValidate`",
           "anchor": "layoutvalidate"
+        },
+        {
+          "level": 3,
+          "text": "`OptionsSet`",
+          "anchor": "optionsset"
         }
       ]
     },
@@ -11036,8 +11175,8 @@
         },
         {
           "level": 3,
-          "text": "Rule families",
-          "anchor": "rule-families"
+          "text": "Rule groups",
+          "anchor": "rule-groups"
         },
         {
           "level": 3,
@@ -11053,13 +11192,13 @@
     },
     {
       "path": "layout.md",
-      "title": "The stricttools/ layout",
+      "title": "The .strictmetadata/ layout",
       "type": "doc",
       "headings": [
         {
           "level": 1,
-          "text": "The stricttools/ layout",
-          "anchor": "the-stricttools-layout"
+          "text": "The .strictmetadata/ layout",
+          "anchor": "the-strictmetadata-layout"
         },
         {
           "level": 2,
@@ -11087,6 +11226,11 @@
           "anchor": "ownership-one-owner-per-directory"
         },
         {
+          "level": 3,
+          "text": "Directories several tools share",
+          "anchor": "directories-several-tools-share"
+        },
+        {
           "level": 2,
           "text": "The derived ignore file",
           "anchor": "the-derived-ignore-file"
@@ -11098,8 +11242,8 @@
         },
         {
           "level": 2,
-          "text": "Moving a repository off `.stricttools/`",
-          "anchor": "moving-a-repository-off-stricttools"
+          "text": "Moving a repository off `stricttools/` or `.stricttools/`",
+          "anchor": "moving-a-repository-off-stricttools-or-stricttools"
         },
         {
           "level": 3,
@@ -11541,8 +11685,8 @@
         },
         {
           "level": 2,
-          "text": "The STALE001 Error",
-          "anchor": "the-stale001-error"
+          "text": "The stale-page-description Error",
+          "anchor": "the-stale-page-description-error"
         },
         {
           "level": 2,
@@ -11707,7 +11851,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-26T20:25:43.480800+00:00",
+  "last_gen": "2026-09-28T00:08:40.097924+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
