@@ -712,6 +712,11 @@
         },
         {
           "level": 2,
+          "text": "options registry",
+          "anchor": "options-registry"
+        },
+        {
+          "level": 2,
           "text": "options set",
           "anchor": "options-set"
         },
@@ -7913,6 +7918,11 @@
         },
         {
           "level": 3,
+          "text": "`OptionsRegistryFormatVersion`",
+          "anchor": "optionsregistryformatversion"
+        },
+        {
+          "level": 3,
           "text": "`GENERATED_BY`",
           "anchor": "generated_by"
         },
@@ -7943,8 +7953,8 @@
         },
         {
           "level": 3,
-          "text": "`UnknownLintCodeError`",
-          "anchor": "unknownlintcodeerror"
+          "text": "`UnknownLintNameError`",
+          "anchor": "unknownlintnameerror"
         },
         {
           "level": 3,
@@ -8038,6 +8048,11 @@
         },
         {
           "level": 3,
+          "text": "`OptionsRegistryDocument`",
+          "anchor": "optionsregistrydocument"
+        },
+        {
+          "level": 3,
           "text": "`OptionID`",
           "anchor": "optionid"
         },
@@ -8083,8 +8098,8 @@
         },
         {
           "level": 3,
-          "text": "`Registry.Codes`",
-          "anchor": "registrycodes"
+          "text": "`Registry.Names`",
+          "anchor": "registrynames"
         },
         {
           "level": 3,
@@ -8103,8 +8118,8 @@
         },
         {
           "level": 3,
-          "text": "`UnknownLintCodeError.Error`",
-          "anchor": "unknownlintcodeerrorerror"
+          "text": "`UnknownLintNameError.Error`",
+          "anchor": "unknownlintnameerrorerror"
         },
         {
           "level": 3,
@@ -8118,8 +8133,8 @@
         },
         {
           "level": 3,
-          "text": "`LintResult.Code`",
-          "anchor": "lintresultcode"
+          "text": "`LintResult.Name`",
+          "anchor": "lintresultname"
         },
         {
           "level": 3,
@@ -8158,8 +8173,8 @@
         },
         {
           "level": 3,
-          "text": "`LintDescriptor.WithCode`",
-          "anchor": "lintdescriptorwithcode"
+          "text": "`LintDescriptor.WithName`",
+          "anchor": "lintdescriptorwithname"
         },
         {
           "level": 3,
@@ -8740,8 +8755,8 @@
         },
         {
           "level": 3,
-          "text": "`LintCodes`",
-          "anchor": "lintcodes"
+          "text": "`LintNames`",
+          "anchor": "lintnames"
         },
         {
           "level": 3,
@@ -8782,6 +8797,11 @@
           "level": 3,
           "text": "`OptionsSet`",
           "anchor": "optionsset"
+        },
+        {
+          "level": 3,
+          "text": "`OptionsRegistry`",
+          "anchor": "optionsregistry"
         }
       ]
     },
@@ -9008,8 +9028,8 @@
         },
         {
           "level": 3,
-          "text": "`LintCode`",
-          "anchor": "lintcode"
+          "text": "`LintName`",
+          "anchor": "lintname"
         },
         {
           "level": 3,
@@ -11878,7 +11898,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-28T00:09:58.220193+00:00",
+  "last_gen": "2026-09-28T00:38:10.717675+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [

@@ -330,7 +330,19 @@
             "items": {
               "additionalProperties": false,
               "properties": {
-                "code": {
+                "file": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "message": {
+                  "type": "string"
+                },
+                "name": {
                   "enum": [
                     "accepted-word-matches-rejected-pattern",
                     "broken-emitted-reference",
@@ -386,18 +398,6 @@
                   ],
                   "type": "string"
                 },
-                "file": {
-                  "type": "string"
-                },
-                "line": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ]
-                },
-                "message": {
-                  "type": "string"
-                },
                 "severity": {
                   "enum": [
                     "error",
@@ -409,7 +409,7 @@
               "required": [
                 "file",
                 "line",
-                "code",
+                "name",
                 "message",
                 "severity"
               ],
@@ -1178,8 +1178,61 @@
     },
     "options": {
       "name": "options",
-      "help": "Write this repository's entries for selfdoc's options in .strictmetadata/options/. Each lint is an option, selfdoc:<lint name>, filed under docs.toml: an error lint runs at error > warn > off, a warning lint at warn > off, and the check applies each entry's current value (off: not reported; warn: reported, never blocking; error: as registered)",
+      "help": "Print selfdoc's options registry, and write this repository's entries for selfdoc's options in .strictmetadata/options/. Each lint is an option, selfdoc:<lint name>, filed under docs.toml: an error lint runs at error > warn > off, a warning lint at warn > off, and the check applies each entry's current value (off: not reported; warn: reported, never blocking; error: as registered)",
       "commands": {
+        "registry": {
+          "name": "registry",
+          "help": "Print selfdoc's options registry: one option per lint, selfdoc:<lint name>, with the subject it is filed under, the values it ranks strongest first, its default, its scope, and what the lint checks. The TOML printed is the registry document selfdoc ships, in the shape of strictspec's built-in options-registry schema, so a tool that reads every tool's options learns selfdoc's rankings from it; with --json the same declarations are the payload. Needs no selfdoc project",
+          "effect": "read_only",
+          "payload_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "format_version": {
+                "type": "integer"
+              },
+              "option": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "default": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "scope": {
+                      "type": "string"
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "values": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "subject",
+                    "values",
+                    "default",
+                    "scope",
+                    "description"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "format_version",
+              "option"
+            ],
+            "type": "object"
+          }
+        },
         "set": {
           "name": "set",
           "help": "Write one selfdoc entry into .strictmetadata/options/docs.toml, or update the entry already there for the same option, keeping every other line of the document. Creates .strictmetadata/options/ and its manifest.toml, naming strictspec as the owner, when absent. strictspec validates the result before anything is written -- every document's shape, and every selfdoc entry with this one in place -- and each refusal is its catalogued diagnostic: a value the option does not declare, a current ranked above the ideal, an entry equal to the default, an empty reason. Refuses an id outside the selfdoc namespace and a directory whose manifest names another owner",

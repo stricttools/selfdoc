@@ -26,7 +26,7 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
 - `assembly` -- initialize, push, inspect, rebuild, republish, retire, and verify the unified multi-project site
 - `layout` -- dump selfdoc's claim on the `.strictmetadata/` directory, validate a repository against it, and migrate a repository off the previous `stricttools/` and `.stricttools/` layouts
-- `options` -- write this repository's entries for selfdoc's options (one per lint, `selfdoc:<lint name>`) in `.strictmetadata/options/docs.toml`, validated by strictspec
+- `options` -- print selfdoc's options registry (one option per lint, `selfdoc:<lint name>`), and write this repository's entries for those options in `.strictmetadata/options/docs.toml`, validated by strictspec
 - `vocabulary` -- accept, reject and remove words in the project's `.strictmetadata/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
 
 ### Stable addresses, archived versions
@@ -89,11 +89,12 @@ lookup.
 Each lint is an option, `selfdoc:<lint name>`, declared in selfdoc's options
 registry (`internal/lints/options.toml`, generated from `internal/lints/lints.toml`
 by `go run ./internal/lints/genoptions` and validated by strictspec's built-in
-options-registry schema). An error lint ranks `error > warn > off`, a warning
-lint `warn > off`. `selfdoc check` and `selfdoc build` read the repository's
-`.strictmetadata/options/` through strictspec, refuse any entry strictspec
-refuses, and apply each selfdoc entry's current value: `off` drops the lint,
-`warn` reports it without blocking. There is no other switch: no config key
+options-registry schema, and printed by `selfdoc options registry`). An error
+lint ranks `error > warn > off`, a warning lint `warn > off`. `selfdoc check`
+and `selfdoc build` read the repository's `.strictmetadata/options/` through
+strictspec, refuse any entry strictspec refuses, and apply each selfdoc
+entry's current value: `off` drops the lint, `warn` reports it without
+blocking. There is no other switch: no config key
 and no flag changes a lint.
 
 ### Vocabulary
@@ -241,7 +242,7 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - **internal/identity**: Package identity holds the site's declared author, as the one Person its structured data names.
 - **internal/js**: Package js carries the browser scripts a built page ships and assembles the body bundle each page needs.
 - **internal/layout**: Package layout is selfdoc's declaration of the per-repository directories it owns, and the single authority for every path it reads or writes inside them.
-- **internal/lints**: Package lints owns the lint-code registry and the verdict rules every check entry point shares.
+- **internal/lints**: Package lints owns the lint registry and the verdict rules every check entry point shares.
 - **internal/lints/genoptions**: Command genoptions writes selfdoc's options registry, internal/lints/options.toml, from the lint registry: one option per lint.
 - **internal/manifest**: Package manifest generates and reads a project's manifest: the JSON record of what a build published -- the project's identity and version, its pages with their heading anchors, and its posts.
 - **internal/migrate**: Package migrate moves a repository off a layout before this one onto the hidden .strictmetadata/ root, where a generated directory's name starts with a dot: selfdoc's directories under the visible stricttools/ root, named as they are named now, or under the hidden .stricttools/ root before it, each under its bare function name.
