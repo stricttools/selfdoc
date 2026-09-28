@@ -1,6 +1,6 @@
 +++
 title = "internal/lints"
-description = "The lint-code registry and the verdict rules every check entry point shares, so a code's severity is declared in one embedded document and nowhere else."
+description = "The lint registry and the verdict rules every check entry point shares, so a lint's name and severity are declared in one embedded document and nowhere else."
 generated = true
 nav_group = "API Reference"
 nav_order = 48

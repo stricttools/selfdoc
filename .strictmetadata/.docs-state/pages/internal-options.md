@@ -1,8 +1,7 @@
 +++
 title = "internal/options"
-description = "Package options writes selfdoc's entries into a repository's options directory, .strictmetadata/options/: the engine of `selfdoc options set`."
+description = "Writes or updates one selfdoc:<lint name> entry in .strictmetadata/options/docs.toml once strictspec accepts the options directory with it in place."
 generated = true
-seeded = true
 nav_group = "API Reference"
 nav_order = 52
 +++

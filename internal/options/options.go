@@ -57,6 +57,9 @@ type NamespaceError struct {
 	ID string
 }
 
+// Error names the refused id and says which ids selfdoc writes: an id with no
+// tool prefix is not an option id at all, and another tool's id is written by
+// that tool, not by selfdoc.
 func (e *NamespaceError) Error() string {
 	tool, _, found := strings.Cut(e.ID, ":")
 	if !found {
