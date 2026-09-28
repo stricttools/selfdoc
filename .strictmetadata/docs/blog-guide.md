@@ -218,11 +218,7 @@ The revisions sidecar is published to the assembly alongside the post-manifest, 
 
 These checks run as part of `selfdoc check` for standalone blog projects. For unified docs-site projects, post checks run alongside the full documentation validation suite.
 
-Suppress specific checks with `--ignore`:
-
-```bash
-selfdoc check --ignore malformed-post-date
-```
+Each of these runs as its option in `.strictmetadata/options/docs.toml` sets it; see the [check guide](../check-guide/#lint-options).
 
 ## Integration with the Assembly
 

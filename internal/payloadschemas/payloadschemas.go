@@ -58,8 +58,8 @@ func LintSeverities() []any { return []any{"error", "warning"} }
 
 // Check is the payload of `selfdoc check`: one directive result per directive
 // found, the coverage block (null when the project has no source to cover),
-// every lint the run kept after suppression, and the exit code the command
-// will terminate with.
+// every lint the run reports under the repository's lint options, and the exit
+// code the command will terminate with.
 func Check() map[string]any {
 	directive := strictcli.SchemaObject(
 		map[string]any{
@@ -318,6 +318,28 @@ func LayoutValidate() map[string]any {
 			"problems": strictcli.SchemaArray(problem),
 		},
 		[]string{"root", "ok", "problems"},
+		false,
+	)
+}
+
+// OptionsSet is the payload of `selfdoc options set`: the entry as written,
+// the subject document it lives in, whether it was created, updated, or
+// already held these values, strictspec's classification of it, and whether
+// the write was committed.
+func OptionsSet() map[string]any {
+	return strictcli.SchemaObject(
+		map[string]any{
+			"id":        strictcli.SchemaType("string"),
+			"file":      strictcli.SchemaType("string"),
+			"action":    merge(strictcli.SchemaType("string"), strictcli.SchemaEnum("created", "updated", "unchanged")),
+			"current":   strictcli.SchemaType("string"),
+			"ideal":     strictcli.SchemaType("string"),
+			"reason":    strictcli.SchemaType("string"),
+			"class":     merge(strictcli.SchemaType("string"), strictcli.SchemaEnum("settled", "debt", "waiting-on-tool")),
+			"written":   strictcli.SchemaArray(strictcli.SchemaType("string")),
+			"committed": strictcli.SchemaType("boolean"),
+		},
+		[]string{"id", "file", "action", "current", "ideal", "reason", "class", "written", "committed"},
 		false,
 	)
 }

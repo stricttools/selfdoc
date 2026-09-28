@@ -28,6 +28,7 @@ func TestTheCommandTreeIsTheDeclaredOne(t *testing.T) {
 		"build", "check", "deploy",
 		"gen", "gen-data", "init",
 		"layout.dump", "layout.migrate", "layout.validate",
+		"options.set",
 		"quality", "serve", "spell-corpus",
 		"vocabulary.accept", "vocabulary.approve", "vocabulary.drop",
 		"vocabulary.reject", "vocabulary.remove",

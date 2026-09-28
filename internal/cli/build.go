@@ -107,6 +107,12 @@ func (c *cli) buildSite(
 	locale, version, theme string,
 	drafts, autoCommit bool,
 ) strictcli.Outcome {
+	// The lint pass after the build applies the repository's lint options,
+	// read before the build so an entry strictspec refuses stops it early.
+	settings, err := lints.LoadSettings(c.dir())
+	if err != nil {
+		return c.fail(err)
+	}
 	written, err := build.Build(build.Options{
 		DirPath:       c.dir(),
 		Config:        cfg,
@@ -134,7 +140,7 @@ func (c *cli) buildSite(
 	if err != nil {
 		return c.fail(err)
 	}
-	kept := check.FilterLints(result.Lints, ignoreCodesFrom(nil, cfg))
+	kept := settings.Apply(result.Lints)
 
 	warnCount := 0
 	errorCount := 0

@@ -15,11 +15,12 @@ import (
 	"github.com/stricttools/selfdoc/internal/payloadschemas"
 	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictspec/go/strictspec"
 )
 
 func (c *cli) registerCheck() {
 	c.app.Command("check",
-		"Check documentation coverage, directive resolution, and lint rules -- and write: it "+
+		"Check documentation coverage, directive resolution, and lint rules, each lint at the value its option in "+strictspec.OptionsDir+"/docs.toml sets (off: not reported; warn: reported, never blocking; error: as registered) -- and write: it "+
 			"advances the content and description baseline of every page it does not report "+
 			"stale or drifted in "+layout.HashesRel+" and commits the store, which is why "+
 			"check is a mutating command and not a read-only one",
@@ -27,7 +28,6 @@ func (c *cli) registerCheck() {
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.Check()),
 		strictcli.WithFlags(
-			strictcli.StringFlag("ignore", "Comma-separated SEO codes to suppress (e.g., first-paragraph-length-out-of-range,low-numeric-data-density)", strictcli.Optional()),
 			strictcli.BoolFlag("auto-commit", "Automatically commit "+layout.HashesRel+", the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way", strictcli.Optional()),
 			strictcli.StringFlag("version-override", "Project version that version-bearing generated content is expected to embed (version-mismatch-in-generated-root-file), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump", strictcli.Optional()),
 		),
@@ -36,22 +36,18 @@ func (c *cli) registerCheck() {
 
 func (c *cli) cmdCheck(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
 	autoCommit := absentMeans(kwargs, "auto_commit", true)
-	ignore := optString(kwargs, "ignore")
 	versionOverride := optString(kwargs, "version_override")
 	handle := effects.FromContext(ctx)
-
-	// Validated before any work is done: a mistyped code suppresses nothing,
-	// a check run that silently ignored the typo would report lints the
-	// caller believes it silenced, and an error-severity code is not
-	// suppressible at all.
-	flagIgnoreCodes, err := lints.ParseIgnoreCodes(ignore, "--ignore")
-	if err != nil {
-		return c.fail(err)
-	}
 
 	cfg, outcome, ok := c.loadConfig()
 	if !ok {
 		return outcome
+	}
+	// The repository's lint options are read before any work is done, so an
+	// entry strictspec refuses stops the run instead of being half applied.
+	settings, err := lints.LoadSettings(c.dir())
+	if err != nil {
+		return c.fail(err)
 	}
 
 	// No dryRun is threaded into the check: under --dry-run the hash write is
@@ -83,9 +79,8 @@ func (c *cli) cmdCheck(ctx *strictcli.Context, kwargs map[string]any) strictcli.
 		}
 	}
 
-	// The combined suppression set: the flag's codes and the project's own
-	// lint_ignore, both already validated against the registry.
-	result.Lints = check.FilterLints(result.Lints, ignoreCodesFrom(flagIgnoreCodes, cfg))
+	// Each lint at the value the repository's options set for it.
+	result.Lints = settings.Apply(result.Lints)
 
 	belowThreshold := check.CoverageBelowThreshold(result, cfg)
 	exitCode := check.CheckResultExitCode(result, cfg)

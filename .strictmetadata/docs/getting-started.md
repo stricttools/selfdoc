@@ -280,10 +280,10 @@ Coverage: 15/23 public symbols documented (65%)
 SEO: 0 warnings, 0 errors
 ```
 
-To suppress specific SEO warnings, pass `--ignore` with a comma-separated list of codes:
+A repository changes how a lint runs through the lint's option, an entry in `.strictmetadata/options/docs.toml` with its reason:
 
 ```bash
-selfdoc check --ignore first-paragraph-length-out-of-range,low-numeric-data-density
+selfdoc options set selfdoc:low-numeric-data-density --current off --ideal off --reason "reference pages list no quantities"
 ```
 
 For machine-readable output (useful in CI):
@@ -297,5 +297,5 @@ selfdoc check --json
 Now that you have a working documentation site with live directives, full-text search, and dark mode, explore these topics to learn about advanced configuration, theming, deployment to production hosting, and the full directive reference:
 
 - **[Directives Reference](../directives/)** -- complete reference for all built-in directives, block syntax, and custom directives.
-- **[Configuration](../configuration/)** -- all `selfdoc.json` options including deploy providers, the coverage threshold, and lint suppression.
+- **[Configuration](../configuration/)** -- all `selfdoc.json` options including deploy providers and the coverage threshold.
 - **[CLI Reference](../cli-index/)** -- detailed documentation for every CLI command and flag.

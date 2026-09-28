@@ -28,17 +28,6 @@ func configErrorf(format string, args ...any) *ConfigError {
 	return &ConfigError{Message: fmt.Sprintf(format, args...)}
 }
 
-// LintCodeValidator polices a config's "lint_ignore" list: it is called with
-// the declared codes and the name of the source that declared them, and any
-// error it returns becomes a [ConfigError].
-//
-// It is a seam rather than a direct call because the lint-code registry is
-// the lints package's to own, and this package must stay loadable without
-// it. The command layer installs the registry-backed check at startup; while
-// it is nil the list's codes are accepted as written, which is why installing
-// it is part of wiring the binary and not optional.
-var LintCodeValidator func(codes []string, source string) error
-
 // missingSentinel marks "no value present in the document", which is
 // distinct from an explicit JSON null: an absent optional field resolves to
 // its default, while an explicit null is handled per type.
@@ -109,6 +98,12 @@ func ValidateConfig(raw any) (Config, error) {
 	document, ok := raw.(map[string]any)
 	if !ok {
 		return nil, &ConfigError{Message: "selfdoc.json must be a JSON object"}
+	}
+
+	// Migration error: "lint_ignore" is retired in favor of each lint's
+	// option.
+	if declared, present := document["lint_ignore"]; present {
+		return nil, lintIgnoreRefusal(declared)
 	}
 
 	// Migration error: top-level "language" is no longer supported
@@ -520,21 +515,6 @@ func postValidate(config Config) error {
 				return configErrorf("duplicate version string %s in 'versions'", util.PythonRepr(name))
 			}
 			seenVersions[name] = true
-		}
-	}
-
-	// lint_ignore validation: every suppressed code must be a real one,
-	// and must be suppressible at all. A mistyped code suppresses nothing
-	// and an error-severity code may not be silenced, so both are refused
-	// at load rather than sitting in the config looking effective.
-	if lintIgnore, ok := config["lint_ignore"].([]any); ok && len(lintIgnore) > 0 && LintCodeValidator != nil {
-		codes := make([]string, 0, len(lintIgnore))
-		for _, entry := range lintIgnore {
-			code, _ := entry.(string)
-			codes = append(codes, code)
-		}
-		if err := LintCodeValidator(codes, "'lint_ignore'"); err != nil {
-			return &ConfigError{Message: err.Error()}
 		}
 	}
 

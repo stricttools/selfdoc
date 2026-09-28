@@ -5,8 +5,6 @@ import (
 	"io"
 	"sort"
 	"strings"
-
-	"github.com/stricttools/selfdoc/internal/lints"
 )
 
 // SerializeCheckResult builds the machine payload `selfdoc check --json`
@@ -18,8 +16,8 @@ import (
 // document against that declaration where it writes the envelope.
 //
 // exitCode is the code the run will terminate with, from
-// [CheckResultExitCode]. The diagnostics must already be filtered through the
-// project's suppression list.
+// [CheckResultExitCode]. The diagnostics must already carry the repository's
+// lint options (lints.Settings.Apply).
 func SerializeCheckResult(result *CheckResult, exitCode int) map[string]any {
 	directiveDocuments := make([]any, 0, len(result.DirectiveResults))
 	for _, directiveResult := range result.DirectiveResults {
@@ -76,14 +74,6 @@ func stringsOrEmpty(values []string) []any {
 		documents = append(documents, value)
 	}
 	return documents
-}
-
-// FilterLints returns the diagnostics whose code is not suppressed.
-//
-// It is the adapter over lints.FilterLints for a caller holding a code set as
-// a map, which is what the suppression parser produces.
-func FilterLints(diagnostics []lints.LintResult, ignoreCodes map[string]struct{}) []lints.LintResult {
-	return lints.FilterLints(diagnostics, ignoreCodes)
 }
 
 // colorize wraps text in an ANSI escape when colour is on.

@@ -435,25 +435,25 @@ func TestMigrateRemovesAnEmptiedVisibleRoot(t *testing.T) {
 
 // A move from the visible root begun by hand is refused with the commands
 // that put it back, and running them lets the move go through.
-func TestMigrateRefusesAPartialMoveOffTheVisibleRootAndItsRemedyClears(t *testing.T) {
+func TestMigrateRefusesAPartialMoveOffTheVisibleRootAndItsFixClears(t *testing.T) {
 	isolate(t)
 	dir := visibleRootProject(t, false)
 	testproject.MkdirAll(t, filepath.Join(dir, ".strictmetadata"))
 	testproject.Git(t, dir, "mv", "stricttools/.docs-state", ".strictmetadata/.docs-state")
 	result := run(t, dir, "layout", "migrate")
-	remedy := "git mv .strictmetadata/.docs-state stricttools/.docs-state"
-	if result.ExitCode == 0 || !strings.Contains(result.Stderr, remedy) {
-		t.Fatalf("exit %d, want a refusal naming %q:\n%s", result.ExitCode, remedy, result.Stderr)
+	fix := "git mv .strictmetadata/.docs-state stricttools/.docs-state"
+	if result.ExitCode == 0 || !strings.Contains(result.Stderr, fix) {
+		t.Fatalf("exit %d, want a refusal naming %q:\n%s", result.ExitCode, fix, result.Stderr)
 	}
 	testproject.Git(t, dir, "mv", ".strictmetadata/.docs-state", "stricttools/.docs-state")
 	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
-		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
+		t.Errorf("the move after the fix failed:\n%s", result.Stderr)
 	}
 }
 
 // selfdoc's directories under both previous roots are refused: which copy is
 // the project's is not the move's to guess. Deleting one clears it.
-func TestMigrateRefusesDirectoriesUnderBothPreviousRootsAndItsRemedyClears(t *testing.T) {
+func TestMigrateRefusesDirectoriesUnderBothPreviousRootsAndItsFixClears(t *testing.T) {
 	isolate(t)
 	dir := visibleRootProject(t, false)
 	testproject.WriteText(t, filepath.Join(dir, layout.EarlierRoot, "docs", layout.ManifestFileName),
@@ -467,6 +467,6 @@ func TestMigrateRefusesDirectoriesUnderBothPreviousRootsAndItsRemedyClears(t *te
 		t.Fatal(err)
 	}
 	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
-		t.Errorf("the move after the remedy failed:\n%s", result.Stderr)
+		t.Errorf("the move after the fix failed:\n%s", result.Stderr)
 	}
 }

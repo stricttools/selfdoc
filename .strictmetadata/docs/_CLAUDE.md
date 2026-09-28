@@ -27,6 +27,7 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
 - `assembly` -- initialize, push, inspect, rebuild, republish, retire, and verify the unified multi-project site
 - `layout` -- dump selfdoc's claim on the `.strictmetadata/` directory, validate a repository against it, and migrate a repository off the previous `stricttools/` and `.stricttools/` layouts
+- `options` -- write this repository's entries for selfdoc's options (one per lint, `selfdoc:<lint name>`) in `.strictmetadata/options/docs.toml`, validated by strictspec
 - `vocabulary` -- accept, reject and remove words in the project's `.strictmetadata/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
 
 ### Stable addresses, archived versions
@@ -83,6 +84,18 @@ the hidden `.stricttools/` root before it, is refused by every command until
 (`.strictmetadata/options/` and `.strictmetadata/upstream/`) name `strictspec`
 as their owner, and `selfdoc layout validate` accepts them without a PATH
 lookup.
+
+### Lint options
+
+Each lint is an option, `selfdoc:<lint name>`, declared in selfdoc's options
+registry (`internal/lints/options.toml`, generated from `internal/lints/lints.toml`
+by `go run ./internal/lints/genoptions` and validated by strictspec's built-in
+options-registry schema). An error lint ranks `error > warn > off`, a warning
+lint `warn > off`. `selfdoc check` and `selfdoc build` read the repository's
+`.strictmetadata/options/` through strictspec, refuse any entry strictspec
+refuses, and apply each selfdoc entry's current value: `off` drops the lint,
+`warn` reports it without blocking. There is no other switch: no config key
+and no flag changes a lint.
 
 ### Vocabulary
 

@@ -274,31 +274,6 @@ func TestCheckAlwaysRunsSEOLints(t *testing.T) {
 	}
 }
 
-func TestCheckRejectsAnUnregisteredIgnoreCode(t *testing.T) {
-	isolate(t)
-	dir := initialized(t)
-
-	result := run(t, dir, "check", "--ignore", "SEO0O8", "--no-auto-commit")
-	if result.ExitCode != 1 {
-		t.Fatalf("exit code is %d, want 1\n%s", result.ExitCode, result.Stderr)
-	}
-	if !strings.Contains(result.Stderr, "SEO0O8") {
-		t.Errorf("the refusal does not name the typo:\n%s", result.Stderr)
-	}
-}
-
-func TestCheckAcceptsARegisteredIgnoreCode(t *testing.T) {
-	requirePagefind(t)
-	isolate(t)
-	requirePython3(t)
-	dir := initialized(t)
-
-	result := run(t, dir, "check", "--ignore", "description-too-short-for-search-snippet", "--no-auto-commit")
-	if strings.Contains(result.Stdout, "description-too-short-for-search-snippet") {
-		t.Errorf("the suppressed rule still reported:\n%s", result.Stdout)
-	}
-}
-
 func TestCheckExitsOneOnErrors(t *testing.T) {
 	requirePagefind(t)
 	isolate(t)

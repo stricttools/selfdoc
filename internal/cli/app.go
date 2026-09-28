@@ -20,7 +20,6 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
 	"github.com/stricttools/selfdoc/internal/config"
-	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/smm-h/strictcli/go/strictcli"
 
 	// The language packages register their extractors from init, which is
@@ -237,34 +236,8 @@ func configTable(cfg config.Config, key string) map[string]any {
 	return table
 }
 
-// ignoreCodesFrom merges the flag's validated suppression set with the
-// project's own lint_ignore, which was validated at config load.
-func ignoreCodesFrom(flagCodes map[string]struct{}, cfg config.Config) map[string]struct{} {
-	codes := map[string]struct{}{}
-	for code := range flagCodes {
-		codes[code] = struct{}{}
-	}
-	if cfg != nil {
-		if declared, ok := cfg["lint_ignore"].([]any); ok {
-			for _, entry := range declared {
-				if s, ok := entry.(string); ok {
-					codes[s] = struct{}{}
-				}
-			}
-		}
-	}
-	return codes
-}
-
 // New builds the selfdoc application.
-//
-// Installing the lint-code validator is part of building the binary rather
-// than optional: internal/config keeps the check as a seam so it stays
-// loadable without the lint registry, and while the seam is nil a config's
-// lint_ignore list is accepted as written.
 func New(opts Options) *strictcli.App {
-	config.LintCodeValidator = lints.ValidateLintCodes
-
 	c := &cli{opts: opts}
 	c.app = strictcli.NewApp("selfdoc", opts.Version, AppHelp)
 
@@ -277,6 +250,7 @@ func New(opts Options) *strictcli.App {
 	c.registerGen()
 	c.registerLayout()
 	c.registerVocabulary()
+	c.registerOptions()
 	c.registerGenData()
 	c.registerSpellCorpus()
 	c.registerQuality()

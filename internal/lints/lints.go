@@ -8,7 +8,8 @@
 // code -- both are refused rather than discouraged. The lint-code enum in the
 // declared check payload schema is pinned to the registry by a test, and the
 // check guide's lint-rule table is rendered from the registry by the
-// "table-lints" directive rather than repeated by hand.
+// "table-lints" directive rather than repeated by hand. Each lint is also an
+// option (options.go), whose registry is rendered from this one.
 //
 // selfdoc's check command, the unified check, the post-build lint pass and the
 // posts-only check all decide the same question -- does this run pass? -- and
@@ -22,7 +23,6 @@ package lints
 import (
 	_ "embed"
 	"fmt"
-	"sort"
 	"strings"
 	"sync"
 )
@@ -146,15 +146,6 @@ func Registered() *Registry {
 	return registered
 }
 
-// ErrLintSuppression is the base every refusal of a suppression-list entry
-// wraps.
-//
-// A suppression list is refused for one of two reasons -- the code is not in
-// the registry, or the code is error-severity and therefore not suppressible.
-// Both are the same event to a caller (the list is bad, say so and stop), so
-// one errors.Is check covers them.
-var ErrLintSuppression = fmt.Errorf("lint suppression list refused")
-
 // UnknownLintCodeError reports a code the registry does not carry.
 //
 // Every emittable code is declared in the registry document. An undeclared
@@ -167,28 +158,6 @@ type UnknownLintCodeError struct {
 
 func (e *UnknownLintCodeError) Error() string { return e.Message }
 
-// Unwrap reports [ErrLintSuppression], so one errors.Is check covers both
-// refusals.
-func (e *UnknownLintCodeError) Unwrap() error { return ErrLintSuppression }
-
-// UnsuppressableLintCodeError reports a suppression list that named an
-// error-severity code.
-//
-// Suppression reaches warning-severity codes only. An error says the build is
-// wrong -- a broken emitted reference, a missing description, a post whose
-// slug moved -- and silencing it hides the defect rather than resolving it,
-// which is how a broken build once passed its own check. The registry is the
-// severity authority, so the refusal is decided there and nowhere else.
-type UnsuppressableLintCodeError struct {
-	Message string
-}
-
-func (e *UnsuppressableLintCodeError) Error() string { return e.Message }
-
-// Unwrap reports [ErrLintSuppression], so one errors.Is check covers both
-// refusals.
-func (e *UnsuppressableLintCodeError) Unwrap() error { return ErrLintSuppression }
-
 // LintSeverity returns the registered severity for code, or an
 // [UnknownLintCodeError].
 func LintSeverity(code string) (string, error) {
@@ -200,105 +169,6 @@ func LintSeverity(code string) (string, error) {
 				"with its severity and description.", code, registryDocumentName)}
 	}
 	return spec.Severity, nil
-}
-
-// ValidateLintCodes refuses any code the registry rejects for suppression.
-//
-// Two refusals, both decided by the registry:
-//
-//   - An unregistered code suppresses nothing and hides the fact that it
-//     suppresses nothing, so it is refused where the list is read rather than
-//     left silently inert.
-//   - A registered error-severity code is not suppressible at all.
-//     Suppression reaches warnings only; an error means the build is wrong,
-//     and silencing it hides the defect.
-//
-// source names where the codes came from in the message (for instance
-// "lint_ignore" or "--ignore"). Unregistered codes are reported before
-// severity, so a typo is reported as a typo, and every offending code is
-// named rather than just the first.
-func ValidateLintCodes(codes []string, source string) error {
-	reg := Registered()
-
-	var unknown []string
-	for _, code := range codes {
-		if !reg.Has(code) {
-			unknown = append(unknown, code)
-		}
-	}
-	if len(unknown) > 0 {
-		quoted := make([]string, len(unknown))
-		for i, code := range unknown {
-			quoted[i] = "'" + code + "'"
-		}
-		return &UnknownLintCodeError{Message: fmt.Sprintf(
-			"%s names lint code(s) the registry does not carry: "+
-				"%s. Every suppressible code is declared in the lint "+
-				"registry (internal/lints/%s); known codes are: %s.",
-			source, strings.Join(quoted, ", "), registryDocumentName,
-			strings.Join(sortedCodes(reg), ", "))}
-	}
-
-	var errorCodes []string
-	for _, code := range codes {
-		spec, _ := reg.Spec(code)
-		if spec.Severity == "error" {
-			errorCodes = append(errorCodes,
-				fmt.Sprintf("%s (severity: %s)", code, spec.Severity))
-		}
-	}
-	if len(errorCodes) > 0 {
-		var suppressible []string
-		for _, code := range sortedCodes(reg) {
-			if spec, _ := reg.Spec(code); spec.Severity == "warning" {
-				suppressible = append(suppressible, code)
-			}
-		}
-		return &UnsuppressableLintCodeError{Message: fmt.Sprintf(
-			"%s names error-severity lint code(s), which cannot be "+
-				"suppressed: %s. An error says the build is wrong -- fix "+
-				"the defect it reports. Suppression reaches warning-severity "+
-				"codes only: %s.",
-			source, strings.Join(errorCodes, ", "),
-			strings.Join(suppressible, ", "))}
-	}
-
-	return nil
-}
-
-// sortedCodes returns every registered code sorted by code point, the order
-// the refusal messages list them in.
-func sortedCodes(reg *Registry) []string {
-	out := reg.Codes()
-	sort.Strings(out)
-	return out
-}
-
-// ParseIgnoreCodes parses a comma-separated --ignore value into a validated
-// code set.
-//
-// source names the flag a rejection is attributed to. An empty value means no
-// suppression, not an error. Every code is checked through
-// [ValidateLintCodes], so an unregistered or error-severity code is refused
-// here rather than silently suppressing nothing.
-func ParseIgnoreCodes(raw, source string) (map[string]struct{}, error) {
-	out := map[string]struct{}{}
-	if raw == "" {
-		return out, nil
-	}
-	var codes []string
-	for _, part := range strings.Split(raw, ",") {
-		if trimmed := strings.TrimSpace(part); trimmed != "" {
-			codes = append(codes, trimmed)
-		}
-	}
-	if err := ValidateLintCodes(codes, source); err != nil {
-		return nil, err
-	}
-	for _, code := range codes {
-		out[code] = struct{}{}
-	}
-	return out, nil
 }
 
 // LintResult is a single lint diagnostic.
@@ -377,24 +247,6 @@ func (l LintResult) Message() string { return l.message }
 
 // Severity returns the registry's severity for this diagnostic's code.
 func (l LintResult) Severity() string { return l.severity }
-
-// FilterLints returns the lints whose code is not in ignoreCodes.
-//
-// An empty or nil ignoreCodes returns the input unchanged, so a run with no
-// suppression list does no work.
-func FilterLints(lints []LintResult, ignoreCodes map[string]struct{}) []LintResult {
-	if len(ignoreCodes) == 0 {
-		return lints
-	}
-	out := make([]LintResult, 0, len(lints))
-	for _, lint := range lints {
-		if _, ok := ignoreCodes[lint.code]; ok {
-			continue
-		}
-		out = append(out, lint)
-	}
-	return out
-}
 
 // LintTableRow is one row of the rendered lint-rule table.
 type LintTableRow struct {
@@ -508,8 +360,8 @@ func numberValue(v any) (float64, bool) {
 // documented coverage is under the configured threshold. It returns 1 when the
 // run fails and 0 when it passes.
 //
-// lints are the diagnostics the run produced, already filtered through the
-// project's suppression list. directiveResults are the per-directive
+// lints are the diagnostics the run produced, with the repository's lint
+// options already applied ([Settings.Apply]). directiveResults are the per-directive
 // resolution results, and are nil for a reduced entry point that resolved no
 // directives (the post-build lint pass, the posts-only check). coverage is nil
 // for an entry point that measured no coverage.

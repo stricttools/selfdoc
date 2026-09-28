@@ -43,6 +43,9 @@ var commandEffects = map[string]string{
 	// ignore file and an empty vocabulary, rewrites selfdoc.json and the
 	// generated root files' headers, then auto-commits
 	"layout.migrate": "mutating",
+	// writes one entry into the options directory's docs subject document,
+	// and the directory's manifest when absent, then auto-commits
+	"options.set": "mutating",
 	// each edits the project's terms file or review list, then auto-commits
 	"vocabulary.accept":  "mutating",
 	"vocabulary.reject":  "mutating",

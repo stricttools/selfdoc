@@ -1,0 +1,413 @@
+# selfdoc's options registry: one option per lint, validated by strictspec's
+# built-in options-registry schema. Generated from lints.toml by
+# `go run ./internal/lints/genoptions`; never edit it by hand.
+
+format_version = 1
+
+[[option]]
+name = "multiple-top-level-headings"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "Multiple H1 headings on a page. Use a single `#` heading."
+
+[[option]]
+name = "skipped-heading-level"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Heading level gaps (e.g., H2 followed by H4 skipping H3)."
+
+[[option]]
+name = "empty-image-alt-text"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Image with empty alt text (`![](...)`). Add descriptive alt text."
+
+[[option]]
+name = "page-title-too-long"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "The document title this page renders exceeds 60 characters, which is past what a search result renders. Shorten the page title."
+
+[[option]]
+name = "missing-frontmatter-description"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "Missing `description` in frontmatter. Add one for meta tags."
+
+[[option]]
+name = "first-paragraph-length-out-of-range"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "First paragraph after a heading is outside the 30-80 word range. Every page type is held to the same band, generated pages included."
+
+[[option]]
+name = "low-numeric-data-density"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Low numeric data density. Pages with 200+ words should include concrete quantities; version strings and calendar years do not count."
+
+[[option]]
+name = "description-too-short-for-search-snippet"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Description is shorter than 110 characters. Aim for 110-160."
+
+[[option]]
+name = "description-too-long-for-search-snippet"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Frontmatter description exceeds 160 characters, which is past what a search result renders. Trim it."
+
+[[option]]
+name = "empty-heading-section"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Empty heading section (heading followed by another heading with no content between)."
+
+[[option]]
+name = "insufficient-theme-color-contrast"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "WCAG contrast ratio below threshold for theme colors. Fix in CSS custom properties."
+
+[[option]]
+name = "missing-page-title"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "No title source: neither frontmatter `title` nor an H1 heading exists on the page."
+
+[[option]]
+name = "meaningless-image-alt-text"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Meaningless image alt text (e.g., \"image\", \"screenshot\", or a bare filename). Write something descriptive."
+
+[[option]]
+name = "generic-link-text"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Generic anchor text like \"click here\" or \"read more\". Use descriptive link text."
+
+[[option]]
+name = "stale-page-description"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "Page content changed but frontmatter description was not updated. Review and update the description."
+
+[[option]]
+name = "manifest-disagrees-with-disk"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Manifest and disk disagree: a page or post exists on disk but is missing from `.strictmetadata/.docs-state/manifest.json`, or the manifest lists one that is gone. Run `selfdoc gen`."
+
+[[option]]
+name = "description-drifted-from-source"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "The source docstrings (or CLI schema) a page documents changed while its description did not. Update the description, or run `selfdoc baseline accept <page>` if it is still accurate."
+
+[[option]]
+name = "description-restates-name"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "The frontmatter description restates the page or symbol name instead of describing it."
+
+[[option]]
+name = "description-too-short"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "Frontmatter description is shorter than 20 characters."
+
+[[option]]
+name = "reference-page-description-too-short"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "A page carrying a `ref` directive has a description shorter than 30 characters."
+
+[[option]]
+name = "broken-page-link"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "A Markdown link points at a `.md` page that does not exist in the docs tree."
+
+[[option]]
+name = "directive-path-not-on-disk"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A directive's `path` resolves but names a file that is not on disk."
+
+[[option]]
+name = "undocumented-parameter"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "A referenced symbol has a parameter its docstring never documents."
+
+[[option]]
+name = "undocumented-return-value"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "A referenced symbol returns a value its docstring never documents."
+
+[[option]]
+name = "code-block-syntax-error"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "A Python or JSON code block does not parse. Fix the snippet's syntax."
+
+[[option]]
+name = "code-block-validation-failed"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A code block marked `validate` failed its configured validator. The message carries the validator's exit code and output tail."
+
+[[option]]
+name = "code-block-validator-not-configured"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A code block is marked `validate` but no `examples` command is configured for its language. Add one, or drop the marker."
+
+[[option]]
+name = "undocumented-cli-command-or-flag"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "strictcli project: a CLI reference page is missing for a command, or a flag in the schema is not documented on its page."
+
+[[option]]
+name = "cli-help-text-too-short"
+subject = "docs"
+values = "warn > off"
+default = "warn"
+scope = "none"
+description = "strictcli project: a command, group, or flag help text is shorter than 50 characters."
+
+[[option]]
+name = "unsupported-source-language"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A configured source entry names a language selfdoc has no extractor for."
+
+[[option]]
+name = "search-indexer-not-installed"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "pagefind is not installed, so the build cannot index the site."
+
+[[option]]
+name = "version-tag-not-extractable"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A version listed in `versions` could not be extracted from its git tag, so it could not be validated."
+
+[[option]]
+name = "version-mismatch-with-project-manifest"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "`version` in selfdoc.json does not match the version detected from the project manifest (pyproject.toml, package.json, or a `VERSION` file)."
+
+[[option]]
+name = "version-mismatch-with-versions-array"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "The last entry of the `versions` array does not match `version` in selfdoc.json."
+
+[[option]]
+name = "version-mismatch-in-generated-root-file"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A generated root file that embeds `project.version` does not contain the expected version. Regenerate with `selfdoc gen --version-override <v>`."
+
+[[option]]
+name = "unknown-word"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A word in page prose is in neither the vendored English word list nor the project's accepted vocabulary (selfdoc's built-in baseline and .strictmetadata/vocabulary/terms.toml). Fix the misspelling, or accept a genuine term with `selfdoc vocabulary accept <word> --meaning <text>`; a word pending in .strictmetadata/vocabulary/review.toml is resolved with `selfdoc vocabulary approve <word>` or `selfdoc vocabulary drop <word>`."
+
+[[option]]
+name = "unused-accepted-word"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A word .strictmetadata/vocabulary/terms.toml accepts is used by no page, as itself or as an alias. Remove it with `selfdoc vocabulary remove <word>`."
+
+[[option]]
+name = "duplicate-vocabulary-entry"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = ".strictmetadata/vocabulary/terms.toml accepts or rejects the same word twice, in the file or on top of selfdoc's built-in baseline. Remove the project's entries with `selfdoc vocabulary remove <word>` and add the one that is needed back."
+
+[[option]]
+name = "accepted-word-matches-rejected-pattern"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "An accepted word is covered by a rejected suffix or prefix, so the two lists disagree about it. A word of selfdoc's built-in baseline is changed only in selfdoc itself, so the project narrows its pattern: `selfdoc vocabulary remove <pattern>`, then `selfdoc vocabulary reject <word> --kind word --reason <text>` for each word meant. A word the project accepts is resolved by removing it with `selfdoc vocabulary remove <word>`, or by narrowing the pattern."
+
+[[option]]
+name = "rejected-term-in-prose"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A page's prose uses a rejected term. Rewrite the passage without it; a rejection the project declared and no longer wants is removed with `selfdoc vocabulary remove <pattern>`."
+
+[[option]]
+name = "unsorted-vocabulary-entries"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "An array in .strictmetadata/vocabulary/terms.toml or review.toml is not sorted by word, case-folded. Move the named entry to its place."
+
+[[option]]
+name = "missing-post-date"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A post is missing the required `date` field in its frontmatter."
+
+[[option]]
+name = "missing-post-title"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A post is missing the required `title` field in its frontmatter."
+
+[[option]]
+name = "malformed-post-date"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A post's `date` is not written as YYYY-MM-DD."
+
+[[option]]
+name = "duplicate-post-slug"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "Two posts resolve to the same slug."
+
+[[option]]
+name = "changed-published-post-slug"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A published post's slug changed, which would break its permalink."
+
+[[option]]
+name = "invalid-post-directives-declaration"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A post is missing the required `directives` declaration, or declares something other than `true`/`false`. Every post states whether it may carry directive markers; there is no default."
+
+[[option]]
+name = "directive-marker-in-post-without-directives"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A post declaring `directives = false` carries a directive marker. The message names the marker and the line it sits on."
+
+[[option]]
+name = "broken-emitted-reference"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "An emitted reference -- a link, a canonical, a sitemap entry or a feed link -- names a file the build did not write."
+
+[[option]]
+name = "unified-project-without-config"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A project listed in the `unified` section has no selfdoc.json."
+
+[[option]]
+name = "unified-project-check-failed"
+subject = "docs"
+values = "error > warn > off"
+default = "error"
+scope = "none"
+description = "A constituent project, or the docs-site's own content, could not be checked."

@@ -1,6 +1,6 @@
 +++
 title = "Check Guide"
-description = "Run selfdoc check to validate directives, measure two-tier coverage and read what a skeleton-only symbol really means, execute marked examples, spell-check page prose, lint blog posts alongside documentation pages, and apply every registered lint rule with its declared severity -- suppressing warnings only, never errors."
+description = "Run selfdoc check to validate directives, measure two-tier coverage and read what a skeleton-only symbol really means, execute marked examples, spell-check page prose, lint blog posts alongside documentation pages, and apply every registered lint rule at the value its option sets, never above its declared severity."
 nav_group = "Guides"
 nav_order = 10
 +++
@@ -83,7 +83,7 @@ Modules listed in `gen.exclude` are excluded from both coverage calculations and
 
 ## Lint Rules
 
-Every `selfdoc check` invocation runs the whole lint registry: SEO and page structure, description staleness and source drift, cross-references and symbol documentation, example validation, CLI reference completeness, version consistency, blog posts, and unified sites. Each rule has a unique code, a severity, and an actionable message explaining what is wrong and how to fix it. Errors cause a non-zero exit; warnings are informational. Each code and its severity are declared once, in the lint registry embedded in the binary, and the table below is rendered from it.
+Every `selfdoc check` invocation runs the whole lint registry: SEO and page structure, description staleness and source drift, cross-references and symbol documentation, example validation, CLI reference completeness, version consistency, blog posts, and unified sites. Each rule has a unique name, a severity, and an actionable message explaining what is wrong and how to fix it. Errors cause a non-zero exit; warnings are informational. Each name and its severity are declared once, in the lint registry embedded in the binary, and the table below is rendered from it. A repository changes how a lint runs through its option; see [Lint options](#lint-options).
 
 :-: table-lints
 
@@ -112,10 +112,10 @@ accepts a word when selfdoc's built-in baseline or the project's own
 file outside the repository: the same committed docs get the same verdict on
 every machine.
 
-unknown-word is error severity and cannot be suppressed. Fixing the prose or
-accepting the term are the two available answers, which is the point: a
-misspelling on a published page is a defect, and the vocabulary records the
-deliberate decision that a word is not one. Each finding names the command
+unknown-word is error severity. Fixing the prose or accepting the term are the
+answers it expects, which is the point: a misspelling on a published page is a
+defect, and the vocabulary records the deliberate decision that a word is not
+one. Each finding names the command
 that accepts the word.
 
 `selfdoc spell-corpus` runs the same engine over every selfdoc project sitting
@@ -200,25 +200,53 @@ baseline's, and by removing the word or narrowing the pattern when it is the
 project's), a page whose prose uses a rejected term (rejected-term-in-prose), and an array out
 of order (unsorted-vocabulary-entries).
 
-### Suppressing rules
+### Lint options
 
-Suppress specific lint rules globally in your config or per invocation via CLI flags. Both sources are merged, so you can set baseline suppressions in config and add per-run overrides as needed. Use suppression sparingly since each rule catches real SEO or accessibility issues:
+Each lint is an option: `selfdoc:<lint name>`, filed in the repository's
+`.strictmetadata/options/docs.toml`. It is how a repository changes how a lint
+runs, and every entry carries its reason, so how a repository
+departs from selfdoc's defaults is visible in one place. An error lint runs at
+`error > warn > off`, a warning lint at `warn > off`, and each runs at its
+registered severity until an entry says otherwise. No entry can raise a lint
+above its registered severity.
 
-```json
-{
-  "lint_ignore": ["first-paragraph-length-out-of-range", "low-numeric-data-density"]
-}
-```
+| Value | What the check does |
+| ----- | ------------------- |
+| `error` | Reports the lint as an error, which fails the run. |
+| `warn` | Reports the lint as a warning, which never fails the run. |
+| `off` | Does not report the lint. |
 
-Or per invocation with `--ignore`:
+An entry names the value the repository runs today (`current`) and the value
+it should run (`ideal`), and `selfdoc options set` writes it:
 
 ```bash
-selfdoc check --ignore first-paragraph-length-out-of-range,low-numeric-data-density
+selfdoc options set selfdoc:low-numeric-data-density --current off --ideal off --reason "reference pages list no quantities"
 ```
 
-Both sources are combined -- CLI flags and config are merged.
+```toml
+format_version = 1
 
-Suppression reaches warning-severity codes only. Naming an error-severity code -- in `lint_ignore` or in `--ignore` -- is a hard error that names the code and its severity, and the run stops before any checking happens. An error says the build is wrong: a broken emitted reference, a missing description, a post whose slug moved. Silencing it hides the defect instead of resolving it, which is how a genuinely broken build once passed its own check. Fix the defect, or change the rule's severity in the registry if the rule itself is wrong.
+[[entry]]
+id = "selfdoc:low-numeric-data-density"
+current = "off"
+ideal = "off"
+reason = "reference pages list no quantities"
+```
+
+The command creates `.strictmetadata/options/` and its `manifest.toml`, which
+names `strictspec` as the owner, when they are absent, updates the entry
+already there for the same option, and keeps every other line of the file.
+strictspec validates the result before anything is written. An entry ranking
+`current` below `ideal` is debt the repository owes; strictcode reports it,
+selfdoc does not.
+
+`selfdoc check` and `selfdoc build` read the entries before any work is done.
+Every document in the directory is held to strictspec's entry schema, and the
+`selfdoc:` entries to selfdoc's registry, so a value the option does not
+declare, an entry in another subject file, a scope, an entry equal to the
+default, a repeated entry, or a `current` ranked above its `ideal` stops the
+run with strictspec's diagnostic, naming the file and the fix. Another tool's
+entries are held to the schema and nothing else.
 
 ## Staleness Detection
 

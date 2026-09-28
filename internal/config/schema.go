@@ -359,19 +359,6 @@ var Schema = []FieldSpec{
 	},
 	// --- optional list fields ---
 	{
-		Name:           "lint_ignore",
-		Type:           FieldList,
-		DefaultFactory: emptyList,
-		AllowEmpty:     true,
-		ItemSpec: &FieldSpec{
-			Name:        "<item>",
-			Type:        FieldStr,
-			Pattern:     `^[a-z]+(-[a-z]+)*$`,
-			Description: "Warning-severity lint rule ID to ignore (e.g. first-paragraph-length-out-of-range, low-numeric-data-density, broken-page-link).",
-		},
-		Description: "List of warning-severity lint rule IDs to suppress (e.g. 'first-paragraph-length-out-of-range', 'low-numeric-data-density'). Error-severity codes cannot be suppressed and are refused at load.",
-	},
-	{
 		Name:           "root_files",
 		Type:           FieldList,
 		DefaultFactory: emptyList,

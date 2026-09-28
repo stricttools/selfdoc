@@ -455,24 +455,6 @@ func TestLINK001OverTheBuiltTree(t *testing.T) {
 	})
 }
 
-func TestFilterLints(t *testing.T) {
-	result := &CheckResult{}
-	fixture := lintProject(t)
-	write(t, filepath.Join(fixture.DocsDir, "page.md"), "# Title\n\nText.\n")
-	result.Lints = runLintsOn(t, fixture, nil)
-
-	if !hasCode(result.Lints, "missing-frontmatter-description") {
-		t.Fatalf("the fixture produced no missing-frontmatter-description: %v", codes(result.Lints))
-	}
-	filtered := FilterLints(result.Lints, map[string]struct{}{"missing-frontmatter-description": {}})
-	if hasCode(filtered, "missing-frontmatter-description") {
-		t.Error("a suppressed code survived the filter")
-	}
-	if len(FilterLints(result.Lints, nil)) != len(result.Lints) {
-		t.Error("an empty suppression list changed the diagnostics")
-	}
-}
-
 func TestCoverageBelowThreshold(t *testing.T) {
 	isolate(t)
 	result := &CheckResult{
