@@ -83,7 +83,7 @@ severity = "warning"
 description = "Meaningless image alt text (e.g., \"image\", \"screenshot\", or a bare filename). Write something descriptive."
 
 [[lints]]
-code = "generic-anchor-text"
+code = "generic-link-text"
 severity = "warning"
 description = "Generic anchor text like \"click here\" or \"read more\". Use descriptive link text."
 

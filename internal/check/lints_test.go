@@ -494,29 +494,29 @@ func TestSEOAltAndAnchorRules(t *testing.T) {
 			absent: []string{"meaningless-image-alt-text"},
 		},
 		{
-			name: "generic-anchor-text generic anchor text",
+			name: "generic-link-text generic anchor text",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"For details, [click here](https://example.com).\n",
-			want: []string{"generic-anchor-text"},
+			want: []string{"generic-link-text"},
 			assert: func(t *testing.T, _ lintFixture, results []lints.LintResult) {
 				if !strings.Contains(
-					onlyMessage(t, results, "generic-anchor-text").Message(), "click here",
+					onlyMessage(t, results, "generic-link-text").Message(), "click here",
 				) {
-					t.Error("generic-anchor-text does not quote the anchor text")
+					t.Error("generic-link-text does not quote the anchor text")
 				}
 			},
 		},
 		{
-			name: "generic-anchor-text descriptive anchor text is silent",
+			name: "generic-link-text descriptive anchor text is silent",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"See [the release workflow](https://example.com).\n",
-			absent: []string{"generic-anchor-text"},
+			absent: []string{"generic-link-text"},
 		},
 		{
-			name: "generic-anchor-text inside a code block is silent",
+			name: "generic-link-text inside a code block is silent",
 			page: "+++\ndescription = \"test\"\n+++\n# Title\n\n" +
 				"```markdown\n[click here](https://example.com)\n```\n",
-			absent: []string{"generic-anchor-text"},
+			absent: []string{"generic-link-text"},
 		},
 	})
 }

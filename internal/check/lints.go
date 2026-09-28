@@ -35,7 +35,7 @@ var meaninglessAlt = map[string]bool{
 // filenameExts matches alt text that is really a filename.
 var filenameExts = regexp.MustCompile(`(?i)\.(png|jpg|jpeg|gif|svg|webp)$`)
 
-// genericAnchors is the link text generic-anchor-text refuses: text that describes the act
+// genericAnchors is the link text generic-link-text refuses: text that describes the act
 // of clicking rather than the destination.
 var genericAnchors = map[string]bool{
 	"click here": true, "here": true, "this link": true, "this page": true,
@@ -515,7 +515,7 @@ func runLints(
 			}
 		}
 
-		// generic-anchor-text -- generic anchor text, in text-bearing tokens only.
+		// generic-link-text -- generic anchor text, in text-bearing tokens only.
 		for _, token := range tokens {
 			if !tokenizer.IsTextBearing(token) {
 				continue
@@ -525,7 +525,7 @@ func runLints(
 					text := util.PythonStrip(match[1])
 					if genericAnchors[strings.ToLower(text)] {
 						results = append(results, lints.MustLintResult(
-							relPath, lineOf(token.Start()+offset+fmOffset), "generic-anchor-text",
+							relPath, lineOf(token.Start()+offset+fmOffset), "generic-link-text",
 							fmt.Sprintf(
 								"Generic anchor text '%s'; use descriptive link text",
 								text,
