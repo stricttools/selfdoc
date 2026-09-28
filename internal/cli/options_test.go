@@ -436,4 +436,32 @@ func TestOptionsSetRefusesADirectoryAnotherOwnerClaims(t *testing.T) {
 	if exists(filepath.Join(optionsDir(dir), "docs.toml")) {
 		t.Error("the refused command wrote docs.toml")
 	}
+	// The refusal names the line to write; writing it clears the refusal.
+	if !strings.Contains(result.Stderr, "owner = \"strictspec\"") {
+		t.Fatalf("the refusal does not name the line to write:\n%s", result.Stderr)
+	}
+	writeText(t, filepath.Join(optionsDir(dir), "manifest.toml"), "owner = \"strictspec\"\n")
+	fixed := run(t, dir, "options", "set", "selfdoc:low-numeric-data-density",
+		"--current", "off", "--ideal", "off", "--reason", "r", "--no-auto-commit")
+	if fixed.ExitCode != 0 {
+		t.Errorf("the fix did not clear the refusal: exit %d\n%s", fixed.ExitCode, fixed.Stderr)
+	}
+}
+
+// An ideal of non-existent, as the --ideal help offers, records a value
+// selfdoc does not offer yet: the entry is waiting on the tool.
+func TestOptionsSetAcceptsAnIdealSelfdocDoesNotOfferYet(t *testing.T) {
+	isolate(t)
+	dir := initialized(t)
+	result := run(t, dir, "--json", "options", "set", "selfdoc:low-numeric-data-density",
+		"--current", "off", "--ideal", "non-existent", "--reason", "the lint should count table cells", "--no-auto-commit")
+	if result.ExitCode != 0 {
+		t.Fatalf("exit %d:\n%s", result.ExitCode, result.Stderr)
+	}
+	if class := payloadOf(t, result)["class"]; class != "waiting-on-tool" {
+		t.Errorf("class = %v, want waiting-on-tool", class)
+	}
+	if check := run(t, dir, "check", "--json", "--no-auto-commit"); strings.Contains(check.Stderr, "STRICTSPEC_") {
+		t.Errorf("the check refuses the entry options set wrote:\n%s", check.Stderr)
+	}
 }
