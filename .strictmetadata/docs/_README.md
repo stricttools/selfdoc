@@ -53,6 +53,7 @@ Your `selfdoc.json` needs `versions` and `locales` -- even for a single-version,
 
 - **Directive syntax** -- embed live API references, schemas, tests, and CLI help directly from source code (`:-:`, `:<:`, `:>:`)
 - **Auto-generated pages** -- API reference and CLI docs from source code structure (`selfdoc gen`)
+- **Generated repository files** -- `README.md` and `.claude/CLAUDE.md` (where Claude Code reads it) resolved from directive templates listed in `root_files`, written read-only by `selfdoc gen`
 - **Multi-version docs** -- build from git tags, cached builds, version picker UI
 - **Localization** -- parallel locale directories, hreflang tags, locale picker, per-locale sitemaps
 - **Monorepo support** -- unified site builder combines multiple projects into one docs site

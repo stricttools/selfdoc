@@ -41,7 +41,7 @@ selfdoc reads the project version from the project's own manifest: `pyproject.to
 
 ### Overriding the version during a release
 
-Documentation is generated *before* the version bump lands, so anything that resolves `project.version` at generation time -- most importantly a root file such as `CLAUDE.md` or `README.md` produced from a template -- would otherwise be committed showing the previous version, on every single release. Pass the about-to-be-released version explicitly:
+Documentation is generated *before* the version bump lands, so anything that resolves `project.version` at generation time -- most importantly a generated file such as `.claude/CLAUDE.md` or `README.md` produced from a template -- would otherwise be committed showing the previous version, on every single release. Pass the about-to-be-released version explicitly:
 
 ```
 selfdoc gen --version-override 1.4.0
@@ -59,6 +59,12 @@ Documentation *pages* need no override -- they keep the `var` directive in their
 ### Docs checks during release
 
 A `selfdoc.json` in the project root is all the wiring there is. rlsbl's release flow runs `selfdoc gen --no-auto-commit` and then `selfdoc check` as built-in steps, before the version bump, so broken directives, coverage regressions and SEO errors stop the release before anything is tagged. Neither step needs a hook, and a machine with no `selfdoc` on `PATH` skips both with a note rather than failing.
+
+### The generated CLAUDE.md and the upload check
+
+rlsbl's `upload-private-paths` check refuses a release whose upload would carry agent instructions, a `CLAUDE.md` included. Go leaves only a whole directory holding its own `go.mod` out of a module zip, so a `CLAUDE.md` at a Go module's root cannot be excluded where it stands. selfdoc generates it at `.claude/CLAUDE.md`, and `rlsbl scaffold` writes a stub `go.mod` in `.claude/` once git tracks a file there, which keeps the file out of the zip.
+
+A repository whose `CLAUDE.md` an earlier selfdoc generated at its root gets that refusal with selfdoc's fix named: upgrade selfdoc, run `selfdoc layout migrate --dry-run` and then `selfdoc layout migrate`, which moves the file to `.claude/CLAUDE.md` and commits (see [Layout](../layout/)), then `rlsbl scaffold` for the stub.
 
 ### Post-release build and deploy
 

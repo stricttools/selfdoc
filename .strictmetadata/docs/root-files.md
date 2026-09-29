@@ -1,25 +1,43 @@
 +++
 title = "Root Files"
-description = "How selfdoc generates root-level files like README.md and CLAUDE.md from directive-powered templates in your .strictmetadata/docs/ directory."
+description = "How selfdoc generates repository-level files like README.md and .claude/CLAUDE.md from directive-powered templates in your .strictmetadata/docs/ directory."
 nav_group = "Guides"
 nav_order = 16
 +++
 
 # Root Files
 
-selfdoc can generate root-level project files (like `README.md` and `CLAUDE.md`) from templates that live in your `.strictmetadata/docs/` directory. The templates use the same directive syntax as your documentation pages, so the generated files always reflect the current state of your source code.
+selfdoc can generate repository-level project files (like `README.md` and `.claude/CLAUDE.md`) from templates that live in your `.strictmetadata/docs/` directory. The templates use the same directive syntax as your documentation pages, so the generated files always reflect the current state of your source code.
 
 ## How It Works
 
 1. You create a template in `.strictmetadata/docs/` with an underscore prefix (e.g., `.strictmetadata/docs/_README.md`, `.strictmetadata/docs/_CLAUDE.md`).
 2. You list those templates in the `root_files` config array.
-3. When you run `selfdoc gen`, each template is read, its directives are resolved against your source code, and the result is written to the project root (without the underscore). Generated files are set to mode 444 (read-only) to prevent accidental edits.
+3. When you run `selfdoc gen`, each template is read, its directives are resolved against your source code, and the result is written to the template's output path. Generated files are set to mode 444 (read-only) to prevent accidental edits.
 
-So `.strictmetadata/docs/_README.md` becomes `README.md`, and `.strictmetadata/docs/_CLAUDE.md` becomes `CLAUDE.md`.
+The output path is fixed by the template's name, with no setting to change it:
+
+| Template | Generates |
+|----------|-----------|
+| `_CLAUDE.md` | `.claude/CLAUDE.md` |
+| any other `_NAME.md` | `NAME.md` at the project root |
+
+So `.strictmetadata/docs/_README.md` becomes `README.md`, and `.strictmetadata/docs/_CLAUDE.md` becomes `.claude/CLAUDE.md`; gen creates `.claude/` when it does not exist.
+
+## Why CLAUDE.md goes under `.claude/`
+
+Claude Code loads `<project>/.claude/CLAUDE.md` as it loads a `CLAUDE.md` at the project root, so the generated instructions reach the agent from either place. Under `.claude/` the file stays out of the project's top level, beside the `.claude/settings.json` it belongs with, and in a Go module a stub `go.mod` in `.claude/` keeps it out of the published module zip, which a file at the module root cannot be (see [rlsbl Integration](../rlsbl-integration/)). When both a root `CLAUDE.md` and `.claude/CLAUDE.md` exist, Claude Code loads both, so a repository keeps only one.
+
+A `CLAUDE.md` that an earlier selfdoc generated at the project root is refused by `selfdoc gen` and reported by `selfdoc check` as `generated-claude-md-at-repository-root`. `selfdoc layout migrate` moves it (see [Layout](../layout/)):
+
+```bash
+selfdoc layout migrate --dry-run
+selfdoc layout migrate
+```
 
 ## Configuration
 
-Add the template paths to `root_files` in your `selfdoc.json`. Each entry must be an underscore-prefixed file in `.strictmetadata/docs/` that serves as the template for a root-level project file. The underscore prefix distinguishes templates from regular documentation pages that appear on the built site:
+Add the template paths to `root_files` in your `selfdoc.json`. The key names the templates that generate repository-level files, wherever each output is placed. Each entry must be an underscore-prefixed file in `.strictmetadata/docs/`. The underscore prefix distinguishes templates from regular documentation pages that appear on the built site:
 
 ```json
 {
@@ -29,8 +47,6 @@ Add the template paths to `root_files` in your `selfdoc.json`. Each entry must b
   ]
 }
 ```
-
-Each entry must be an underscore-prefixed file in `.strictmetadata/docs/`. The underscore prefix is mandatory -- it distinguishes templates from regular documentation pages.
 
 ## Template Format
 
@@ -74,21 +90,23 @@ This header serves two purposes:
 > [!WARNING]
 > If a file exists at the output path and does not have the auto-generated header, selfdoc refuses to overwrite it. This prevents accidentally destroying a hand-written file. Delete or rename the existing file first if you want selfdoc to take over.
 
+## Ignored Output Paths
+
+A generated file is committed, so gen refuses an output path git ignores, before it writes anything. The refusal names the ignore file, the line, and the rule that match, and asks for a narrower rule. A `.gitignore` that ignores all of `.claude/` to keep Claude Code's personal settings out of git is the common case: ignore `.claude/settings.local.json` instead, and `.claude/CLAUDE.md` can be committed.
+
 ## Read-Only Permissions
 
-Generated root files are set to `chmod 444` (read-only) after writing. This is a safety measure -- if you or your editor accidentally open the generated file and try to save changes, the OS will block the write. Always edit the template in `.strictmetadata/docs/`, never the generated output.
+Generated files are set to `chmod 444` (read-only) after writing. This is a safety measure -- if you or your editor accidentally open the generated file and try to save changes, the OS will block the write. Always edit the template in `.strictmetadata/docs/`, never the generated output.
 
 ## Regenerating
 
-Run `selfdoc gen` to regenerate all root files from their templates. This resolves every directive in every template listed in `root_files`, overwrites the output files, and sets them to read-only permissions. It also runs automatically as part of `selfdoc build`:
+Run `selfdoc gen` to regenerate every file from its template. This resolves every directive in every template listed in `root_files`, overwrites the output files, and sets them to read-only permissions:
 
 ```bash
 selfdoc gen
 ```
 
-This resolves directives in every template listed in `root_files` and overwrites the output files. It is also run as part of `selfdoc build`, so your root files stay current whenever you build the docs site.
-
 > [!TIP]
-> If you use rlsbl for releases, add `selfdoc gen` to your pre-checks hook so root files are always up to date before a release is tagged.
+> If you use rlsbl for releases, its release flow runs `selfdoc gen` itself, before the version bump, so the generated files are current when a release is tagged (see [rlsbl Integration](../rlsbl-integration/)).
 
 Next: [Data Generation](../gen-data-guide/) -->

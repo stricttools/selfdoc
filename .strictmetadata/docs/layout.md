@@ -188,17 +188,36 @@ then:
 - rewrites every `selfdoc.json` value naming a moved path (`docs`, `output`,
   `root_files`, a custom directive's script) and the header line of every
   generated root file;
+- moves a `CLAUDE.md` an earlier selfdoc generated at the repository root to
+  `.claude/CLAUDE.md` (see below);
 - writes an empty `.strictmetadata/vocabulary/terms.toml` when the project has none;
 - converts the manifests (see below);
 - commits the whole move, unless `--no-auto-commit` is passed.
 
 Only selfdoc's directories move: another tool's directory under the previous
 root stays where it is, with its lines of the ignore file. A repository already
-on this layout with its manifests converted, one part-way through a move
-(selfdoc's directories under a previous root and `.strictmetadata/`, with the
-`git mv` commands that put them back), one keeping selfdoc's directories under
-both previous roots, and one that never used a previous layout are each refused
-with what to do instead.
+on this layout with its manifests converted and no generated `CLAUDE.md` at its
+root, one part-way through a move (selfdoc's directories under a previous root
+and `.strictmetadata/`, with the `git mv` commands that put them back), one
+keeping selfdoc's directories under both previous roots, and one that never
+used a previous layout are each refused with what to do instead.
+
+### Moving the generated CLAUDE.md under `.claude/`
+
+The `_CLAUDE.md` template generates `.claude/CLAUDE.md`, which Claude Code loads
+as it loads a `CLAUDE.md` at the project root (see
+[Root Files](../root-files/)). An earlier selfdoc generated it at the repository
+root. Such a file -- one whose first line is selfdoc's generated-file header --
+is refused by `selfdoc gen` and reported by `selfdoc check` as
+`generated-claude-md-at-repository-root`, both naming the move, and
+`selfdoc layout migrate` moves it to `.claude/CLAUDE.md` and commits: in the
+same commit as the directories for a repository on a previous layout, and on its
+own for one already on `.strictmetadata/`. The dry run prints it as
+`move CLAUDE.md -> .claude/CLAUDE.md`. The move is refused when
+`.claude/CLAUDE.md` exists already, naming the `git rm` of whichever of the two
+is not current, and when git ignores `.claude/CLAUDE.md`, naming the ignore file,
+its line, and a narrower rule. A hand-written root `CLAUDE.md` is not selfdoc's,
+and stays where it is.
 
 ### Converting the manifests
 
