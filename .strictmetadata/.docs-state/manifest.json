@@ -6840,6 +6840,16 @@
         },
         {
           "level": 3,
+          "text": "`ClaudeOutputRel`",
+          "anchor": "claudeoutputrel"
+        },
+        {
+          "level": 3,
+          "text": "`PreviousClaudeOutputRel`",
+          "anchor": "previousclaudeoutputrel"
+        },
+        {
+          "level": 3,
           "text": "`GenResult`",
           "anchor": "genresult"
         },
@@ -6865,8 +6875,33 @@
         },
         {
           "level": 3,
+          "text": "`HasGeneratedHeader`",
+          "anchor": "hasgeneratedheader"
+        },
+        {
+          "level": 3,
           "text": "`RootFileOutputName`",
           "anchor": "rootfileoutputname"
+        },
+        {
+          "level": 3,
+          "text": "`PreviousClaudeOutputMessage`",
+          "anchor": "previousclaudeoutputmessage"
+        },
+        {
+          "level": 3,
+          "text": "`RefusePreviousClaudeOutput`",
+          "anchor": "refusepreviousclaudeoutput"
+        },
+        {
+          "level": 3,
+          "text": "`RefuseIgnoredOutput`",
+          "anchor": "refuseignoredoutput"
+        },
+        {
+          "level": 3,
+          "text": "`RootFileOutputPreconditions`",
+          "anchor": "rootfileoutputpreconditions"
         },
         {
           "level": 3,
@@ -8392,6 +8427,11 @@
         },
         {
           "level": 3,
+          "text": "`ExistingClaudeOutputError`",
+          "anchor": "existingclaudeoutputerror"
+        },
+        {
+          "level": 3,
           "text": "`PlanMigration`",
           "anchor": "planmigration"
         },
@@ -8407,6 +8447,11 @@
         },
         {
           "level": 3,
+          "text": "`Plan.Summary`",
+          "anchor": "plansummary"
+        },
+        {
+          "level": 3,
           "text": "`NotNeededError.Error`",
           "anchor": "notneedederrorerror"
         },
@@ -8419,6 +8464,11 @@
           "level": 3,
           "text": "`SeveralPreviousRootsError.Error`",
           "anchor": "severalpreviousrootserrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`ExistingClaudeOutputError.Error`",
+          "anchor": "existingclaudeoutputerrorerror"
         }
       ]
     },
@@ -11294,6 +11344,11 @@
         },
         {
           "level": 3,
+          "text": "Moving the generated CLAUDE.md under `.claude/`",
+          "anchor": "moving-the-generated-claudemd-under-claude"
+        },
+        {
+          "level": 3,
           "text": "Converting the manifests",
           "anchor": "converting-the-manifests"
         },
@@ -11537,6 +11592,11 @@
         },
         {
           "level": 3,
+          "text": "The generated CLAUDE.md and the upload check",
+          "anchor": "the-generated-claudemd-and-the-upload-check"
+        },
+        {
+          "level": 3,
           "text": "Post-release build and deploy",
           "anchor": "post-release-build-and-deploy"
         },
@@ -11569,6 +11629,11 @@
         },
         {
           "level": 2,
+          "text": "Why CLAUDE.md goes under `.claude/`",
+          "anchor": "why-claudemd-goes-under-claude"
+        },
+        {
+          "level": 2,
           "text": "Configuration",
           "anchor": "configuration"
         },
@@ -11581,6 +11646,11 @@
           "level": 2,
           "text": "Generated File Markers",
           "anchor": "generated-file-markers"
+        },
+        {
+          "level": 2,
+          "text": "Ignored Output Paths",
+          "anchor": "ignored-output-paths"
         },
         {
           "level": 2,
@@ -11898,7 +11968,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-28T00:38:10.717675+00:00",
+  "last_gen": "2026-09-29T20:18:12.460251+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [

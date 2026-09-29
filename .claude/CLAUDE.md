@@ -25,7 +25,7 @@ Code-aware static site generator. Builds full documentation sites from Markdown 
 - `baseline` -- accept the content and description hash baselines that drive stale-page-description and description-drifted-from-source
 - `blog` -- everything about writing: `blog post` creates, lists, generates and publishes posts, `blog editor` runs the local authoring app, and `blog publish-docs` publishes this project's documentation to the unified assembly without a release
 - `assembly` -- initialize, push, inspect, rebuild, republish, retire, and verify the unified multi-project site
-- `layout` -- dump selfdoc's claim on the `.strictmetadata/` directory, validate a repository against it, and migrate a repository off the previous `stricttools/` and `.stricttools/` layouts
+- `layout` -- dump selfdoc's claim on the `.strictmetadata/` directory, validate a repository against it, and migrate a repository off the previous `stricttools/` and `.stricttools/` layouts, moving a `CLAUDE.md` an earlier selfdoc generated at the repository root to `.claude/CLAUDE.md` in the same commit
 - `options` -- print selfdoc's options registry (one option per lint, `selfdoc:<lint name>`), and write this repository's entries for those options in `.strictmetadata/options/docs.toml`, validated by strictspec
 - `vocabulary` -- accept, reject and remove words in the project's `.strictmetadata/vocabulary/terms.toml`, and approve or drop the words pending in `review.toml`
 
@@ -144,7 +144,7 @@ Sandboxed script execution via bubblewrap (bwrap). Runs scripts in isolated envi
 
 ### Root file templates
 
-`.strictmetadata/docs/_CLAUDE.md` and `.strictmetadata/docs/_README.md` are templates that generate the project root `CLAUDE.md` and `README.md` via `selfdoc gen`. They support directives like any other template.
+`.strictmetadata/docs/_CLAUDE.md` and `.strictmetadata/docs/_README.md` are templates that `selfdoc gen` resolves into `.claude/CLAUDE.md` (this file) and `README.md`. They support directives like any other template. Where a template's output goes is decided in one place, `RootFileOutputName` in `internal/gen/rootfiles.go`: `_CLAUDE.md` always generates `.claude/CLAUDE.md`, which Claude Code loads as it loads a root `CLAUDE.md`, and every other template generates its basename without the underscore at the project root. gen creates `.claude/`, refuses while a `CLAUDE.md` an earlier selfdoc generated sits at the project root (naming `selfdoc layout migrate`, which moves it; `selfdoc check` reports it as `generated-claude-md-at-repository-root`), and refuses an output path git ignores, naming the ignore file, its line, and a narrower rule.
 
 ## Release workflow
 
@@ -186,7 +186,7 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - `locales` (required): array of `{code, label, default}` objects -- controls localization
 - `unified`: optional, for monorepo docs-site projects -- lists constituent projects
 - `gen_data`: optional sandboxed script execution config
-- `root_files`: templates that generate root-level files (e.g. CLAUDE.md, README.md)
+- `root_files`: the templates that generate repository-level files, wherever each is placed (`_README.md` generates `README.md`, `_CLAUDE.md` generates `.claude/CLAUDE.md`)
 - `deploy`: Cloudflare Pages or GitHub Pages provider config
 
 ## Architecture

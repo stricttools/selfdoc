@@ -52,6 +52,7 @@ Your `selfdoc.json` needs `versions` and `locales` -- even for a single-version,
 
 - **Directive syntax** -- embed live API references, schemas, tests, and CLI help directly from source code (`:-:`, `:<:`, `:>:`)
 - **Auto-generated pages** -- API reference and CLI docs from source code structure (`selfdoc gen`)
+- **Generated repository files** -- `README.md` and `.claude/CLAUDE.md` (where Claude Code reads it) resolved from directive templates listed in `root_files`, written read-only by `selfdoc gen`
 - **Multi-version docs** -- build from git tags, cached builds, version picker UI
 - **Localization** -- parallel locale directories, hreflang tags, locale picker, per-locale sitemaps
 - **Monorepo support** -- unified site builder combines multiple projects into one docs site
@@ -201,7 +202,7 @@ Dispatch order is content directives, then custom directives, then the language 
 | `glossary` | no | Auto-generate a glossary page from dfn terms. |
 | `coverage_threshold` | no | Minimum fraction of public symbols that must be documented for selfdoc check to pass (0.0-1.0). Default 1.0 requires 100% coverage. |
 | `feed_max_entries` | no | Maximum number of entries in the Atom feed, sorted by most recent. |
-| `root_files` | no | List of underscore-prefixed template paths in docs/ for root file generation. |
+| `root_files` | no | List of underscore-prefixed templates that generate repository-level files, wherever each is placed: _README.md generates README.md at the project root, and _CLAUDE.md generates .claude/CLAUDE.md. |
 | `redirects` | no | Page-level redirects expanded across all locale/version combos. |
 | `deploy` | no | Deployment configuration for publishing the generated site. |
 | `directives` | no | Custom directive mappings from directive name to source file path. |
