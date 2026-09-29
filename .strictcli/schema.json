@@ -364,6 +364,7 @@
                     "empty-heading-section",
                     "empty-image-alt-text",
                     "first-paragraph-length-out-of-range",
+                    "generated-claude-md-at-repository-root",
                     "generic-link-text",
                     "insufficient-theme-color-contrast",
                     "invalid-post-directives-declaration",
@@ -887,7 +888,7 @@
         },
         "migrate": {
           "name": "migrate",
-          "help": "Move this repository off a layout before this one: every directory whose manifest.toml names selfdoc under stricttools/ (the layout before this one, whose generated directories already start with a dot) or under .stricttools/ (the layout before that, which named every directory bare) moves under .strictmetadata/, a generated one behind a dot (stricttools/docs -> .strictmetadata/docs, stricttools/.docs-state -> .strictmetadata/.docs-state, stricttools/.docs-cache -> .strictmetadata/.docs-cache, stricttools/posts -> .strictmetadata/posts, stricttools/vocabulary -> .strictmetadata/vocabulary, .stricttools/docs -> .strictmetadata/docs, .stricttools/docs-state -> .strictmetadata/.docs-state, .stricttools/docs-cache -> .strictmetadata/.docs-cache, .stricttools/posts -> .strictmetadata/posts, .stricttools/vocabulary -> .strictmetadata/vocabulary). It creates .strictmetadata/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from the previous root's .gitignore (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, writes .strictmetadata/vocabulary/terms.toml empty when the project has none, converts the manifests (.strictmetadata/.docs-state/manifest.json and .strictmetadata/.docs-state/post-manifest.json) from schema_version 1 to 2, which records the project's accepted words and rejected patterns from .strictmetadata/vocabulary/terms.toml, and commits. A repository already on .strictmetadata/ whose manifests are on schema_version 1 gets the manifest conversion alone, and one whose .strictmetadata/vocabulary/ carries no manifest.toml -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and .strictmetadata/vocabulary/terms.toml empty when the project has none. Another tool's directories stay where they are. Refuses a repository already migrated with its manifests converted and its vocabulary directory granted, part-way through a move, holding selfdoc's directories under both previous roots, or never on a previous layout; --dry-run prints the plan and changes nothing",
+          "help": "Move this repository off a layout before this one: every directory whose manifest.toml names selfdoc under stricttools/ (the layout before this one, whose generated directories already start with a dot) or under .stricttools/ (the layout before that, which named every directory bare) moves under .strictmetadata/, a generated one behind a dot (stricttools/docs -> .strictmetadata/docs, stricttools/.docs-state -> .strictmetadata/.docs-state, stricttools/.docs-cache -> .strictmetadata/.docs-cache, stricttools/posts -> .strictmetadata/posts, stricttools/vocabulary -> .strictmetadata/vocabulary, .stricttools/docs -> .strictmetadata/docs, .stricttools/docs-state -> .strictmetadata/.docs-state, .stricttools/docs-cache -> .strictmetadata/.docs-cache, .stricttools/posts -> .strictmetadata/posts, .stricttools/vocabulary -> .strictmetadata/vocabulary). It creates .strictmetadata/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from the previous root's .gitignore (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, moves a CLAUDE.md an earlier selfdoc generated at the repository root to .claude/CLAUDE.md (where selfdoc generates it now, and Claude Code reads it), writes .strictmetadata/vocabulary/terms.toml empty when the project has none, converts the manifests (.strictmetadata/.docs-state/manifest.json and .strictmetadata/.docs-state/post-manifest.json) from schema_version 1 to 2, which records the project's accepted words and rejected patterns from .strictmetadata/vocabulary/terms.toml, and commits. A repository already on .strictmetadata/ whose manifests are on schema_version 1 gets the manifest conversion alone, and one whose .strictmetadata/vocabulary/ carries no manifest.toml -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and .strictmetadata/vocabulary/terms.toml empty when the project has none, and one whose generated CLAUDE.md is still at its root gets that move. Another tool's directories stay where they are, and so does a hand-written CLAUDE.md. Refuses a repository already migrated with its manifests converted, its vocabulary directory granted, and no generated CLAUDE.md at its root; part-way through a move; holding selfdoc's directories under both previous roots; never on a previous layout; holding .claude/CLAUDE.md beside a generated root CLAUDE.md; or ignoring .claude/CLAUDE.md in git. --dry-run prints the plan and changes nothing",
           "effect": "mutating",
           "payload_schema": {
             "additionalProperties": false,
@@ -898,6 +899,25 @@
               "deletes": {
                 "items": {
                   "type": "string"
+                },
+                "type": "array"
+              },
+              "file_moves": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to"
+                  ],
+                  "type": "object"
                 },
                 "type": "array"
               },
@@ -962,6 +982,7 @@
               "previous_root",
               "root",
               "moves",
+              "file_moves",
               "writes",
               "rewrites",
               "deletes",
@@ -1203,6 +1224,12 @@
                     "name": {
                       "type": "string"
                     },
+                    "requires": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
                     "scope": {
                       "type": "string"
                     },
@@ -1219,6 +1246,7 @@
                     "values",
                     "default",
                     "scope",
+                    "requires",
                     "description"
                   ],
                   "type": "object"
