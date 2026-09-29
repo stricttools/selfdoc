@@ -77,7 +77,7 @@ type UnmigratedError struct {
 
 func (e *UnmigratedError) Error() string {
 	return fmt.Sprintf(
-		"This repository keeps selfdoc's directories under %s/ (%s), a layout before this one, which selfdoc no longer reads. selfdoc keeps them under %s/ now, and a generated directory's name starts with a dot there. Run '%s', which moves them, rewrites the paths selfdoc.json and the generated root files name, and commits the move; '%s --dry-run' prints the plan first.",
+		"This repository keeps selfdoc's directories under %s/ (%s), a layout before this one, which selfdoc no longer reads. selfdoc keeps them under %s/ now, and a generated directory's name starts with a dot there. Run '%s', which moves them, rewrites the paths selfdoc.json and the generated root files name, moves a CLAUDE.md selfdoc generated at the repository root to .claude/CLAUDE.md, and commits the move; '%s --dry-run' prints the plan first.",
 		e.Root, strings.Join(e.Found, ", "), Root, MigrateCommand, MigrateCommand)
 }
 

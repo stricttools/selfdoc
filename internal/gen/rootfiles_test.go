@@ -3,6 +3,7 @@ package gen
 import (
 	"errors"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -381,5 +382,130 @@ func TestRootFileTemplatesGenerateInOrder(t *testing.T) {
 		if !strings.HasPrefix(read(t, filepath.Join(dir, name)), rootFileHeaderPrefix) {
 			t.Errorf("%s carries no header", name)
 		}
+	}
+}
+
+func TestRootFileOutputName(t *testing.T) {
+	for _, testCase := range []struct {
+		template string
+		want     string
+		named    bool
+	}{
+		{".strictmetadata/docs/_CLAUDE.md", ".claude/CLAUDE.md", true},
+		{".strictmetadata/docs/_README.md", "README.md", true},
+		{"docs/_CONTRIBUTING.md", "CONTRIBUTING.md", true},
+		{".strictmetadata/docs/CLAUDE.md", "", false},
+	} {
+		got, named := RootFileOutputName(testCase.template)
+		if got != testCase.want || named != testCase.named {
+			t.Errorf("RootFileOutputName(%q) = %q, %v; want %q, %v",
+				testCase.template, got, named, testCase.want, testCase.named)
+		}
+	}
+}
+
+// The _CLAUDE.md template generates .claude/CLAUDE.md, which Claude Code loads
+// as it loads a CLAUDE.md at the project root, and gen creates .claude/.
+func TestTheClaudeTemplateGeneratesUnderDotClaude(t *testing.T) {
+	isolate(t)
+	dir, cfg := rootFileProject(t, []any{".strictmetadata/docs/_CLAUDE.md"}, nil)
+	write(t, filepath.Join(dir, ".strictmetadata", "docs", "_CLAUDE.md"), "# Agent notes\n")
+
+	generated := generateRootFiles(t, cfg, dir)
+
+	if len(generated) != 1 || generated[0] != ".claude/CLAUDE.md" {
+		t.Fatalf("generated %v, want [.claude/CLAUDE.md]", generated)
+	}
+	outputPath := filepath.Join(dir, ".claude", "CLAUDE.md")
+	if content := read(t, outputPath); !strings.HasPrefix(content, rootFileHeaderPrefix) ||
+		!strings.Contains(content, "# Agent notes") {
+		t.Errorf(".claude/CLAUDE.md holds:\n%s", content)
+	}
+	if info, err := os.Stat(outputPath); err != nil || info.Mode().Perm() != 0o444 {
+		t.Errorf(".claude/CLAUDE.md: %v, %v; want mode 0444", info, err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "CLAUDE.md")); !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("a CLAUDE.md was written at the project root: %v", err)
+	}
+}
+
+// A CLAUDE.md at the project root that an earlier selfdoc generated is
+// refused, naming the move; a hand-written one is not selfdoc's to refuse.
+func TestGenRefusesAGeneratedRootClaude(t *testing.T) {
+	isolate(t)
+	dir, cfg := rootFileProject(t, []any{".strictmetadata/docs/_CLAUDE.md"}, nil)
+	write(t, filepath.Join(dir, ".strictmetadata", "docs", "_CLAUDE.md"), "# Agent notes\n")
+	write(t, filepath.Join(dir, "CLAUDE.md"),
+		RootFileHeaderLine(".strictmetadata/docs/_CLAUDE.md")+"\n\n# Agent notes\n")
+
+	_, err := GenerateRootFiles(cfg, dir, "", effects.Unbound())
+	if err == nil {
+		t.Fatal("gen generated beside a CLAUDE.md an earlier selfdoc generated at the root")
+	}
+	for _, want := range []string{"CLAUDE.md", ".claude/CLAUDE.md",
+		"selfdoc layout migrate --dry-run", "'selfdoc layout migrate'"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal does not name %q: %v", want, err)
+		}
+	}
+	if _, statErr := os.Stat(filepath.Join(dir, ".claude")); !errors.Is(statErr, os.ErrNotExist) {
+		t.Errorf("the refusal wrote .claude/: %v", statErr)
+	}
+
+	write(t, filepath.Join(dir, "CLAUDE.md"), "# Hand-written notes\n")
+	if generated := generateRootFiles(t, cfg, dir); len(generated) != 1 {
+		t.Errorf("generated %v beside a hand-written root CLAUDE.md", generated)
+	}
+}
+
+// gitIn runs one git command in dir, failing the test when it does.
+func gitIn(t *testing.T, dir string, args ...string) {
+	t.Helper()
+	command := exec.Command("git", args...)
+	command.Dir = dir
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("git %s: %v\n%s", strings.Join(args, " "), err, output)
+	}
+}
+
+// An output git ignores could never be committed, so gen refuses it, naming
+// the ignore file, its line, and a narrower rule; narrowing the rule clears
+// the refusal.
+func TestGenRefusesAnOutputGitIgnoresAndANarrowerRuleClears(t *testing.T) {
+	isolate(t)
+	dir, cfg := rootFileProject(t, []any{".strictmetadata/docs/_CLAUDE.md"}, nil)
+	write(t, filepath.Join(dir, ".strictmetadata", "docs", "_CLAUDE.md"), "# Agent notes\n")
+	write(t, filepath.Join(dir, ".gitignore"), "/dist/\n.claude/\n")
+	gitIn(t, dir, "init", "-q")
+
+	_, err := GenerateRootFiles(cfg, dir, "", effects.Unbound())
+	if err == nil {
+		t.Fatal("gen generated a file git ignores")
+	}
+	for _, want := range []string{".claude/CLAUDE.md", "line 2 of .gitignore", "`.claude/`",
+		"`.claude/settings.local.json`"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal does not name %q: %v", want, err)
+		}
+	}
+	if _, statErr := os.Stat(filepath.Join(dir, ".claude", "CLAUDE.md")); !errors.Is(statErr, os.ErrNotExist) {
+		t.Errorf("the refusal wrote .claude/CLAUDE.md: %v", statErr)
+	}
+
+	write(t, filepath.Join(dir, ".gitignore"), "/dist/\n.claude/settings.local.json\n")
+	if generated := generateRootFiles(t, cfg, dir); len(generated) != 1 || generated[0] != ".claude/CLAUDE.md" {
+		t.Errorf("generated %v after the rule was narrowed", generated)
+	}
+}
+
+// A negated rule that re-includes the output leaves it committable.
+func TestGenAcceptsAnOutputANegatedRuleReincludes(t *testing.T) {
+	isolate(t)
+	dir, cfg := rootFileProject(t, []any{".strictmetadata/docs/_CLAUDE.md"}, nil)
+	write(t, filepath.Join(dir, ".strictmetadata", "docs", "_CLAUDE.md"), "# Agent notes\n")
+	write(t, filepath.Join(dir, ".gitignore"), ".claude/*\n!.claude/CLAUDE.md\n")
+	gitIn(t, dir, "init", "-q")
+	if generated := generateRootFiles(t, cfg, dir); len(generated) != 1 {
+		t.Errorf("generated %v", generated)
 	}
 }

@@ -278,6 +278,7 @@ func CheckDocs(
 		return nil, err
 	}
 	result.Lints = append(result.Lints, versionMatch...)
+	result.Lints = append(result.Lints, checkRootClaudeLocation(dirPath)...)
 
 	// Description staleness and source-docstring drift. The hash keys are
 	// prefixed with the locale code, matching the build, so gen and check

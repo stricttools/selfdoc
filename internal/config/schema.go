@@ -368,7 +368,7 @@ var Schema = []FieldSpec{
 			Type:        FieldStr,
 			Description: "Underscore-prefixed template path in docs/.",
 		},
-		Description: "List of underscore-prefixed template paths in docs/ for root file generation.",
+		Description: "List of underscore-prefixed templates that generate repository-level files, wherever each is placed: _README.md generates README.md at the project root, and _CLAUDE.md generates .claude/CLAUDE.md.",
 	},
 	{
 		Name:           "redirects",

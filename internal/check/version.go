@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/stricttools/selfdoc/internal/directives"
+	"github.com/stricttools/selfdoc/internal/gen"
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/util"
 )
@@ -99,12 +100,11 @@ func checkVersionMatch(
 			continue
 		}
 
-		basename := filepath.Base(templatePath)
-		if !strings.HasPrefix(basename, "_") {
+		outputName, named := gen.RootFileOutputName(templatePath)
+		if !named {
 			continue
 		}
-		outputName := basename[1:]
-		outputPath := filepath.Join(dirPath, outputName)
+		outputPath := filepath.Join(dirPath, filepath.FromSlash(outputName))
 		if !isFile(outputPath) {
 			// Not generated yet -- gen's concern, not a version
 			// mismatch.
@@ -145,4 +145,17 @@ func hasVersionVarDirective(template string) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+// checkRootClaudeLocation reports a CLAUDE.md at the repository root that an
+// earlier selfdoc generated (generated-claude-md-at-repository-root): selfdoc
+// generates it at .claude/CLAUDE.md now, and Claude Code would load both.
+func checkRootClaudeLocation(dirPath string) []lints.LintResult {
+	if !gen.HasGeneratedHeader(filepath.Join(dirPath, gen.PreviousClaudeOutputRel)) {
+		return nil
+	}
+	return []lints.LintResult{lints.MustLintResult(
+		gen.PreviousClaudeOutputRel, nil, "generated-claude-md-at-repository-root",
+		gen.PreviousClaudeOutputMessage(),
+	)}
 }

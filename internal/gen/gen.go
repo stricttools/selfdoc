@@ -5,8 +5,8 @@
 // the other per-file languages) or per package (Go), plus a generated index
 // page, plus the CLI reference pages for a strictcli-based project.
 // GenerateRootFiles resolves the underscore-prefixed templates a project
-// declares in root_files and writes the project root's own files -- README.md,
-// CLAUDE.md -- from them.
+// declares in root_files and writes the repository-level files from them --
+// README.md at the project root, .claude/CLAUDE.md under it.
 //
 // # Machine text is a placeholder, handwritten text is not
 //

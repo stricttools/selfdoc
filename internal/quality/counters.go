@@ -19,11 +19,11 @@ import (
 //     documentation), every directory in submodulePaths, and the scratch
 //     directories at the project root (experiments/, screenshots/);
 //   - the filenames in [SkipMarkdownFiles] (generated changelogs);
-//   - every path in rootFileTemplates -- the docs/_README.md style templates
-//     named by root_files in selfdoc.json. Their generated output (README.md,
-//     CLAUDE.md) sits at the project root and is counted instead, so skipping
-//     the template avoids counting the same prose twice. Paths are matched
-//     relative to projectPath, as selfdoc.json spells them.
+//   - every path in rootFileTemplates -- the _README.md style templates named
+//     by root_files in selfdoc.json. Their generated output (README.md at the
+//     project root, .claude/CLAUDE.md under it) is walked and counted instead,
+//     so skipping the template avoids counting the same prose twice. Paths are
+//     matched relative to projectPath, as selfdoc.json spells them.
 //
 // Files that cannot be read are skipped rather than counted as empty.
 func MarkdownLOC(projectPath string, submodulePaths []string, rootFileTemplates []string) (int, int) {

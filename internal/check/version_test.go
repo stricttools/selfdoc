@@ -186,6 +186,27 @@ func TestVER004GeneratedRootFileVersion(t *testing.T) {
 	}
 }
 
+// The version check reads the file the _CLAUDE.md template generates, which
+// is .claude/CLAUDE.md, and names it.
+func TestVersionMismatchReadsTheClaudeOutputUnderDotClaude(t *testing.T) {
+	projectConfig := pythonProjectConfig()
+	projectConfig["root_files"] = []any{".strictmetadata/docs/_CLAUDE.md"}
+	root := versionProject(t, projectConfig, "1.0.0")
+	write(t, filepath.Join(root, ".strictmetadata", "docs", "_CLAUDE.md"),
+		"# Project\n\nVersion :-: var key=\"project.version\"\n")
+	write(t, filepath.Join(root, ".claude", "CLAUDE.md"), "# Project\n\nVersion 0.9.0\n")
+
+	result, err := CheckDocs(root, nil, false, "", "", handle())
+	if err != nil {
+		t.Fatalf("CheckDocs: %v", err)
+	}
+	found := withCode(result.Lints, "version-mismatch-in-generated-root-file")
+	if len(found) != 1 || found[0].File() != ".claude/CLAUDE.md" {
+		t.Fatalf("version-mismatch-in-generated-root-file = %v, want one naming .claude/CLAUDE.md",
+			messagesOf(found))
+	}
+}
+
 // gitInit sets up a repository in dir and commits everything in it.
 func gitInit(t *testing.T, dir string) {
 	t.Helper()

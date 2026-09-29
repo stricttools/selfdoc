@@ -54,6 +54,12 @@ func (c *cli) cmdGen(ctx *strictcli.Context, kwargs map[string]any) strictcli.Ou
 	// registered here too -- otherwise gen refuses the whole project.
 	cfg = c.withSiteDirectives(cfg, handle)
 
+	// A root file that cannot be generated where it belongs refuses the whole
+	// run before any page is written.
+	if err := gen.RootFileOutputPreconditions(cfg, dir, handle); err != nil {
+		return c.fail(err)
+	}
+
 	// A codeless project declares no 'source', which is the declaration that
 	// there are no API or CLI reference pages to derive. Say so and go
 	// straight to the root-file templates, which need no source code.

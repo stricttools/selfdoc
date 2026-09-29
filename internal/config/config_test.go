@@ -1184,8 +1184,9 @@ func TestLintIgnoreIsRefusedNamingTheOptionsEntries(t *testing.T) {
 	})
 }
 
-// Every retired code maps to a lint the registry carries, and every lint has
-// the one retired code it replaced.
+// Every retired code maps to a lint the registry carries, and no two codes map
+// to the same lint. A lint registered after the codes were retired never had
+// one, so the registry may hold lints no code names.
 func TestEveryRetiredLintCodeNamesARegisteredLint(t *testing.T) {
 	seen := map[string]bool{}
 	for code, name := range retiredLintCodes {
@@ -1196,9 +1197,6 @@ func TestEveryRetiredLintCodeNamesARegisteredLint(t *testing.T) {
 			t.Errorf("%q is the name of more than one retired code", name)
 		}
 		seen[name] = true
-	}
-	if len(seen) != lints.Registered().Len() {
-		t.Errorf("%d retired codes map onto %d lints", len(seen), lints.Registered().Len())
 	}
 }
 

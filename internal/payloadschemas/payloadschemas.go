@@ -288,13 +288,14 @@ func LayoutMigrate() map[string]any {
 			"previous_root":         strictcli.SchemaType("string"),
 			"root":                  strictcli.SchemaType("string"),
 			"moves":                 strictcli.SchemaArray(move),
+			"file_moves":            strictcli.SchemaArray(move),
 			"writes":                strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"rewrites":              strictcli.SchemaArray(rewrite),
 			"deletes":               strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"removed_previous_root": strictcli.SchemaType("boolean"),
 			"committed":             strictcli.SchemaType("boolean"),
 		},
-		[]string{"previous_root", "root", "moves", "writes", "rewrites", "deletes", "removed_previous_root", "committed"},
+		[]string{"previous_root", "root", "moves", "file_moves", "writes", "rewrites", "deletes", "removed_previous_root", "committed"},
 		false,
 	)
 }
