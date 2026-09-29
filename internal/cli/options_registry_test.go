@@ -52,8 +52,8 @@ func TestOptionsRegistryPublishesTheSameDeclarationsAsJSON(t *testing.T) {
 		t.Fatalf("options registry --json exited %d: %s", result.ExitCode, result.Stderr)
 	}
 	payload := payloadOf(t, result)
-	if payload["format_version"] != float64(1) {
-		t.Errorf("format_version = %v, want 1", payload["format_version"])
+	if payload["format_version"] != float64(2) {
+		t.Errorf("format_version = %v, want 2", payload["format_version"])
 	}
 	document, diags := strictspec.ReadOptionsRegistry(lints.OptionsRegistryDocument())
 	if len(diags) > 0 {
@@ -73,6 +73,9 @@ func TestOptionsRegistryPublishesTheSameDeclarationsAsJSON(t *testing.T) {
 			if got[field] != value {
 				t.Errorf("option %d %s = %v, want %q", index, field, got[field], value)
 			}
+		}
+		if requires, ok := got["requires"].([]any); !ok || len(requires) != len(want.Requires) {
+			t.Errorf("option %d requires = %#v, want %v", index, got["requires"], want.Requires)
 		}
 	}
 }

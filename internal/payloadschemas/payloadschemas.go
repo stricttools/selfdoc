@@ -356,9 +356,10 @@ func OptionsRegistry() map[string]any {
 			"values":      strictcli.SchemaType("string"),
 			"default":     strictcli.SchemaType("string"),
 			"scope":       strictcli.SchemaType("string"),
+			"requires":    strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"description": strictcli.SchemaType("string"),
 		},
-		[]string{"name", "subject", "values", "default", "scope", "description"},
+		[]string{"name", "subject", "values", "default", "scope", "requires", "description"},
 		false,
 	)
 	return strictcli.SchemaObject(

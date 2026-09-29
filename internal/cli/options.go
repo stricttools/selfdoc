@@ -111,12 +111,17 @@ func optionsRegistryPayload() (map[string]any, error) {
 	}
 	declared := make([]any, 0, len(document.Options))
 	for _, option := range document.Options {
+		requires := make([]any, 0, len(option.Requires))
+		for _, name := range option.Requires {
+			requires = append(requires, name)
+		}
 		declared = append(declared, map[string]any{
 			"name":        option.Name,
 			"subject":     option.Subject,
 			"values":      option.Values,
 			"default":     option.Default,
 			"scope":       option.Scope,
+			"requires":    requires,
 			"description": option.Description,
 		})
 	}

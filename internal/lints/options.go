@@ -41,7 +41,7 @@ const (
 // OptionsRegistryFormatVersion is the format version of the options registry
 // selfdoc ships: the document's format_version, the one strictspec's built-in
 // options-registry schema reads.
-const OptionsRegistryFormatVersion = 1
+const OptionsRegistryFormatVersion = 2
 
 // optionsRegistryName is the shipped registry's file name, as the messages and
 // the generator spell it.
@@ -82,7 +82,7 @@ func RenderOptionsRegistry(reg *Registry) string {
 	for _, name := range reg.Names() {
 		spec, _ := reg.Spec(name)
 		values, def := optionRanking(spec.Severity)
-		fmt.Fprintf(&out, "\n[[option]]\nname = %s\nsubject = %s\nvalues = %s\ndefault = %s\nscope = \"none\"\ndescription = %s\n",
+		fmt.Fprintf(&out, "\n[[option]]\nname = %s\nsubject = %s\nvalues = %s\ndefault = %s\nscope = \"none\"\nrequires = []\ndescription = %s\n",
 			strconv.Quote(name), strconv.Quote(OptionsSubject), strconv.Quote(values),
 			strconv.Quote(def), strconv.Quote(spec.Description))
 	}
