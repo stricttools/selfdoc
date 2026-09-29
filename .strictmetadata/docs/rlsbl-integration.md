@@ -1,6 +1,6 @@
 +++
 title = "rlsbl Integration"
-description = "How selfdoc and rlsbl work together: auto-commit preference chain, changelog detection, docs checks during release, and post-release deploy."
+description = "How selfdoc and rlsbl work together: auto-commit, changelog detection, release-time docs checks, the generated CLAUDE.md in Go uploads, and post-release deploy."
 nav_group = "Guides"
 nav_order = 11
 +++
