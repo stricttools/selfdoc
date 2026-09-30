@@ -24,12 +24,27 @@ var reservedWindowsNames = []string{
 }
 
 // skippedDirs are directories whose contents are build output, caches or the
-// git database rather than module content.
+// git database rather than module content, plus the gitignored scratch
+// directories experiments/ and screenshots/.
 var skippedDirs = map[string]bool{
-	".git":         true,
+	".git":            true,
 	".strictmetadata": true,
-	"bin":          true,
-	"dist":         true,
+	"bin":             true,
+	"dist":            true,
+	"experiments":     true,
+	"screenshots":     true,
+}
+
+// TestRepositoryScansSkipTheScratchDirectories asserts that the repository
+// walks never enter experiments/ or screenshots/. Both are gitignored scratch
+// directories holding throwaway probes, so a Go file left in one would turn a
+// repository-wide invariant red over code the module does not carry.
+func TestRepositoryScansSkipTheScratchDirectories(t *testing.T) {
+	for _, name := range []string{"experiments", "screenshots"} {
+		if !skippedDirs[name] {
+			t.Errorf("the repository scans enter %s/: add it to skippedDirs", name)
+		}
+	}
 }
 
 // isReserved reports whether a single path element is one of the names Go
