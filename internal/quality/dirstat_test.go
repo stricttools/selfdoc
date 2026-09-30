@@ -319,7 +319,7 @@ func TestCheckDirstatRefusesOnlyAnAbsentBinary(t *testing.T) {
 			t.Fatalf("error = %v (%T), want *quality.DirstatMissingError", err, err)
 		}
 		want := "error: dirstat is not installed\n" +
-			"install: go install github.com/smm-h/dirstat/cmd/dirstat@v0"
+			"install: go install github.com/stricttools/dirstat/cmd/dirstat@v0"
 		if err.Error() != want {
 			t.Errorf("error = %q, want %q", err, want)
 		}

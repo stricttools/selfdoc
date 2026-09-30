@@ -131,7 +131,7 @@ func WrapSharedPage(opts SharedPage) (string, error) {
 		opts.BodyHTML + "\n" +
 		"</div>\n" +
 		"<footer class=\"site-footer\">\n" +
-		"<p>Built with <a href=\"https://github.com/smm-h/selfdoc\">selfdoc</a></p>\n" +
+		"<p>Built with <a href=\"https://github.com/stricttools/selfdoc\">selfdoc</a></p>\n" +
 		"</footer>\n" +
 		searchDialog + "\n" +
 		searchScript + "\n" +

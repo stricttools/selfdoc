@@ -85,7 +85,7 @@
 
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 </footer>
 </main>

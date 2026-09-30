@@ -126,7 +126,7 @@ type DirstatMissingError struct{}
 // Error returns the refusal and the install command, one per line.
 func (e *DirstatMissingError) Error() string {
 	return "error: dirstat is not installed\n" +
-		"install: go install github.com/smm-h/dirstat/cmd/dirstat@v0"
+		"install: go install github.com/stricttools/dirstat/cmd/dirstat@v0"
 }
 
 // CheckDirstat returns a [DirstatMissingError] unless the dirstat binary is

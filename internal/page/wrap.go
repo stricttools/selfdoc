@@ -487,7 +487,7 @@ func WrapPage(opts WrapOptions) (string, error) {
 	b.WriteString(meta.tocAside + "\n")
 	b.WriteString("</div>\n")
 	b.WriteString("<footer class=\"site-footer\">\n")
-	b.WriteString("<p>Built with <a href=\"https://github.com/smm-h/selfdoc\">selfdoc</a></p>\n")
+	b.WriteString("<p>Built with <a href=\"https://github.com/stricttools/selfdoc\">selfdoc</a></p>\n")
 	b.WriteString(meta.feedFooterHTML + "\n")
 	b.WriteString("</footer>\n")
 	b.WriteString("</main>\n")

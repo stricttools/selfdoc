@@ -135,5 +135,5 @@ Stdout then carries exactly one document -- the strictcli envelope -- and the sc
 `selfdoc quality` requires [dirstat](https://github.com/stricttools/dirstat) to count source lines. If dirstat is not installed, the command exits with an error and prints the install command:
 
 ```
-go install github.com/smm-h/dirstat/cmd/dirstat@latest
+go install github.com/stricttools/dirstat/cmd/dirstat@v0
 ```

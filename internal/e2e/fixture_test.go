@@ -39,7 +39,7 @@ const AllowedExternal = "https://example.org/external-reference"
 
 // GeneratorLink is the generator's attribution link, which every page's chrome
 // carries.
-const GeneratorLink = "https://github.com/smm-h/selfdoc"
+const GeneratorLink = "https://github.com/stricttools/selfdoc"
 
 const (
 	authorName   = "Test Author"

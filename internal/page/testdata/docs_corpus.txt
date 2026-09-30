@@ -74,7 +74,7 @@
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Architecture</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/architecture.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/architecture.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#build-pipeline-overview">Build Pipeline Overview</a>
 <a class="docs-toc-item" href="#how-directives-resolve">How Directives Resolve</a>
@@ -126,7 +126,7 @@
 <h2 id="staleness-tracking"><a class="heading-link" href="#staleness-tracking" aria-label="Link to section: Staleness Tracking">#</a>Staleness Tracking</h2>
 <p>The build computes content hashes for each page and persists them. The <code>check</code> command later uses these hashes to detect when page content has changed but its frontmatter description has not been updated -- catching stale SEO metadata before it goes live.</p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/architecture.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../directives/"><span class="page-nav-label">Previous</span>&larr; Directives Reference</a><span class="page-progress">Page 5 of 9</span><a class="page-nav-next" href="../code-blocks/"><span class="page-nav-label">Next</span>Code Blocks &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/architecture.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../directives/"><span class="page-nav-label">Previous</span>&larr; Directives Reference</a><span class="page-progress">Page 5 of 9</span><a class="page-nav-next" href="../code-blocks/"><span class="page-nav-label">Next</span>Code Blocks &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#build-pipeline-overview">Build Pipeline Overview</a>
@@ -138,7 +138,7 @@
 <a class="docs-toc-item" href="#staleness-tracking">Staleness Tracking</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -206,7 +206,7 @@ for (const t of document.querySelectorAll(
 {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://selfdoc.smmh.dev/"}, {"@type": "ListItem", "position": 2, "name": "Code Blocks"}]}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Code Blocks", "programmingLanguage": "json", "codeRepository": "https://github.com/smm-h/selfdoc"}
+{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Code Blocks", "programmingLanguage": "json", "codeRepository": "https://github.com/stricttools/selfdoc"}
 </script>
 <meta property="og:title" content="Code Blocks - selfdoc">
 <meta property="og:type" content="article">
@@ -263,7 +263,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Code Blocks</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/code-blocks.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/code-blocks.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#syntax-highlighting">Syntax Highlighting</a>
 <a class="docs-toc-item" href="#language-icons">Language Icons</a>
@@ -375,7 +375,7 @@ for (const t of document.querySelectorAll(
 <p>Every code block gets a copy-to-clipboard button automatically. No config needed. It appears in the top-right corner of the block on hover and copies the raw code content (without line numbers or annotations).</p>
 <p>Next: <a href="../custom-directives/">Custom Directives</a> --></p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/code-blocks.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../architecture/"><span class="page-nav-label">Previous</span>&larr; Architecture</a><span class="page-progress">Page 6 of 9</span><a class="page-nav-next" href="../glossary-terms/"><span class="page-nav-label">Next</span>Glossary &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/code-blocks.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../architecture/"><span class="page-nav-label">Previous</span>&larr; Architecture</a><span class="page-progress">Page 6 of 9</span><a class="page-nav-next" href="../glossary-terms/"><span class="page-nav-label">Next</span>Glossary &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#syntax-highlighting">Syntax Highlighting</a>
@@ -389,7 +389,7 @@ for (const t of document.querySelectorAll(
 <a class="docs-toc-item" href="#copy-button">Copy Button</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -511,7 +511,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Comparisons</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/comparisons.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/comparisons.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#feature-comparison">Feature Comparison</a>
 <a class="docs-toc-item" href="#where-each-tool-shines">Where Each Tool Shines</a>
@@ -567,7 +567,7 @@ for (const t of document.querySelectorAll(
 <p>selfdoc fits a niche that the others do not cover well: projects that want source-extracted documentation across Python, Go, and TypeScript without switching tools. The directive system keeps docs in sync with code automatically, and the built-in SEO, search, and deploy pipeline means fewer moving parts. The tradeoff is fewer themes and a smaller community than Sphinx or Docusaurus.</p>
 <p>Next: <a href="../getting-started/">Getting Started</a> --></p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/comparisons.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../configuration/"><span class="page-nav-label">Previous</span>&larr; Configuration</a><span class="page-progress">Page 3 of 9</span><a class="page-nav-next" href="../directives/"><span class="page-nav-label">Next</span>Directives Reference &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/comparisons.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../configuration/"><span class="page-nav-label">Previous</span>&larr; Configuration</a><span class="page-progress">Page 3 of 9</span><a class="page-nav-next" href="../directives/"><span class="page-nav-label">Next</span>Directives Reference &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#feature-comparison">Feature Comparison</a>
@@ -582,7 +582,7 @@ for (const t of document.querySelectorAll(
 <a class="docs-toc-item sub" href="#selfdoc">selfdoc</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -650,7 +650,7 @@ for (const t of document.querySelectorAll(
 {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://selfdoc.smmh.dev/"}, {"@type": "ListItem", "position": 2, "name": "Configuration"}]}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Configuration", "programmingLanguage": "json", "codeRepository": "https://github.com/smm-h/selfdoc"}
+{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Configuration", "programmingLanguage": "json", "codeRepository": "https://github.com/stricttools/selfdoc"}
 </script>
 <meta property="og:title" content="Configuration - selfdoc">
 <meta property="og:type" content="article">
@@ -707,7 +707,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Configuration</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/configuration.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/configuration.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#config-reference">Config Reference</a>
 <a class="docs-toc-item" href="#common-configurations">Common Configurations</a>
@@ -799,7 +799,7 @@ for (const t of document.querySelectorAll(
 }</code></pre></figure>
 <p>Every command template must contain the <code>{file}</code> placeholder; a template without it is rejected when the config loads, since it would validate nothing. Keys are language names exactly as they appear after the opening fence, so a block opened with <code>```py</code> needs a <code>py</code> entry, not a <code>python</code> one. Omitting <code>examples</code> entirely turns the feature off, and any <code>validate</code> marker in the docs then reports <code>EXAMPLE003</code>. See the <a href="../check-guide/">Check Guide</a> for the full behavior.</p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/configuration.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../index.html"><span class="page-nav-label">Previous</span>&larr; Home</a><span class="page-progress">Page 2 of 9</span><a class="page-nav-next" href="../comparisons/"><span class="page-nav-label">Next</span>Comparisons &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/configuration.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../index.html"><span class="page-nav-label">Previous</span>&larr; Home</a><span class="page-progress">Page 2 of 9</span><a class="page-nav-next" href="../comparisons/"><span class="page-nav-label">Next</span>Comparisons &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#config-reference">Config Reference</a>
@@ -810,7 +810,7 @@ for (const t of document.querySelectorAll(
 <a class="docs-toc-item" href="#example-validators">Example Validators</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -878,7 +878,7 @@ for (const t of document.querySelectorAll(
 {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://selfdoc.smmh.dev/"}, {"@type": "ListItem", "position": 2, "name": "Directives Reference"}]}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Directives Reference", "programmingLanguage": ["markdown", "json", "python"], "codeRepository": "https://github.com/smm-h/selfdoc"}
+{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Directives Reference", "programmingLanguage": ["markdown", "json", "python"], "codeRepository": "https://github.com/stricttools/selfdoc"}
 </script>
 <meta property="og:title" content="Directives Reference - selfdoc">
 <meta property="og:type" content="article">
@@ -935,7 +935,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Directives Reference</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/directives.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/directives.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#syntax">Syntax</a>
 <a class="docs-toc-item" href="#built-in-directives">Built-in Directives</a>
@@ -984,7 +984,7 @@ for (const t of document.querySelectorAll(
 <ul><li><code>attrs</code> — dict of key-value pairs from the directive line</li><li><code>config</code> — the full <code>selfdoc.json</code> configuration dict</li><li><code>body</code> — list of body lines (empty list for one-liners)</li></ul>
 <p>Custom directives take priority over built-in directives of the same name.</p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/directives.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../comparisons/"><span class="page-nav-label">Previous</span>&larr; Comparisons</a><span class="page-progress">Page 4 of 9</span><a class="page-nav-next" href="../architecture/"><span class="page-nav-label">Next</span>Architecture &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/directives.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../comparisons/"><span class="page-nav-label">Previous</span>&larr; Comparisons</a><span class="page-progress">Page 4 of 9</span><a class="page-nav-next" href="../architecture/"><span class="page-nav-label">Next</span>Architecture &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#syntax">Syntax</a>
@@ -993,7 +993,7 @@ for (const t of document.querySelectorAll(
 <a class="docs-toc-item" href="#custom-directives">Custom Directives</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -1115,7 +1115,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:glossary"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:glossary"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Glossary</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/glossary-terms.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/glossary-terms.md" target="_blank" rel="noopener">Edit</a>
 </div>
 
 <div class="page-summary">
@@ -1125,13 +1125,13 @@ for (const t of document.querySelectorAll(
 <p>This page defines 23 key terms used throughout the selfdoc documentation.</p>
 <p>:<: list-glossary :=: ::: <strong>Directive</strong>: A marker in Markdown templates that selfdoc resolves into content at build time. Comes in one-liner (<code>:-:</code>) and block (<code>:&lt;: ... :&gt;:</code>) forms. ::: <strong>Extractor</strong>: A language-specific module that reads source code and extracts API information for directives. Selfdoc ships with extractors for Python, Go, and TypeScript. ::: <strong>Frontmatter</strong>: YAML-like metadata at the top of a Markdown file between <code>---</code> delimiters. Controls title, description, nav group, and other page settings. ::: <strong>Resolver</strong>: The dispatch layer that routes a parsed directive to the correct handler -- content directives, custom directives, or language extractors, in that order. ::: <strong>Tokenizer</strong>: A standalone module that splits Markdown into typed block tokens (headings, code blocks, tables, paragraphs, etc.) used by both the renderer and the lint system. ::: <strong>Theme</strong>: A set of CSS custom properties controlling colors, typography, layout, and component styling. Selfdoc ships with <code>minimal</code> and <code>clean</code> themes. ::: <strong>Callout</strong>: A content directive that renders a styled admonition box. Types include <code>callout-note</code>, <code>callout-warning</code>, <code>callout-tip</code>, <code>callout-danger</code>, and <code>callout-important</code>. ::: <strong>Code block</strong>: A fenced block of source code (triple backticks) that gets syntax-highlighted in the rendered output. Consecutive code blocks with different languages become tabbed. ::: <strong>OG card</strong>: An OpenGraph image generated for each page, used as the preview image when a link is shared on social media or messaging platforms. ::: <strong>Sitemap</strong>: An XML file (<code>sitemap.xml</code>) listing all page URLs and their last-modified dates, used by search engines for indexing. ::: <strong>Atom feed</strong>: An XML feed (<code>feed.xml</code>) that allows RSS readers to subscribe to documentation updates. Pages can opt out with <code>feed: false</code> in frontmatter. ::: <strong>Canonical URL</strong>: The definitive URL for a page, set via the <code>base_url</code> config field. Used in <code>&lt;link rel=&quot;canonical&quot;&gt;</code> tags and sitemaps to avoid duplicate content in search engines. ::: <strong>JSON-LD</strong>: Structured data embedded in each HTML page as a <code>&lt;script type=&quot;application/ld+json&quot;&gt;</code> block. Provides search engines with machine-readable metadata about the page. ::: <strong>Lint rule</strong>: An SEO or content quality check run by <code>selfdoc check</code>. Each rule has a code (e.g., SEO001) and produces warnings or errors with file locations. ::: <strong>Coverage</strong>: The percentage of public symbols in your source code that are referenced by at least one directive. Reported by <code>selfdoc check</code> and configurable via <code>min_coverage</code>. ::: <strong>Staleness</strong>: When a page's content has changed since the last build but its frontmatter description has not been updated. Detected by comparing content and description hashes. ::: <strong>Build pipeline</strong>: The seven-stage process that transforms Markdown templates into a static HTML site: scan, resolve, tokenize, render, post-process, generate HTML, auxiliary output. ::: <strong>Nav group</strong>: A frontmatter field (<code>nav_group</code>) that controls which section of the sidebar navigation a page appears in. Pages with the same nav group are grouped together. ::: <strong>Slug</strong>: The URL-friendly identifier derived from a page's filename. For example, <code>getting-started.md</code> becomes the slug <code>getting-started</code>, served at <code>/getting-started/</code>. ::: <strong>Search index</strong>: The Pagefind index under <code>pagefind/</code>, built from the finished HTML pages, powering the client-side full-text search in the rendered site. ::: <strong>Post-processor</strong>: A regex-based transform that runs after block rendering to detect cross-block patterns like consecutive code blocks (code tabs) or ordered lists after tutorial headings (step guides). ::: <strong>Custom directive</strong>: A project-specific directive defined in <code>selfdoc.json</code> that points to a Python script implementing <code>resolve(attrs, config, body)</code>. Takes priority over built-in directives. ::: <strong>Content directive</strong>: A directive that transforms body content into styled HTML without needing source code access. Includes callouts and <code>list-glossary</code>. :>:</p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/glossary-terms.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../code-blocks/"><span class="page-nav-label">Previous</span>&larr; Code Blocks</a><span class="page-progress">Page 7 of 9</span><a class="page-nav-next" href="../guides/getting-started/"><span class="page-nav-label">Next</span>Getting Started &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/glossary-terms.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../code-blocks/"><span class="page-nav-label">Previous</span>&larr; Code Blocks</a><span class="page-progress">Page 7 of 9</span><a class="page-nav-next" href="../guides/getting-started/"><span class="page-nav-label">Next</span>Getting Started &rarr;</a></nav></footer>
 </article>
 </div>
 
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -1199,7 +1199,7 @@ for (const t of document.querySelectorAll(
 {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://selfdoc.smmh.dev/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://selfdoc.smmh.dev/guides/"}, {"@type": "ListItem", "position": 3, "name": "Getting Started"}]}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Getting Started", "programmingLanguage": ["bash", "json", "markdown"], "codeRepository": "https://github.com/smm-h/selfdoc"}
+{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Getting Started", "programmingLanguage": ["bash", "json", "markdown"], "codeRepository": "https://github.com/stricttools/selfdoc"}
 </script>
 <meta property="og:title" content="Getting Started - selfdoc">
 <meta property="og:type" content="article">
@@ -1256,7 +1256,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="group:Guides"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-static">Guides</span></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Getting Started</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/guides/getting-started.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/guides/getting-started.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#installation">Installation</a>
 <a class="docs-toc-item" href="#initialize-a-project">Initialize a Project</a>
@@ -1417,7 +1417,7 @@ SEO: 0 warnings, 0 errors</code></pre></figure>
 <p>Now that you have a working documentation site with live directives, full-text search, and dark mode, explore these topics to learn about advanced configuration, theming, deployment to production hosting, and the full directive reference:</p>
 <ul><li><strong><a href="../directives/">Directives Reference</a></strong> -- complete reference for all built-in directives, block syntax, and custom directives.</li><li><strong><a href="../selfdoc-config/">Configuration</a></strong> -- all <code>selfdoc.json</code> options including deploy providers, coverage thresholds, and lint suppression.</li><li><strong><a href="../cli-index/">CLI Reference</a></strong> -- detailed documentation for every CLI command and flag.</li></ul>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/guides/getting-started.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../../glossary-terms/"><span class="page-nav-label">Previous</span>&larr; Glossary</a><span class="page-progress">Page 8 of 9</span><a class="page-nav-next" href="../../guides/theming/"><span class="page-nav-label">Next</span>Theming &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/guides/getting-started.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../../glossary-terms/"><span class="page-nav-label">Previous</span>&larr; Glossary</a><span class="page-progress">Page 8 of 9</span><a class="page-nav-next" href="../../guides/theming/"><span class="page-nav-label">Next</span>Theming &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#installation">Installation</a>
@@ -1433,7 +1433,7 @@ SEO: 0 warnings, 0 errors</code></pre></figure>
 <a class="docs-toc-item" href="#next-steps">Next Steps</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -1501,7 +1501,7 @@ for (const t of document.querySelectorAll(
 {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://selfdoc.smmh.dev/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://selfdoc.smmh.dev/guides/"}, {"@type": "ListItem", "position": 3, "name": "Theming"}]}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Theming", "programmingLanguage": ["json", "bash", "css"], "codeRepository": "https://github.com/smm-h/selfdoc"}
+{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Theming", "programmingLanguage": ["json", "bash", "css"], "codeRepository": "https://github.com/stricttools/selfdoc"}
 </script>
 <meta property="og:title" content="Theming - selfdoc">
 <meta property="og:type" content="article">
@@ -1558,7 +1558,7 @@ for (const t of document.querySelectorAll(
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="group:Guides"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
 <nav class="tm-crumbs-nav" aria-label="Breadcrumb"><ol class="tm-crumbs"><li class="tm-crumb"><a class="tm-crumb-link" href="../../index.html">Home</a></li><li class="tm-crumb"><span class="tm-crumb-static">Guides</span></li><li class="tm-crumb"><span class="tm-crumb-current" aria-current="page">Theming</span></li></ol></nav>
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/guides/theming.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/guides/theming.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#choosing-a-theme">Choosing a Theme</a>
 <a class="docs-toc-item sub" href="#what-differs-about-tinymoon">What differs about tinymoon</a>
@@ -1800,7 +1800,7 @@ for (const t of document.querySelectorAll(
     }
 }</code></pre></figure>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/guides/theming.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../../guides/getting-started/"><span class="page-nav-label">Previous</span>&larr; Getting Started</a><span class="page-progress">Page 9 of 9</span></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/guides/theming.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><a class="page-nav-prev" href="../../guides/getting-started/"><span class="page-nav-label">Previous</span>&larr; Getting Started</a><span class="page-progress">Page 9 of 9</span></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#choosing-a-theme">Choosing a Theme</a>
@@ -1825,7 +1825,7 @@ for (const t of document.querySelectorAll(
 <a class="docs-toc-item" href="#print-stylesheet">Print Stylesheet</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="../../feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
@@ -1896,7 +1896,7 @@ for (const t of document.querySelectorAll(
 {"@context": "https://schema.org", "@type": "Person", "name": "Test Author", "url": "https://author.example", "sameAs": ["https://github.com/testauthor"]}
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "selfdoc", "programmingLanguage": ["markdown", "json", "bash"], "codeRepository": "https://github.com/smm-h/selfdoc"}
+{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "selfdoc", "programmingLanguage": ["markdown", "json", "bash"], "codeRepository": "https://github.com/stricttools/selfdoc"}
 </script>
 <meta property="og:title" content="selfdoc">
 <meta property="og:type" content="website">
@@ -1952,7 +1952,7 @@ for (const t of document.querySelectorAll(
 <article data-pagefind-body class="doc-body">
 <span class="pagefind-facet" data-pagefind-filter="version:0.38.1"></span><span class="pagefind-facet" data-pagefind-filter="type:guide"></span><span class="pagefind-facet" data-pagefind-filter="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="project:selfdoc"></span><span class="pagefind-facet" data-pagefind-meta="type:guide"></span>
 <div class="content-header">
-<a class="edit-link edit-link-top" href="https://github.com/smm-h/selfdoc/edit/main/docs/index.md" target="_blank" rel="noopener">Edit</a>
+<a class="edit-link edit-link-top" href="https://github.com/stricttools/selfdoc/edit/main/docs/index.md" target="_blank" rel="noopener">Edit</a>
 </div>
 <details class="mobile-toc"><summary>On this page</summary><nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#how-it-works">How it works</a>
 <a class="docs-toc-item sub" href="#1-write-markdown-with-directives">1. Write Markdown with directives</a>
@@ -2006,7 +2006,7 @@ And the CLI usage:
 <h2 id="get-started"><a class="heading-link" href="#get-started" aria-label="Link to section: Get started">#</a>Get started</h2>
 <p>Ready to try it? Head over to the <a href="getting-started/">Getting Started</a> guide for installation, project initialization, and your first documentation build. The guide walks you through creating a <code>selfdoc.json</code>, writing your first template with directives, and previewing the output locally with live reload.</p>
 
-<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/smm-h/selfdoc/edit/main/docs/index.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><span class="page-progress">Page 1 of 9</span><a class="page-nav-next" href="configuration/"><span class="page-nav-label">Next</span>Configuration &rarr;</a></nav></footer>
+<footer class="page-footer"><div class="page-meta"><span><a class="edit-link" href="https://github.com/stricttools/selfdoc/edit/main/docs/index.md" target="_blank" rel="noopener">Edit this page on GitHub</a></span></div><nav class="page-nav"><span class="page-progress">Page 1 of 9</span><a class="page-nav-next" href="configuration/"><span class="page-nav-label">Next</span>Configuration &rarr;</a></nav></footer>
 </article>
 </div>
 <nav class="docs-toc" aria-label="On this page"><div class="docs-toc-head">Contents</div><a class="docs-toc-item" href="#how-it-works">How it works</a>
@@ -2018,7 +2018,7 @@ And the CLI usage:
 <a class="docs-toc-item" href="#get-started">Get started</a></nav>
 </div>
 <footer class="site-footer">
-<p>Built with <a href="https://github.com/smm-h/selfdoc">selfdoc</a></p>
+<p>Built with <a href="https://github.com/stricttools/selfdoc">selfdoc</a></p>
 
 <p><a class="feed-link" href="feed.xml"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"/></svg>Subscribe via RSS</a></p>
 </footer>
