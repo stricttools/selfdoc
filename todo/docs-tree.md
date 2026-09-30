@@ -137,7 +137,7 @@ drafts predate some rulings below, and the rulings win).
 - Link destinations are `<jump id="..."/>` marks, placeable anywhere. Every
   level-2 heading must carry one; one on a level-1 heading is refused (the page
   is that address). Two identical jump IDs on one page are an error, including
-  when one page expands the same module's reference twice.
+  when one page includes the same module's reference twice.
 - Links are ordinary Markdown links; selfdoc resolves each relative URL to a node
   and its jump mark, and a link to a missing node or mark is an error.
   Cross-site links use the address form `site:path#jump`.
