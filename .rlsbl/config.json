@@ -1,5 +1,4 @@
 {
-  "changelog_format_version_enforced": true,
   "publish_mode": "ci",
   "push_timeout": 120,
   "env_file": "~/Projects/.env",
