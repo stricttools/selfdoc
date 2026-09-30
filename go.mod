@@ -20,7 +20,7 @@ require (
 	github.com/odvcencio/gotreesitter v0.52.0
 	github.com/playwright-community/playwright-go v0.6000.0
 	github.com/smm-h/tinymoon v0.11.0
-	github.com/stricttools/strictspec/go v0.4.0
+	github.com/stricttools/strictspec/go v0.5.0
 	golang.org/x/text v0.42.0
 )
 
