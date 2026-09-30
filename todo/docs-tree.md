@@ -40,8 +40,16 @@ drafts predate some rulings below, and the rulings win).
 - Every node has a **node type** (field `type`), following the unist/mdast
   vocabulary for Markdown syntax trees. The word "kind" is not used. A
   parameter's type is its **value type**.
-- Directives stop being a separate concept: each is a node type written as a tag
-  whose content comes from an expander.
+- A node type backed by code is a **component**, as in MDX: its code (built
+  into selfdoc or a project script) takes parameters, a body, and the project's
+  configuration, may compute anything, and returns content that must fit the
+  node type's **content model** (the declared grammar of what a node type may
+  contain). One term covers every depth: `<ref/>` and `<value/>` inside a page,
+  and the tree-file nodes that produce whole groups of pages (the API and CLI
+  reference). A component's output is generated content; everything else is
+  authored.
+- "Directive", "expander", and "generator node" are not used. The built-in that
+  renders the reference table of node types is `table-node-types`.
 
 ### The tree file
 
@@ -71,20 +79,20 @@ drafts predate some rulings below, and the rulings win).
 
 - A node orders its children with one `order` key holding either a rule or an
   explicit list. The rules are a closed set: `alphabetic` (by child ID),
-  `newest-first` (by date), and `source` (the order a generator declares, for
+  `newest-first` (by date), and `source` (the order a component declares, for
   example a CLI's command order or the package tree with the root package
   first). An explicit list must name every child: a missing child or a name
   with no child is a hard error.
-- Generator nodes always order by `source`; an `order` key on one is refused.
+- Page-group components always order by `source`; an `order` key on one is refused.
 - Inside an authored page, content is in document order, checked against the
   page's node type.
 - A group is a page whose body is optional. A body-less group's URL serves a
   generated listing: its title and description from the tree file and its child
   pages with their descriptions, in order.
 - URLs follow the tree (`rules/`, then `rules/deps-unused/`). Generated pages
-  sit under their generator node with the site's own package prefix dropped
+  sit under their component's node with the site's own package prefix dropped
   (`/api/checks/`, not `/api/rlsbl-checks/`; `/cli/check/`). Module pages are
-  flat under their generator, never nested along the package tree. Every old
+  flat under their component, never nested along the package tree. Every old
   URL gets a permanent redirect to its new one.
 - Any two nodes claiming one address is a hard error naming both.
 - rlsbl's release history is published as `release-notes`; its hand-written
@@ -102,18 +110,18 @@ drafts predate some rulings below, and the rulings win).
   `OPTIONS` was granted. selfdoc keeps error codes only for what needs a build
   (expansions, links, staleness).
 - selfdoc ships the built-in node types. A project declares its own in its tree
-  file (parameters, where the node type may appear, the structure of its output)
-  with a script that expands it (today's `resolve(attrs, config, body)`
-  contract); selfdoc checks the script's output against the declared structure.
+  file (parameters, where the node type may appear, its content model) with the
+  script that is its component (today's `resolve(attrs, config, body)`
+  contract); selfdoc checks the script's output against the content model.
 - Node type names are lowercase ASCII kebab-case, `^[a-z][a-z0-9]*(-[a-z0-9]+)*$`,
   for every node type.
 - No node type may be named after an HTML element, with no exemption. Node types
   for Markdown constructs use CommonMark/GFM terms: `strong-emphasis` and
   `raw-html`, and `markdown-table`, `markdown-link`, `markdown-image` where the
   spec has no single term.
-- A node type's output structure is a simple grammar: items matched in order,
-  greedily, with no backtracking; a declaration whose structure would need
-  backtracking is refused.
+- A content model is a simple grammar: items matched in order, greedily, with
+  no backtracking; a declaration whose content model would need backtracking is
+  refused.
 
 ### Tags and links
 
@@ -158,8 +166,8 @@ drafts predate some rulings below, and the rulings win).
   describes = "sha256:..."
   ```
 
-  Page IDs carry their generator's prefix: `module:`, `command:`,
-  `index:<generator node type>` (so a site has at most one generator of each
+  Page IDs carry their component's prefix: `module:`, `command:`,
+  `index:<component node type>` (so a site has at most one component of each
   node type). One record per page; a duplicate is refused; records are sorted by
   `page`. A generated page without a record is an error, and so is a record
   whose page no longer exists. Records hold one language; a site declaring a
@@ -218,7 +226,7 @@ anything a step finds that these rulings do not settle.
 3. selfdoc, tags: the tag parser following CommonMark rules, its checks, `jump`,
    link resolution, replacing the marker parser.
 4. selfdoc, the tree: the tree file, node types, ordering, groups and listings,
-   generator nodes, addresses, redirects, and the sidebar, prev/next, and search
+   page-group components, addresses, redirects, and the sidebar, prev/next, and search
    built from the tree; `nav_order` and `nav_group` removed.
 5. selfdoc, generated pages: derived and locked, never committed; descriptions
    with hashes, staleness, rewrite and confirm; section files in slots;
@@ -230,11 +238,7 @@ anything a step finds that these rulings do not settle.
 
 ## Open questions
 
-- Whether the grammar for a node type's output structure is called its
-  "content model" (the XML/SGML term).
-- The name of the built-in node type that renders the reference table of node
-  types (today `table-directives`; `table-node-types` proposed).
-- Whether "directive" survives as a term for tag node types with expanders.
+None.
 
 ## Related todos to reconcile
 
