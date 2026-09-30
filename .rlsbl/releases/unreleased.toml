@@ -2,11 +2,16 @@
 format_version = 1
 # Version bump type: patch, minor, major, infra, or prerelease
 #   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
-bump = ""
+bump = "minor"
 # Short description of this release (required)
-description = ""
+description = "selfdoc's per-repository directories move from stricttools/ to the hidden .strictmetadata/, and 'selfdoc layout migrate' moves a repository onto it. Lint codes become kebab-case names; each lint becomes an option, set in .strictmetadata/options/docs.toml with the new 'selfdoc options set', which replaces lint_ignore and 'selfdoc check --ignore' (both removed); 'selfdoc options registry' prints the options registry selfdoc ships; and a finding's lint in 'selfdoc check --json' is under 'name', no longer 'code'. The _CLAUDE.md template now generates .claude/CLAUDE.md instead of a CLAUDE.md at the repository root."
 # Optional context explaining why these changes were made
-context = ""
+context = """
+Upgrading a project, in this order:
+1. Run 'selfdoc layout migrate --dry-run', read the plan, then 'selfdoc layout migrate'. It moves selfdoc's directories off stricttools/ (or .stricttools/) onto .strictmetadata/, rewrites the selfdoc.json paths and the generated root files' headers, moves a CLAUDE.md an earlier selfdoc generated at the repository root to .claude/CLAUDE.md, and commits. In a Go module, then run 'rlsbl scaffold' for the stub go.mod in .claude/ that keeps the file out of the module zip.
+2. A selfdoc.json still declaring lint_ignore is refused with the 'selfdoc options set' command for each lint it names: run those, then delete lint_ignore from selfdoc.json.
+3. Anything reading 'selfdoc check --json' reads a finding's lint from 'name' instead of 'code', and matches the new lint names instead of the old codes.
+"""
 # Pre-release channel: alpha, beta, rc, or stable (ordered;
 # demotion is an error). With patch/minor/major it ENTERS the
 # channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
