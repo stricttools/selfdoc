@@ -368,6 +368,62 @@ func TestOpenWriteAndAppendLive(t *testing.T) {
 	}
 }
 
+// TestAtomicWriteDefaultModeKeepsAnExistingFilesMode asserts that rewriting a
+// file with ModeDefault leaves its mode alone. The temporary file used to be
+// created 0600 and renamed over the target, so every rewrite of selfdoc.json
+// (by 'selfdoc layout migrate', among others) narrowed it to 0600.
+func TestAtomicWriteDefaultModeKeepsAnExistingFilesMode(t *testing.T) {
+	t.Parallel()
+	h := Unbound()
+	for _, mode := range []fs.FileMode{0o644, 0o664, 0o640} {
+		path := filepath.Join(t.TempDir(), "selfdoc.json")
+		if err := os.WriteFile(path, []byte("old"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Chmod(path, mode); err != nil {
+			t.Fatal(err)
+		}
+		if err := h.AtomicWrite(path, []byte("new"), ModeDefault); err != nil {
+			t.Fatalf("AtomicWrite: %v", err)
+		}
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if info.Mode().Perm() != mode {
+			t.Errorf("mode after a ModeDefault rewrite = %04o, want the file's own %04o", info.Mode().Perm(), mode)
+		}
+	}
+}
+
+// TestAtomicWriteDefaultModeCreatesAsAPlainWriteDoes asserts that a file
+// AtomicWrite creates with ModeDefault gets the mode Write gives it: 0644 as
+// modified by the process umask, never the temporary file's 0600.
+func TestAtomicWriteDefaultModeCreatesAsAPlainWriteDoes(t *testing.T) {
+	t.Parallel()
+	h := Unbound()
+	dir := t.TempDir()
+	plain := filepath.Join(dir, "plain.json")
+	atomic := filepath.Join(dir, "atomic.json")
+	if err := h.Write(plain, []byte("x"), ModeDefault); err != nil {
+		t.Fatalf("Write: %v", err)
+	}
+	if err := h.AtomicWrite(atomic, []byte("x"), ModeDefault); err != nil {
+		t.Fatalf("AtomicWrite: %v", err)
+	}
+	want, err := os.Stat(plain)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.Stat(atomic)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Mode().Perm() != want.Mode().Perm() {
+		t.Errorf("AtomicWrite created %04o, Write created %04o", got.Mode().Perm(), want.Mode().Perm())
+	}
+}
+
 // TestAtomicWriteOverReadOnlyTarget is why live mode keeps the temp file and
 // the rename: a plain write to a 0444 file fails, and the generated root files
 // are 0444 by design.

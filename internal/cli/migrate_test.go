@@ -171,6 +171,30 @@ func TestMigrateMovesSelfdocsDirectoriesAndLeavesAnotherToolsAlone(t *testing.T)
 	}
 }
 
+// The move rewrites selfdoc.json's paths and leaves the file's mode as it was:
+// it used to come back 0600, readable by its owner alone.
+func TestMigrateKeepsSelfdocJSONsMode(t *testing.T) {
+	isolate(t)
+	dir := previousLayoutProject(t, false)
+	config := filepath.Join(dir, "selfdoc.json")
+	if err := os.Chmod(config, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if result := run(t, dir, "layout", "migrate", "--no-auto-commit"); result.ExitCode != 0 {
+		t.Fatalf("the move failed:\n%s\n%s", result.Stdout, result.Stderr)
+	}
+	if got := readJSON(t, config)["docs"]; got != ".strictmetadata/docs/" {
+		t.Fatalf("selfdoc.json was not rewritten: docs = %v", got)
+	}
+	info, err := os.Stat(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0o644 {
+		t.Errorf("selfdoc.json mode after the move = %04o, want 0644", info.Mode().Perm())
+	}
+}
+
 func TestMigrateRemovesAnEmptiedPreviousRootAndCommits(t *testing.T) {
 	isolate(t)
 	dir := previousLayoutProject(t, false)

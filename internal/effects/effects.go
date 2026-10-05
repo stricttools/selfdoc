@@ -60,9 +60,11 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"math/rand/v2"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -645,7 +647,14 @@ func (h *Handle) AtomicWrite(path string, content []byte, mode fs.FileMode) erro
 	if dir == "" {
 		dir = "."
 	}
-	tmp, err := os.CreateTemp(dir, "*.tmp")
+	// ModeDefault leaves an existing file's mode as it was; a file this call
+	// creates gets writeMode as modified by the umask, as Write gives it.
+	if mode == ModeDefault {
+		if info, err := os.Stat(path); err == nil {
+			mode = info.Mode().Perm()
+		}
+	}
+	tmp, err := createSibling(dir)
 	if err != nil {
 		return err
 	}
@@ -673,6 +682,21 @@ func (h *Handle) AtomicWrite(path string, content []byte, mode fs.FileMode) erro
 		return err
 	}
 	return nil
+}
+
+// createSibling creates a new temporary file in dir with writeMode, which the
+// kernel narrows by the umask. os.CreateTemp is not used because it always
+// creates 0600, and the rename would carry that mode onto the target.
+func createSibling(dir string) (*os.File, error) {
+	for range 10000 {
+		name := filepath.Join(dir, strconv.FormatUint(rand.Uint64(), 36)+".tmp")
+		file, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_EXCL, writeMode)
+		if errors.Is(err, fs.ErrExist) {
+			continue
+		}
+		return file, err
+	}
+	return nil, fmt.Errorf("creating a temporary file in %s: every name tried already exists", dir)
 }
 
 // mintChmod records the chmod an explicit mode asks for.
