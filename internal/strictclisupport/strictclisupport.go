@@ -332,6 +332,26 @@ func GroupSubgroups(group *Object) []*Object {
 	return subgroups
 }
 
+// WalkGroup calls visit for group and then for every group nested inside it,
+// at any depth, depth first in declaration order. path is the visited group's
+// full command path: the top-level group's name, then each nested name,
+// space-separated.
+func WalkGroup(group *Object, visit func(path string, grp *Object) error) error {
+	return walkGroup(group, CommandName(group), visit)
+}
+
+func walkGroup(group *Object, path string, visit func(string, *Object) error) error {
+	if err := visit(path, group); err != nil {
+		return err
+	}
+	for _, subgroup := range GroupSubgroups(group) {
+		if err := walkGroup(subgroup, path+" "+CommandName(subgroup), visit); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Field is the string value of one declared field of any schema entry -- a
 // flag's env var, an argument's help -- and "" when the entry omits it or
 // declares it as something other than a string.

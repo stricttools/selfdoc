@@ -73,7 +73,7 @@ func commandTable(structure *strictclisupport.Structure, targetDir string) (stri
 		rows = append(rows, []string{"`" + name + "`", strictclisupport.CommandHelp(cmd)})
 	}
 	for _, group := range structure.Groups {
-		rows = groupRows(rows, group, "")
+		rows = groupRows(rows, group)
 	}
 	if len(rows) == 0 {
 		return marker("no commands found in '%s'", targetDir), nil
@@ -83,21 +83,18 @@ func commandTable(structure *strictclisupport.Structure, targetDir string) (stri
 	)
 }
 
-// groupRows appends a group's heading row, its subcommands, and then each
-// nested group's rows, with every path prefixed by the enclosing groups.
-func groupRows(rows [][]string, group *strictclisupport.Object, prefix string) [][]string {
-	groupPath := prefix + strictclisupport.CommandName(group)
-	rows = append(rows, []string{
-		"**" + groupPath + "**", strictclisupport.CommandHelp(group),
+// groupRows appends a group's heading row and its subcommands, then the same
+// for each nested group, with every path prefixed by the enclosing groups.
+func groupRows(rows [][]string, group *strictclisupport.Object) [][]string {
+	_ = strictclisupport.WalkGroup(group, func(path string, grp *strictclisupport.Object) error {
+		rows = append(rows, []string{"**" + path + "**", strictclisupport.CommandHelp(grp)})
+		for _, cmd := range strictclisupport.GroupCommands(grp) {
+			rows = append(rows, []string{
+				"`" + path + " " + strictclisupport.CommandName(cmd) + "`",
+				strictclisupport.CommandHelp(cmd),
+			})
+		}
+		return nil
 	})
-	for _, cmd := range strictclisupport.GroupCommands(group) {
-		rows = append(rows, []string{
-			"`" + groupPath + " " + strictclisupport.CommandName(cmd) + "`",
-			strictclisupport.CommandHelp(cmd),
-		})
-	}
-	for _, subgroup := range strictclisupport.GroupSubgroups(group) {
-		rows = groupRows(rows, subgroup, groupPath+" ")
-	}
 	return rows
 }

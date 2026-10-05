@@ -1199,7 +1199,6 @@ func renderCommandPage(cmd *Object, appName string, navOrder int, existingPath s
 func renderGroupPage(grp *Object, appName string, navOrder int, existingPath string) (string, error) {
 	name := getString(grp, "name")
 	help := getString(grp, "help")
-	subcommands := getList(grp, "commands")
 
 	defaultDesc, err := ComputeDefaultCLIDescription(KindGroup, name, appName, help)
 	if err != nil {
@@ -1246,16 +1245,51 @@ func renderGroupPage(grp *Object, appName string, navOrder int, existingPath str
 		lines = append(lines, help, "")
 	}
 
-	deprecated := getObject(grp, "deprecated")
-	if deprecated != nil && deprecated.Len() > 0 {
-		lines = append(lines, "## Deprecated", "")
-		for _, retired := range sortedKeys(deprecated) {
-			value, _ := deprecated.Get(retired)
-			lines = append(lines, fmt.Sprintf("- `%s` -- %s", retired, pyStr(value)))
+	lines = append(lines, deprecatedLines(grp, "## Deprecated")...)
+
+	// The page documents the group's own subcommands, then each nested
+	// group at any depth under a heading naming its full path.
+	err = WalkGroup(grp, func(path string, member *Object) error {
+		if member != grp {
+			lines = append(lines, "## "+path, "")
+			if memberHelp := getString(member, "help"); memberHelp != "" {
+				lines = append(lines, memberHelp, "")
+			}
+			lines = append(lines, deprecatedLines(member, "### Deprecated")...)
 		}
-		lines = append(lines, "")
+		sections, err := subcommandSections(getList(member, "commands"), path)
+		if err != nil {
+			return err
+		}
+		lines = append(lines, sections...)
+		return nil
+	})
+	if err != nil {
+		return "", err
 	}
 
+	return strings.Join(lines, "\n"), nil
+}
+
+// deprecatedLines renders a group's own deprecated map under heading, and
+// nothing when the group declares none.
+func deprecatedLines(grp *Object, heading string) []string {
+	deprecated := getObject(grp, "deprecated")
+	if deprecated == nil || deprecated.Len() == 0 {
+		return nil
+	}
+	lines := []string{heading, ""}
+	for _, retired := range sortedKeys(deprecated) {
+		value, _ := deprecated.Get(retired)
+		lines = append(lines, fmt.Sprintf("- `%s` -- %s", retired, pyStr(value)))
+	}
+	return append(lines, "")
+}
+
+// subcommandSections renders one section per subcommand of the group at
+// groupPath, each headed by the subcommand's full path.
+func subcommandSections(subcommands []any, groupPath string) ([]string, error) {
+	var lines []string
 	for _, raw := range subcommands {
 		cmd := asObject(raw)
 		cmdName := getString(cmd, "name")
@@ -1263,7 +1297,7 @@ func renderGroupPage(grp *Object, appName string, navOrder int, existingPath str
 		flags := getList(cmd, "flags")
 		args := getList(cmd, "args")
 
-		lines = append(lines, "## "+name+" "+cmdName, "")
+		lines = append(lines, "## "+groupPath+" "+cmdName, "")
 		if cmdHelp != "" {
 			lines = append(lines, cmdHelp, "")
 		}
@@ -1274,7 +1308,7 @@ func renderGroupPage(grp *Object, appName string, navOrder int, existingPath str
 		if len(flags) > 0 {
 			table, err := flagTable(flags)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 			lines = append(lines, "### Flags", "", table, "")
 			lines = append(lines, flagSetsLines(cmd)...)
@@ -1283,22 +1317,21 @@ func renderGroupPage(grp *Object, appName string, navOrder int, existingPath str
 		if len(args) > 0 {
 			table, err := argTable(args)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 			lines = append(lines, "### Arguments", "", table, "")
 		}
 
 		constraints, err := constraintsLines(cmd, "### Constraints")
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		lines = append(lines, constraints...)
 		grants, err := grantsLines(cmd, "### Grants")
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		lines = append(lines, grants...)
 	}
-
-	return strings.Join(lines, "\n"), nil
+	return lines, nil
 }

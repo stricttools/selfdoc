@@ -1664,3 +1664,58 @@ func mustDecodeList(t *testing.T, text string) []any {
 	}
 	return items
 }
+
+// TestGroupPageNestedGroups pins that a group's page documents the groups
+// nested inside it, at every depth, each command under its full path. Nested
+// groups get no page of their own: the top-level group's page holds them.
+func TestGroupPageNestedGroups(t *testing.T) {
+	isolate(t)
+	dir := t.TempDir()
+	docsDir := genFromSchema(t, dir, `{"schema_version": 2, "name": "app",
+	  "project_id": "app", "version": "1.0", "help": "an app",
+	  "commands": {},
+	  "groups": {
+	    "apple": {"help": "Apple stores",
+	      "commands": {"upload": {"help": "Upload a build", "effect": "mutating"}},
+	      "groups": {
+	        "testers": {"help": "Manage testers",
+	          "deprecated": {"purge": "use 'apple testers remove' instead"},
+	          "commands": {"remove": {"help": "Remove a tester", "effect": "mutating",
+	            "flags": [{"name": "email", "help": "The tester's email",
+	              "value_schema": {"type": "string"}, "presence": "required"}],
+	            "args": []}},
+	          "groups": {
+	            "invites": {"help": "Tester invites",
+	              "commands": {"resend": {"help": "Resend an invite",
+	                "effect": "mutating"}}}
+	          }}
+	      }}
+	  }}`)
+	content := readPage(t, docsDir, "cli-apple.md")
+	sections := []string{
+		"## apple upload",
+		"## apple testers\n\nManage testers",
+		"### Deprecated",
+		"`purge`",
+		"## apple testers remove\n\nRemove a tester",
+		"`--email`",
+		"## apple testers invites\n\nTester invites",
+		"## apple testers invites resend\n\nResend an invite",
+	}
+	wants(t, content, sections...)
+	position := -1
+	for _, section := range sections {
+		next := strings.Index(content, section)
+		if next <= position {
+			t.Fatalf("section %q out of order in:\n%s", section, content)
+		}
+		position = next
+	}
+
+	names := ExpectedCLIPageFilenames(mustReadSchema(t, dir))
+	for _, name := range names {
+		if name != "cli-index.md" && name != "cli-apple.md" {
+			t.Errorf("unexpected page %q in %v", name, names)
+		}
+	}
+}
