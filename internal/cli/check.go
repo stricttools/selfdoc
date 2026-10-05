@@ -14,7 +14,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/payloadschemas"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 	"github.com/stricttools/strictspec/go/strictspec"
 )
 

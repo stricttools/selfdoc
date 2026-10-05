@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 	"github.com/stricttools/testisolation/go/hygiene"
 )
 

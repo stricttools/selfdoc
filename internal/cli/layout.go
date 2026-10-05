@@ -13,7 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/manifest"
 	"github.com/stricttools/selfdoc/internal/migrate"
 	"github.com/stricttools/selfdoc/internal/payloadschemas"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 func (c *cli) registerLayout() {

@@ -12,7 +12,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/gitcommit"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // sourceEntry is one entry of the scaffolded config's "source" array.

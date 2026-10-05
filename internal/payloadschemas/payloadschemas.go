@@ -11,15 +11,15 @@
 // The declarations are built through strictcli's own schema builders, which
 // produce exactly the literal an author could have written by hand and pass
 // the identical registration-time validation over the framework's closed
-// keyword subset. --dump-schema publishes them verbatim, which makes each one
+// keyword subset. `selfdoc help --json` publishes them verbatim, which makes each one
 // the single artifact a consumer generates against.
 package payloadschemas
 
 import (
 	"sort"
 
-	"github.com/smm-h/strictcli/go/strictcli"
 	"github.com/stricttools/selfdoc/internal/lints"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // merge folds every fragment into one schema object, later keys winning.

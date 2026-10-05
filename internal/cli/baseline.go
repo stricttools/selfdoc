@@ -6,7 +6,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/check"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/gitcommit"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 func (c *cli) registerBaseline() {

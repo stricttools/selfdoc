@@ -8,7 +8,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/layout"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 func (c *cli) registerPublishDocs(group *strictcli.Group) {

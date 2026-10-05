@@ -13,7 +13,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/manifest"
 	"github.com/stricttools/selfdoc/internal/staleness"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // defaultPostsDir is where a project keeps its posts when it declares nothing.

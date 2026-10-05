@@ -8,7 +8,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/deploy"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 func (c *cli) registerDeploy() {

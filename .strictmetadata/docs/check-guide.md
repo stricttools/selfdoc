@@ -309,7 +309,7 @@ The payload is an object with `directives`, `coverage`, `lints`, and `exit_code`
 
 ```text
 {
-  "interface_version": 1,
+  "interface_version": 3,
   "app": "selfdoc",
   "command": "check",
   "exit_code": 0,
@@ -318,11 +318,13 @@ The payload is an object with `directives`, `coverage`, `lints`, and `exit_code`
     "coverage": {"total_public": 23, "referenced": 15, ...},
     "lints": [{"name": "missing-frontmatter-description", "severity": "error", ...}],
     "exit_code": 0
-  }
+  },
+  "output": null,
+  ...
 }
 ```
 
-The payload's shape is declared as a JSON Schema on the command itself and validated before it is written, so a document that deviates fails the run instead of reaching a consumer. `selfdoc --dump-schema` publishes the declaration.
+The payload's shape is declared as a JSON Schema on the command itself and validated before it is written, so a document that deviates fails the run instead of reaching a consumer. `selfdoc help --json` prints the help document, which publishes the declaration.
 
 ## Exit Codes
 

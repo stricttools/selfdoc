@@ -15,7 +15,7 @@ package main
 
 import (
 	"github.com/stricttools/selfdoc/internal/cli"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 func main() {

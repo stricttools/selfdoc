@@ -20,7 +20,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/manifest"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // assemblyDefaultBranch is the assembly repository branch every command

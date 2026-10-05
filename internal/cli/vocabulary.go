@@ -5,7 +5,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/gitcommit"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/vocabulary"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // vocabularyAutoCommit is the --auto-commit flag every vocabulary command

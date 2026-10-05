@@ -19,7 +19,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/resolver"
 	"github.com/stricttools/selfdoc/internal/revisions"
 	"github.com/stricttools/selfdoc/internal/util"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // assemblyDispatchGrant is the one grant every command that triggers the

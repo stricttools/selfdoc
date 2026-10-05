@@ -8,8 +8,8 @@
 #
 # Everything this hook used to do besides that is now the release flow's own
 # work: the bump-selfdoc step syncs selfdoc.json's "version" (and the last
-# entry of its versions array), and the strictcli schema dump step runs
-# `go run . --dump-schema` at the repository root, which is both the member
+# entry of its versions array), and the strictcli help document step runs
+# `go run . help --json` at the repository root, which is both the member
 # directory and the package the entry point now lives in.
 
 set -euo pipefail

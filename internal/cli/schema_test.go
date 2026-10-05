@@ -256,25 +256,24 @@ func probePayload(t *testing.T, value map[string]any) (finding string) {
 	return result.Stderr + result.Stdout
 }
 
-func TestDumpSchemaWritesTheProjectIdentity(t *testing.T) {
-	// The Go port derives project_id from the module path in go.mod, which is
-	// the module's own identity rather than the binary's name.
+func TestHelpJSONPrintsTheProjectIdentity(t *testing.T) {
+	// project_id is the main module path from the program's build information,
+	// the module's own identity rather than the binary's name, so it is the
+	// same wherever the program runs: the directory here holds no go.mod.
 	isolate(t)
 	dir := t.TempDir()
-	writeText(t, filepath.Join(dir, "go.mod"), "module github.com/stricttools/selfdoc\n\ngo 1.26.3\n")
 
-	result := runCLI(t, dir, "--dump-schema")
+	result := runCLI(t, dir, "help", "--json")
 	if result.ExitCode != 0 {
-		t.Fatalf("--dump-schema failed: %s", result.Stderr)
+		t.Fatalf("help --json failed: %s", result.Stderr)
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".strictcli")); !os.IsNotExist(err) {
+		t.Errorf("help --json wrote .strictcli/ (stat: %v); it prints the document and writes no file", err)
 	}
 
-	data, err := os.ReadFile(filepath.Join(dir, ".strictcli", "schema.json"))
-	if err != nil {
-		t.Fatalf("reading the written schema: %v", err)
-	}
 	var schema map[string]any
-	if err := json.Unmarshal(data, &schema); err != nil {
-		t.Fatalf("decoding the written schema: %v", err)
+	if err := json.Unmarshal([]byte(result.Stdout), &schema); err != nil {
+		t.Fatalf("decoding the help document on stdout: %v\n%s", err, result.Stdout)
 	}
 	if schema["schema_version"] != float64(2) {
 		t.Errorf("schema_version is %v, want 2", schema["schema_version"])

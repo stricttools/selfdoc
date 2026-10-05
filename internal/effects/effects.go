@@ -66,7 +66,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // ModeDefault is the file mode operand meaning "no explicit mode": the file is

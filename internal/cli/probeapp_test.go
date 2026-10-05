@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // newProbeApp builds a throwaway application whose one command emits value

@@ -12,7 +12,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/cli/faketool"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 	"github.com/stricttools/testisolation/go/hygiene"
 )
 

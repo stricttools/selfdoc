@@ -3,13 +3,13 @@ package cli
 import (
 	"fmt"
 
-	"github.com/smm-h/strictcli/go/strictcli"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/gitcommit"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/options"
 	"github.com/stricttools/selfdoc/internal/payloadschemas"
+	"github.com/stricttools/strictcli/go/strictcli"
 	"github.com/stricttools/strictspec/go/strictspec"
 )
 

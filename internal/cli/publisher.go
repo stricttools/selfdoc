@@ -9,7 +9,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/posts"
 	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 // publishCommandPath is the dotted path of the command the editor's publish

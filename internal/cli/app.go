@@ -20,7 +20,7 @@ import (
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
 	"github.com/stricttools/selfdoc/internal/config"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 
 	// The language packages register their extractors from init, which is
 	// what links a language into the binary. Every command that resolves a

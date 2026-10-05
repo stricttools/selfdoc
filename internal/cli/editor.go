@@ -6,7 +6,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/editor/registry"
 	"github.com/stricttools/selfdoc/internal/blog/serving"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/smm-h/strictcli/go/strictcli"
+	"github.com/stricttools/strictcli/go/strictcli"
 )
 
 func (c *cli) registerEditor(parent *strictcli.Group) {
