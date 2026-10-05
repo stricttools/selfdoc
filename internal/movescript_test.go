@@ -1,6 +1,7 @@
 package internal_test
 
 import (
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -557,6 +558,10 @@ func runMoveOnPath(t *testing.T, root, dir, path string, args ...string) (string
 	t.Helper()
 	argv := append([]string{filepath.Join(root, moveScript), "--project", dir}, args...)
 	cmd := exec.Command("python3", argv...)
+	// The child's PATH below cannot resolve "python3", and a relocatable
+	// interpreter locates its standard library from argv[0]: start it by the
+	// absolute path Go resolved from this process's PATH instead.
+	cmd.Args[0] = cmd.Path
 	cmd.Dir = root
 	var env []string
 	for _, entry := range os.Environ() {
@@ -662,6 +667,63 @@ func TestTheMoveScriptDryRunNeedsNoBinary(t *testing.T) {
 	}
 	if !strings.Contains(out, "--selfdoc") {
 		t.Errorf("the dry run does not say that apply will need a binary named with --selfdoc:\n%s", out)
+	}
+}
+
+// managedPython returns the path of a uv-managed CPython interpreter, skipping
+// the test when uv or such an interpreter is not available. A uv-managed build
+// is relocatable: unlike a system interpreter, it has no compiled-in prefix to
+// fall back on, and finds its standard library only from where it was started.
+func managedPython(t *testing.T) string {
+	t.Helper()
+	if _, err := exec.LookPath("uv"); err != nil {
+		t.Skip("uv is not on PATH: no uv-managed interpreter to start the move script with")
+	}
+	out, err := exec.Command("uv", "python", "list", "--only-installed", "--managed-python", "--output-format", "json").Output()
+	if err != nil {
+		t.Skipf("uv cannot list its managed interpreters: %v", err)
+	}
+	var found []struct {
+		Path string `json:"path"`
+	}
+	if err := json.Unmarshal(out, &found); err != nil {
+		t.Fatalf("parsing uv's interpreter list: %v\n%s", err, out)
+	}
+	if len(found) == 0 {
+		t.Skip("uv has no managed interpreter installed")
+	}
+	return found[0].Path
+}
+
+// TestTheMoveScriptStartsUnderARelocatableInterpreterFirstOnPath asserts that
+// the move script runs when the python3 first on the caller's PATH is a
+// relocatable interpreter (an activated uv virtual environment, or a tool run
+// through 'uv run'), while the script's own PATH holds only the tools it runs.
+// Started by a bare name that its own PATH cannot resolve, such an interpreter
+// cannot find its standard library and dies before the script's first line.
+func TestTheMoveScriptStartsUnderARelocatableInterpreterFirstOnPath(t *testing.T) {
+	requireSafegit(t)
+	interpreter := managedPython(t)
+	callerPath := filepath.Join(t.TempDir(), "caller-bin")
+	if err := os.MkdirAll(callerPath, 0o755); err != nil {
+		t.Fatalf("mkdir %s: %v", callerPath, err)
+	}
+	if err := os.Symlink(interpreter, filepath.Join(callerPath, "python3")); err != nil {
+		t.Fatalf("symlink python3: %v", err)
+	}
+	t.Setenv("PATH", callerPath+string(os.PathListSeparator)+os.Getenv("PATH"))
+	hygiene.Isolate(t)
+	root := moduleRoot(t)
+	dir := oldLayoutProject(t)
+	makeToolRoot(t, dir)
+
+	out, status := runMoveOnPath(t, root, dir, toolPath(t, "git", "safegit"), "--dry-run")
+
+	if status != 0 {
+		t.Fatalf("the dry run refused under a relocatable python3 first on PATH:\n%s", out)
+	}
+	if !strings.Contains(out, "moves planned:") {
+		t.Errorf("the dry run did not print its plan:\n%s", out)
 	}
 }
 
