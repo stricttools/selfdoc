@@ -525,9 +525,14 @@ func checkCLIPages(
 				if strictclisupport.CommandName(group) != commandName {
 					continue
 				}
-				for _, subcommand := range strictclisupport.GroupCommands(group) {
-					flags = append(flags, strictclisupport.CommandFlags(subcommand)...)
-				}
+				// A group's page documents its nested groups too, so their
+				// commands' flags are this page's flags.
+				_ = strictclisupport.WalkGroup(group, func(_ string, grp *strictclisupport.Object) error {
+					for _, subcommand := range strictclisupport.GroupCommands(grp) {
+						flags = append(flags, strictclisupport.CommandFlags(subcommand)...)
+					}
+					return nil
+				})
 				break
 			}
 		}
@@ -585,31 +590,34 @@ func checkCLIPages(
 	}
 
 	for _, group := range cliSchema.Groups {
-		groupName := strictclisupport.CommandName(group)
-		pageFile := "cli-" + groupName + ".md"
-		checkHelpLength("group", groupName, strictclisupport.CommandHelp(group), pageFile)
-		for _, subcommand := range strictclisupport.GroupCommands(group) {
-			subcommandName := strictclisupport.CommandName(subcommand)
-			checkHelpLength(
-				"command", groupName+" "+subcommandName,
-				strictclisupport.CommandHelp(subcommand), pageFile,
-			)
-			for _, flag := range strictclisupport.IterFlagHelp(
-				strictclisupport.CommandFlags(subcommand),
-			) {
-				checkHelpLength("flag", flag.Label, flag.Help, pageFile)
-			}
-			for _, arg := range strictclisupport.CommandArgs(subcommand) {
-				entry, isObject := arg.(*strictclisupport.Object)
-				if !isObject {
-					continue
-				}
+		// Nested groups are documented on their top-level group's page.
+		pageFile := "cli-" + strictclisupport.CommandName(group) + ".md"
+		_ = strictclisupport.WalkGroup(group, func(groupPath string, grp *strictclisupport.Object) error {
+			checkHelpLength("group", groupPath, strictclisupport.CommandHelp(grp), pageFile)
+			for _, subcommand := range strictclisupport.GroupCommands(grp) {
+				subcommandName := strictclisupport.CommandName(subcommand)
 				checkHelpLength(
-					"arg", strictclisupport.Field(entry, "name"),
-					strictclisupport.Field(entry, "help"), pageFile,
+					"command", groupPath+" "+subcommandName,
+					strictclisupport.CommandHelp(subcommand), pageFile,
 				)
+				for _, flag := range strictclisupport.IterFlagHelp(
+					strictclisupport.CommandFlags(subcommand),
+				) {
+					checkHelpLength("flag", flag.Label, flag.Help, pageFile)
+				}
+				for _, arg := range strictclisupport.CommandArgs(subcommand) {
+					entry, isObject := arg.(*strictclisupport.Object)
+					if !isObject {
+						continue
+					}
+					checkHelpLength(
+						"arg", strictclisupport.Field(entry, "name"),
+						strictclisupport.Field(entry, "help"), pageFile,
+					)
+				}
 			}
-		}
+			return nil
+		})
 	}
 
 	return results, nil

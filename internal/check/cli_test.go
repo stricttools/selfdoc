@@ -276,6 +276,100 @@ func TestCLI002HelpLength(t *testing.T) {
 		}
 	})
 
+	t.Run("nested groups and their commands are measured at every depth", func(t *testing.T) {
+		long := "A help text long enough to pass the minimum length rule easily"
+		root := strictcliProject(t,
+			cliSchema(nil, map[string]any{
+				"apple": map[string]any{
+					"name": "apple", "help": long,
+					"commands": map[string]any{},
+					"groups": map[string]any{
+						"testers": map[string]any{
+							"name": "testers", "help": "Testers",
+							"commands": map[string]any{
+								"remove": map[string]any{
+									"name": "remove", "help": "Remove one",
+									"flags": []any{cliFlag("email", "Who")},
+									"args":  []any{map[string]any{"name": "id", "help": "Which"}},
+								},
+							},
+							"groups": map[string]any{
+								"invites": map[string]any{
+									"name": "invites", "help": "Invites",
+									"commands": map[string]any{
+										"resend": map[string]any{
+											"name": "resend", "help": "Resend",
+											"flags": []any{}, "args": []any{},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}),
+			map[string]string{
+				"cli-index.md": cliIndexPage,
+				"cli-apple.md": "+++\ndescription = \"Reference for the myapp apple " +
+					"group with usage details\"\n+++\n# myapp apple\n\n`--email`\n",
+			},
+		)
+		result := checkFixture(t, root)
+		matching := withCode(result.Lints, "cli-help-text-too-short")
+		joined := strings.Join(messagesOf(matching), "\n")
+		for _, fragment := range []string{
+			"group 'apple testers'", "command 'apple testers remove'",
+			"flag '--email'", "arg 'id'",
+			"group 'apple testers invites'", "command 'apple testers invites resend'",
+		} {
+			if !strings.Contains(joined, fragment) {
+				t.Errorf("%s was not measured: %q", fragment, joined)
+			}
+		}
+		if len(matching) != 6 {
+			t.Errorf("cli-help-text-too-short count = %d, want 6: %v", len(matching), messagesOf(matching))
+		}
+		for _, lint := range matching {
+			if lint.File() != "cli-apple.md" {
+				t.Errorf("file = %q, want cli-apple.md", lint.File())
+			}
+		}
+	})
+
+	t.Run("a nested command's flag the group page does not document", func(t *testing.T) {
+		long := "A help text long enough to pass the minimum length rule easily"
+		root := strictcliProject(t,
+			cliSchema(nil, map[string]any{
+				"apple": map[string]any{
+					"name": "apple", "help": long,
+					"commands": map[string]any{},
+					"groups": map[string]any{
+						"testers": map[string]any{
+							"name": "testers", "help": long,
+							"commands": map[string]any{
+								"remove": map[string]any{
+									"name": "remove", "help": long,
+									"flags": []any{cliFlag("email", long)},
+									"args":  []any{},
+								},
+							},
+						},
+					},
+				},
+			}),
+			map[string]string{
+				"cli-index.md": cliIndexPage,
+				"cli-apple.md": "+++\ndescription = \"Reference for the myapp apple " +
+					"group with usage details\"\n+++\n# myapp apple\n\nText.\n",
+			},
+		)
+		result := checkFixture(t, root)
+		matching := withCode(result.Lints, "undocumented-cli-command-or-flag")
+		if len(matching) != 1 || !strings.Contains(matching[0].Message(), "--email") {
+			t.Fatalf("undocumented-cli-command-or-flag = %v, want one naming --email", messagesOf(matching))
+		}
+	})
+
 	t.Run("an argument's help is measured", func(t *testing.T) {
 		root := strictcliProject(t,
 			cliSchema(map[string]any{
