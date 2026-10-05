@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "name": "selfdoc",
+  "name": "release-checkout",
   "slug": "selfdoc",
   "version": "0.45.1",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
@@ -11968,7 +11968,7 @@
       ]
     }
   ],
-  "last_gen": "2026-09-29T20:18:12.460251+00:00",
+  "last_gen": "2026-10-05T21:23:32.236662+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
