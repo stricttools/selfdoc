@@ -1,9 +1,10 @@
 // Package strictclisupport is first-class support for strictcli-based
 // projects.
 //
-// It reads .strictcli/schema.json -- the document `<app> --dump-schema`
-// writes -- for the CLI's structure (the app, its commands, flags, arguments
-// and groups) and renders that structure as Markdown documentation pages.
+// It reads .strictcli/schema.json -- the help document `<app> help --json`
+// prints, saved to that file -- for the CLI's structure (the app, its
+// commands, flags, arguments and groups) and renders that structure as
+// Markdown documentation pages.
 //
 // # Version 2 only
 //
@@ -227,8 +228,10 @@ func ReadSchemaJSON(baseDir string) (*Structure, error) {
 		}
 		return nil, &SchemaError{Message: fmt.Sprintf(
 			"Schema at %s declares schema_version %s; this selfdoc reads "+
-				"schema_version %d only. Regenerate it with a strictcli "+
-				">= 0.41.0: %s --dump-schema",
+				"schema_version %d only. Regenerate it with a strictcli that "+
+				"has 'help --json' (Go 0.37.0, Python 0.44.0, TypeScript "+
+				"0.43.0, or later), running '%s help --json > "+
+				".strictcli/schema.json' in the directory that holds .strictcli/",
 			schemaPath, pyRepr(version), SupportedSchemaVersion, appName,
 		)}
 	}
@@ -240,7 +243,9 @@ func ReadSchemaJSON(baseDir string) (*Structure, error) {
 			appName = name
 		}
 		return nil, &SchemaError{Message: fmt.Sprintf(
-			"Schema missing project_id field. Regenerate with: %s --dump-schema",
+			"Schema missing project_id field. Regenerate it by running "+
+				"'%s help --json > .strictcli/schema.json' in the directory "+
+				"that holds .strictcli/",
 			appName,
 		)}
 	}

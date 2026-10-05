@@ -512,7 +512,7 @@ func TestProjectIDValidation(t *testing.T) {
 		writeSchemaText(t, dir, `{"schema_version": 2, "name": "myapp",
 		  "version": "1.0", "help": "test", "commands": {}, "groups": {}}`)
 		_, err := ReadSchemaJSON(dir)
-		if err == nil || !strings.Contains(err.Error(), "myapp --dump-schema") {
+		if err == nil || !strings.Contains(err.Error(), "'myapp help --json > .strictcli/schema.json'") {
 			t.Fatalf("err = %v", err)
 		}
 	})
@@ -596,7 +596,7 @@ func TestSchemaVersionRefusals(t *testing.T) {
 			if !asSchemaError(err, &schemaErr) {
 				t.Fatalf("err is %T, want *SchemaError", err)
 			}
-			if !strings.Contains(err.Error(), "old --dump-schema") {
+			if !strings.Contains(err.Error(), "'old help --json > .strictcli/schema.json'") {
 				t.Errorf("the refusal must name the regeneration command: %v", err)
 			}
 		})

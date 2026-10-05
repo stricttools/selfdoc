@@ -75,7 +75,7 @@ func TestMain(m *testing.M) {
 // which is how the two properties that only exist outside App.Test are
 // asserted: the confirmation a consequential command demands at a terminal
 // (App.Test behaves as if consent were given and never prompts), and the
-// schema --dump-schema writes to the working directory.
+// help document `help --json` prints.
 const runAsCLIEnv = "SELFDOC_CLI_RUN_AS_CLI"
 
 // cliProcess is one real invocation of the application as a subprocess.
