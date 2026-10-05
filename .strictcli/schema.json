@@ -83,7 +83,7 @@
   },
   "project_id": "github.com/stricttools/selfdoc",
   "name": "selfdoc",
-  "version": "0.45.1",
+  "version": "0.46.0",
   "help": "Code-aware static site generator with directive-based content extraction",
   "commands": {
     "init": {
