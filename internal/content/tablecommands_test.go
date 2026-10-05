@@ -3,6 +3,7 @@ package content
 import (
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stricttools/selfdoc/internal/strictclisupport"
@@ -62,6 +63,47 @@ func TestTableCommands(t *testing.T) {
 			"| **config** | configuration |",
 			"| `config show` | Show the config |",
 		)
+	})
+
+	t.Run("nested groups are listed at every depth with full paths", func(t *testing.T) {
+		base := t.TempDir()
+		write(t, filepath.Join(base, ".strictcli", "schema.json"), `{
+		  "schema_version": 2, "project_id": "x", "name": "x",
+		  "commands": {},
+		  "groups": {
+		    "apple": {"help": "Apple stores",
+		      "commands": {"upload": {"help": "Upload a build"}},
+		      "groups": {
+		        "testers": {"help": "Manage testers",
+		          "commands": {"remove": {"help": "Remove a tester"}},
+		          "groups": {
+		            "invites": {"help": "Tester invites",
+		              "commands": {"resend": {"help": "Resend an invite"}}}
+		          }}
+		      }},
+		    "play": {"help": "Play store",
+		      "commands": {"release": {"help": "Release a build"}}}
+		  }}`)
+		rendered := commands(t, base, nil)
+		rows := []string{
+			"| **apple** | Apple stores |",
+			"| `apple upload` | Upload a build |",
+			"| **apple testers** | Manage testers |",
+			"| `apple testers remove` | Remove a tester |",
+			"| **apple testers invites** | Tester invites |",
+			"| `apple testers invites resend` | Resend an invite |",
+			"| **play** | Play store |",
+			"| `play release` | Release a build |",
+		}
+		wants(t, rendered, rows...)
+		position := -1
+		for _, row := range rows {
+			next := strings.Index(rendered, row)
+			if next <= position {
+				t.Fatalf("row %q out of order in:\n%s", row, rendered)
+			}
+			position = next
+		}
 	})
 
 	t.Run("a schema in a subdirectory is discovered", func(t *testing.T) {

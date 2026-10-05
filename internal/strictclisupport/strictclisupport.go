@@ -319,6 +319,19 @@ func GroupCommands(group *Object) []*Object {
 	return commands
 }
 
+// GroupSubgroups are a group's nested groups, in declaration order, each in
+// the same translated form as a top-level group. translateGroup keeps the
+// nested "groups" object as the schema declares it, so the translation
+// happens here.
+func GroupSubgroups(group *Object) []*Object {
+	nested := getObject(group, "groups")
+	var subgroups []*Object
+	for _, name := range keysOf(nested) {
+		subgroups = append(subgroups, translateGroup(name, getObject(nested, name)))
+	}
+	return subgroups
+}
+
 // Field is the string value of one declared field of any schema entry -- a
 // flag's env var, an argument's help -- and "" when the entry omits it or
 // declares it as something other than a string.

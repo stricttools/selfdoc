@@ -64,7 +64,8 @@ func ResolveTableCommands(attrs map[string]string, config map[string]any, baseDi
 }
 
 // commandTable renders one row per command, and for each group a heading row
-// followed by its subcommands.
+// followed by its subcommands and then its nested groups, at any depth. Every
+// row names the full command path.
 func commandTable(structure *strictclisupport.Structure, targetDir string) (string, error) {
 	var rows [][]string
 	for _, cmd := range structure.Commands {
@@ -72,16 +73,7 @@ func commandTable(structure *strictclisupport.Structure, targetDir string) (stri
 		rows = append(rows, []string{"`" + name + "`", strictclisupport.CommandHelp(cmd)})
 	}
 	for _, group := range structure.Groups {
-		groupName := strictclisupport.CommandName(group)
-		rows = append(rows, []string{
-			"**" + groupName + "**", strictclisupport.CommandHelp(group),
-		})
-		for _, cmd := range strictclisupport.GroupCommands(group) {
-			rows = append(rows, []string{
-				"`" + groupName + " " + strictclisupport.CommandName(cmd) + "`",
-				strictclisupport.CommandHelp(cmd),
-			})
-		}
+		rows = groupRows(rows, group, "")
 	}
 	if len(rows) == 0 {
 		return marker("no commands found in '%s'", targetDir), nil
@@ -89,4 +81,23 @@ func commandTable(structure *strictclisupport.Structure, targetDir string) (stri
 	return tables.RenderMarkdownTable(
 		[]string{"Command", "Description"}, rows, nil, false,
 	)
+}
+
+// groupRows appends a group's heading row, its subcommands, and then each
+// nested group's rows, with every path prefixed by the enclosing groups.
+func groupRows(rows [][]string, group *strictclisupport.Object, prefix string) [][]string {
+	groupPath := prefix + strictclisupport.CommandName(group)
+	rows = append(rows, []string{
+		"**" + groupPath + "**", strictclisupport.CommandHelp(group),
+	})
+	for _, cmd := range strictclisupport.GroupCommands(group) {
+		rows = append(rows, []string{
+			"`" + groupPath + " " + strictclisupport.CommandName(cmd) + "`",
+			strictclisupport.CommandHelp(cmd),
+		})
+	}
+	for _, subgroup := range strictclisupport.GroupSubgroups(group) {
+		rows = groupRows(rows, subgroup, groupPath+" ")
+	}
+	return rows
 }
