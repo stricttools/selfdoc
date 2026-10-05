@@ -23,3 +23,7 @@ Upgrading a project, in this order:
 # blog = false
 include = ["go"]
 exclude = []
+candidate_sha = "99708c923db026ad8244d1350b0736499024c1da"
+
+[tree_hashes]
+"." = "9ca514a7c2a5451dfa6676d5715edda6f7ef08cc"
