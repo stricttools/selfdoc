@@ -3,6 +3,7 @@ package quality
 import (
 	"encoding/json"
 	"fmt"
+	selfdocconfig "github.com/stricttools/selfdoc/internal/config"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -102,7 +103,9 @@ func ScoreProject(projectPath string, h *effects.Handle) (Result, error) {
 	if content, err := os.ReadFile(filepath.Join(projectPath, "selfdoc.json")); err == nil {
 		var config map[string]any
 		if err := json.Unmarshal(content, &config); err == nil {
-			rootFileTemplates = stringList(config["root_files"])
+			for _, rootFile := range selfdocconfig.RootFiles(config) {
+				rootFileTemplates = append(rootFileTemplates, rootFile.Template)
+			}
 		}
 	}
 

@@ -736,8 +736,40 @@ func TestGenAndGenData(t *testing.T) {
 
 func TestListAndMappingFields(t *testing.T) {
 	runCases(t, []configCase{
-		{name: "root_files loads", data: baseKeys(map[string]any{"root_files": []any{"docs/_CLAUDE.md"}}), check: wantEqual("root_files", []any{"docs/_CLAUDE.md"})},
-		{name: "a root_files item must be a string", data: baseKeys(map[string]any{"root_files": []any{123}}), wantErr: "'root_files[0]' must be a string"},
+		{
+			name: "a root_files entry names its template and its outputs",
+			data: baseKeys(map[string]any{"root_files": []any{
+				map[string]any{"template": "docs/_README.md", "outputs": []any{"README.md", "pypi/README.md"}},
+			}}),
+			check: func(t *testing.T, cfg Config) {
+				got := RootFiles(cfg)
+				if len(got) != 1 || got[0].Template != "docs/_README.md" ||
+					len(got[0].Outputs) != 2 || got[0].Outputs[0] != "README.md" || got[0].Outputs[1] != "pypi/README.md" {
+					t.Fatalf("RootFiles = %#v", got)
+				}
+			},
+		},
+		{
+			name:    "a plain-string root_files entry names the migration",
+			data:    baseKeys(map[string]any{"root_files": []any{"docs/_CLAUDE.md"}}),
+			wantErr: "root_files[0] is a plain string ('docs/_CLAUDE.md'). Every root_files entry is an object naming its template and the files it generates",
+		},
+		{name: "a root_files entry must be an object", data: baseKeys(map[string]any{"root_files": []any{123}}), wantErr: "'root_files[0]' must be an object"},
+		{name: "a root_files entry needs a template", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"outputs": []any{"README.md"}}}}), wantErr: "'root_files[0].template' is required"},
+		{name: "a root_files entry needs outputs", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"template": "docs/_README.md"}}}), wantErr: "'root_files[0].outputs' is required"},
+		{name: "a root_files entry needs at least one output", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"template": "docs/_README.md", "outputs": []any{}}}}), wantErr: "'root_files[0].outputs' must be a non-empty list"},
+		{name: "an unknown root_files key is refused", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"template": "docs/_README.md", "outputs": []any{"README.md"}, "output": "x"}}}), wantErr: "invalid <item> key 'output'; must be one of: outputs, template"},
+		{name: "an absolute output is refused", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"template": "docs/_README.md", "outputs": []any{"/etc/README.md"}}}}), wantErr: "root_files[0].outputs[0] '/etc/README.md' is not a path inside the project"},
+		{name: "an output leaving the project is refused", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"template": "docs/_README.md", "outputs": []any{"../README.md"}}}}), wantErr: "root_files[0].outputs[0] '../README.md' is not a path inside the project"},
+		{name: "an output not in its clean form is refused", data: baseKeys(map[string]any{"root_files": []any{map[string]any{"template": "docs/_README.md", "outputs": []any{"pypi/./README.md"}}}}), wantErr: "root_files[0].outputs[0] 'pypi/./README.md' is not a path inside the project"},
+		{
+			name: "two entries generating one output are refused",
+			data: baseKeys(map[string]any{"root_files": []any{
+				map[string]any{"template": "docs/_README.md", "outputs": []any{"README.md"}},
+				map[string]any{"template": "docs/_OTHER.md", "outputs": []any{"README.md"}},
+			}}),
+			wantErr: "root_files declares the output 'README.md' more than once",
+		},
 		{
 			name: "redirects load",
 			data: baseKeys(map[string]any{"redirects": []any{
@@ -1304,7 +1336,7 @@ func TestDiagnosticsMatchThePythonSurface(t *testing.T) {
 		{map[string]any{"locales": []any{map[string]any{"code": "en_US", "label": "x"}}}, `invalid locales[0].code 'en_US'; must match pattern ^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$`},
 		{map[string]any{"gen_data": map[string]any{"scripts": []any{map[string]any{"command": "echo hi", "output": "o", "mounts": []any{123}}}}}, "'gen_data.scripts[0].mounts[0]' must be a string"},
 		{map[string]any{"source": []any{"src/"}}, `source[0] is a plain string ('src/'). Source entries must be objects with 'path' and 'language': {"path": "src/", "language": "python"}`},
-		{map[string]any{"root_files": []any{123}}, "'root_files[0]' must be a string"},
+		{map[string]any{"root_files": []any{123}}, "'root_files[0]' must be an object"},
 		{map[string]any{"posts": map[string]any{"dir": 123}}, "'posts.dir' must be a string"},
 		{map[string]any{"versions": []any{map[string]any{"version": "1.0", "indexed": true}}}, "invalid <item> key 'indexed'; must be one of: projects, version"},
 		{map[string]any{"foo": "bar"}, "unknown config key 'foo'"},

@@ -134,7 +134,7 @@ func TestExtensionOfReadsTheKindThePythonExpressionDid(t *testing.T) {
 func TestSelfdocInfoReadsAdoption(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, root, "selfdoc.json", `{
-		"root_files": ["docs/_README.md", "docs/_CLAUDE.md"],
+		"root_files": [{"template": "docs/_README.md", "outputs": ["README.md"]}, {"template": "docs/_CLAUDE.md", "outputs": [".claude/CLAUDE.md"]}],
 		"directives": {"one": {}, "two": {}},
 		"posts": {"dir": "posts"},
 		"docs": "documentation"
@@ -175,7 +175,7 @@ func TestSelfdocInfoWithoutAConfig(t *testing.T) {
 
 func TestSelfdocInfoDefaultsTheDocsDirectory(t *testing.T) {
 	root := t.TempDir()
-	writeFile(t, root, "selfdoc.json", `{"root_files": [".strictmetadata/docs/_README.md"]}`)
+	writeFile(t, root, "selfdoc.json", `{"root_files": [{"template": ".strictmetadata/docs/_README.md", "outputs": ["README.md"]}]}`)
 	writeFile(t, root, ".strictmetadata/docs/page.md", ":-: version\n")
 
 	info := SelfdocInfo(root)
@@ -274,7 +274,7 @@ esac`)
 func TestScoreProjectCombinesEveryCounter(t *testing.T) {
 	bin := isolate(t)
 	root := project(t)
-	writeFile(t, root, "selfdoc.json", `{"root_files": ["docs/_README.md"]}`)
+	writeFile(t, root, "selfdoc.json", `{"root_files": [{"template": "docs/_README.md", "outputs": ["README.md"]}]}`)
 	scoringDirstat(t, bin, root, 1000, 20)
 
 	result, err := ScoreProject(root, effects.Unbound())

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/stricttools/selfdoc/internal/catalog"
+	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/content"
 	"github.com/stricttools/selfdoc/internal/directives"
 	"github.com/stricttools/selfdoc/internal/effects"
@@ -64,15 +65,14 @@ func HasGeneratedHeader(path string) bool {
 	return strings.HasPrefix(firstLine(path), rootFileHeaderPrefix)
 }
 
-// RootFileOutputName is the file, relative to the project root and spelled
-// with forward slashes, a root-file template generates: ClaudeOutputRel for
-// the _CLAUDE.md template, and every other template's basename without the
-// leading underscore. A basename with no underscore generates nothing and
-// answers false.
-//
-// It is the one place the output path is decided: gen writes there, and the
-// version check and the layout migration read there.
-func RootFileOutputName(templatePath string) (string, bool) {
+// ConvertedRootFileOutput is the output `selfdoc layout migrate` declares
+// when it converts a root_files entry that names only its template: the file
+// selfdoc generated from such an entry, relative to the project root and
+// spelled with forward slashes. That is ClaudeOutputRel for the _CLAUDE.md
+// template, and every other template's basename without the leading
+// underscore. A basename with no underscore generated nothing and answers
+// false. Every other reader takes the outputs a root_files entry declares.
+func ConvertedRootFileOutput(templatePath string) (string, bool) {
 	basename := filepath.Base(templatePath)
 	if !strings.HasPrefix(basename, "_") {
 		return "", false
@@ -164,32 +164,30 @@ func RefuseIgnoredOutput(baseDir, rel string, h *effects.Handle) error {
 // RootFileOutputPreconditions refuses a project whose root files cannot be
 // generated as it stands, before anything is written: a CLAUDE.md an earlier
 // selfdoc generated at the project root, or an output path git ignores.
-func RootFileOutputPreconditions(config map[string]any, baseDir string, h *effects.Handle) error {
+func RootFileOutputPreconditions(cfg map[string]any, baseDir string, h *effects.Handle) error {
 	if err := RefusePreviousClaudeOutput(baseDir); err != nil {
 		return err
 	}
-	for _, templatePath := range configStringList(config, "root_files") {
-		outputName, named := RootFileOutputName(templatePath)
-		if !named {
-			continue
-		}
-		if err := RefuseIgnoredOutput(baseDir, outputName, h); err != nil {
-			return err
+	for _, rootFile := range config.RootFiles(cfg) {
+		for _, outputName := range rootFile.Outputs {
+			if err := RefuseIgnoredOutput(baseDir, outputName, h); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 // GenerateRootFiles resolves a project's root-file templates and writes each
-// to the path [RootFileOutputName] decides.
+// to every output its root_files entry declares.
 //
-// config's root_files key lists the templates (paths like
-// ".strictmetadata/docs/_README.md"). Each one's basename must start with an
-// underscore: _README.md generates README.md at the project root, and
-// _CLAUDE.md generates .claude/CLAUDE.md, creating .claude/. The template's
-// frontmatter is dropped, its directives are resolved through the project's
-// own resolver, and the result is written read-only (0444) under the
-// auto-generated header.
+// Each root_files entry names a template (a path like
+// ".strictmetadata/docs/_README.md", whose basename must start with an
+// underscore) and the files it generates, relative to the project root, e.g.
+// "README.md" and "pypi/README.md". The template's frontmatter is dropped, its
+// directives are resolved through the project's own resolver, and the result
+// is written read-only (0444) under the auto-generated header to every output,
+// creating the directories they sit in.
 //
 // Before anything is written, [RootFileOutputPreconditions] refuses a root
 // CLAUDE.md an earlier selfdoc generated, and an output path git ignores.
@@ -201,7 +199,8 @@ func RootFileOutputPreconditions(config map[string]any, baseDir string, h *effec
 //
 // An existing output file whose first line is not the auto-generated header is
 // never overwritten: that is a hard error naming the exact header line to add
-// in order to adopt the file.
+// in order to adopt the file, raised before any output of that entry is
+// written.
 //
 // versionOverride, when non-empty, is recorded on config under the runtime
 // version-override key, which is what the var directive reads for
@@ -209,24 +208,24 @@ func RootFileOutputPreconditions(config map[string]any, baseDir string, h *effec
 //
 // It returns the output names, relative to baseDir and spelled with forward
 // slashes.
-func GenerateRootFiles(config map[string]any, baseDir, versionOverride string, handle *effects.Handle) ([]string, error) {
+func GenerateRootFiles(cfg map[string]any, baseDir, versionOverride string, handle *effects.Handle) ([]string, error) {
 	if versionOverride != "" {
-		config[content.VersionOverrideKey] = versionOverride
+		cfg[content.VersionOverrideKey] = versionOverride
 	}
 
-	if err := RootFileOutputPreconditions(config, baseDir, handle); err != nil {
+	if err := RootFileOutputPreconditions(cfg, baseDir, handle); err != nil {
 		return nil, err
 	}
-	rootFiles := configStringList(config, "root_files")
+	rootFiles := config.RootFiles(cfg)
 	if len(rootFiles) == 0 {
 		return nil, nil
 	}
 
-	projectResolver, err := resolver.MakeResolver(config, baseDir, handle)
+	projectResolver, err := resolver.MakeResolver(cfg, baseDir, handle)
 	if err != nil {
 		return nil, err
 	}
-	customNames := customDirectiveNames(config)
+	customNames := customDirectiveNames(cfg)
 	if err := directives.ValidateDirectiveNames(sortedNames(customNames)); err != nil {
 		return nil, err
 	}
@@ -237,20 +236,19 @@ func GenerateRootFiles(config map[string]any, baseDir, versionOverride string, h
 
 	var generated []string
 
-	for _, templatePath := range rootFiles {
+	for _, rootFile := range rootFiles {
+		templatePath := rootFile.Template
 		fullTemplate := filepath.Join(baseDir, templatePath)
 		if info, err := os.Stat(fullTemplate); err != nil || !info.Mode().IsRegular() {
 			return nil, fmt.Errorf("Root file template not found: %s", templatePath)
 		}
 
-		outputName, named := RootFileOutputName(templatePath)
-		if !named {
+		if !strings.HasPrefix(filepath.Base(templatePath), "_") {
 			return nil, fmt.Errorf(
 				"Root file template basename must start with '_': %s",
 				templatePath,
 			)
 		}
-		outputPath := filepath.Join(baseDir, filepath.FromSlash(outputName))
 
 		data, err := os.ReadFile(fullTemplate)
 		if err != nil {
@@ -291,25 +289,31 @@ func GenerateRootFiles(config map[string]any, baseDir, versionOverride string, h
 		finalContent := makeRootFileHeader(templatePath) + resolved
 
 		// Overwrite safety: adopt a generated file, refuse a handwritten
-		// one.
-		if info, err := os.Stat(outputPath); err == nil && info.Mode().IsRegular() {
-			if !strings.HasPrefix(firstLine(outputPath), rootFileHeaderPrefix) {
-				return nil, errors.New(
-					"Refusing to overwrite " + outputPath + ": file exists and " +
-						"is not auto-generated by selfdoc. To migrate, add " +
-						"'" + strings.TrimRight(makeRootFileHeader(templatePath), " \t\n\r") + "' as " +
-						"the first line, or rename the existing file.",
-				)
+		// one -- at every output, before any of them is written.
+		for _, outputName := range rootFile.Outputs {
+			outputPath := filepath.Join(baseDir, filepath.FromSlash(outputName))
+			if info, err := os.Stat(outputPath); err == nil && info.Mode().IsRegular() {
+				if !strings.HasPrefix(firstLine(outputPath), rootFileHeaderPrefix) {
+					return nil, errors.New(
+						"Refusing to overwrite " + outputPath + ": file exists and " +
+							"is not auto-generated by selfdoc. To migrate, add " +
+							"'" + strings.TrimRight(makeRootFileHeader(templatePath), " \t\n\r") + "' as " +
+							"the first line, or rename the existing file.",
+					)
+				}
 			}
 		}
 
-		if err := handle.MkdirAll(filepath.Dir(outputPath)); err != nil {
-			return nil, err
+		for _, outputName := range rootFile.Outputs {
+			outputPath := filepath.Join(baseDir, filepath.FromSlash(outputName))
+			if err := handle.MkdirAll(filepath.Dir(outputPath)); err != nil {
+				return nil, err
+			}
+			if err := handle.AtomicWrite(outputPath, []byte(finalContent), generatedPageMode); err != nil {
+				return nil, err
+			}
+			generated = append(generated, outputName)
 		}
-		if err := handle.AtomicWrite(outputPath, []byte(finalContent), generatedPageMode); err != nil {
-			return nil, err
-		}
-		generated = append(generated, outputName)
 	}
 
 	return generated, nil
@@ -348,18 +352,5 @@ func sortedNames(names map[string]struct{}) []string {
 		result = append(result, name)
 	}
 	sort.Strings(result)
-	return result
-}
-
-// configStringList reads a list-of-strings config key, skipping any entry that
-// is not a string.
-func configStringList(config map[string]any, key string) []string {
-	raw, _ := config[key].([]any)
-	result := make([]string, 0, len(raw))
-	for _, item := range raw {
-		if value, isString := item.(string); isString {
-			result = append(result, value)
-		}
-	}
 	return result
 }

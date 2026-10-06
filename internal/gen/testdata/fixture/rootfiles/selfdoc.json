@@ -10,7 +10,12 @@
   "base_url": "https://example.com",
   "search_engine": "pagefind",
   "root_files": [
-    ".strictmetadata/docs/_TEST.md"
+    {
+      "template": ".strictmetadata/docs/_TEST.md",
+      "outputs": [
+        "TEST.md"
+      ]
+    }
   ],
   "topology": {
     "docs_base": "https://docs.example.dev",

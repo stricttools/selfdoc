@@ -364,11 +364,28 @@ var Schema = []FieldSpec{
 		DefaultFactory: emptyList,
 		AllowEmpty:     true,
 		ItemSpec: &FieldSpec{
-			Name:        "<item>",
-			Type:        FieldStr,
-			Description: "Underscore-prefixed template path in docs/.",
+			Name:       "<item>",
+			Type:       FieldDict,
+			StrictKeys: true,
+			Children: []FieldSpec{
+				{
+					Name:        "template",
+					Type:        FieldStr,
+					Required:    true,
+					Description: "Underscore-prefixed template path, relative to the project root.",
+				},
+				{
+					Name:        "outputs",
+					Type:        FieldList,
+					Required:    true,
+					MinLength:   ptrInt(1),
+					ItemSpec:    &FieldSpec{Name: "<item>", Type: FieldStr, Description: "A file the template generates, relative to the project root."},
+					Description: "The files the template generates, each relative to the project root, in clean form, and inside the project.",
+				},
+			},
+			Description: "One template and the files it generates.",
 		},
-		Description: "List of underscore-prefixed templates that generate repository-level files, wherever each is placed: _README.md generates README.md at the project root, and _CLAUDE.md generates .claude/CLAUDE.md.",
+		Description: "The templates that generate repository-level files, each with the files it generates, e.g. {\"template\": \".strictmetadata/docs/_README.md\", \"outputs\": [\"README.md\", \"pypi/README.md\"]}. No output is declared by more than one entry.",
 	},
 	{
 		Name:           "redirects",

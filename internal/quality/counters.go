@@ -3,6 +3,7 @@ package quality
 import (
 	"bytes"
 	"encoding/json"
+	selfdocconfig "github.com/stricttools/selfdoc/internal/config"
 	"os"
 	"path/filepath"
 	"strings"
@@ -171,7 +172,8 @@ func SelfdocInfo(projectPath string) Adoption {
 	}
 
 	info := Adoption{HasSelfdoc: true}
-	for _, template := range stringList(config["root_files"]) {
+	for _, rootFile := range selfdocconfig.RootFiles(config) {
+		template := rootFile.Template
 		if strings.HasSuffix(template, "_README.md") {
 			info.AutoREADME = true
 		}

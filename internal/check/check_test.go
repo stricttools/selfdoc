@@ -193,7 +193,7 @@ func TestNoConfigRaises(t *testing.T) {
 func TestRootTemplateDirectivesValidated(t *testing.T) {
 	root := pythonProject(t)
 	config := pythonProjectConfig()
-	config["root_files"] = []any{".strictmetadata/docs/_README.md"}
+	config["root_files"] = []any{map[string]any{"template": ".strictmetadata/docs/_README.md", "outputs": []any{"README.md"}}}
 	writeConfig(t, root, config)
 	write(t, filepath.Join(root, ".strictmetadata", "docs", "_README.md"),
 		"# Project\n\n:-: ref path=\"mylib\"\n")
@@ -212,7 +212,7 @@ func TestRootTemplateDirectivesValidated(t *testing.T) {
 func TestRootTemplateMissingFileSkipped(t *testing.T) {
 	root := pythonProject(t)
 	config := pythonProjectConfig()
-	config["root_files"] = []any{"docs/_MISSING.md"}
+	config["root_files"] = []any{map[string]any{"template": "docs/_MISSING.md", "outputs": []any{"MISSING.md"}}}
 	writeConfig(t, root, config)
 
 	result := checkFixture(t, root)
@@ -225,7 +225,7 @@ func TestRootTemplateMissingFileSkipped(t *testing.T) {
 func TestRootTemplateWithFrontmatter(t *testing.T) {
 	root := pythonProject(t)
 	config := pythonProjectConfig()
-	config["root_files"] = []any{".strictmetadata/docs/_README.md"}
+	config["root_files"] = []any{map[string]any{"template": ".strictmetadata/docs/_README.md", "outputs": []any{"README.md"}}}
 	writeConfig(t, root, config)
 	write(t, filepath.Join(root, ".strictmetadata", "docs", "_README.md"),
 		"+++\ntitle = \"Readme\"\n+++\n\n# Project\n\n:-: ref path=\"mylib\"\n")

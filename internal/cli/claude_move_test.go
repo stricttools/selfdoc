@@ -24,7 +24,7 @@ func rootClaudeProject(t *testing.T) string {
 	t.Helper()
 	// No source, so the only page is the one written here, and check has
 	// nothing to report but what this file is about.
-	dir := testproject.Make(t, map[string]any{"root_files": []any{claudeTemplate}, "source": []any{}})
+	dir := testproject.Make(t, map[string]any{"root_files": []any{map[string]any{"template": claudeTemplate, "outputs": []any{".claude/CLAUDE.md"}}}, "source": []any{}})
 	testproject.WriteText(t, filepath.Join(testproject.DocsDir(dir), "index.md"),
 		"+++\ntitle = \"Test Project\"\ndescription = \"The documentation of a test project whose agent instructions are generated from a template and committed where Claude Code reads them.\"\n+++\n\n# Test Project\n\nWelcome to the docs.\n")
 	testproject.WriteText(t, filepath.Join(dir, filepath.FromSlash(claudeTemplate)), "# Agent notes\n")
@@ -164,7 +164,7 @@ func TestMigrateOffThePreviousLayoutMovesTheGeneratedRootClaudeToo(t *testing.T)
 		t.Errorf("the move left uncommitted changes:\n%s", status)
 	}
 	if subject := strings.TrimSpace(gitOutput(t, dir, "log", "-1", "--format=%s")); subject !=
-		"selfdoc layout migrate: move selfdoc's directories from .stricttools/ to .strictmetadata/ and move the generated CLAUDE.md to .claude/CLAUDE.md" {
+		"selfdoc layout migrate: move selfdoc's directories from .stricttools/ to .strictmetadata/ and move the generated CLAUDE.md to .claude/CLAUDE.md and name every root_files entry's outputs" {
 		t.Errorf("the last commit is %q", subject)
 	}
 	if gen := run(t, dir, "gen", "--no-auto-commit"); gen.ExitCode != 0 {

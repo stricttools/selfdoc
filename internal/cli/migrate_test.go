@@ -155,7 +155,16 @@ func TestMigrateMovesSelfdocsDirectoriesAndLeavesAnotherToolsAlone(t *testing.T)
 	if config["docs"] != ".strictmetadata/docs/" || config["output"] != ".strictmetadata/.docs-cache/build/" {
 		t.Errorf("selfdoc.json docs/output = %v / %v", config["docs"], config["output"])
 	}
-	if files, _ := config["root_files"].([]any); len(files) != 1 || files[0] != ".strictmetadata/docs/_README.md" {
+	files, _ := config["root_files"].([]any)
+	entry, _ := func() (map[string]any, bool) {
+		if len(files) != 1 {
+			return nil, false
+		}
+		e, ok := files[0].(map[string]any)
+		return e, ok
+	}()
+	if outputs, _ := entry["outputs"].([]any); entry["template"] != ".strictmetadata/docs/_README.md" ||
+		len(outputs) != 1 || outputs[0] != "README.md" {
 		t.Errorf("selfdoc.json root_files = %v", config["root_files"])
 	}
 	readme := readText(t, filepath.Join(dir, "README.md"))

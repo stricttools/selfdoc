@@ -187,7 +187,7 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - `locales` (required): array of `{code, label, default}` objects -- controls localization
 - `unified`: optional, for monorepo docs-site projects -- lists constituent projects
 - `gen_data`: optional sandboxed script execution config
-- `root_files`: the templates that generate repository-level files, wherever each is placed (`_README.md` generates `README.md`, `_CLAUDE.md` generates `.claude/CLAUDE.md`)
+- `root_files`: one `{template, outputs}` object per template that generates repository-level files, naming every file it generates (e.g. `_README.md` generating `README.md` and `pypi/README.md`, `_CLAUDE.md` generating `.claude/CLAUDE.md`); a plain template string is refused, and `selfdoc layout migrate` converts it
 - `deploy`: Cloudflare Pages or GitHub Pages provider config
 
 ## Architecture

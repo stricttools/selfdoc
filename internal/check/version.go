@@ -2,6 +2,7 @@ package check
 
 import (
 	"fmt"
+	selfdocconfig "github.com/stricttools/selfdoc/internal/config"
 	"os"
 	"path/filepath"
 	"strings"
@@ -82,7 +83,8 @@ func checkVersionMatch(
 
 	var results []lints.LintResult
 
-	for _, templatePath := range stringList(config["root_files"]) {
+	for _, rootFile := range selfdocconfig.RootFiles(config) {
+		templatePath := rootFile.Template
 		fullTemplate := filepath.Join(dirPath, templatePath)
 		if !isFile(fullTemplate) {
 			// A missing template is reported by gen, not here.
@@ -100,33 +102,31 @@ func checkVersionMatch(
 			continue
 		}
 
-		outputName, named := gen.RootFileOutputName(templatePath)
-		if !named {
-			continue
+		for _, outputName := range rootFile.Outputs {
+			outputPath := filepath.Join(dirPath, filepath.FromSlash(outputName))
+			if !isFile(outputPath) {
+				// Not generated yet -- gen's concern, not a version
+				// mismatch.
+				continue
+			}
+			generated, err := os.ReadFile(outputPath)
+			if err != nil {
+				return nil, err
+			}
+			if strings.Contains(string(generated), expected) {
+				continue
+			}
+			results = append(results, lints.MustLintResult(
+				outputName, nil, "version-mismatch-in-generated-root-file",
+				fmt.Sprintf(
+					"Generated root file '%s' embeds the project version from '%s' "+
+						"but does not contain the expected version '%s'. Regenerate "+
+						"with 'selfdoc gen --version-override %s' so the committed "+
+						"file is not one release behind.",
+					outputName, templatePath, expected, expected,
+				),
+			))
 		}
-		outputPath := filepath.Join(dirPath, filepath.FromSlash(outputName))
-		if !isFile(outputPath) {
-			// Not generated yet -- gen's concern, not a version
-			// mismatch.
-			continue
-		}
-		generated, err := os.ReadFile(outputPath)
-		if err != nil {
-			return nil, err
-		}
-		if strings.Contains(string(generated), expected) {
-			continue
-		}
-		results = append(results, lints.MustLintResult(
-			outputName, nil, "version-mismatch-in-generated-root-file",
-			fmt.Sprintf(
-				"Generated root file '%s' embeds the project version from '%s' "+
-					"but does not contain the expected version '%s'. Regenerate "+
-					"with 'selfdoc gen --version-override %s' so the committed "+
-					"file is not one release behind.",
-				outputName, templatePath, expected, expected,
-			),
-		))
 	}
 
 	return results, nil

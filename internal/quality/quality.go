@@ -96,7 +96,7 @@ var Tiers = [6]Tier{
 var NextSteps = [5]string{
 	"Create a README.md with project description and usage",
 	"Run `selfdoc init` to create selfdoc.json",
-	"Add docs/_README.md to root_files in selfdoc.json",
+	"Add a root_files entry for docs/_README.md, with its outputs, to selfdoc.json",
 	"Use :-: directives in docs/ to connect docs to source code",
 	"Define custom directives or configure blog posts",
 }

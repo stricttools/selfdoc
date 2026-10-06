@@ -153,7 +153,7 @@ func TestVER004GeneratedRootFileVersion(t *testing.T) {
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
 			projectConfig := pythonProjectConfig()
-			projectConfig["root_files"] = []any{".strictmetadata/docs/_README.md"}
+			projectConfig["root_files"] = []any{map[string]any{"template": ".strictmetadata/docs/_README.md", "outputs": []any{"README.md"}}}
 			root := versionProject(t, projectConfig, "1.0.0")
 			write(t, filepath.Join(root, ".strictmetadata", "docs", "_README.md"), testCase.template)
 			if testCase.writeGenerated {
@@ -190,7 +190,7 @@ func TestVER004GeneratedRootFileVersion(t *testing.T) {
 // is .claude/CLAUDE.md, and names it.
 func TestVersionMismatchReadsTheClaudeOutputUnderDotClaude(t *testing.T) {
 	projectConfig := pythonProjectConfig()
-	projectConfig["root_files"] = []any{".strictmetadata/docs/_CLAUDE.md"}
+	projectConfig["root_files"] = []any{map[string]any{"template": ".strictmetadata/docs/_CLAUDE.md", "outputs": []any{".claude/CLAUDE.md"}}}
 	root := versionProject(t, projectConfig, "1.0.0")
 	write(t, filepath.Join(root, ".strictmetadata", "docs", "_CLAUDE.md"),
 		"# Project\n\nVersion :-: var key=\"project.version\"\n")
@@ -203,6 +203,30 @@ func TestVersionMismatchReadsTheClaudeOutputUnderDotClaude(t *testing.T) {
 	found := withCode(result.Lints, "version-mismatch-in-generated-root-file")
 	if len(found) != 1 || found[0].File() != ".claude/CLAUDE.md" {
 		t.Fatalf("version-mismatch-in-generated-root-file = %v, want one naming .claude/CLAUDE.md",
+			messagesOf(found))
+	}
+}
+
+// Every output an entry declares is read: a second output one release behind
+// is named while the first is current.
+func TestVersionMismatchReadsEveryDeclaredOutput(t *testing.T) {
+	projectConfig := pythonProjectConfig()
+	projectConfig["root_files"] = []any{map[string]any{
+		"template": ".strictmetadata/docs/_README.md", "outputs": []any{"README.md", "pypi/README.md"},
+	}}
+	root := versionProject(t, projectConfig, "1.0.0")
+	write(t, filepath.Join(root, ".strictmetadata", "docs", "_README.md"),
+		"# Project\n\nVersion :-: var key=\"project.version\"\n")
+	write(t, filepath.Join(root, "README.md"), "# Project\n\nVersion 1.0.0\n")
+	write(t, filepath.Join(root, "pypi", "README.md"), "# Project\n\nVersion 0.9.0\n")
+
+	result, err := CheckDocs(root, nil, false, "", "", handle())
+	if err != nil {
+		t.Fatalf("CheckDocs: %v", err)
+	}
+	found := withCode(result.Lints, "version-mismatch-in-generated-root-file")
+	if len(found) != 1 || found[0].File() != "pypi/README.md" {
+		t.Fatalf("version-mismatch-in-generated-root-file = %v, want one naming pypi/README.md",
 			messagesOf(found))
 	}
 }

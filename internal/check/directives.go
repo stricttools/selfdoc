@@ -2,6 +2,7 @@ package check
 
 import (
 	"errors"
+	selfdocconfig "github.com/stricttools/selfdoc/internal/config"
 	"os"
 	"path/filepath"
 	"sort"
@@ -173,13 +174,14 @@ func renderAttrs(attrs map[string]string, order []string) string {
 //
 // A template that is not on disk is skipped: gen reports that at gen time.
 func resolveRootTemplates(config map[string]any, baseDir string) (map[string]docs.Doc, error) {
-	rootFiles := stringList(config["root_files"])
+	rootFiles := selfdocconfig.RootFiles(config)
 	if len(rootFiles) == 0 {
 		return nil, nil
 	}
 
 	result := map[string]docs.Doc{}
-	for _, templatePath := range rootFiles {
+	for _, rootFile := range rootFiles {
+		templatePath := rootFile.Template
 		fullPath := filepath.Join(baseDir, templatePath)
 		info, err := os.Stat(fullPath)
 		if err != nil || !info.Mode().IsRegular() {

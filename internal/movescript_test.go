@@ -46,7 +46,7 @@ func oldLayoutProject(t *testing.T) string {
 	testproject.WriteJSON(t, filepath.Join(dir, "selfdoc.json"), testproject.DefaultConfig(map[string]any{
 		"docs":       "docs/",
 		"output":     "docs/_build/",
-		"root_files": []any{"docs/_README.md"},
+		"root_files": []any{map[string]any{"template": "docs/_README.md", "outputs": []any{"README.md"}}},
 	}))
 	testproject.WriteText(t, filepath.Join(dir, ".gitignore"), "docs/_build/\n")
 	testproject.WriteText(t, filepath.Join(dir, "src", "__init__.py"), `"""Example."""`+"\n")

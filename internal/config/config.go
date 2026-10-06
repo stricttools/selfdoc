@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -184,6 +185,21 @@ func ValidateConfig(raw any) (Config, error) {
 					"source[%d] is a plain string (%s). "+
 						"Source entries must be objects with 'path' and 'language': "+
 						`{"path": "src/", "language": "python"}`,
+					i, util.PythonRepr(text))
+			}
+		}
+	}
+
+	// Migration error: root_files entries are objects, not strings
+	if rawRootFiles, isList := document["root_files"].([]any); isList {
+		for i, item := range rawRootFiles {
+			if text, isStr := item.(string); isStr {
+				return nil, configErrorf(
+					"root_files[%d] is a plain string (%s). Every root_files entry is an object naming "+
+						"its template and the files it generates: "+
+						`{"template": ".strictmetadata/docs/_README.md", "outputs": ["README.md"]}. `+
+						"Run 'selfdoc layout migrate --dry-run', then 'selfdoc layout migrate', which converts "+
+						"every entry to the outputs it generated before.",
 					i, util.PythonRepr(text))
 			}
 		}
@@ -518,6 +534,10 @@ func postValidate(config Config) error {
 		}
 	}
 
+	if err := validateRootFileOutputs(config); err != nil {
+		return err
+	}
+
 	// Unified validation: unique project slugs (explicit or derived from path)
 	if unified, ok := config["unified"].(map[string]any); ok {
 		projects, _ := unified["projects"].([]any)
@@ -569,4 +589,56 @@ func OutputRel(cfg Config) string {
 		return out
 	}
 	return layout.OutputDefault
+}
+
+// RootFile is one root_files entry: a template and the files it generates,
+// each relative to the project root and spelled with forward slashes.
+type RootFile struct {
+	Template string
+	Outputs  []string
+}
+
+// RootFiles returns a validated config's root_files entries, in the order the
+// config declares them. It is the one reader of the key: gen writes every
+// output, and check, the quality score and the layout migration read them.
+func RootFiles(config map[string]any) []RootFile {
+	list, _ := config["root_files"].([]any)
+	result := make([]RootFile, 0, len(list))
+	for _, item := range list {
+		entry, _ := item.(map[string]any)
+		template, _ := entry["template"].(string)
+		rootFile := RootFile{Template: template}
+		outputs, _ := entry["outputs"].([]any)
+		for _, output := range outputs {
+			if text, ok := output.(string); ok {
+				rootFile.Outputs = append(rootFile.Outputs, text)
+			}
+		}
+		result = append(result, rootFile)
+	}
+	return result
+}
+
+// validateRootFileOutputs refuses an output that is not a clean relative path
+// inside the project, and an output two entries both declare: gen would write
+// one over the other.
+func validateRootFileOutputs(config Config) error {
+	seen := map[string]bool{}
+	for i, rootFile := range RootFiles(config) {
+		for j, output := range rootFile.Outputs {
+			if path.IsAbs(output) || path.Clean(output) != output || output == "." ||
+				output == ".." || strings.HasPrefix(output, "../") || strings.Contains(output, "\\") {
+				return configErrorf(
+					"root_files[%d].outputs[%d] %s is not a path inside the project: write it relative to "+
+						"the project root, with forward slashes and no '.' or '..' segments, e.g. 'pypi/README.md'",
+					i, j, util.PythonRepr(output))
+			}
+			if seen[output] {
+				return configErrorf("root_files declares the output %s more than once: each file is generated "+
+					"by one template", util.PythonRepr(output))
+			}
+			seen[output] = true
+		}
+	}
+	return nil
 }
