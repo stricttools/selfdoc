@@ -59,5 +59,3 @@ target/
 # strictspec). Never committed: a release builds against the published modules.
 /go.work
 /go.work.sum
-
-build/
