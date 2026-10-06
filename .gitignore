@@ -32,7 +32,6 @@ Thumbs.db
 *.local-only
 
 *.log
-coverage/
 
 .rlsbl/releases/in-progress.json
 .rlsbl/releases/scrub-result.json
