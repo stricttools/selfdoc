@@ -38,6 +38,8 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stricttools/go-toml-edit v0.5.0 h1:21IkWoTA1efKhGnPxOaY3VS2VLevaHRNHgcRkh0oZiA=
+github.com/stricttools/go-toml-edit v0.5.0/go.mod h1:7eeWlpfpfjScMk3JTUttd+JOusRnNSAYUSXIJCJzbB8=
 github.com/stricttools/strictcli/go v0.38.0 h1:ehbZjD704EGmw5gebpnAV5VTktNQ5kHV/QbbAwd/Vek=
 github.com/stricttools/strictcli/go v0.38.0/go.mod h1:HkNzHaH9J5uWOVcklbDmifc5MqwiFOOs9T8bP2504iw=
 github.com/stricttools/strictspec/go v0.5.0 h1:OKFJNvdlO1k7HDnzJ1t+cGop1pU/MS9wEnUDlWc348c=

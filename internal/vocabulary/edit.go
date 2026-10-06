@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	tomledit "github.com/smm-h/go-toml-edit"
+	tomledit "github.com/stricttools/go-toml-edit"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/layout"
 )

@@ -40,7 +40,7 @@ import (
 	"os"
 	"strings"
 
-	tomledit "github.com/smm-h/go-toml-edit"
+	tomledit "github.com/stricttools/go-toml-edit"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/spelling"
 	"github.com/stricttools/selfdoc/internal/vocabulary/reviewschema"

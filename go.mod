@@ -5,7 +5,7 @@ go 1.26.3
 toolchain go1.26.6
 
 require (
-	github.com/smm-h/go-toml-edit v0.4.0
+	github.com/stricttools/go-toml-edit v0.5.0
 	github.com/stricttools/strictcli/go v0.38.0
 	github.com/stricttools/testisolation/go v0.3.0
 )
@@ -29,5 +29,6 @@ require (
 	github.com/dlclark/regexp2/v2 v2.2.1 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.5 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/smm-h/go-toml-edit v0.4.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 )
