@@ -10,7 +10,8 @@ import (
 	"github.com/stricttools/strictcli/go/strictcli"
 )
 
-// The refusals that name how to regenerate .strictcli/schema.json are held to
+// The refusals that name how to regenerate .strictmetadata/.cli-schema/schema.json
+// are held to
 // their word: each test takes the command a refusal prints, runs it against a
 // strictcli application, and asserts the schema it produced is read.
 
@@ -118,4 +119,56 @@ func TestTheMissingProjectIDRefusalsCommandRegeneratesIt(t *testing.T) {
 	}
 	runIn(t, dir, quotedCommand(t, err.Error(), "running "))
 	assertTheFixtureSchemaIsRead(t, dir)
+}
+
+// The refusal for a project with no schema names the command with the
+// program's name left to fill in, since nothing names it; filled in, the
+// command writes the schema in a project that has no .strictmetadata/ yet.
+func TestTheNoSchemaRefusalsCommandWritesTheSchema(t *testing.T) {
+	isolate(t)
+	fixtureAppOnPath(t)
+	dir := t.TempDir()
+	_, err := ExtractCLIStructure(nil, dir)
+	if err == nil {
+		t.Fatal("a project with no schema was read")
+	}
+	command := quotedCommand(t, err.Error(), "running ")
+	if !strings.Contains(command, AppPlaceholder) {
+		t.Fatalf("the command names no %s to fill in: %s", AppPlaceholder, command)
+	}
+	runIn(t, dir, strings.ReplaceAll(command, AppPlaceholder, fixtureAppName))
+	assertTheFixtureSchemaIsRead(t, dir)
+}
+
+// RegenerateCommand is the command every refusal that names one prints; run
+// in a directory with no .strictmetadata/, it writes the schema there.
+func TestRegenerateCommandWritesTheSchemaWhereNoneWas(t *testing.T) {
+	isolate(t)
+	fixtureAppOnPath(t)
+	dir := t.TempDir()
+	runIn(t, dir, RegenerateCommand(fixtureAppName))
+	assertTheFixtureSchemaIsRead(t, dir)
+}
+
+// A schema at .strictcli/schema.json, where strictcli schemas were kept before
+// .strictmetadata/.cli-schema/, is not read.
+func TestASchemaAtTheFormerLocationIsNotRead(t *testing.T) {
+	isolate(t)
+	dir := t.TempDir()
+	former := filepath.Join(dir, ".strictcli", "schema.json")
+	if err := os.MkdirAll(filepath.Dir(former), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(former, []byte(`{"schema_version": 2, "name": "x", "project_id": "x", "commands": {}, "groups": {}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if UsesStrictcli(nil, dir) {
+		t.Error("a schema at .strictcli/schema.json made the project count as a strictcli project")
+	}
+	if structure, err := ReadSchemaJSON(dir); structure != nil || err != nil {
+		t.Errorf("ReadSchemaJSON read the former location: %+v, %v", structure, err)
+	}
+	if found := DiscoverSchemaDirs(dir); len(found) != 0 {
+		t.Errorf("DiscoverSchemaDirs found the former location: %v", found)
+	}
 }

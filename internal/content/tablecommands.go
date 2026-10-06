@@ -12,7 +12,8 @@ import (
 // ResolveTableCommands produces a Markdown table of the CLI commands a
 // strictcli schema declares.
 //
-// The .strictcli/schema.json is discovered by walking the project root. When
+// The .strictmetadata/.cli-schema/schema.json is discovered by walking the
+// project root. When
 // exactly one schema is found it is used; zero and several are both hard
 // errors, and schema-dir="<dir>" selects one explicitly when discovery is
 // ambiguous.
@@ -25,8 +26,13 @@ func ResolveTableCommands(attrs map[string]string, config map[string]any, baseDi
 		}
 		if structure == nil {
 			return "", &strictclisupport.SchemaDiscoveryError{Message: fmt.Sprintf(
-				"table-commands: no .strictcli/schema.json found in "+
-					`schema-dir="%s" (relative to project root).`, targetDir,
+				"table-commands: no %s found in "+
+					`schema-dir="%s" (relative to project root). Write it by `+
+					"running '%s' in that directory, with %s replaced by the "+
+					"program's name.",
+				strictclisupport.SchemaRelPath, targetDir,
+				strictclisupport.RegenerateCommand(strictclisupport.AppPlaceholder),
+				strictclisupport.AppPlaceholder,
 			)}
 		}
 		return commandTable(structure, targetDir)
@@ -34,18 +40,22 @@ func ResolveTableCommands(attrs map[string]string, config map[string]any, baseDi
 
 	candidates := strictclisupport.DiscoverSchemaDirs(baseDir)
 	if len(candidates) == 0 {
-		return "", &strictclisupport.SchemaDiscoveryError{Message: "table-commands: " +
-			"no .strictcli/schema.json found under the project root. " +
-			"Generate one with '<app> --dump-schema', or select it with " +
-			`schema-dir="<dir>".`,
-		}
+		return "", &strictclisupport.SchemaDiscoveryError{Message: fmt.Sprintf(
+			"table-commands: no %s found under the project root. Write one "+
+				"by running '%s' in the directory of the program's module, "+
+				"with %s replaced by the program's name, or select one with "+
+				`schema-dir="<dir>".`,
+			strictclisupport.SchemaRelPath,
+			strictclisupport.RegenerateCommand(strictclisupport.AppPlaceholder),
+			strictclisupport.AppPlaceholder,
+		)}
 	}
 	if len(candidates) > 1 {
 		return "", &strictclisupport.SchemaDiscoveryError{Message: fmt.Sprintf(
-			"table-commands: multiple .strictcli/schema.json found (%s). "+
+			"table-commands: multiple %s found (%s). "+
 				`Disambiguate with schema-dir="<dir>" naming the directory `+
-				"that contains the .strictcli/ folder.",
-			strings.Join(candidates, ", "),
+				"that contains the .strictmetadata/ folder.",
+			strictclisupport.SchemaRelPath, strings.Join(candidates, ", "),
 		)}
 	}
 	targetDir = candidates[0]
@@ -56,8 +66,8 @@ func ResolveTableCommands(attrs map[string]string, config map[string]any, baseDi
 	if structure == nil {
 		// Discovery already confirmed the file exists.
 		return "", &strictclisupport.SchemaDiscoveryError{Message: fmt.Sprintf(
-			"table-commands: failed to read .strictcli/schema.json in '%s'.",
-			targetDir,
+			"table-commands: failed to read %s in '%s'.",
+			strictclisupport.SchemaRelPath, targetDir,
 		)}
 	}
 	return commandTable(structure, targetDir)

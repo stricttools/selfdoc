@@ -12,7 +12,7 @@ import (
 // writeSchema writes a minimal dumped schema under dir.
 func writeSchema(t *testing.T, dir string) {
 	t.Helper()
-	write(t, filepath.Join(dir, ".strictcli", "schema.json"), `{
+	write(t, filepath.Join(dir, ".strictmetadata", ".cli-schema", "schema.json"), `{
 	  "schema_version": 2,
 	  "project_id": "test-app",
 	  "name": "testcli",
@@ -67,7 +67,7 @@ func TestTableCommands(t *testing.T) {
 
 	t.Run("nested groups are listed at every depth with full paths", func(t *testing.T) {
 		base := t.TempDir()
-		write(t, filepath.Join(base, ".strictcli", "schema.json"), `{
+		write(t, filepath.Join(base, ".strictmetadata", ".cli-schema", "schema.json"), `{
 		  "schema_version": 2, "project_id": "x", "name": "x",
 		  "commands": {},
 		  "groups": {
@@ -123,7 +123,7 @@ func TestTableCommands(t *testing.T) {
 
 	t.Run("an absent schema is a hard error", func(t *testing.T) {
 		_, err := ResolveTableCommands(nil, map[string]any{}, t.TempDir())
-		wants(t, discoveryError(t, err), "no .strictcli/schema.json", "schema-dir")
+		wants(t, discoveryError(t, err), "no .strictmetadata/.cli-schema/schema.json", "schema-dir")
 	})
 
 	t.Run("ambiguous discovery is a hard error listing the candidates", func(t *testing.T) {
@@ -146,7 +146,7 @@ func TestTableCommands(t *testing.T) {
 
 	t.Run("a schema with no commands at all", func(t *testing.T) {
 		base := t.TempDir()
-		write(t, filepath.Join(base, ".strictcli", "schema.json"), `{
+		write(t, filepath.Join(base, ".strictmetadata", ".cli-schema", "schema.json"), `{
 		  "schema_version": 2, "project_id": "x", "name": "x",
 		  "commands": {}, "groups": {}}`)
 		wants(t, commands(t, base, nil), "no commands found in '.'")
@@ -154,7 +154,7 @@ func TestTableCommands(t *testing.T) {
 
 	t.Run("a malformed schema is the reader's error", func(t *testing.T) {
 		base := t.TempDir()
-		write(t, filepath.Join(base, ".strictcli", "schema.json"), `{
+		write(t, filepath.Join(base, ".strictmetadata", ".cli-schema", "schema.json"), `{
 		  "schema_version": 1, "project_id": "x", "name": "old",
 		  "commands": {}, "groups": {}}`)
 		_, err := ResolveTableCommands(nil, map[string]any{}, base)

@@ -1575,7 +1575,7 @@ func TestStrictcliPagesJoinTheRun(t *testing.T) {
 	isolate(t)
 	requirePython3(t)
 	dir, cfg := pythonProject(t)
-	write(t, filepath.Join(dir, ".strictcli", "schema.json"), strictcliSchema)
+	write(t, filepath.Join(dir, ".strictmetadata", ".cli-schema", "schema.json"), strictcliSchema)
 
 	first := generate(t, cfg, dir)
 

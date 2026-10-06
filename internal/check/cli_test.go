@@ -24,7 +24,7 @@ func strictcliProject(
 	if err != nil {
 		t.Fatalf("encode schema: %v", err)
 	}
-	write(t, filepath.Join(root, ".strictcli", "schema.json"), string(encoded))
+	write(t, filepath.Join(root, ".strictmetadata", ".cli-schema", "schema.json"), string(encoded))
 
 	write(t, filepath.Join(root, ".strictmetadata", "docs", ".keep"), "")
 	// The CLI reference pages go where gen writes them: the generated docs

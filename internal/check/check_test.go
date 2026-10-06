@@ -314,7 +314,7 @@ func TestSerializeCheckResultNoCoverage(t *testing.T) {
 
 func TestStrictcliCodeHelpIsAHardError(t *testing.T) {
 	root := pythonProject(t)
-	write(t, filepath.Join(root, ".strictcli", "schema.json"), `{
+	write(t, filepath.Join(root, ".strictmetadata", ".cli-schema", "schema.json"), `{
   "schema_version": 2,
   "name": "mylib",
   "project_id": "unknown",

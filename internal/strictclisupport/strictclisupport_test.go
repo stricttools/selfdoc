@@ -32,7 +32,7 @@ func writeFile(t *testing.T, path, content string) {
 // writeSchemaText writes text as dir's dumped schema and returns its path.
 func writeSchemaText(t *testing.T, dir, text string) string {
 	t.Helper()
-	path := filepath.Join(dir, ".strictcli", "schema.json")
+	path := filepath.Join(dir, ".strictmetadata", ".cli-schema", "schema.json")
 	writeFile(t, path, text)
 	return path
 }
@@ -512,7 +512,7 @@ func TestProjectIDValidation(t *testing.T) {
 		writeSchemaText(t, dir, `{"schema_version": 2, "name": "myapp",
 		  "version": "1.0", "help": "test", "commands": {}, "groups": {}}`)
 		_, err := ReadSchemaJSON(dir)
-		if err == nil || !strings.Contains(err.Error(), "'myapp help --json > .strictcli/schema.json'") {
+		if err == nil || !strings.Contains(err.Error(), "'mkdir -p .strictmetadata/.cli-schema && myapp help --json > .strictmetadata/.cli-schema/schema.json'") {
 			t.Fatalf("err = %v", err)
 		}
 	})
@@ -596,7 +596,7 @@ func TestSchemaVersionRefusals(t *testing.T) {
 			if !asSchemaError(err, &schemaErr) {
 				t.Fatalf("err is %T, want *SchemaError", err)
 			}
-			if !strings.Contains(err.Error(), "'old help --json > .strictcli/schema.json'") {
+			if !strings.Contains(err.Error(), "'mkdir -p .strictmetadata/.cli-schema && old help --json > .strictmetadata/.cli-schema/schema.json'") {
 				t.Errorf("the refusal must name the regeneration command: %v", err)
 			}
 		})

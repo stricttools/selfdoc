@@ -1,8 +1,8 @@
 // Package strictclisupport is first-class support for strictcli-based
 // projects.
 //
-// It reads .strictcli/schema.json -- the help document `<app> help --json`
-// prints, saved to that file -- for the CLI's structure (the app, its
+// It reads .strictmetadata/.cli-schema/schema.json -- the help document
+// `<app> help --json` prints, saved to that file -- for the CLI's structure (the app, its
 // commands, flags, arguments and groups) and renders that structure as
 // Markdown documentation pages.
 //
@@ -51,7 +51,7 @@ type SchemaError struct {
 // Error returns the diagnostic.
 func (e *SchemaError) Error() string { return e.Message }
 
-// SchemaDiscoveryError is returned when .strictcli/schema.json discovery finds
+// SchemaDiscoveryError is returned when schema discovery finds
 // nothing or finds more than one candidate.
 //
 // It is a hard error: a page that asked for a CLI table cannot be rendered
@@ -68,19 +68,39 @@ func (e *SchemaDiscoveryError) Error() string { return e.Message }
 
 // schemaDiscoveryExcludes are the directory names never traversed when
 // discovering schemas. Hidden directories (a leading ".") are pruned
-// separately -- .strictcli is not traversed into but is still detected as a
-// schema location under each visited directory.
+// separately -- .strictmetadata is not traversed into, and the schema location
+// under it is still checked under each visited directory.
 var schemaDiscoveryExcludes = map[string]bool{
 	"node_modules": true, "dist": true, "build": true, "_build": true,
 	"target": true, "vendor": true, "venv": true, "__pycache__": true,
 }
 
-// schemaRelPath is where a project's dumped schema sits, relative to the
-// directory that holds it.
-const schemaRelPath = ".strictcli/schema.json"
+// schemaDirRel is the directory a project's dumped schema sits in, relative to
+// the directory of the module it describes.
+const schemaDirRel = ".strictmetadata/.cli-schema"
+
+// SchemaRelPath is where a project's dumped schema sits, relative to the
+// directory of the module it describes. The earlier .strictcli/schema.json is
+// not read.
+const SchemaRelPath = schemaDirRel + "/schema.json"
+
+// schemaRelPath is [SchemaRelPath] under the name this package reads it by.
+const schemaRelPath = SchemaRelPath
+
+// AppPlaceholder stands for the program's name in a [RegenerateCommand] a
+// refusal prints when nothing names the program.
+const AppPlaceholder = "<app>"
+
+// RegenerateCommand is the shell command that writes app's schema to
+// [SchemaRelPath], run in the directory of the module app is built from. It
+// creates the schema's directory first, since a project that has never had a
+// schema has none.
+func RegenerateCommand(app string) string {
+	return "mkdir -p " + schemaDirRel + " && " + app + " help --json > " + SchemaRelPath
+}
 
 // UsesStrictcli reports whether the project at baseDir has a
-// .strictcli/schema.json file.
+// .strictmetadata/.cli-schema/schema.json file.
 //
 // sourcePaths is accepted for call-site symmetry and is not read: detection is
 // the presence of the schema document and nothing else.
@@ -90,7 +110,7 @@ func UsesStrictcli(sourcePaths []string, baseDir string) bool {
 }
 
 // DiscoverSchemaDirs discovers the directories under baseDir that hold a
-// .strictcli/schema.json.
+// .strictmetadata/.cli-schema/schema.json.
 //
 // It walks baseDir, pruning vendored and build directories and every hidden
 // directory, and records each visited directory that holds a schema as a path
@@ -177,7 +197,7 @@ type Structure struct {
 	Groups   []*Object
 }
 
-// ReadSchemaJSON reads baseDir's .strictcli/schema.json and translates it into
+// ReadSchemaJSON reads baseDir's .strictmetadata/.cli-schema/schema.json and translates it into
 // the structure the renderers read.
 //
 // It returns a nil structure and a nil error when the document does not exist
@@ -198,7 +218,8 @@ type Structure struct {
 func ReadSchemaJSON(baseDir string) (*Structure, error) {
 	// The path is joined the way the Python joined it, because it is quoted
 	// in every error below: a project read as "." names
-	// "./.strictcli/schema.json", which is the string a reader greps for.
+	// "./.strictmetadata/.cli-schema/schema.json", which is the string a
+	// reader greps for.
 	schemaPath := util.PathJoin(baseDir, schemaRelPath)
 	info, err := os.Stat(schemaPath)
 	if err != nil || !info.Mode().IsRegular() {
@@ -230,9 +251,9 @@ func ReadSchemaJSON(baseDir string) (*Structure, error) {
 			"Schema at %s declares schema_version %s; this selfdoc reads "+
 				"schema_version %d only. Regenerate it with a strictcli that "+
 				"has 'help --json' (Go 0.37.0, Python 0.44.0, TypeScript "+
-				"0.43.0, or later), running '%s help --json > "+
-				".strictcli/schema.json' in the directory that holds .strictcli/",
-			schemaPath, pyRepr(version), SupportedSchemaVersion, appName,
+				"0.43.0, or later), running '%s' in the directory that holds "+
+				".strictmetadata/",
+			schemaPath, pyRepr(version), SupportedSchemaVersion, RegenerateCommand(appName),
 		)}
 	}
 
@@ -244,9 +265,8 @@ func ReadSchemaJSON(baseDir string) (*Structure, error) {
 		}
 		return nil, &SchemaError{Message: fmt.Sprintf(
 			"Schema missing project_id field. Regenerate it by running "+
-				"'%s help --json > .strictcli/schema.json' in the directory "+
-				"that holds .strictcli/",
-			appName,
+				"'%s' in the directory that holds .strictmetadata/",
+			RegenerateCommand(appName),
 		)}
 	}
 	expected := util.ReadProjectField(baseDir, "name")
@@ -413,8 +433,8 @@ type NoSchemaError struct {
 // Error names the directory and the command that writes the missing document.
 func (e *NoSchemaError) Error() string {
 	return fmt.Sprintf(
-		"No .strictcli/schema.json found in %s. Run '<app> --dump-schema' to generate it.",
-		util.PythonRepr(e.BaseDir),
+		"No %s found in %s. Write it by running '%s' in that directory, with %s replaced by the program's name.",
+		SchemaRelPath, util.PythonRepr(e.BaseDir), RegenerateCommand(AppPlaceholder), AppPlaceholder,
 	)
 }
 

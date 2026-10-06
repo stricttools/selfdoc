@@ -267,8 +267,8 @@ func TestHelpJSONPrintsTheProjectIdentity(t *testing.T) {
 	if result.ExitCode != 0 {
 		t.Fatalf("help --json failed: %s", result.Stderr)
 	}
-	if _, err := os.Stat(filepath.Join(dir, ".strictcli")); !os.IsNotExist(err) {
-		t.Errorf("help --json wrote .strictcli/ (stat: %v); it prints the document and writes no file", err)
+	if _, err := os.Stat(filepath.Join(dir, ".strictmetadata")); !os.IsNotExist(err) {
+		t.Errorf("help --json wrote .strictmetadata/ (stat: %v); it prints the document and writes no file", err)
 	}
 
 	var schema map[string]any
