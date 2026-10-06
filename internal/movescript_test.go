@@ -298,7 +298,7 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 		t.Errorf("the post still names the old path:\n%s", post)
 	}
 	// The root ignore file's line for the old build output is dropped: the
-	// derived ignore file inside the tool-state directory covers the new one.
+	// cache directory's own ignore file covers the new one.
 	ignore := testproject.ReadText(t, filepath.Join(dir, ".gitignore"))
 	if strings.Contains(ignore, "docs/_build/") {
 		t.Errorf("the root ignore file still names the old build output:\n%s", ignore)
@@ -317,7 +317,7 @@ func TestTheMoveScriptMovesAndRewrites(t *testing.T) {
 	// tells the person to delete.
 	for _, line := range strings.Split(gitStatus(t, dir), "\n") {
 		trimmed := strings.TrimSpace(line)
-		// The uncommitted cache is what the derived ignore file covers, and
+		// The uncommitted cache is what its own ignore file covers, and
 		// that file is written by the build the person runs next -- which is
 		// what the closing report tells them to commit.
 		if trimmed == "" || strings.HasSuffix(trimmed, "docs/") ||

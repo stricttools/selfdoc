@@ -180,7 +180,8 @@ func MakeLocalized(t TB, locales []map[string]any, overrides map[string]any) str
 }
 
 // Manifests writes the ownership manifest every directory selfdoc claims needs
-// before selfdoc may write into it.
+// before selfdoc may write into it, and the ignore file of each uncommitted
+// one, as `selfdoc init` writes them.
 //
 // Only the repository's own acts write manifests -- `selfdoc init` and
 // `selfdoc layout migrate`: the file is the permission, and granting it is the
@@ -191,6 +192,10 @@ func Manifests(t TB, projectDir string) {
 	for _, claimed := range layout.Declared() {
 		WriteText(t, layout.DirectoryManifestPath(projectDir, claimed.Name),
 			layout.DirectoryManifestContent(layout.Owner))
+	}
+	for _, ignored := range layout.IgnoredDirectories() {
+		WriteText(t, layout.Path(projectDir, layout.DirectoryIgnoreRel(ignored.Name)),
+			layout.DirectoryIgnoreContent())
 	}
 }
 

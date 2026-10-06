@@ -242,10 +242,12 @@ func LayoutDump() map[string]any {
 			"deprecated_names": strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"manifest_path":    strictcli.SchemaType("string"),
 			"manifest_content": strictcli.SchemaType("string"),
+			"ignore_path":      strictcli.SchemaType("string"),
+			"ignore_content":   strictcli.SchemaType("string"),
 		},
 		[]string{
 			"name", "path", "side", "commitment", "description", "deprecated_names",
-			"manifest_path", "manifest_content",
+			"manifest_path", "manifest_content", "ignore_path", "ignore_content",
 		},
 		false,
 	)
@@ -254,10 +256,10 @@ func LayoutDump() map[string]any {
 			"tool":          strictcli.SchemaType("string"),
 			"root":          strictcli.SchemaType("string"),
 			"manifest_file": strictcli.SchemaType("string"),
-			"ignore_file":   strictcli.SchemaType("string"),
+			"root_files":    strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"directories":   strictcli.SchemaArray(directory),
 		},
-		[]string{"tool", "root", "manifest_file", "ignore_file", "directories"},
+		[]string{"tool", "root", "manifest_file", "root_files", "directories"},
 		false,
 	)
 }
@@ -283,19 +285,31 @@ func LayoutMigrate() map[string]any {
 		[]string{"path", "changes"},
 		false,
 	)
+	shardMove := strictcli.SchemaObject(
+		map[string]any{
+			"from":  strictcli.SchemaType("string"),
+			"to":    strictcli.SchemaType("string"),
+			"files": strictcli.SchemaArray(strictcli.SchemaType("string")),
+		},
+		[]string{"from", "to", "files"},
+		false,
+	)
 	return strictcli.SchemaObject(
 		map[string]any{
 			"previous_root":         strictcli.SchemaType("string"),
 			"root":                  strictcli.SchemaType("string"),
 			"moves":                 strictcli.SchemaArray(move),
 			"file_moves":            strictcli.SchemaArray(move),
+			"cli_moves":             strictcli.SchemaArray(move),
+			"shard_moves":           strictcli.SchemaArray(shardMove),
+			"removed_directories":   strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"writes":                strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"rewrites":              strictcli.SchemaArray(rewrite),
 			"deletes":               strictcli.SchemaArray(strictcli.SchemaType("string")),
 			"removed_previous_root": strictcli.SchemaType("boolean"),
 			"committed":             strictcli.SchemaType("boolean"),
 		},
-		[]string{"previous_root", "root", "moves", "file_moves", "writes", "rewrites", "deletes", "removed_previous_root", "committed"},
+		[]string{"previous_root", "root", "moves", "file_moves", "cli_moves", "shard_moves", "writes", "rewrites", "deletes", "removed_directories", "removed_previous_root", "committed"},
 		false,
 	)
 }

@@ -40,15 +40,14 @@
 // handwritten directory, or a handwritten page in a generated one, is a defect
 // with a named remedy.
 //
-// # The derived ignore file
+// # The ignore files
 //
-// git needs one file inside [Root] to keep the uncommitted directories out of
-// the repository. It is derived, at [Root]/[IgnoreFileName], from the
-// commitment each tool declares: an uncommitted directory's contents are
-// ignored and its manifest is not, so the permission travels with the
-// repository while the contents do not. selfdoc owns only the block between
-// its two marker comments and leaves every other line of that file alone, so
-// several tools can write their own blocks into one file.
+// [Root] holds directories only, with [RootFiles] as the exceptions, so the
+// ignore rules a directory needs sit inside it: each uncommitted directory
+// selfdoc owns carries its own [IgnoreFileName], derived from the commitment
+// its declaration states. Its contents are ignored, and its manifest and the
+// ignore file itself are not, so the permission travels with the repository
+// while the contents do not.
 package layout
 
 import (
@@ -90,9 +89,14 @@ const (
 	manifestFormatVersion = SCHEMA_FORMAT_VERSION
 )
 
-// IgnoreFileName is the derived ignore file inside [Root]. It starts with a dot
-// because git reads it under no other name, not because it is generated.
+// IgnoreFileName is the ignore file a directory under [Root] carries. It
+// starts with a dot because git reads it under no other name, not because it
+// is generated.
 const IgnoreFileName = ".gitignore"
+
+// RootFiles are the files [Root] may hold beside its directories: go.mod, the
+// stub module that keeps the tree out of a Go module's zip.
+var RootFiles = []string{"go.mod"}
 
 // MoveScript is the script that moves a repository off the layout selfdoc used
 // before this one, as it is spelled inside selfdoc's own checkout. A refusal
@@ -117,8 +121,7 @@ const (
 // Commitment is whether a directory's contents belong in the repository.
 type Commitment string
 
-// The two commitments. An uncommitted directory contributes one line to the
-// derived ignore file.
+// The two commitments. An uncommitted directory carries its own ignore file.
 const (
 	Committed   Commitment = "committed"
 	Uncommitted Commitment = "uncommitted"
@@ -457,11 +460,27 @@ func declaresFormatVersion(text string) bool {
 // can answer for it.
 const SharedOwner = "strictspec"
 
+// CLIOwner is the owner the directories a strictcli program's schema and test
+// coverage live in name in their manifests (.cli-schema and
+// .cli-test-coverage). strictcli is a library its programs link rather than a
+// command, so no PATH lookup can answer for it either.
+const CLIOwner = "strictcli"
+
+// LibraryOwners are the owners a manifest may name that are libraries rather
+// than commands.
+var LibraryOwners = []string{SharedOwner, CLIOwner}
+
 // KnownOwner reports whether a manifest names an owner this machine has:
-// selfdoc itself, [SharedOwner], or any name PATH answers with an executable.
+// selfdoc itself, one of [LibraryOwners], or any name PATH answers with an
+// executable.
 func KnownOwner(owner string) bool {
-	if owner == Owner || owner == SharedOwner {
+	if owner == Owner {
 		return true
+	}
+	for _, library := range LibraryOwners {
+		if owner == library {
+			return true
+		}
 	}
 	_, err := exec.LookPath(owner)
 	return err == nil
@@ -498,8 +517,9 @@ func EnsureOwned(baseDir, name string) error {
 var InitDirectories = []string{DocsName, DocsStateName, DocsCacheName, VocabularyName}
 
 // GrantInit writes the ownership manifests of [InitDirectories] that are
-// missing, naming selfdoc, and refreshes the derived ignore file. It returns
-// the slash-form relative paths it wrote.
+// missing, naming selfdoc, and the ignore file of each uncommitted one. It
+// returns the slash-form relative paths of the manifests it wrote and of every
+// uncommitted directory's ignore file.
 //
 // It is the adopting act a repository performs by running `selfdoc init`. A
 // manifest already naming selfdoc is kept
@@ -531,15 +551,24 @@ func GrantInit(h *effects.Handle, baseDir string) ([]string, error) {
 		}
 		written = append(written, DirectoryManifestRel(name))
 	}
-	if err := WriteIgnore(h, baseDir); err != nil {
-		return nil, err
+	for _, name := range InitDirectories {
+		if dir, _ := Lookup(name); dir.Commitment != Uncommitted {
+			continue
+		}
+		if err := h.MkdirAll(Path(baseDir, declaredRel(name))); err != nil {
+			return nil, err
+		}
+		if err := WriteDirectoryIgnore(h, baseDir, name); err != nil {
+			return nil, err
+		}
+		written = append(written, DirectoryIgnoreRel(name))
 	}
 	return written, nil
 }
 
 // EnsureDir creates a directory inside one of selfdoc's function directories,
-// after checking the manifest that permits it, and refreshes the derived
-// ignore file.
+// after checking the manifest that permits it, and brings that function
+// directory's ignore file up to date when it is uncommitted.
 //
 // rel is one of this package's slash-form relative paths. Creating anything
 // under [Root] goes through here, so no path can reach the filesystem without
@@ -560,69 +589,73 @@ func EnsureDir(h *effects.Handle, baseDir, rel string) error {
 	if err := h.MkdirAll(Path(baseDir, rel)); err != nil {
 		return err
 	}
-	return WriteIgnore(h, baseDir)
+	return WriteDirectoryIgnore(h, baseDir, name)
 }
 
-// The comments selfdoc's block of the derived ignore file sits between. Lines
-// outside them belong to other tools and are left as they stand.
+// The comments an earlier selfdoc wrapped its block of the ignore file at the
+// top of a root in. [WithoutIgnoreBlock] reads them, so a move off that file
+// can tell selfdoc's lines from another tool's.
 const (
 	ignoreBegin = "# BEGIN selfdoc -- derived from selfdoc's layout declaration"
 	ignoreEnd   = "# END selfdoc"
 )
 
-// IgnoreBlock is selfdoc's block of the derived ignore file: the marker
-// comments around the lines that keep each uncommitted directory it owns out
-// of the repository.
-//
-// An uncommitted directory contributes two lines rather than one. Its contents
-// are ignored, and its [ManifestFileName] is not: the manifest is the
+// directoryIgnoreContent is what the ignore file of an uncommitted directory
+// selfdoc owns holds: everything in the directory is ignored except the
+// directory's manifest and the ignore file itself. The manifest is the
 // permission to write into the directory, and a permission that git did not
 // carry would have to be written again in every fresh checkout -- including
 // the ones a multi-version build extracts out of git tags.
-func IgnoreBlock() []string {
-	block := []string{ignoreBegin}
-	for _, dir := range declared {
-		if dir.Commitment == Uncommitted {
-			block = append(block,
-				dir.DiskName()+"/*",
-				"!"+dir.DiskName()+"/"+ManifestFileName)
-		}
-	}
-	return append(block, ignoreEnd)
+const directoryIgnoreContent = "# Written by selfdoc from its layout declaration: what this directory holds\n" +
+	"# is not committed; its manifest and this file are.\n" +
+	"*\n" +
+	"!" + IgnoreFileName + "\n" +
+	"!" + ManifestFileName + "\n"
+
+// DirectoryIgnoreContent returns what an uncommitted directory's ignore file
+// holds.
+func DirectoryIgnoreContent() string { return directoryIgnoreContent }
+
+// DirectoryIgnoreRel returns where the ignore file of the directory with the
+// given function name sits, relative to the repository root, in slash form.
+func DirectoryIgnoreRel(name string) string {
+	return declaredRel(name) + "/" + IgnoreFileName
 }
 
-// RenderIgnore returns what the derived ignore file should hold, given what it
-// holds now: selfdoc's block replaced in place, or appended when the file
-// carries none, with every other line untouched.
-func RenderIgnore(existing string) string {
-	block := IgnoreBlock()
-	var before, after []string
-	inBlock, sawBlock := false, false
-	for _, line := range strings.Split(strings.ReplaceAll(existing, "\r\n", "\n"), "\n") {
-		switch {
-		case strings.TrimSpace(line) == ignoreBegin:
-			inBlock, sawBlock = true, true
-		case strings.TrimSpace(line) == ignoreEnd:
-			inBlock = false
-		case inBlock:
-			// A line inside selfdoc's own block is replaced by the block.
-		case sawBlock:
-			after = append(after, line)
-		default:
-			before = append(before, line)
+// IgnoredDirectories are the directories selfdoc claims whose contents the
+// repository does not commit, each of which carries its own ignore file.
+func IgnoredDirectories() []Directory {
+	var ignored []Directory
+	for _, dir := range declared {
+		if dir.Commitment == Uncommitted {
+			ignored = append(ignored, dir)
 		}
 	}
-	lines := append([]string{}, trimBlankEdges(before)...)
-	if len(lines) > 0 {
-		lines = append(lines, "")
-	}
-	lines = append(lines, block...)
-	if rest := trimBlankEdges(after); len(rest) > 0 {
-		lines = append(lines, "")
-		lines = append(lines, rest...)
-	}
-	return strings.Join(lines, "\n") + "\n"
+	return ignored
 }
+
+// WriteDirectoryIgnore brings the ignore file of the directory with the given
+// function name up to date, writing nothing when the directory is committed or
+// the file already holds what it should.
+func WriteDirectoryIgnore(h *effects.Handle, baseDir, name string) error {
+	dir, ok := Lookup(name)
+	if !ok || dir.Commitment != Uncommitted {
+		return nil
+	}
+	target := Path(baseDir, DirectoryIgnoreRel(name))
+	existing, err := os.ReadFile(target)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	if string(existing) == directoryIgnoreContent {
+		return nil
+	}
+	return h.AtomicWrite(target, []byte(directoryIgnoreContent), effects.ModeDefault)
+}
+
+// RootIgnoreRel is the ignore file an earlier selfdoc derived at the top of
+// [Root], which `selfdoc layout migrate` converts into one per directory.
+var RootIgnoreRel = Root + "/" + IgnoreFileName
 
 // WithoutIgnoreBlock returns an ignore file's content with selfdoc's block
 // removed and every other line kept, for the ignore file a move leaves behind.
@@ -666,35 +699,4 @@ func trimBlankEdges(lines []string) []string {
 		end--
 	}
 	return lines[start:end]
-}
-
-// IgnorePath is where the derived ignore file sits.
-func IgnorePath(baseDir string) string {
-	return Path(baseDir, Root+"/"+IgnoreFileName)
-}
-
-// WriteIgnore brings the derived ignore file up to date, writing nothing when
-// it already holds what it should.
-func WriteIgnore(h *effects.Handle, baseDir string) error {
-	target := IgnorePath(baseDir)
-	existing, err := os.ReadFile(target)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-	wanted := RenderIgnore(string(existing))
-	if string(existing) == wanted {
-		return nil
-	}
-	return h.AtomicWrite(target, []byte(wanted), effects.ModeDefault)
-}
-
-// IgnoreIsCurrent reports whether the derived ignore file holds selfdoc's block
-// as declared, and returns the content it should hold.
-func IgnoreIsCurrent(baseDir string) (bool, string) {
-	existing, err := os.ReadFile(IgnorePath(baseDir))
-	if err != nil {
-		existing = nil
-	}
-	wanted := RenderIgnore(string(existing))
-	return string(existing) == wanted, wanted
 }

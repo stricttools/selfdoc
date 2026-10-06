@@ -1,6 +1,6 @@
 +++
 title = "The .strictmetadata/ layout"
-description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, generated ones behind a dot, a manifest inside each naming its owner, shared directories strictspec owns, a derived ignore file, and the commands that inspect, check and migrate it."
+description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, generated ones behind a dot, a manifest inside each naming its owner, shared directories strictspec owns, a strictcli program's schema and test-coverage directories, the ignore file each uncommitted directory carries, and the commands that inspect, check and migrate it."
 nav_group = "Guides"
 nav_order = 4
 +++
@@ -102,8 +102,8 @@ manifest does.
 
 `owner` is the whole of what a manifest declares. The file is validated against
 a schema, so an unknown key is refused rather than silently ignored, and the
-named owner has to be one this machine has: `selfdoc`, `strictspec`, or a name
-that resolves to an executable on `PATH`.
+named owner has to be one this machine has: `selfdoc`, `strictspec`,
+`strictcli`, or a name that resolves to an executable on `PATH`.
 
 ### Directories several tools share
 
@@ -115,34 +115,38 @@ against, and it is a library every reading tool links rather than a command, so
 `selfdoc layout validate` accepts such a directory without looking for a
 `strictspec` executable on `PATH`. Each tool writes only its own entries there.
 
+### A strictcli program's directories
+
+`.strictmetadata/.cli-schema/` holds the program's help document
+(`schema.json`, the output of `<app> help --json`), and
+`.strictmetadata/.cli-test-coverage/` holds its committed test-coverage manifest
+(`manifest.json`) and the uncommitted per-process shards (`shards/`). Their
+manifests name `strictcli`, a library its programs link rather than a command,
+so `selfdoc layout validate` accepts them without looking for a `strictcli`
+executable on `PATH`.
+
 Reading and writing are open to anyone. The owner is what validates.
 
-## The derived ignore file
+## Ignore files
 
-`.strictmetadata/.gitignore` keeps the uncommitted directories out of the
-repository. It is derived from the commitment each tool declares rather than
-written by hand, and selfdoc owns only the block between its two marker
-comments:
+`.strictmetadata/` holds directories only, with `go.mod` -- the stub module that
+keeps the tree out of a Go module's zip -- as the one file beside them. A
+directory that needs ignore rules carries them in its own `.gitignore`. Each
+uncommitted directory selfdoc owns gets one derived from its declaration:
 
 ```gitignore
-# BEGIN selfdoc -- derived from selfdoc's layout declaration
-.docs-cache/*
-!.docs-cache/manifest.toml
-# END selfdoc
+# Written by selfdoc from its layout declaration: what this directory holds
+# is not committed; its manifest and this file are.
+*
+!.gitignore
+!manifest.toml
 ```
 
-An uncommitted directory contributes two lines rather than one. Its contents are
-ignored and its manifest is not: the permission travels with the repository
-while the contents do not, so a fresh checkout -- including the one a
-multi-version build extracts out of a git tag -- does not have to be granted
-again.
-
-Every other line belongs to whoever wrote it and is left alone, so several tools
-write their own blocks into one file. `selfdoc build` rewrites selfdoc's block
-when it is out of date; commit the result.
-
-Its name starts with a dot because git reads it under no other name, not because
-it is generated.
+Its contents are ignored and its manifest is not: the permission travels with
+the repository while the contents do not, so a fresh checkout -- including the
+one a multi-version build extracts out of a git tag -- does not have to be
+granted again. `selfdoc build` rewrites the file when it is out of date; commit
+the result.
 
 ## Checking a repository
 
@@ -154,8 +158,9 @@ It answers for the repository it runs in: every directory under
 `.strictmetadata/` carries a `manifest.toml` naming an owner this machine has, and
 every directory selfdoc claims names selfdoc; every directory selfdoc owns
 starts with a dot exactly when it is generated, and holds only what its side
-allows; nothing inside selfdoc's committed directories starts with a dot; and
-the derived ignore file carries what the commitment declarations render. Each
+allows; nothing inside selfdoc's committed directories starts with a dot; every
+uncommitted directory selfdoc owns carries the `.gitignore` its declaration
+derives; and `.strictmetadata/` holds directories and `go.mod` only. Each
 problem names its remedy. With `--json` it publishes the same answer as a
 payload, which is what a fleet-wide check reads.
 
@@ -182,25 +187,51 @@ then:
   it moves `docs`, `posts` and `vocabulary` under the same names, and
   `docs-state` and `docs-cache` to `.strictmetadata/.docs-state` and
   `.strictmetadata/.docs-cache`;
-- writes the derived ignore file for the new names, and removes selfdoc's block
-  from the previous root's `.gitignore`, deleting that file, and the previous
-  root itself, when nothing else is left in them;
+- writes the `.gitignore` of each uncommitted directory, and removes selfdoc's
+  block from the previous root's `.gitignore`, deleting that file, and the
+  previous root itself, when nothing else is left in them;
 - rewrites every `selfdoc.json` value naming a moved path (`docs`, `output`,
   `root_files`, a custom directive's script) and the header line of every
   generated root file;
 - moves a `CLAUDE.md` an earlier selfdoc generated at the repository root to
   `.claude/CLAUDE.md` (see below);
 - writes an empty `.strictmetadata/vocabulary/terms.toml` when the project has none;
+- moves strictcli's files and converts the ignore file (see below);
 - converts the manifests (see below);
 - commits the whole move, unless `--no-auto-commit` is passed.
 
 Only selfdoc's directories move: another tool's directory under the previous
 root stays where it is, with its lines of the ignore file. A repository already
-on this layout with its manifests converted and no generated `CLAUDE.md` at its
-root, one part-way through a move (selfdoc's directories under a previous root
+on this layout with its manifests converted, its ignore files converted, no
+`.strictcli/` left, and no generated `CLAUDE.md` at its root, one part-way through a move (selfdoc's directories under a previous root
 and `.strictmetadata/`, with the `git mv` commands that put them back), one
 keeping selfdoc's directories under both previous roots, and one that never
 used a previous layout are each refused with what to do instead.
+
+### Moving strictcli's files and converting the ignore file
+
+On any repository, a previous layout or this one, the move also takes care of
+two things an earlier layout left behind:
+
+- **`.strictcli/` directories.** Every `.strictcli/` directory in the tree moves
+  into the `.strictmetadata/` beside it: `schema.json` to
+  `.strictmetadata/.cli-schema/schema.json`, `test-coverage.json` to
+  `.strictmetadata/.cli-test-coverage/manifest.json`, and the shard files under
+  `coverage/` to `.strictmetadata/.cli-test-coverage/shards/`. Each directory
+  that receives a file gets a `manifest.toml` naming `strictcli`, and
+  `.cli-test-coverage/` gets the `.gitignore` that keeps `shards/` out of the
+  repository. The stub `go.mod` is deleted (the one at `.strictmetadata/go.mod`
+  covers the new place), an empty `coverage/` is dropped, and the emptied
+  `.strictcli/` is removed. For the repository root's `.strictcli/`, the move
+  also deletes `.rlsbl/bases/.strictcli/go.mod`, drops `.strictcli/go.mod` from
+  `.rlsbl/managed-files.json`, and removes the root `.gitignore`'s `coverage/`
+  line. A file in `.strictcli/` that is none of these, or one git does not
+  track, is refused by name, and so is a file whose new place is taken.
+- **The ignore file at the top of `.strictmetadata/`.** An earlier selfdoc
+  derived `.strictmetadata/.gitignore`; the move deletes it and writes the
+  `.gitignore` of each uncommitted directory instead. A file still holding
+  another tool's lines besides selfdoc's block is refused, listing them, so
+  they can be moved into the directory they are for.
 
 ### Moving the generated CLAUDE.md under `.claude/`
 

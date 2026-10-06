@@ -178,7 +178,7 @@ func TestADirectoryAnotherToolOwnsIsRefused(t *testing.T) {
 	}
 }
 
-func TestCreatingADirectoryWritesTheDerivedIgnoreFile(t *testing.T) {
+func TestCreatingAnUncommittedDirectoryWritesItsOwnIgnoreFile(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := owned(t)
 	if err := EnsureDir(effects.Unbound(), dir, OutputRel); err != nil {
@@ -187,33 +187,36 @@ func TestCreatingADirectoryWritesTheDerivedIgnoreFile(t *testing.T) {
 	if info, err := os.Stat(Path(dir, OutputRel)); err != nil || !info.IsDir() {
 		t.Fatalf("the output directory was not created: %v", err)
 	}
-	ignore := read(t, IgnorePath(dir))
-	if !strings.Contains(ignore, "."+DocsCacheName+"/*") {
-		t.Errorf("the derived ignore file does not ignore the uncommitted directory:\n%s", ignore)
+	ignore := read(t, Path(dir, DocsCacheRel+"/"+IgnoreFileName))
+	lines := strings.Split(ignore, "\n")
+	for _, want := range []string{"*", "!" + IgnoreFileName, "!" + ManifestFileName} {
+		found := false
+		for _, line := range lines {
+			found = found || line == want
+		}
+		// The permission travels with the repository even though the
+		// contents do not, so a fresh checkout does not have to be granted
+		// again; the ignore file itself is committed for the same reason.
+		if !found {
+			t.Errorf("the directory's ignore file lacks the line %q:\n%s", want, ignore)
+		}
 	}
-	// The permission travels with the repository even though the contents do
-	// not, so a fresh checkout does not have to be granted again.
-	if !strings.Contains(ignore, "!."+DocsCacheName+"/"+ManifestFileName) {
-		t.Errorf("the derived ignore file swallows the uncommitted directory's manifest:\n%s", ignore)
-	}
-	if strings.Contains(ignore, DocsStateName+"/") {
-		t.Errorf("the derived ignore file ignores a committed directory:\n%s", ignore)
+	if _, err := os.Stat(Path(dir, Root+"/"+IgnoreFileName)); !os.IsNotExist(err) {
+		t.Errorf("%s/ holds an ignore file of its own (stat: %v); each directory carries its own", Root, err)
 	}
 }
 
-func TestTheDerivedIgnoreFileLeavesOtherToolsLinesAlone(t *testing.T) {
+func TestCreatingACommittedDirectoryWritesNoIgnoreFile(t *testing.T) {
 	hygiene.Isolate(t)
-	existing := "# BEGIN othertool\nother-cache/\n# END othertool\n"
-	rendered := RenderIgnore(existing)
-	for _, want := range []string{"# BEGIN othertool", "other-cache/", "# END othertool", "." + DocsCacheName + "/*"} {
-		if !strings.Contains(rendered, want) {
-			t.Errorf("the rendered ignore file lost %q:\n%s", want, rendered)
-		}
+	dir := owned(t)
+	if err := EnsureDir(effects.Unbound(), dir, HashesDirRel); err != nil {
+		t.Fatalf("EnsureDir: %v", err)
 	}
-	// Rendering what was rendered changes nothing: the block is replaced in
-	// place rather than appended again.
-	if again := RenderIgnore(rendered); again != rendered {
-		t.Errorf("a second render differs:\n%s\n---\n%s", rendered, again)
+	if _, err := os.Stat(Path(dir, DocsStateRel+"/"+IgnoreFileName)); !os.IsNotExist(err) {
+		t.Errorf("a committed directory got an ignore file (stat: %v)", err)
+	}
+	if _, err := os.Stat(Path(dir, Root+"/"+IgnoreFileName)); !os.IsNotExist(err) {
+		t.Errorf("%s/ holds an ignore file of its own (stat: %v)", Root, err)
 	}
 }
 

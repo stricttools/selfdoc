@@ -368,8 +368,8 @@ def plan_rewrites(
         after = before
         if name == ".gitignore":
             # The root ignore file's line for the old build output goes
-            # rather than being rewritten: the derived ignore file inside the
-            # tool-state directory covers the new one.
+            # rather than being rewritten: the cache directory's own ignore
+            # file covers the new one.
             after = drop_stale_ignore_lines(after, output_rel)
         for old, new in pairs:
             after = replace_path(after, old, new)
@@ -402,7 +402,7 @@ def changed_lines(before: str, after: str) -> list[str]:
 
 def drop_stale_ignore_lines(text: str, output_rel: str) -> str:
     """The root ignore file's line for the old build output is not needed: the
-    derived ignore file inside the tool-state directory covers the new one."""
+    cache directory's own ignore file covers the new one."""
     kept = []
     for line in text.split("\n"):
         if line.strip().rstrip("/") == output_rel:
@@ -670,8 +670,8 @@ def perform_rewrites(project: Path, rewrites, output_rel: str) -> None:
 def print_followups(project: Path) -> None:
     """The two things the person does after a successful move."""
     print("two things are left to do by hand:")
-    print(f"  commit the ignore file the build derived: "
-          f"safegit commit -m \"layout: the derived ignore file\" -- {ROOT_DIR}/.gitignore")
+    print(f"  commit the ignore file the build wrote in the cache directory: "
+          f"safegit commit -m \"layout: the cache directory's ignore file\" -- {ROOT_DIR}/.docs-cache/.gitignore")
     print("  delete what the old layout left behind (build output, caches), for example:")
     print("    saferm delete -r --on-error abort --description \"superseded by the "
           ".strictmetadata layout\" docs/_build")

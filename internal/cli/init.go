@@ -312,7 +312,6 @@ func (c *cli) cmdInit(ctx *strictcli.Context, kwargs map[string]any) strictcli.O
 
 	if autoCommit {
 		committed := append([]string{"selfdoc.json", indexRel}, grantedManifests...)
-		committed = append(committed, layout.Root+"/"+layout.IgnoreFileName)
 		if _, _, err := gitcommit.AutoCommit(
 			committed, "selfdoc init", dir, handle,
 		); err != nil {

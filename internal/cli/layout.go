@@ -28,14 +28,14 @@ func (c *cli) registerLayout() {
 	)
 
 	group.Command("validate",
-		"Check this repository's "+layout.Root+"/ directory: every directory carries a "+layout.ManifestFileName+" naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, and the derived ignore file is what selfdoc's declaration renders",
+		"Check this repository's "+layout.Root+"/ directory: every directory carries a "+layout.ManifestFileName+" naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, every uncommitted directory selfdoc owns carries the "+layout.IgnoreFileName+" its declaration derives, and "+layout.Root+"/ holds directories and "+strings.Join(layout.RootFiles, ", ")+" only",
 		c.cmdLayoutValidate,
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.PayloadSchema(payloadschemas.LayoutValidate()),
 	)
 
 	group.Command("migrate",
-		"Move this repository off a layout before this one: every directory whose "+layout.ManifestFileName+" names selfdoc under "+layout.PreviousRoot+"/ (the layout before this one, whose generated directories already start with a dot) or under "+layout.EarlierRoot+"/ (the layout before that, which named every directory bare) moves under "+layout.Root+"/, a generated one behind a dot ("+migrationExample()+"). It creates "+layout.Root+"/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from the previous root's "+layout.IgnoreFileName+" (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, moves a CLAUDE.md an earlier selfdoc generated at the repository root to "+gen.ClaudeOutputRel+" (where selfdoc generates it now, and Claude Code reads it), writes "+layout.TermsRel+" empty when the project has none, converts the manifests ("+layout.ManifestRel+" and "+layout.PostManifestRel+") from schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" to "+strconv.Itoa(manifest.SchemaVersion)+", which records the project's accepted words and rejected patterns from "+layout.TermsRel+", and commits. A repository already on "+layout.Root+"/ whose manifests are on schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" gets the manifest conversion alone, and one whose "+layout.VocabularyRel+"/ carries no "+layout.ManifestFileName+" -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and "+layout.TermsRel+" empty when the project has none, and one whose generated CLAUDE.md is still at its root gets that move. Another tool's directories stay where they are, and so does a hand-written CLAUDE.md. Refuses a repository already migrated with its manifests converted, its vocabulary directory granted, and no generated CLAUDE.md at its root; part-way through a move; holding selfdoc's directories under both previous roots; never on a previous layout; holding "+gen.ClaudeOutputRel+" beside a generated root CLAUDE.md; or ignoring "+gen.ClaudeOutputRel+" in git. --dry-run prints the plan and changes nothing",
+		"Move this repository off a layout before this one: every directory whose "+layout.ManifestFileName+" names selfdoc under "+layout.PreviousRoot+"/ (the layout before this one, whose generated directories already start with a dot) or under "+layout.EarlierRoot+"/ (the layout before that, which named every directory bare) moves under "+layout.Root+"/, a generated one behind a dot ("+migrationExample()+"). It creates "+layout.Root+"/ (the manifests naming selfdoc are the grant), writes each uncommitted directory's own "+layout.IgnoreFileName+", removes selfdoc's block from the previous root's "+layout.IgnoreFileName+" (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, moves a CLAUDE.md an earlier selfdoc generated at the repository root to "+gen.ClaudeOutputRel+" (where selfdoc generates it now, and Claude Code reads it), writes "+layout.TermsRel+" empty when the project has none, converts the manifests ("+layout.ManifestRel+" and "+layout.PostManifestRel+") from schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" to "+strconv.Itoa(manifest.SchemaVersion)+", which records the project's accepted words and rejected patterns from "+layout.TermsRel+", and commits. In every repository it also converts the "+layout.RootIgnoreRel+" an earlier selfdoc derived into one "+layout.IgnoreFileName+" per uncommitted directory, and moves strictcli's files out of every .strictcli/ directory into the "+layout.Root+"/ beside it: schema.json to "+layout.Root+"/.cli-schema/schema.json, test-coverage.json to "+layout.Root+"/.cli-test-coverage/manifest.json, and the coverage/ shards to "+layout.Root+"/.cli-test-coverage/shards/, writing each directory's "+layout.ManifestFileName+" naming strictcli and the "+layout.IgnoreFileName+" that keeps the shards out of the repository, deleting the stub go.mod, and removing the emptied .strictcli/ and an empty coverage/; for the repository root's .strictcli/ it also deletes .rlsbl/bases/.strictcli/go.mod, drops .strictcli/go.mod from .rlsbl/managed-files.json, and removes the root .gitignore's coverage/ line. A repository already on "+layout.Root+"/ whose manifests are on schema_version "+strconv.Itoa(manifest.PreviousSchemaVersion)+" gets the manifest conversion alone, and one whose "+layout.VocabularyRel+"/ carries no "+layout.ManifestFileName+" -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and "+layout.TermsRel+" empty when the project has none, and one whose generated CLAUDE.md is still at its root gets that move. Another tool's directories stay where they are, and so does a hand-written CLAUDE.md. Refuses a repository already migrated with its manifests converted, its vocabulary directory granted, its ignore files converted, no .strictcli/ left, and no generated CLAUDE.md at its root; a .strictcli/ holding a file it does not know the place of, or one git does not track; a .strictcli/ file whose new place is taken; an "+layout.RootIgnoreRel+" holding another tool's lines; part-way through a move; holding selfdoc's directories under both previous roots; never on a previous layout; holding "+gen.ClaudeOutputRel+" beside a generated root CLAUDE.md; or ignoring "+gen.ClaudeOutputRel+" in git. --dry-run prints the plan and changes nothing",
 		c.cmdLayoutMigrate,
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.LayoutMigrate()),
@@ -72,12 +72,8 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 			c.println("Dry run: the migration would take these steps, and nothing is changed:")
 		case len(plan.Moves) > 0:
 			c.println("Moving this repository onto the " + layout.Root + "/ layout:")
-		case len(plan.Writes) > 0:
-			c.println("Writing what this repository's " + layout.Root + "/ layout lacks:")
-		case len(plan.Rewrites) == 0:
-			c.println("Moving this repository's generated root files where selfdoc generates them now:")
 		default:
-			c.printf("Converting this repository's manifests to schema_version %d:\n", manifest.SchemaVersion)
+			c.println("Bringing this repository onto the current " + layout.Root + "/ layout:")
 		}
 		for _, line := range plan.Lines() {
 			c.println("  " + line)
@@ -117,13 +113,32 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 	}
 	deletes := make([]any, 0, len(plan.Deletes))
 	for _, deleted := range plan.Deletes {
-		deletes = append(deletes, deleted)
+		deletes = append(deletes, deleted.Path)
+	}
+	cliMoves := make([]any, 0, len(plan.CLIMoves))
+	for _, move := range plan.CLIMoves {
+		cliMoves = append(cliMoves, map[string]any{"from": move.From, "to": move.To})
+	}
+	shardMoves := make([]any, 0, len(plan.ShardMoves))
+	for _, move := range plan.ShardMoves {
+		files := make([]any, 0, len(move.Files))
+		for _, file := range move.Files {
+			files = append(files, file)
+		}
+		shardMoves = append(shardMoves, map[string]any{"from": move.From, "to": move.To, "files": files})
+	}
+	removedDirs := make([]any, 0, len(plan.RemoveDirs))
+	for _, removed := range plan.RemoveDirs {
+		removedDirs = append(removedDirs, removed)
 	}
 	ctx.Payload(map[string]any{
 		"previous_root":         plan.PreviousRoot,
 		"root":                  layout.Root,
 		"moves":                 moves,
 		"file_moves":            fileMoves,
+		"cli_moves":             cliMoves,
+		"shard_moves":           shardMoves,
+		"removed_directories":   removedDirs,
 		"writes":                writes,
 		"rewrites":              rewrites,
 		"deletes":               deletes,
@@ -134,8 +149,12 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 		var sentences []string
 		if len(plan.Moves) > 0 {
 			sentences = append(sentences, fmt.Sprintf("Moved %d directories under %s/.", len(plan.Moves), layout.Root))
-		} else if len(plan.Writes) > 0 || len(plan.Rewrites) > 0 {
-			sentences = append(sentences, fmt.Sprintf("Wrote %d file(s) and converted %d manifest(s).", len(plan.Writes), len(plan.Rewrites)))
+		}
+		if len(plan.CLIMoves) > 0 || len(plan.ShardMoves) > 0 || len(plan.RemoveDirs) > 0 {
+			sentences = append(sentences, fmt.Sprintf("Moved strictcli's files out of %d .strictcli/ directory(s).", countCLIDirs(plan)))
+		}
+		if len(plan.Writes) > 0 || len(plan.Rewrites) > 0 || len(plan.Deletes) > 0 {
+			sentences = append(sentences, fmt.Sprintf("Wrote %d file(s), rewrote %d, and deleted %d.", len(plan.Writes), len(plan.Rewrites), len(plan.Deletes)))
 		}
 		for _, move := range plan.FileMoves {
 			sentences = append(sentences, fmt.Sprintf("Moved %s to %s.", move.From, move.To))
@@ -146,6 +165,17 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 		c.println(strings.Join(sentences, " "))
 	}
 	return strictcli.Exit(0)
+}
+
+// countCLIDirs counts the .strictcli/ directories a plan removes.
+func countCLIDirs(plan migrate.Plan) int {
+	count := 0
+	for _, removed := range plan.RemoveDirs {
+		if strings.HasSuffix(removed, "/.strictcli") || removed == ".strictcli" {
+			count++
+		}
+	}
+	return count
 }
 
 // layoutDeclaration is the document `selfdoc layout dump` prints, and the
@@ -167,15 +197,44 @@ func layoutDeclaration() map[string]any {
 			"deprecated_names": deprecated,
 			"manifest_path":    layout.DirectoryManifestRel(dir.Name),
 			"manifest_content": layout.DirectoryManifestContent(layout.Owner),
+			"ignore_path":      ignorePath(dir),
+			"ignore_content":   ignoreContent(dir),
 		})
 	}
 	return map[string]any{
 		"tool":          layout.Owner,
 		"root":          layout.Root,
 		"manifest_file": layout.ManifestFileName,
-		"ignore_file":   layout.Root + "/" + layout.IgnoreFileName,
+		"root_files":    rootFiles(),
 		"directories":   directories,
 	}
+}
+
+// ignorePath is where a directory's own ignore file sits, and empty for a
+// committed directory, which carries none.
+func ignorePath(dir layout.Directory) string {
+	if dir.Commitment != layout.Uncommitted {
+		return ""
+	}
+	return layout.DirectoryIgnoreRel(dir.Name)
+}
+
+// ignoreContent is what a directory's own ignore file holds, and empty for a
+// committed directory.
+func ignoreContent(dir layout.Directory) string {
+	if dir.Commitment != layout.Uncommitted {
+		return ""
+	}
+	return layout.DirectoryIgnoreContent()
+}
+
+// rootFiles lists the files the root may hold beside its directories.
+func rootFiles() []any {
+	files := make([]any, 0, len(layout.RootFiles))
+	for _, file := range layout.RootFiles {
+		files = append(files, file)
+	}
+	return files
 }
 
 func (c *cli) cmdLayoutDump(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {

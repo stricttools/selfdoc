@@ -39,9 +39,10 @@ const (
 // a tool this machine has ([KnownOwner]), and every directory selfdoc claims that exists
 // names selfdoc; every directory selfdoc owns carries the leading dot its side
 // calls for; every directory selfdoc owns holds only what its side allows;
-// nothing inside selfdoc's committed directories starts with a dot; and the
-// derived ignore file's selfdoc block is what the declaration says it should
-// be. A directory another tool owns is held to the manifest rule only: its
+// nothing inside selfdoc's committed directories starts with a dot; every
+// uncommitted directory selfdoc owns carries the ignore file its declaration
+// derives; and [Root] holds directories and [RootFiles] only, the ignore file
+// an earlier selfdoc derived at its top included. A directory another tool owns is held to the manifest rule only: its
 // name and its contents are its owner's to judge.
 //
 // A missing [Root] is returned as an error rather than a problem: the rest of
@@ -63,7 +64,7 @@ func Validate(baseDir string) ([]Problem, error) {
 	owners, problems := ownershipProblems(baseDir)
 	problems = append(problems, sideProblems(baseDir, owners)...)
 	problems = append(problems, hiddenProblems(baseDir, owners)...)
-	problems = append(problems, ignoreProblems(baseDir)...)
+	problems = append(problems, ignoreProblems(baseDir, owners)...)
 	return problems, nil
 }
 
@@ -84,7 +85,7 @@ func ownershipProblems(baseDir string) (map[string]string, []Problem) {
 	var problems []Problem
 	for _, entry := range entries {
 		name := entry.Name()
-		if name == IgnoreFileName {
+		if name == IgnoreFileName || isRootFile(name) {
 			continue
 		}
 		shown := Root + "/" + name
@@ -122,8 +123,8 @@ func ownershipProblems(baseDir string) (map[string]string, []Problem) {
 			problems = append(problems, Problem{
 				Check: CheckOwnership,
 				Message: fmt.Sprintf(
-					"%s declares %q as the owner of %s, and this machine has no such tool. An owner is %q itself, %q (the owner of a directory several tools share), or a name PATH answers with an executable.",
-					entryManifestRel(name), manifest.Owner, shown, Owner, SharedOwner),
+					"%s declares %q as the owner of %s, and this machine has no such tool. An owner is %q itself, %q (the owner of a directory several tools share), %q (the owner of a strictcli program's schema and test-coverage directories), or a name PATH answers with an executable.",
+					entryManifestRel(name), manifest.Owner, shown, Owner, SharedOwner, CLIOwner),
 			})
 		}
 		if !claimed {
@@ -249,19 +250,50 @@ func hiddenProblems(baseDir string, owners map[string]string) []Problem {
 	return problems
 }
 
-// ignoreProblems reports a derived ignore file that does not carry selfdoc's
-// block as the declaration renders it, with the content it should hold.
-func ignoreProblems(baseDir string) []Problem {
-	current, wanted := IgnoreIsCurrent(baseDir)
-	if current {
-		return nil
+// isRootFile reports whether name is one of the files [Root] may hold.
+func isRootFile(name string) bool {
+	for _, allowed := range RootFiles {
+		if name == allowed {
+			return true
+		}
 	}
-	return []Problem{{
-		Check: CheckIgnore,
-		Message: fmt.Sprintf(
-			"%s is not what selfdoc's commitment declaration renders. Run 'selfdoc build', which rewrites it. It should hold:\n%s",
-			Root+"/"+IgnoreFileName, strings.TrimRight(wanted, "\n")),
-	}}
+	return false
+}
+
+// ignoreProblems reports an ignore file at the top of [Root], which an earlier
+// selfdoc derived there, and every uncommitted directory selfdoc owns whose
+// own ignore file is not what its declaration derives, with the content it
+// should hold.
+func ignoreProblems(baseDir string, owners map[string]string) []Problem {
+	var problems []Problem
+	if _, err := os.Lstat(Path(baseDir, RootIgnoreRel)); err == nil {
+		problems = append(problems, Problem{
+			Check: CheckIgnore,
+			Message: fmt.Sprintf(
+				"%s exists, and %s/ holds directories and %s only: each directory carries the ignore rules it needs in its own %s. Run 'selfdoc layout migrate' (--dry-run first), which moves selfdoc's rules into the directories they are for and removes the file.",
+				RootIgnoreRel, Root, strings.Join(RootFiles, ", "), IgnoreFileName),
+		})
+	}
+	for _, dir := range IgnoredDirectories() {
+		if owners[dir.DiskName()] != Owner {
+			continue
+		}
+		if info, err := os.Stat(Path(baseDir, dir.Rel())); err != nil || !info.IsDir() {
+			continue
+		}
+		rel := DirectoryIgnoreRel(dir.Name)
+		existing, err := os.ReadFile(Path(baseDir, rel))
+		if err == nil && string(existing) == directoryIgnoreContent {
+			continue
+		}
+		problems = append(problems, Problem{
+			Check: CheckIgnore,
+			Message: fmt.Sprintf(
+				"%s is not what selfdoc's commitment declaration derives. Run 'selfdoc build', which rewrites it. It should hold:\n%s",
+				rel, strings.TrimRight(directoryIgnoreContent, "\n")),
+		})
+	}
+	return problems
 }
 
 // showPath renders an absolute path the way a diagnostic names it: relative to

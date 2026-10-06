@@ -36,8 +36,11 @@ func TestInitWritesTheOwnershipManifestsOfAFreshRepository(t *testing.T) {
 			t.Errorf("%s names %q as its owner", name, manifest.Owner)
 		}
 	}
-	if !exists(filepath.Join(dir, ".strictmetadata", layout.IgnoreFileName)) {
-		t.Error("init wrote no derived ignore file")
+	if !exists(filepath.Join(dir, ".strictmetadata", ".docs-cache", layout.IgnoreFileName)) {
+		t.Error("init wrote no ignore file in the cache directory")
+	}
+	if exists(filepath.Join(dir, ".strictmetadata", layout.IgnoreFileName)) {
+		t.Error("init wrote an ignore file at the top of .strictmetadata/")
 	}
 
 	// The project init produced is one the next command accepts as it stands.

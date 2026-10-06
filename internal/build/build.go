@@ -193,7 +193,8 @@ func Build(opts Options, h *effects.Handle) (map[string]bool, error) {
 	}
 	// The output directory is one of selfdoc's own, so it is created
 	// through the layout: the repository's ownership row is what permits
-	// it, and the derived ignore file is brought up to date with it.
+	// it, and the cache directory's own ignore file is brought up to date
+	// with it.
 	if err := layout.EnsureDir(h, opts.DirPath, strings.TrimRight(configString(cfg, "output"), "/")); err != nil {
 		return nil, err
 	}

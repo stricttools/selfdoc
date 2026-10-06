@@ -102,7 +102,7 @@ func TestMigrateDryRunPrintsThePlanAndChangesNothing(t *testing.T) {
 		"move .stricttools/docs/ -> .strictmetadata/docs/",
 		"move .stricttools/docs-state/ -> .strictmetadata/.docs-state/",
 		"move .stricttools/docs-cache/ -> .strictmetadata/.docs-cache/",
-		"write .strictmetadata/.gitignore",
+		"write .strictmetadata/.docs-cache/.gitignore",
 		"write " + layout.TermsRel,
 		`rewrite selfdoc.json: ".stricttools/docs/" -> ".strictmetadata/docs/"`,
 		"rewrite README.md: header names .strictmetadata/docs/_README.md",
@@ -145,8 +145,11 @@ func TestMigrateMovesSelfdocsDirectoriesAndLeavesAnotherToolsAlone(t *testing.T)
 	if strings.Contains(previousIgnore, "BEGIN selfdoc") || !strings.Contains(previousIgnore, "other-state/cache/") {
 		t.Errorf("the previous ignore file is\n%s", previousIgnore)
 	}
-	if ignore := readText(t, layout.IgnorePath(dir)); !strings.Contains(ignore, ".docs-cache/*") {
-		t.Errorf("the derived ignore file is\n%s", ignore)
+	if ignore := readText(t, layout.Path(dir, layout.DirectoryIgnoreRel(layout.DocsCacheName))); ignore != layout.DirectoryIgnoreContent() {
+		t.Errorf("the cache directory's ignore file is\n%s", ignore)
+	}
+	if exists(layout.Path(dir, layout.RootIgnoreRel)) {
+		t.Errorf("the move wrote %s; each directory carries its own", layout.RootIgnoreRel)
 	}
 	config := readJSON(t, filepath.Join(dir, "selfdoc.json"))
 	if config["docs"] != ".strictmetadata/docs/" || config["output"] != ".strictmetadata/.docs-cache/build/" {
@@ -400,7 +403,7 @@ func TestMigrateMovesTheVisibleRootUnderTheHiddenOne(t *testing.T) {
 		"move stricttools/.docs-state/ -> .strictmetadata/.docs-state/",
 		"move stricttools/.docs-cache/ -> .strictmetadata/.docs-cache/",
 		"move stricttools/vocabulary/ -> .strictmetadata/vocabulary/",
-		"write .strictmetadata/.gitignore",
+		"write .strictmetadata/.docs-cache/.gitignore",
 		`rewrite selfdoc.json: "stricttools/docs/" -> ".strictmetadata/docs/"`,
 		`rewrite selfdoc.json: "stricttools/.docs-cache/build/" -> ".strictmetadata/.docs-cache/build/"`,
 		"rewrite README.md: header names .strictmetadata/docs/_README.md",

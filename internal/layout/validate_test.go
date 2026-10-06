@@ -283,28 +283,72 @@ func TestValidateLeavesAnotherToolsDotAlone(t *testing.T) {
 	}
 }
 
-func TestValidateReportsAStaleIgnoreFile(t *testing.T) {
+func TestValidateReportsAStaleDirectoryIgnoreFile(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := validated(t)
-	write(t, IgnorePath(dir), "# BEGIN othertool\nother/\n# END othertool\n")
+	write(t, Path(dir, DocsCacheRel+"/"+IgnoreFileName), "build/\n")
 	problems := problemsOf(t, dir, CheckIgnore)
 	if len(problems) != 1 {
 		t.Fatalf("ignore problems = %v, want the stale file's one", problems)
 	}
-	if !strings.Contains(problems[0].Message, "."+DocsCacheName+"/*") {
+	if !strings.Contains(problems[0].Message, "!"+ManifestFileName) {
 		t.Errorf("the problem does not carry the content it should hold: %s", problems[0].Message)
 	}
 
-	// The remedy: writing the file through the layout clears the problem,
-	// and the other tool's lines are still there.
-	if err := WriteIgnore(effects.Unbound(), dir); err != nil {
-		t.Fatalf("WriteIgnore: %v", err)
+	// The remedy the problem names, 'selfdoc build', creates the output
+	// directory through the layout; doing that clears the problem.
+	if !strings.Contains(problems[0].Message, "selfdoc build") {
+		t.Errorf("the problem does not name its remedy: %s", problems[0].Message)
+	}
+	if err := EnsureDir(effects.Unbound(), dir, OutputRel); err != nil {
+		t.Fatalf("EnsureDir: %v", err)
 	}
 	if remaining := problemsOf(t, dir, CheckIgnore); len(remaining) != 0 {
 		t.Errorf("the remedy did not clear the problem: %v", remaining)
 	}
-	if ignore := read(t, IgnorePath(dir)); !strings.Contains(ignore, "other/") {
-		t.Errorf("the other tool's lines were dropped:\n%s", ignore)
+}
+
+// The root holds directories only, with go.mod as the one exception; the
+// ignore file an earlier selfdoc derived there is reported with the command
+// that converts it.
+func TestValidateReportsTheRootIgnoreFileNamingTheMigration(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := validated(t)
+	write(t, Path(dir, Root+"/"+IgnoreFileName), "# BEGIN selfdoc -- derived from selfdoc's layout declaration\n.docs-cache/*\n!.docs-cache/manifest.toml\n# END selfdoc\n")
+	problems := problemsOf(t, dir, CheckIgnore)
+	if len(problems) != 1 || !strings.Contains(problems[0].Message, "selfdoc layout migrate") {
+		t.Fatalf("ignore problems = %v, want the root ignore file's one naming the migration", problems)
+	}
+	if ownership := problemsOf(t, dir, CheckOwnership); len(ownership) != 0 {
+		t.Errorf("the root ignore file is also reported as an ownership problem: %v", ownership)
+	}
+}
+
+func TestValidateAcceptsTheRootGoMod(t *testing.T) {
+	hygiene.Isolate(t)
+	dir := validated(t)
+	write(t, Path(dir, Root+"/go.mod"), "module private.invalid/rlsbl-private\n")
+	problems, err := Validate(dir)
+	if err != nil {
+		t.Fatalf("Validate: %v", err)
+	}
+	if len(problems) != 0 {
+		t.Errorf("problems = %v, want none for %s/go.mod", problems, Root)
+	}
+}
+
+// The directories a strictcli program's schema and test coverage live in name
+// strictcli as their owner. strictcli is a library its programs link, not a
+// command, so they pass without any strictcli on PATH.
+func TestValidateAcceptsDirectoriesOwnedByStrictcliWithoutAPathLookup(t *testing.T) {
+	hygiene.Isolate(t)
+	t.Setenv("PATH", t.TempDir())
+	dir := validated(t)
+	for _, owned := range []string{".cli-schema", ".cli-test-coverage"} {
+		write(t, filepath.Join(dir, Root, owned, ManifestFileName), DirectoryManifestContent("strictcli"))
+	}
+	if problems := problemsOf(t, dir, CheckOwnership); len(problems) != 0 {
+		t.Errorf("ownership problems = %v, want none for directories strictcli owns", problems)
 	}
 }
 

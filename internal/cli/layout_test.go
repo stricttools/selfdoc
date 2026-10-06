@@ -143,8 +143,8 @@ func TestLayoutValidatePassesOnABuiltProject(t *testing.T) {
 	}
 }
 
-// A stale derived ignore file is refused, and the remedy the refusal names --
-// running the build -- clears it.
+// A stale ignore file in the cache directory is refused, and the remedy the
+// refusal names -- running the build -- clears it.
 func TestLayoutValidateRefusesAStaleIgnoreFileAndTheBuildClearsIt(t *testing.T) {
 	requirePagefind(t)
 	isolate(t)
@@ -153,7 +153,7 @@ func TestLayoutValidateRefusesAStaleIgnoreFileAndTheBuildClearsIt(t *testing.T) 
 	if result := run(t, dir, "build", "--no-auto-commit"); result.ExitCode != 0 {
 		t.Fatalf("build exited %d: %s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
-	writeText(t, filepath.Join(dir, layout.Root, layout.IgnoreFileName), "# BEGIN othertool\nx/\n# END othertool\n")
+	writeText(t, layout.Path(dir, layout.DirectoryIgnoreRel(layout.DocsCacheName)), "build/\n")
 
 	stale := run(t, dir, "layout", "validate")
 	if stale.ExitCode != 1 {

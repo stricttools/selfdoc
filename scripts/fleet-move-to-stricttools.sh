@@ -77,7 +77,7 @@ post_move() {
   (cd "$dir" && "$selfdoc" layout validate >/dev/null 2>&1) || { echo "   layout validate failed"; (cd "$dir" && "$selfdoc" layout validate 2>&1 | head -3 | sed 's/^/     /'); return 1; }
   local files; files=$(git -C "$dir" status --porcelain | awk '{print $2}')
   if [ -n "$files" ]; then
-    (cd "$dir" && safegit commit -m "layout: the derived ignore file and the regenerated pages on the new layout" -- $files >/dev/null 2>&1) || { echo "   commit failed"; return 1; }
+    (cd "$dir" && safegit commit -m "layout: the cache directory's ignore file and the regenerated pages on the new layout" -- $files >/dev/null 2>&1) || { echo "   commit failed"; return 1; }
   fi
   local hashes; hashes=$(git -C "$dir" log --format=%h --grep='^layout: ' -3 | tr '\n' ',' | sed 's/,$//')
   if [ -n "$hashes" ]; then

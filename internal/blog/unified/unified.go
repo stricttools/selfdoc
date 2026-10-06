@@ -129,8 +129,8 @@ func BuildUnified(
 		}
 	}
 	// Creating anything under the layout root goes through EnsureDir: it
-	// reads the directory's ownership manifest before writing and refreshes
-	// the derived ignore file after.
+	// reads the directory's ownership manifest before writing and brings the
+	// directory's own ignore file up to date after.
 	if err := layout.EnsureDir(h, dirPath, outputRel); err != nil {
 		return nil, err
 	}

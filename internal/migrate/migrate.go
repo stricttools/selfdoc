@@ -18,6 +18,13 @@
 // same commit: on its own for a repository already on this layout, and beside
 // the directories for one that is not.
 //
+// The move also takes strictcli's files out of every .strictcli/ directory
+// into the .strictmetadata/ beside it (see planCLIFiles), and converts the
+// ignore file an earlier selfdoc derived at the top of .strictmetadata/ into
+// one per uncommitted directory (see planIgnores): on their own for a
+// repository already on this layout, and beside the directories for one that
+// is not.
+//
 // The move also converts the repository's manifests -- the build manifest and
 // the post manifest -- from the schema before the vocabulary to the current
 // one, adding the vocabulary of the project's terms file. A repository already
@@ -85,18 +92,27 @@ type Plan struct {
 	// generates them now: a CLAUDE.md an earlier selfdoc generated at the
 	// repository root, to .claude/CLAUDE.md.
 	FileMoves []Move
-	// Writes are the files the move creates: the derived ignore file under
-	// the new root, and the vocabulary files a repository without them
-	// needs.
+	// CLIMoves are strictcli's committed files moving out of a .strictcli/
+	// directory: the schema and the test-coverage manifest.
+	CLIMoves []Move
+	// ShardMoves are the uncommitted coverage shards moving out of a
+	// .strictcli/coverage/ directory.
+	ShardMoves []ShardMove
+	// Writes are the files the move creates: the ignore files of the
+	// uncommitted directories, the vocabulary files a repository without them
+	// needs, and the grants and ignore file of strictcli's directories.
 	Writes []Write
 	// Rewrites are the files rewritten in place: the ignore file under the
 	// previous root when another tool's lines stay in it, selfdoc.json, and
 	// the generated root files whose header names a moved template, at the
 	// path each has once the file moves are done.
 	Rewrites []Rewrite
-	// Deletes are the files the move deletes: the previous root's ignore file
-	// when selfdoc's block was all it held.
-	Deletes []string
+	// Deletes are the files the move deletes: an ignore file whose only lines
+	// were selfdoc's block, and the stub modules a .strictcli/ directory held.
+	Deletes []Delete
+	// RemoveDirs are the directories the move empties and removes, deepest
+	// first: each .strictcli/ directory and what was left in it.
+	RemoveDirs []string
 	// RemovePreviousRoot is set when nothing is left under the previous root
 	// once selfdoc's directories and its ignore file are gone.
 	RemovePreviousRoot bool
@@ -118,6 +134,12 @@ func (p Plan) Lines() []string {
 	for _, move := range p.FileMoves {
 		lines = append(lines, fmt.Sprintf("move %s -> %s (a generated root file, where selfdoc generates it now)", move.From, move.To))
 	}
+	for _, move := range p.CLIMoves {
+		lines = append(lines, fmt.Sprintf("move %s -> %s", move.From, move.To))
+	}
+	for _, move := range p.ShardMoves {
+		lines = append(lines, fmt.Sprintf("move %d coverage shard file(s) %s/ -> %s/", len(move.Files), move.From, move.To))
+	}
 	for _, write := range p.Writes {
 		lines = append(lines, fmt.Sprintf("write %s (%s)", write.Path, write.Why))
 	}
@@ -127,7 +149,10 @@ func (p Plan) Lines() []string {
 		}
 	}
 	for _, deleted := range p.Deletes {
-		lines = append(lines, fmt.Sprintf("delete %s (it held only selfdoc's block)", deleted))
+		lines = append(lines, fmt.Sprintf("delete %s (%s)", deleted.Path, deleted.Why))
+	}
+	for _, removed := range p.RemoveDirs {
+		lines = append(lines, fmt.Sprintf("remove %s/ (nothing is left in it)", removed))
 	}
 	if p.RemovePreviousRoot {
 		lines = append(lines, fmt.Sprintf("remove %s/ (nothing else is left in it)", p.PreviousRoot))
@@ -143,17 +168,73 @@ func (p Plan) Summary() string {
 	case len(p.Moves) > 0:
 		clauses = append(clauses, "move selfdoc's directories from "+p.PreviousRoot+"/ to "+layout.Root+"/")
 	default:
-		if len(p.Writes) > 0 {
+		if p.writesVocabulary() {
 			clauses = append(clauses, "write the vocabulary directory")
 		}
-		if len(p.Rewrites) > 0 {
+		if p.convertsManifests() {
 			clauses = append(clauses, fmt.Sprintf("convert the manifests to schema_version %d", manifest.SchemaVersion))
 		}
+	}
+	if len(p.RemoveDirs) > 0 {
+		clauses = append(clauses, "move strictcli's files from .strictcli/ to "+layout.Root+"/")
+	}
+	// A move off a previous root writes the ignore files as part of the move.
+	if len(p.Moves) == 0 && p.convertsIgnores() {
+		clauses = append(clauses, "give each uncommitted directory its own ignore file")
 	}
 	for _, move := range p.FileMoves {
 		clauses = append(clauses, "move the generated "+move.From+" to "+move.To)
 	}
 	return strings.Join(clauses, " and ")
+}
+
+// writesVocabulary reports whether the plan writes the vocabulary directory's
+// files.
+func (p Plan) writesVocabulary() bool {
+	for _, write := range p.Writes {
+		if write.Path == layout.TermsRel || write.Path == layout.DirectoryManifestRel(layout.VocabularyName) {
+			return true
+		}
+	}
+	return false
+}
+
+// convertsManifests reports whether the plan converts or commits a manifest
+// document.
+func (p Plan) convertsManifests() bool {
+	for _, rewrite := range p.Rewrites {
+		for _, rel := range convertedManifests {
+			if rewrite.Path == rel {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// convertsIgnores reports whether the plan writes an uncommitted directory's
+// ignore file or deletes the one at the top of the root.
+func (p Plan) convertsIgnores() bool {
+	for _, deleted := range p.Deletes {
+		if deleted.Path == layout.RootIgnoreRel {
+			return true
+		}
+	}
+	for _, dir := range layout.IgnoredDirectories() {
+		for _, write := range p.Writes {
+			if write.Path == layout.DirectoryIgnoreRel(dir.Name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// empty reports whether the plan has no step at all.
+func (p Plan) empty() bool {
+	return len(p.Moves) == 0 && len(p.FileMoves) == 0 && len(p.CLIMoves) == 0 &&
+		len(p.ShardMoves) == 0 && len(p.Writes) == 0 && len(p.Rewrites) == 0 &&
+		len(p.Deletes) == 0 && len(p.RemoveDirs) == 0 && !p.RemovePreviousRoot
 }
 
 // gitTimeout bounds the one git probe the plan makes.
@@ -247,13 +328,26 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 		if err := plan.planManifests(baseDir, h, from, false, false); err != nil {
 			return Plan{}, err
 		}
-		if len(plan.Writes) > 0 || len(plan.Rewrites) > 0 || len(plan.FileMoves) > 0 {
+		if err := plan.planIgnores(baseDir, nil); err != nil {
+			return Plan{}, err
+		}
+		if err := plan.planCLIFiles(baseDir, h); err != nil {
+			return Plan{}, err
+		}
+		if !plan.empty() {
 			return plan, nil
 		}
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
-			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), no layout before it (%s) holds any, %s carries its grant, the manifests are on schema_version %d, and no %s at the repository root was generated by selfdoc.",
-			layout.Root, strings.Join(current, ", "), previousRootsList(), layout.VocabularyRel+"/", manifest.SchemaVersion, gen.PreviousClaudeOutputRel)}
+			"Nothing to migrate: %s/ already holds selfdoc's directories (%s), no layout before it (%s) holds any, %s carries its grant, the manifests are on schema_version %d, no %s at the repository root was generated by selfdoc, every uncommitted directory carries its own %s and %s holds none, and no %s/ directory is left.",
+			layout.Root, strings.Join(current, ", "), previousRootsList(), layout.VocabularyRel+"/", manifest.SchemaVersion, gen.PreviousClaudeOutputRel, layout.IgnoreFileName, layout.Root+"/", previousCLIDir)}
 	case len(previous) == 0:
+		var plan Plan
+		if err := plan.planCLIFiles(baseDir, h); err != nil {
+			return Plan{}, err
+		}
+		if !plan.empty() {
+			return plan, nil
+		}
 		return Plan{}, &NotNeededError{Message: fmt.Sprintf(
 			"Nothing to migrate: this repository has no directory under a layout before this one (%s) whose %s names selfdoc. A repository that has not adopted selfdoc runs 'selfdoc init'.",
 			previousRootsList(), layout.ManifestFileName)}
@@ -284,18 +378,15 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 		}
 	}
 
-	// Another tool's lines in an ignore file already under the new root stay
-	// where they are, beside selfdoc's block.
-	ignoreRel := layout.Root + "/" + layout.IgnoreFileName
-	existingIgnore, err := os.ReadFile(layout.IgnorePath(baseDir))
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
+	arriving := map[string]bool{}
+	for name := range moved {
+		if dir, claimed := from.Lookup(name); claimed {
+			arriving[dir.Name] = true
+		}
+	}
+	if err := plan.planIgnores(baseDir, arriving); err != nil {
 		return Plan{}, err
 	}
-	plan.Writes = append(plan.Writes, Write{
-		Path: ignoreRel, Why: "selfdoc's block, for the new names",
-		Content: []byte(layout.RenderIgnore(string(existingIgnore))),
-	})
-	plan.Commit = append(plan.Commit, ignoreRel)
 
 	if err := plan.planVocabulary(baseDir, from, moved); err != nil {
 		return Plan{}, err
@@ -314,6 +405,9 @@ func PlanMigration(baseDir string, h *effects.Handle) (Plan, error) {
 		return Plan{}, err
 	}
 	if err := plan.planRootFileHeaders(baseDir, configPaths); err != nil {
+		return Plan{}, err
+	}
+	if err := plan.planCLIFiles(baseDir, h); err != nil {
 		return Plan{}, err
 	}
 	return plan, nil
@@ -542,7 +636,7 @@ func (p *Plan) planPreviousIgnore(baseDir string, from layout.PreviousLayout, mo
 	default:
 		remaining := layout.WithoutIgnoreBlock(string(raw))
 		if strings.TrimSpace(remaining) == "" {
-			p.Deletes = append(p.Deletes, ignoreRel)
+			p.Deletes = append(p.Deletes, Delete{Path: ignoreRel, Why: "it held only selfdoc's block"})
 		} else {
 			ignoreGone = false
 			info, statErr := os.Stat(ignorePath)
@@ -736,9 +830,10 @@ func trackedFiles(baseDir, rel string, h *effects.Handle) ([]string, error) {
 }
 
 // Apply performs a plan: creates the new root when directories move, moves
-// them, moves the generated root files, writes, rewrites and deletes the
-// files, and removes the previous root when nothing is left in it. Under a
-// dry-run handle every step is recorded instead.
+// them, moves the generated root files and strictcli's files, writes,
+// rewrites and deletes the files, removes the emptied .strictcli/
+// directories, and removes the previous root when nothing is left in it.
+// Under a dry-run handle every step is recorded instead.
 func Apply(h *effects.Handle, baseDir string, plan Plan) error {
 	if len(plan.Moves) > 0 {
 		if err := h.MkdirAll(filepath.Join(baseDir, layout.Root)); err != nil {
@@ -765,6 +860,33 @@ func Apply(h *effects.Handle, baseDir string, plan Plan) error {
 			return err
 		}
 	}
+	for _, move := range plan.CLIMoves {
+		to := filepath.Join(baseDir, filepath.FromSlash(move.To))
+		if parent := filepath.Dir(to); !created[parent] {
+			if err := h.MkdirAll(parent); err != nil {
+				return err
+			}
+			created[parent] = true
+		}
+		if err := h.Rename(filepath.Join(baseDir, filepath.FromSlash(move.From)), to); err != nil {
+			return err
+		}
+	}
+	for _, move := range plan.ShardMoves {
+		to := filepath.Join(baseDir, filepath.FromSlash(move.To))
+		if !created[to] {
+			if err := h.MkdirAll(to); err != nil {
+				return err
+			}
+			created[to] = true
+		}
+		for _, file := range move.Files {
+			from := filepath.Join(baseDir, filepath.FromSlash(move.From), file)
+			if err := h.Rename(from, filepath.Join(to, file)); err != nil {
+				return err
+			}
+		}
+	}
 	for _, write := range plan.Writes {
 		target := filepath.Join(baseDir, filepath.FromSlash(write.Path))
 		if parent := filepath.Dir(target); !created[parent] {
@@ -784,7 +906,12 @@ func Apply(h *effects.Handle, baseDir string, plan Plan) error {
 		}
 	}
 	for _, deleted := range plan.Deletes {
-		if err := h.Remove(filepath.Join(baseDir, filepath.FromSlash(deleted))); err != nil {
+		if err := h.Remove(filepath.Join(baseDir, filepath.FromSlash(deleted.Path))); err != nil {
+			return err
+		}
+	}
+	for _, removed := range plan.RemoveDirs {
+		if err := h.Rmdir(filepath.Join(baseDir, filepath.FromSlash(removed))); err != nil {
 			return err
 		}
 	}

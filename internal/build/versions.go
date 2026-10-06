@@ -30,8 +30,7 @@ const (
 //
 // The content is moved by streaming "git archive" into "tar -x", so nothing
 // buffers the whole tree. The cache is one of selfdoc's uncommitted
-// directories, so the derived ignore file inside the tool-state directory is
-// what keeps it out of the repository.
+// directories, so its own ignore file is what keeps it out of the repository.
 //
 // Both docs roots are extracted: the handwritten pages the config names, and
 // the generated pages committed beside them, so an archived version's build

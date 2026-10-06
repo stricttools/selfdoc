@@ -112,12 +112,11 @@ func TestBuildMultipleVersions(t *testing.T) {
 		if isDir(filepath.Join(cacheDir, "0.2.0")) {
 			t.Error("the current version was extracted instead of read from the working tree")
 		}
-		// The cache is kept out of the repository by the one derived
-		// ignore file inside the tool-state directory, not by an ignore
-		// file of its own.
-		gitignore := readFile(t, filepath.Join(built.dir, ".strictmetadata", ".gitignore"))
-		if !strings.Contains(gitignore, "docs-cache/") {
-			t.Errorf("the derived ignore file is %q, want it ignoring the cache directory", gitignore)
+		// The cache is kept out of the repository by its own ignore file,
+		// which ignores everything in it but that file and its manifest.
+		gitignore := readFile(t, filepath.Join(built.dir, ".strictmetadata", ".docs-cache", ".gitignore"))
+		if !strings.Contains(gitignore, "\n*\n") {
+			t.Errorf("the cache directory's ignore file is %q, want it ignoring the cache's contents", gitignore)
 		}
 	})
 
