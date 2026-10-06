@@ -32,7 +32,7 @@ Each tier after 0 builds on the previous one. A project cannot reach tier 4 with
 
 - **Tier 0** -- The project has no markdown files. Start by creating a `README.md`.
 - **Tier 1** -- Documentation exists but is entirely manual. Running `selfdoc init` will move you to tier 2.
-- **Tier 2** -- selfdoc is configured but not yet generating root files. Add `.strictmetadata/docs/_README.md` to the `root_files` array in `selfdoc.json` and run `selfdoc gen`.
+- **Tier 2** -- selfdoc is configured but not yet generating root files. Add an entry for `.strictmetadata/docs/_README.md` with its outputs to the `root_files` array in `selfdoc.json` and run `selfdoc gen`.
 - **Tier 3** -- Root files are auto-generated, but docs are not connected to source code. Add directives like `:-: ref path="mypackage" lang="python"` to your templates.
 - **Tier 4** -- Directives link documentation to source code. Define custom directives in `selfdoc.json` or configure blog posts to reach tier 5.
 - **Tier 5** -- All selfdoc features are in use.

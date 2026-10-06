@@ -195,6 +195,9 @@ then:
   generated root file;
 - moves a `CLAUDE.md` an earlier selfdoc generated at the repository root to
   `.claude/CLAUDE.md` (see below);
+- converts every `root_files` entry that is a plain template string into the
+  object naming its template and the output selfdoc generated from it, keeping
+  the rest of `selfdoc.json` byte for byte (see [Root Files](../root-files/));
 - writes an empty `.strictmetadata/vocabulary/terms.toml` when the project has none;
 - moves strictcli's files and converts the ignore file (see below);
 - converts the manifests (see below);

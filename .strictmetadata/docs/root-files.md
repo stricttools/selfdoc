@@ -12,17 +12,10 @@ selfdoc can generate repository-level project files (like `README.md` and `.clau
 ## How It Works
 
 1. You create a template in `.strictmetadata/docs/` with an underscore prefix (e.g., `.strictmetadata/docs/_README.md`, `.strictmetadata/docs/_CLAUDE.md`).
-2. You list those templates in the `root_files` config array.
-3. When you run `selfdoc gen`, each template is read, its directives are resolved against your source code, and the result is written to the template's output path. Generated files are set to mode 444 (read-only) to prevent accidental edits.
+2. You list each template in the `root_files` config array, with the files it generates.
+3. When you run `selfdoc gen`, each template is read, its directives are resolved against your source code, and the result is written to every output its entry declares. Generated files are set to mode 444 (read-only) to prevent accidental edits.
 
-The output path is fixed by the template's name, with no setting to change it:
-
-| Template | Generates |
-|----------|-----------|
-| `_CLAUDE.md` | `.claude/CLAUDE.md` |
-| any other `_NAME.md` | `NAME.md` at the project root |
-
-So `.strictmetadata/docs/_README.md` becomes `README.md`, and `.strictmetadata/docs/_CLAUDE.md` becomes `.claude/CLAUDE.md`; gen creates `.claude/` when it does not exist.
+One template can generate several files: a package published to a registry whose page shows a README of its own, from a directory of the repository, gets a real copy of the project README there, kept in step with the one at the root because both come from one template. gen creates the directories the outputs sit in, such as `.claude/`.
 
 ## Why CLAUDE.md goes under `.claude/`
 
@@ -37,15 +30,31 @@ selfdoc layout migrate
 
 ## Configuration
 
-Add the template paths to `root_files` in your `selfdoc.json`. The key names the templates that generate repository-level files, wherever each output is placed. Each entry must be an underscore-prefixed file in `.strictmetadata/docs/`. The underscore prefix distinguishes templates from regular documentation pages that appear on the built site:
+Add one entry per template to `root_files` in your `selfdoc.json`. Each entry is an object naming its `template` and its `outputs`:
+
+- `template` is an underscore-prefixed file, conventionally in `.strictmetadata/docs/`. The underscore prefix distinguishes templates from regular documentation pages that appear on the built site.
+- `outputs` lists the files the template generates, at least one. Each is relative to the project root, written with forward slashes and no `.` or `..` segments, and no output is declared by two entries.
 
 ```json
 {
   "root_files": [
-    ".strictmetadata/docs/_README.md",
-    ".strictmetadata/docs/_CLAUDE.md"
+    {
+      "template": ".strictmetadata/docs/_README.md",
+      "outputs": ["README.md", "pypi/README.md"]
+    },
+    {
+      "template": ".strictmetadata/docs/_CLAUDE.md",
+      "outputs": [".claude/CLAUDE.md"]
+    }
   ]
 }
+```
+
+An entry that is a plain template string, the form earlier selfdoc versions read, is refused with an error naming the migration. `selfdoc layout migrate` converts every such entry, declaring the output selfdoc generated from it: `.claude/CLAUDE.md` for a `_CLAUDE.md` template, and the basename without its underscore at the project root for any other:
+
+```bash
+selfdoc layout migrate --dry-run
+selfdoc layout migrate
 ```
 
 ## Template Format
@@ -88,11 +97,11 @@ This header serves two purposes:
 2. It tells selfdoc that the file was previously generated, making it safe to overwrite on the next run.
 
 > [!WARNING]
-> If a file exists at the output path and does not have the auto-generated header, selfdoc refuses to overwrite it. This prevents accidentally destroying a hand-written file. Delete or rename the existing file first if you want selfdoc to take over.
+> If a file exists at any output path and does not have the auto-generated header, selfdoc refuses to overwrite it, before it writes any output of that template. This prevents accidentally destroying a hand-written file. Delete or rename the existing file first if you want selfdoc to take over.
 
 ## Ignored Output Paths
 
-A generated file is committed, so gen refuses an output path git ignores, before it writes anything. The refusal names the ignore file, the line, and the rule that match, and asks for a narrower rule. A `.gitignore` that ignores all of `.claude/` to keep Claude Code's personal settings out of git is the common case: ignore `.claude/settings.local.json` instead, and `.claude/CLAUDE.md` can be committed.
+A generated file is committed, so gen refuses any output path git ignores, before it writes anything. The refusal names the ignore file, the line, and the rule that match, and asks for a narrower rule. A `.gitignore` that ignores all of `.claude/` to keep Claude Code's personal settings out of git is the common case: ignore `.claude/settings.local.json` instead, and `.claude/CLAUDE.md` can be committed.
 
 ## Read-Only Permissions
 
@@ -100,7 +109,7 @@ Generated files are set to `chmod 444` (read-only) after writing. This is a safe
 
 ## Regenerating
 
-Run `selfdoc gen` to regenerate every file from its template. This resolves every directive in every template listed in `root_files`, overwrites the output files, and sets them to read-only permissions:
+Run `selfdoc gen` to regenerate every file from its template. This resolves every directive in every template listed in `root_files`, overwrites every declared output, and sets them to read-only permissions:
 
 ```bash
 selfdoc gen
