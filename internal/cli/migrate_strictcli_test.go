@@ -114,9 +114,12 @@ func TestMigrateDryRunPlansTheStrictcliMoveAndChangesNothing(t *testing.T) {
 func TestMigrateMovesStrictcliFilesAndCommits(t *testing.T) {
 	isolate(t)
 	dir := strictcliProject(t)
-	result := run(t, dir, "--json", "layout", "migrate")
-	if result.ExitCode != 0 {
-		t.Fatalf("the move failed:\n%s\n%s", result.Stdout, result.Stderr)
+	human := run(t, dir, "layout", "migrate")
+	if human.ExitCode != 0 {
+		t.Fatalf("the move failed:\n%s\n%s", human.Stdout, human.Stderr)
+	}
+	if !strings.Contains(human.Stdout, "Moved strictcli's files out of 2 .strictcli/ directory(s).") {
+		t.Errorf("the report miscounts the .strictcli/ directories:\n%s", human.Stdout)
 	}
 	if got := readText(t, filepath.Join(dir, ".strictmetadata", ".cli-schema", "schema.json")); got != cliSchema {
 		t.Errorf("the schema moved as %q", got)

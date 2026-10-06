@@ -259,6 +259,7 @@ func (p *Plan) planCLIDir(baseDir, dir string, h *effects.Handle) ([]string, err
 		p.RemoveDirs = append(p.RemoveDirs, joinRel(fromDir, previousShardsDir))
 	}
 	p.RemoveDirs = append(p.RemoveDirs, fromDir)
+	p.CLIDirs = append(p.CLIDirs, fromDir)
 	return nil, nil
 }
 

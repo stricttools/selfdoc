@@ -150,8 +150,8 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 		if len(plan.Moves) > 0 {
 			sentences = append(sentences, fmt.Sprintf("Moved %d directories under %s/.", len(plan.Moves), layout.Root))
 		}
-		if len(plan.CLIMoves) > 0 || len(plan.ShardMoves) > 0 || len(plan.RemoveDirs) > 0 {
-			sentences = append(sentences, fmt.Sprintf("Moved strictcli's files out of %d .strictcli/ directory(s).", countCLIDirs(plan)))
+		if len(plan.CLIDirs) > 0 {
+			sentences = append(sentences, fmt.Sprintf("Moved strictcli's files out of %d .strictcli/ directory(s).", len(plan.CLIDirs)))
 		}
 		if len(plan.Writes) > 0 || len(plan.Rewrites) > 0 || len(plan.Deletes) > 0 {
 			sentences = append(sentences, fmt.Sprintf("Wrote %d file(s), rewrote %d, and deleted %d.", len(plan.Writes), len(plan.Rewrites), len(plan.Deletes)))
@@ -165,17 +165,6 @@ func (c *cli) cmdLayoutMigrate(ctx *strictcli.Context, kwargs map[string]any) st
 		c.println(strings.Join(sentences, " "))
 	}
 	return strictcli.Exit(0)
-}
-
-// countCLIDirs counts the .strictcli/ directories a plan removes.
-func countCLIDirs(plan migrate.Plan) int {
-	count := 0
-	for _, removed := range plan.RemoveDirs {
-		if strings.HasSuffix(removed, "/.strictcli") || removed == ".strictcli" {
-			count++
-		}
-	}
-	return count
 }
 
 // layoutDeclaration is the document `selfdoc layout dump` prints, and the

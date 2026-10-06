@@ -113,6 +113,9 @@ type Plan struct {
 	// RemoveDirs are the directories the move empties and removes, deepest
 	// first: each .strictcli/ directory and what was left in it.
 	RemoveDirs []string
+	// CLIDirs are the .strictcli/ directories the move takes strictcli's
+	// files out of, relative to the repository root.
+	CLIDirs []string
 	// RemovePreviousRoot is set when nothing is left under the previous root
 	// once selfdoc's directories and its ignore file are gone.
 	RemovePreviousRoot bool
