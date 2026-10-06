@@ -23,3 +23,91 @@ Publish this project's documentation to the assembly without a release. Builds t
 | Kind | Name | Reason |
 | --- | --- | --- |
 | proc_mutate | `assembly-dispatch` | triggers a GitHub Actions workflow on the assembly repository, which rebuilds and republishes the live documentation site |
+
+## blog post
+
+Manage blog posts and chronological content for the documentation site
+
+## blog post new
+
+Scaffold a new blog post markdown file with a date-prefixed filename and frontmatter template containing title, date, slug, tags, draft status, and project metadata. Creates the file in the configured posts directory and exits with an error if the file already exists.
+
+**Effect:** mutating
+
+### Flags
+
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--title` |  | str | required |  | Title for the new blog post, used in frontmatter and filename generation |
+
+## blog post list
+
+List all discovered blog posts with date, title, slug, and draft status. Scans the configured posts directory for markdown files with frontmatter, parses their metadata, and prints a formatted summary showing each post's publication date, title, slug identifier, and whether it is marked as a draft.
+
+**Effect:** read_only
+
+## blog post generate
+
+Generate a blog post markdown file from structured release metadata. Takes version, bump type, description, changelog, and registry URLs as inputs, produces a frontmatter-bearing post with title, date, tags, and body content, and updates the project manifest with the new post entry.
+
+**Effect:** mutating
+
+### Flags
+
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--from-release`, `--no-from-release` |  | bool | required |  | Generate the post from structured release metadata rather than freeform content. Structured metadata is the only shape this command generates, so --no-from-release is refused; state --from-release to say what the post is built from |
+| `--version` |  | str | required |  | The released version number to feature in the generated blog post title and metadata |
+| `--prev-version` |  | str | optional |  | Previous version number, used to show what version this release upgrades from |
+| `--bump-type` |  | str | optional |  | Semver bump type (patch, minor, or major) included in the post frontmatter |
+| `--description` |  | str | optional |  | Short release description text included as the post summary paragraph |
+| `--context` |  | str | optional |  | Additional context explaining the rationale for this release, included in generated blog posts |
+| `--changelog-file` |  | str | optional |  | Path to a markdown file whose contents are embedded as the changelog section of the post |
+| `--body-file` |  | str | optional |  | Path to a file containing user-written prose to include as the main post body content |
+| `--project-name` |  | str | optional |  | Human-readable project name used in the blog post title and frontmatter metadata |
+| `--release-url` |  | str | optional |  | Full URL to the GitHub release page, linked from the generated blog post |
+| `--registry-url` |  | list[str] | default: `[]` |  | Package registry URL such as PyPI or npm page, can be specified multiple times |
+
+## blog post publish
+
+Publish non-draft blog posts to the documentation assembly. Builds posts locally, pushes built HTML and manifest to the assembly repo via the Git Data API, then dispatches a shared-only workflow to regenerate cross-project elements.
+
+**Effect:** mutating · **consequential** (prompts before running; `--approve-consequential` skips)
+
+### Grants
+
+| Kind | Name | Reason |
+| --- | --- | --- |
+| proc_mutate | `assembly-dispatch` | triggers a GitHub Actions workflow on the assembly repository, which rebuilds and republishes the live documentation site |
+
+## blog editor
+
+Run and inspect the local authoring app for blog posts
+
+## blog editor list-repos
+
+List every repository the editor registry declares, with its kind and where it points. Reads the hand-written registry TOML, validates every entry in full, and prints one line per entry -- a local entry's working tree, or a remote entry's repository, ref and whether it declares that rendering runs against a checkout.
+
+**Effect:** read_only
+
+### Flags
+
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--registry` |  | str | optional |  | Path to the editor registry TOML. Omitted, the machine-local registry at ~/Projects/ark/selfdoc-registry.toml is read. |
+
+## blog editor serve
+
+Run the local authoring app: a browser UI over the registry's repositories, with the tinymoon editor component on the left and a live preview on the right. The preview is the publish renderer over the unsaved buffer, so what you approve is byte-for-byte what publishing produces, and rendering a preview writes nothing. Saving writes the buffer into the repository's working tree. Binds 127.0.0.1 only.
+
+**Effect:** mutating
+
+**Dry run:** not supported — 'editor serve' is an interactive server: its writes are the saves you make at the keyboard while it runs, so at launch there is nothing to record. Worse, those saves happen on request threads that carry no preview context, so they would execute for real. Run it without --dry-run, and preview a save by not pressing save.
+
+### Flags
+
+| Name | Short | Type | Presence | Env | Description |
+| --- | --- | --- | --- | --- | --- |
+| `--port` |  | int | required |  | Port to bind on 127.0.0.1. Required and has no default: the editor writes working trees and answers without authentication, so which port it occupies is a decision the caller states rather than inherits. |
+| `--registry` |  | str | optional |  | Path to the editor registry TOML. Omitted, the machine-local registry at ~/Projects/ark/selfdoc-registry.toml is read. |
+| `--tinymoon-assets` |  | str | optional |  | Path to a tinymoon checkout's 'assets' directory. Omitted, the installed tinymoon package is used. The editor tier (js/editor.js, js/completion.js, css/editor.css) is newer than the released package, so a checkout is currently the only complete source. |

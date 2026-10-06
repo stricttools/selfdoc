@@ -1,8 +1,8 @@
 {
   "schema_version": 2,
-  "name": "release-checkout",
+  "name": "selfdoc",
   "slug": "selfdoc",
-  "version": "0.45.1",
+  "version": "0.46.0",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -536,6 +536,71 @@
           "level": 3,
           "text": "Grants",
           "anchor": "grants"
+        },
+        {
+          "level": 2,
+          "text": "blog post",
+          "anchor": "blog-post"
+        },
+        {
+          "level": 2,
+          "text": "blog post new",
+          "anchor": "blog-post-new"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags"
+        },
+        {
+          "level": 2,
+          "text": "blog post list",
+          "anchor": "blog-post-list"
+        },
+        {
+          "level": 2,
+          "text": "blog post generate",
+          "anchor": "blog-post-generate"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-1"
+        },
+        {
+          "level": 2,
+          "text": "blog post publish",
+          "anchor": "blog-post-publish"
+        },
+        {
+          "level": 3,
+          "text": "Grants",
+          "anchor": "grants-1"
+        },
+        {
+          "level": 2,
+          "text": "blog editor",
+          "anchor": "blog-editor"
+        },
+        {
+          "level": 2,
+          "text": "blog editor list-repos",
+          "anchor": "blog-editor-list-repos"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-2"
+        },
+        {
+          "level": 2,
+          "text": "blog editor serve",
+          "anchor": "blog-editor-serve"
+        },
+        {
+          "level": 3,
+          "text": "Flags",
+          "anchor": "flags-3"
         }
       ]
     },
@@ -7384,8 +7449,8 @@
         },
         {
           "level": 3,
-          "text": "The derived ignore file",
-          "anchor": "the-derived-ignore-file"
+          "text": "The ignore files",
+          "anchor": "the-ignore-files"
         },
         {
           "level": 3,
@@ -7469,6 +7534,11 @@
         },
         {
           "level": 3,
+          "text": "`CLIOwner`",
+          "anchor": "cliowner"
+        },
+        {
+          "level": 3,
           "text": "`DeprecatedRoot`",
           "anchor": "deprecatedroot"
         },
@@ -7526,6 +7596,11 @@
           "level": 3,
           "text": "`CheckIgnore`",
           "anchor": "checkignore"
+        },
+        {
+          "level": 3,
+          "text": "`RootFiles`",
+          "anchor": "rootfiles"
         },
         {
           "level": 3,
@@ -7629,8 +7704,18 @@
         },
         {
           "level": 3,
+          "text": "`LibraryOwners`",
+          "anchor": "libraryowners"
+        },
+        {
+          "level": 3,
           "text": "`InitDirectories`",
           "anchor": "initdirectories"
+        },
+        {
+          "level": 3,
+          "text": "`RootIgnoreRel`",
+          "anchor": "rootignorerel"
         },
         {
           "level": 3,
@@ -7764,33 +7849,28 @@
         },
         {
           "level": 3,
-          "text": "`IgnoreBlock`",
-          "anchor": "ignoreblock"
+          "text": "`DirectoryIgnoreContent`",
+          "anchor": "directoryignorecontent"
         },
         {
           "level": 3,
-          "text": "`RenderIgnore`",
-          "anchor": "renderignore"
+          "text": "`DirectoryIgnoreRel`",
+          "anchor": "directoryignorerel"
+        },
+        {
+          "level": 3,
+          "text": "`IgnoredDirectories`",
+          "anchor": "ignoreddirectories"
+        },
+        {
+          "level": 3,
+          "text": "`WriteDirectoryIgnore`",
+          "anchor": "writedirectoryignore"
         },
         {
           "level": 3,
           "text": "`WithoutIgnoreBlock`",
           "anchor": "withoutignoreblock"
-        },
-        {
-          "level": 3,
-          "text": "`IgnorePath`",
-          "anchor": "ignorepath"
-        },
-        {
-          "level": 3,
-          "text": "`WriteIgnore`",
-          "anchor": "writeignore"
-        },
-        {
-          "level": 3,
-          "text": "`IgnoreIsCurrent`",
-          "anchor": "ignoreiscurrent"
         },
         {
           "level": 3,
@@ -8432,6 +8512,31 @@
         },
         {
           "level": 3,
+          "text": "`ShardMove`",
+          "anchor": "shardmove"
+        },
+        {
+          "level": 3,
+          "text": "`Delete`",
+          "anchor": "delete"
+        },
+        {
+          "level": 3,
+          "text": "`UnplaceableError`",
+          "anchor": "unplaceableerror"
+        },
+        {
+          "level": 3,
+          "text": "`PartialCLIMoveError`",
+          "anchor": "partialclimoveerror"
+        },
+        {
+          "level": 3,
+          "text": "`RootIgnoreError`",
+          "anchor": "rootignoreerror"
+        },
+        {
+          "level": 3,
           "text": "`PlanMigration`",
           "anchor": "planmigration"
         },
@@ -8469,6 +8574,21 @@
           "level": 3,
           "text": "`ExistingClaudeOutputError.Error`",
           "anchor": "existingclaudeoutputerrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`UnplaceableError.Error`",
+          "anchor": "unplaceableerrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`PartialCLIMoveError.Error`",
+          "anchor": "partialclimoveerrorerror"
+        },
+        {
+          "level": 3,
+          "text": "`RootIgnoreError.Error`",
+          "anchor": "rootignoreerrorerror"
         }
       ]
     },
@@ -9684,6 +9804,16 @@
         },
         {
           "level": 3,
+          "text": "`SchemaRelPath`",
+          "anchor": "schemarelpath"
+        },
+        {
+          "level": 3,
+          "text": "`AppPlaceholder`",
+          "anchor": "appplaceholder"
+        },
+        {
+          "level": 3,
           "text": "`PageKind`",
           "anchor": "pagekind"
         },
@@ -9749,6 +9879,11 @@
         },
         {
           "level": 3,
+          "text": "`RegenerateCommand`",
+          "anchor": "regeneratecommand"
+        },
+        {
+          "level": 3,
           "text": "`UsesStrictcli`",
           "anchor": "usesstrictcli"
         },
@@ -9786,6 +9921,16 @@
           "level": 3,
           "text": "`GroupCommands`",
           "anchor": "groupcommands"
+        },
+        {
+          "level": 3,
+          "text": "`GroupSubgroups`",
+          "anchor": "groupsubgroups"
+        },
+        {
+          "level": 3,
+          "text": "`WalkGroup`",
+          "anchor": "walkgroup"
         },
         {
           "level": 3,
@@ -11328,9 +11473,14 @@
           "anchor": "directories-several-tools-share"
         },
         {
+          "level": 3,
+          "text": "A strictcli program's directories",
+          "anchor": "a-strictcli-programs-directories"
+        },
+        {
           "level": 2,
-          "text": "The derived ignore file",
-          "anchor": "the-derived-ignore-file"
+          "text": "Ignore files",
+          "anchor": "ignore-files"
         },
         {
           "level": 2,
@@ -11341,6 +11491,11 @@
           "level": 2,
           "text": "Moving a repository off `stricttools/` or `.stricttools/`",
           "anchor": "moving-a-repository-off-stricttools-or-stricttools"
+        },
+        {
+          "level": 3,
+          "text": "Moving strictcli's files and converting the ignore file",
+          "anchor": "moving-strictclis-files-and-converting-the-ignore-file"
         },
         {
           "level": 3,
@@ -11968,7 +12123,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-05T21:23:32.236662+00:00",
+  "last_gen": "2026-10-06T11:47:56.136073+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
