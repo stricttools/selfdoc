@@ -104,14 +104,41 @@ func cliDirSkipped(baseDir, full, name string) bool {
 	return strings.HasPrefix(name, ".") || excludes.IsScratchDir(baseDir, full)
 }
 
+// ignoredPaths returns which of the given paths, relative to baseDir in slash
+// form, git ignores -- a path inside an ignored directory included. Outside a
+// git repository nothing is ignored.
+func ignoredPaths(baseDir string, paths []string, h *effects.Handle) map[string]bool {
+	ignored := map[string]bool{}
+	if len(paths) == 0 {
+		return ignored
+	}
+	result, err := h.Run(
+		[]string{"git", "check-ignore", "-z", "--stdin"},
+		effects.Cwd(baseDir), effects.CaptureOutput(),
+		effects.Stdin([]byte(strings.Join(paths, "\x00"))),
+		effects.Timeout(gitTimeout), effects.Read(),
+	)
+	if err != nil || result.ExitCode != 0 {
+		return ignored
+	}
+	for _, name := range strings.Split(string(result.Stdout), "\x00") {
+		if name != "" {
+			ignored[name] = true
+		}
+	}
+	return ignored
+}
+
 // findCLIDirs returns the directories under baseDir holding a .strictcli/
-// directory, relative to baseDir in slash form, "." for the root, sorted.
-func findCLIDirs(baseDir string) ([]string, error) {
+// directory, relative to baseDir in slash form, "." for the root, sorted. A
+// .strictcli/ git ignores, or one inside an ignored directory, is not the
+// repository's and is not found.
+func findCLIDirs(baseDir string, h *effects.Handle) ([]string, error) {
 	root, err := filepath.Abs(baseDir)
 	if err != nil {
 		return nil, err
 	}
-	var found []string
+	var candidates []string
 	walkErr := filepath.WalkDir(root, func(full string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -127,12 +154,19 @@ func findCLIDirs(baseDir string) ([]string, error) {
 			if relErr != nil {
 				return relErr
 			}
-			found = append(found, filepath.ToSlash(rel))
+			candidates = append(candidates, joinRel(filepath.ToSlash(rel), previousCLIDir))
 		}
 		return nil
 	})
 	if walkErr != nil {
 		return nil, walkErr
+	}
+	ignored := ignoredPaths(baseDir, candidates, h)
+	var found []string
+	for _, candidate := range candidates {
+		if !ignored[candidate] {
+			found = append(found, path.Dir(candidate))
+		}
 	}
 	sort.Strings(found)
 	return found, nil
@@ -149,7 +183,7 @@ func findCLIDirs(baseDir string) ([]string, error) {
 // stub from rlsbl's managed-files record, and removes the root .gitignore's
 // coverage/ line, which ignored the shard directory.
 func (p *Plan) planCLIFiles(baseDir string, h *effects.Handle) error {
-	dirs, err := findCLIDirs(baseDir)
+	dirs, err := findCLIDirs(baseDir, h)
 	if err != nil {
 		return err
 	}

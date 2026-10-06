@@ -244,3 +244,25 @@ func TestMigrateRefusesAnotherToolsLinesInTheRootIgnoreFile(t *testing.T) {
 		t.Fatalf("the remedy did not let the move through:\n%s\n%s", result.Stdout, result.Stderr)
 	}
 }
+
+// A .strictcli/ inside a directory git ignores is not the repository's, and
+// the move leaves it alone rather than refusing over it.
+func TestMigrateLeavesAStrictcliInsideAnIgnoredDirectoryAlone(t *testing.T) {
+	isolate(t)
+	dir := strictcliProject(t)
+	writeText(t, filepath.Join(dir, "scratch.local-only", "probe", ".strictcli", "schema.json"), cliSchema)
+	writeText(t, filepath.Join(dir, "local", ".strictcli", "schema.json"), cliSchema)
+	writeText(t, filepath.Join(dir, "local", ".gitignore"), ".strictcli/\n")
+	writeText(t, filepath.Join(dir, ".gitignore"), "node_modules/\ncoverage/\ndist/\n*.local-only\n")
+	testproject.Git(t, dir, "add", ".gitignore", "local/.gitignore")
+	testproject.Git(t, dir, "commit", "-q", "-m", "ignored scratch")
+	result := run(t, dir, "layout", "migrate")
+	if result.ExitCode != 0 {
+		t.Fatalf("the move refused over an ignored .strictcli/:\n%s\n%s", result.Stdout, result.Stderr)
+	}
+	for _, kept := range []string{"scratch.local-only/probe/.strictcli/schema.json", "local/.strictcli/schema.json"} {
+		if !exists(filepath.Join(dir, filepath.FromSlash(kept))) {
+			t.Errorf("%s was touched", kept)
+		}
+	}
+}
