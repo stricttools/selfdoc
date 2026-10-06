@@ -555,8 +555,8 @@
   },
   "en/internal-migrate.md": {
     "content": "fa922969a57523d1c0fe70a3d1832d544144b4e968a71be2390f11f8f966d524",
-    "description": "8ab65e302db846a701273b1ebbbf65a095f4a856556763e610792277e979fc74",
-    "source_docstring": "4786e7137d2d3a1155da5bd82c1f519ed2d5911323761d7eeee0d390afd92d11"
+    "description": "ef11b3730034aee21d3a3770d5384b515c55c6eb8f4ae1cbb9c58e34cb2c669a",
+    "source_docstring": "a22635e5ff1d18f041be650ee66ff3bf3f064a7087fdb982465c302501e260aa"
   },
   "en/internal-options.md": {
     "content": "7b5fb96e8e5a5772a3d4ae4f9823ccc1c53979850e09c9536bea517280d57294",
@@ -683,8 +683,8 @@
     "description": "368283e2ae5434b431437461e25c722f4ddc31083b2720fe7794ada67c517418"
   },
   "en/layout.md": {
-    "content": "dcff10cb45f6e19c88e2193cae72d3c00e7f661f79b5ce69c355b299c61121a3",
-    "description": "f72311e759d29709d5e0ca919d75f3df2e4432bc90a1562b78465bd88c45a85e"
+    "content": "00d5f93092dc0300927d5f6eb2f1e15bb9ddef73f2ef700b218fdf3f55c1fb11",
+    "description": "c9fc6ba371c2a3977efe6ec084ff76e89f24c4396c9152840561f472ffe72034"
   },
   "en/llms-txt.md": {
     "content": "f2b2dbaace9656c8aa7445983484cdd8cd142c49cbe289301dc23871d641d7aa",
@@ -699,16 +699,16 @@
     "description": "3edf7df236b6d70e9c4fa38475114e867b1449a5b278f66349bcb7f3c82d47e5"
   },
   "en/quality-guide.md": {
-    "content": "2d71de04e7254b9ef28850073bfe62e73aa2b3cabcef6613976057602100d234",
-    "description": "dc4d5de0f56b7095a07fb4de44f00a9bf5d9d3cb6459cdc6a326bb67de529d74"
+    "content": "476dc34828bf7b394acf32170e4bfd0347c7388d415d14b7d0c4d5185d7afdf6",
+    "description": "b01d48eba5828fc414be58d1e91795f97402c80f7d98fed409bb5c3db739a322"
   },
   "en/rlsbl-integration.md": {
     "content": "aac17289f0ed18a0d1873ff38033b666cf322c8dcd3b877d7b7f5fca3bfe35fc",
     "description": "d959fc7db7fc7ec51151719e8acb645797e00ba23119cc1c8eb17374902a8310"
   },
   "en/root-files.md": {
-    "content": "700dc2862978a14285d76bdb3c834f986f2e8f66a13da843bcfd68437bb2a129",
-    "description": "93c4ff093adb4977d5b46db81a59a6c01d2cac387b5184f231347a0a7120c3e0"
+    "content": "7e04638cf2d30bfc457c1b46a3f1644a4f26cbfc6d7a55bc2e6ad167734eb3f6",
+    "description": "5cb5900b39ccc78a828b77f7772fb1dd14969ca239b29a046c208850d4994215"
   },
   "en/search.md": {
     "content": "f18d8d150668ef3b6050e5d597f4a6710358363281689b8a238e4b1d79010bed",
