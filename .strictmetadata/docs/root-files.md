@@ -1,6 +1,6 @@
 +++
 title = "Root Files"
-description = "How selfdoc generates repository-level files like README.md and .claude/CLAUDE.md from directive-powered templates in your .strictmetadata/docs/ directory."
+description = "How selfdoc generates repository-level files like README.md and .claude/CLAUDE.md from directive-powered templates, each root_files entry naming its template and every file it generates."
 nav_group = "Guides"
 nav_order = 16
 +++

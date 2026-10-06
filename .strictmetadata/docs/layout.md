@@ -1,6 +1,6 @@
 +++
 title = "The .strictmetadata/ layout"
-description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, generated ones behind a dot, a manifest inside each naming its owner, shared directories strictspec owns, a strictcli program's schema and test-coverage directories, the ignore file each uncommitted directory carries, and the commands that inspect, check and migrate it."
+description = "Where selfdoc keeps a repository's state: one hidden directory of function-named directories, generated ones behind a dot, a manifest inside each naming its owner, shared directories strictspec owns, a strictcli program's schema and test-coverage directories, the ignore file each uncommitted directory carries, and the commands that inspect, check and migrate it, the migration also converting plain-string root_files entries."
 nav_group = "Guides"
 nav_order = 4
 +++
