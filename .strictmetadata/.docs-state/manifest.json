@@ -5017,6 +5017,11 @@
         },
         {
           "level": 3,
+          "text": "`RootFile`",
+          "anchor": "rootfile"
+        },
+        {
+          "level": 3,
           "text": "`FieldType`",
           "anchor": "fieldtype"
         },
@@ -5044,6 +5049,11 @@
           "level": 3,
           "text": "`OutputRel`",
           "anchor": "outputrel"
+        },
+        {
+          "level": 3,
+          "text": "`RootFiles`",
+          "anchor": "rootfiles"
         },
         {
           "level": 3,
@@ -6945,8 +6955,8 @@
         },
         {
           "level": 3,
-          "text": "`RootFileOutputName`",
-          "anchor": "rootfileoutputname"
+          "text": "`ConvertedRootFileOutput`",
+          "anchor": "convertedrootfileoutput"
         },
         {
           "level": 3,
@@ -12123,7 +12133,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-06T11:47:56.136073+00:00",
+  "last_gen": "2026-10-06T13:22:56.634617+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [

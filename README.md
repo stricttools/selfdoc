@@ -202,7 +202,7 @@ Dispatch order is content directives, then custom directives, then the language 
 | `glossary` | no | Auto-generate a glossary page from dfn terms. |
 | `coverage_threshold` | no | Minimum fraction of public symbols that must be documented for selfdoc check to pass (0.0-1.0). Default 1.0 requires 100% coverage. |
 | `feed_max_entries` | no | Maximum number of entries in the Atom feed, sorted by most recent. |
-| `root_files` | no | List of underscore-prefixed templates that generate repository-level files, wherever each is placed: _README.md generates README.md at the project root, and _CLAUDE.md generates .claude/CLAUDE.md. |
+| `root_files` | no | The templates that generate repository-level files, each with the files it generates, e.g. {"template": ".strictmetadata/docs/_README.md", "outputs": ["README.md", "pypi/README.md"]}. No output is declared by more than one entry. |
 | `redirects` | no | Page-level redirects expanded across all locale/version combos. |
 | `deploy` | no | Deployment configuration for publishing the generated site. |
 | `directives` | no | Custom directive mappings from directive name to source file path. |
