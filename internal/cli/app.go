@@ -257,5 +257,7 @@ func New(opts Options) *strictcli.App {
 	c.registerAssembly()
 	c.registerBlog()
 
+	c.refreshIndexOnMutatingCommands()
+
 	return c.app
 }

@@ -5,10 +5,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/stricttools/selfdoc/internal/confidential"
 	"github.com/stricttools/selfdoc/internal/deploy"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/stricttools/strictcli/go/strictcli"
+	"github.com/stricttools/strictspec/go/lifecycle"
 )
 
 func (c *cli) registerDeploy() {
@@ -72,6 +74,17 @@ func (c *cli) cmdDeploy(ctx *strictcli.Context, kwargs map[string]any) strictcli
 	// here: it is refused where the config is read.
 	provider, _ := deployConfig["provider"].(string)
 	project, _ := deployConfig["project"].(string)
+
+	// A deploy is public documentation: refused outright when no releasable
+	// may publish, and refused when any built page names a confidential term.
+	if err := c.publicOutputAllowed(handle, lifecycle.PublicDocs); err != nil {
+		return c.fail(err)
+	}
+	if err := c.confidentialNameRefusal("deploy", func(names []string) ([]confidential.Finding, error) {
+		return confidential.ScanDir(names, outputDir)
+	}); err != nil {
+		return c.fail(err)
+	}
 
 	// The project root is the deploy target: this command already operates on
 	// one directory (config, output dir), so the repository whose origin

@@ -137,6 +137,15 @@ GitHub Pages does not support custom HTTP headers via a configuration file like 
 
 HTTPS and HSTS are handled by the GitHub Pages platform itself -- no configuration is needed on your side.
 
+## Confidential names and proprietary licenses
+
+Every public output selfdoc produces -- `selfdoc deploy`, `selfdoc blog post publish`, and `selfdoc blog publish-docs` -- reads the repository's lifecycle-and-license record (`.strictmetadata/lifecycle-and-license/lifecycle-and-license.toml`) before anything leaves the machine:
+
+- When the record has licenses in effect and every one of them is `proprietary`, no releasable may publish, and the output is refused under the `proprietary-refuses-public-output` rule, naming the subject and its license period.
+- Every page and post the output would publish is scanned against the machine-local confidential-name index (`<user config directory>/strictspec/confidential-names.toml`), in every repository, a repository without a record included. A match refuses the output, naming the page, the line, the column, and the term. Matching ignores case and counts whole tokens only. Remove the term from the source, rebuild, and run the command again.
+
+Every mutating selfdoc command keeps the index current for the repository it runs in: a confidential repository (one with a `proprietary` license period in effect) has its names written under its origin remote, and a public repository's entry is removed. A confidential repository with no origin remote is refused until one is added. Read-only commands never write the index, and under `--dry-run` the writes are recorded rather than made.
+
 ## Directory-Index URLs
 
 selfdoc generates directory-index URLs for all pages by default, which produces clean URLs without file extensions and avoids trailing-slash redirect chains. For example, a page at `.strictmetadata/docs/guide.md` becomes `guide/index.html` in the output, which is served as `/guide/` by any standard web server.

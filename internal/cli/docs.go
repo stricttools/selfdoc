@@ -6,9 +6,11 @@ import (
 	"strings"
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
+	"github.com/stricttools/selfdoc/internal/confidential"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/strictcli/go/strictcli"
+	"github.com/stricttools/strictspec/go/lifecycle"
 )
 
 func (c *cli) registerPublishDocs(group *strictcli.Group) {
@@ -43,6 +45,12 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 	slug := configString(cfg, "topology", "slug")
 	if slug == "" {
 		return c.failf("Error: topology.slug not configured in selfdoc.json.")
+	}
+
+	// The published documentation is public: refused outright when no
+	// releasable may publish it.
+	if err := c.publicOutputAllowed(handle, lifecycle.PublicDocs); err != nil {
+		return c.fail(err)
 	}
 
 	version := assembly.PublishVersion(dir, cfg)
@@ -84,6 +92,14 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 	if info, err := os.Stat(outputDir); err != nil || !info.IsDir() {
 		return c.failf("Error: the build produced no output at %s; there is "+
 			"nothing to publish.", outputDir)
+	}
+
+	// Every built page is scanned for confidential names before anything is
+	// pushed.
+	if err := c.confidentialNameRefusal("documentation publish", func(names []string) ([]confidential.Finding, error) {
+		return confidential.ScanDir(names, outputDir)
+	}); err != nil {
+		return c.fail(err)
 	}
 
 	summary, err := assembly.PublishProjectDocs(assembly.PublishOptions{

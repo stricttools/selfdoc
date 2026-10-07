@@ -11,6 +11,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/blog/posts"
 	"github.com/stricttools/selfdoc/internal/blog/site"
 	"github.com/stricttools/selfdoc/internal/build"
+	"github.com/stricttools/selfdoc/internal/confidential"
 	"github.com/stricttools/selfdoc/internal/directives"
 	"github.com/stricttools/selfdoc/internal/docs"
 	"github.com/stricttools/selfdoc/internal/effects"
@@ -20,6 +21,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/revisions"
 	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/stricttools/strictcli/go/strictcli"
+	"github.com/stricttools/strictspec/go/lifecycle"
 )
 
 // assemblyDispatchGrant is the one grant every command that triggers the
@@ -372,6 +374,12 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 		return c.failf("Error: topology.slug not configured in selfdoc.json.")
 	}
 
+	// A blog post is a public output: refused outright when no releasable may
+	// publish one.
+	if err := c.publicOutputAllowed(handle, lifecycle.BlogPost); err != nil {
+		return c.fail(err)
+	}
+
 	postsDir := filepath.Join(dir, strings.TrimRight(postsDirOf(cfg), "/"))
 	discovered, err := posts.Discover(postsDir, "", handle)
 	if err != nil {
@@ -454,6 +462,14 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 			return c.fail(err)
 		}
 		files["manifests/"+slug+"-revisions.json"] = data
+	}
+
+	// Everything this publish pushes is scanned for confidential names before
+	// anything leaves the machine.
+	if err := c.confidentialNameRefusal("post publish", func(names []string) ([]confidential.Finding, error) {
+		return confidential.ScanFiles(names, files), nil
+	}); err != nil {
+		return c.fail(err)
 	}
 
 	// Record the posts this publish owns, in the same commit that carries
