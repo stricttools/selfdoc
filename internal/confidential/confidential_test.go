@@ -40,7 +40,13 @@ func parseRecord(t *testing.T, src string) *lifecycle.Record {
 	return record
 }
 
-const proprietaryWidget = "format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nreason = \"the widget is proprietary\"\n"
+// widgetName is the widget's releasable-name identity, which keys the
+// repository's entry in the confidential-name index.
+const widgetName = "\n[[identities]]\nsubject = \"widget\"\nfacet = \"releasable-name\"\nvalue = \"widget\"\nregistry = \"\"\ntag_patterns = [\"v*\"]\nfrom = 2020-01-01\nreason = \"its name\"\n"
+
+const proprietaryWidget = "format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nreason = \"the widget is proprietary\"\n" + widgetName
+
+const publicWidget = "format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"MIT\"\nfrom = 2020-01-01\nreason = \"the widget is public\"\n" + widgetName
 
 const mixedLicenses = proprietaryWidget + "\n[[licenses]]\nsubject = \"gadget\"\nlicense = \"MIT\"\nfrom = 2020-01-01\nreason = \"the gadget client is public\"\n"
 
@@ -67,13 +73,13 @@ func TestRefreshUpsertsAConfidentialRepository(t *testing.T) {
 	hygiene.Isolate(t)
 	indexPath := filepath.Join(t.TempDir(), "strictspec", "confidential-names.toml")
 	w := &recordingWriter{}
-	repo := Repository{Origin: "https://git.invalid/example/gadget-works.git", Record: parseRecord(t, proprietaryWidget)}
+	repo := Repository{Root: "/work/widget-checkout", Origin: "https://git.invalid/example/gadget-works.git", Record: parseRecord(t, proprietaryWidget)}
 
 	if err := Refresh(w, indexPath, repo, today); err != nil {
 		t.Fatalf("refresh: %v", err)
 	}
 	got := readFile(t, indexPath)
-	for _, want := range []string{`origin = "git.invalid/example/gadget-works"`, `"widget"`, `"gadget-works"`} {
+	for _, want := range []string{`subjects = ["widget"]`, `"widget"`, `"gadget-works"`, `"widget-checkout"`} {
 		if !strings.Contains(got, want) {
 			t.Errorf("the index does not hold %s:\n%s", want, got)
 		}
@@ -92,9 +98,9 @@ func TestRefreshUpsertsAConfidentialRepository(t *testing.T) {
 func TestRefreshRemovesAPublicRepositoryAndKeepsTheOthers(t *testing.T) {
 	hygiene.Isolate(t)
 	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
-	writeIndex(t, indexPath, "format_version = 1\n\n[[repositories]]\norigin = \"git.invalid/example/gadget-works\"\nnames = [\"widget\"]\n\n[[repositories]]\norigin = \"github.com/example/portal\"\nnames = [\"portal\"]\n")
+	writeIndex(t, indexPath, "format_version = 1\n\n[[repositories]]\nsubjects = [\"portal\"]\nnames = [\"portal\"]\n\n[[repositories]]\nsubjects = [\"widget\"]\nnames = [\"gadget-works\"]\n")
 	w := &recordingWriter{}
-	repo := Repository{Origin: "git@git.invalid:example/gadget-works.git", Record: parseRecord(t, "format_version = 1\n")}
+	repo := Repository{Root: "/work/gadget-works", Record: parseRecord(t, publicWidget)}
 
 	if err := Refresh(w, indexPath, repo, today); err != nil {
 		t.Fatalf("refresh: %v", err)
@@ -108,11 +114,11 @@ func TestRefreshRemovesAPublicRepositoryAndKeepsTheOthers(t *testing.T) {
 	}
 }
 
-func TestRefreshOfAPublicRepositoryWithoutAnOriginWritesNothing(t *testing.T) {
+func TestRefreshOfAPublicRepositoryWithoutAReleasableNameWritesNothing(t *testing.T) {
 	hygiene.Isolate(t)
 	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
 	w := &recordingWriter{}
-	if err := Refresh(w, indexPath, Repository{Record: parseRecord(t, "format_version = 1\n")}, today); err != nil {
+	if err := Refresh(w, indexPath, Repository{Root: "/work/site", Record: parseRecord(t, "format_version = 1\n")}, today); err != nil {
 		t.Fatalf("refresh: %v", err)
 	}
 	if len(w.writes) != 0 {
@@ -120,16 +126,38 @@ func TestRefreshOfAPublicRepositoryWithoutAnOriginWritesNothing(t *testing.T) {
 	}
 }
 
-func TestRefreshRefusesAConfidentialRepositoryWithoutAnOrigin(t *testing.T) {
+// The index keys a repository by its record's releasable-name identities, so
+// a confidential repository without an origin remote records its names.
+func TestRefreshUpsertsAConfidentialRepositoryWithoutAnOrigin(t *testing.T) {
 	hygiene.Isolate(t)
 	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
 	w := &recordingWriter{}
-	err := Refresh(w, indexPath, Repository{Record: parseRecord(t, proprietaryWidget)}, today)
-	if err == nil || !strings.Contains(err.Error(), "git remote add origin") {
-		t.Fatalf("a confidential repository with no origin was not refused naming the fix: %v", err)
+	if err := Refresh(w, indexPath, Repository{Root: "/work/gadget-works", Record: parseRecord(t, proprietaryWidget)}, today); err != nil {
+		t.Fatalf("refresh: %v", err)
+	}
+	got := readFile(t, indexPath)
+	for _, want := range []string{`subjects = ["widget"]`, `"widget"`, `"gadget-works"`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("the index does not hold %s:\n%s", want, got)
+		}
+	}
+}
+
+func TestRefreshRefusesAConfidentialRepositoryWithoutAReleasableName(t *testing.T) {
+	hygiene.Isolate(t)
+	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
+	w := &recordingWriter{}
+	unnamed := strings.TrimSuffix(proprietaryWidget, widgetName)
+	err := Refresh(w, indexPath, Repository{Root: "/work/gadget-works", Record: parseRecord(t, unnamed)}, today)
+	if err == nil || !strings.Contains(err.Error(), "rlsbl transition identity --facet releasable-name") {
+		t.Fatalf("a confidential repository with no releasable-name identity was not refused naming the fix: %v", err)
 	}
 	if len(w.writes) != 0 {
 		t.Errorf("a refused refresh wrote %v", w.writes)
+	}
+	// The refusal's fix: the identity recorded, the refresh records the names.
+	if err := Refresh(w, indexPath, Repository{Root: "/work/gadget-works", Record: parseRecord(t, proprietaryWidget)}, today); err != nil {
+		t.Fatalf("the refresh was refused after the identity was recorded: %v", err)
 	}
 }
 

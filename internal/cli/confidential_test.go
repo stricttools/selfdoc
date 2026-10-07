@@ -38,10 +38,14 @@ func writeConfidentialNames(t *testing.T, names ...string) string {
 	for i, n := range names {
 		quoted[i] = `"` + n + `"`
 	}
-	writeText(t, path, "format_version = 1\n\n[[repositories]]\norigin = \"github.com/example/portal-works\"\nnames = ["+
+	writeText(t, path, "format_version = 1\n\n[[repositories]]\nsubjects = [\"portal-works\"]\nnames = ["+
 		strings.Join(quoted, ", ")+"]\n")
 	return path
 }
+
+// widgetName is the widget's releasable-name identity, which keys the
+// repository's entry in the confidential-name index.
+const widgetName = "\n[[identities]]\nsubject = \"widget\"\nfacet = \"releasable-name\"\nvalue = \"widget\"\nregistry = \"\"\ntag_patterns = [\"v*\"]\nfrom = 2020-01-01\nreason = \"its name\"\n"
 
 // confidentialGitRepository makes dir a git repository with an origin remote
 // and a lifecycle-and-license record in which the widget has been proprietary
@@ -51,7 +55,8 @@ func confidentialGitRepository(t *testing.T, dir string) {
 	testproject.Git(t, dir, "init")
 	testproject.Git(t, dir, "remote", "add", "origin", "https://git.invalid/example/gadget-works.git")
 	writeText(t, filepath.Join(dir, ".strictmetadata", "lifecycle-and-license", "lifecycle-and-license.toml"),
-		"format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nreason = \"the widget is proprietary\"\n")
+		"format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nreason = \"the widget is proprietary\"\n"+
+			widgetName)
 }
 
 func indexExists(t *testing.T) bool {
@@ -82,7 +87,7 @@ func TestReadOnlyCommandLeavesTheIndexUnwrittenAndAMutatingOneWritesIt(t *testin
 		t.Fatalf("gen-data exited %d: %s", result.ExitCode, result.Stderr)
 	}
 	got := readText(t, confidentialIndexPath(t))
-	for _, want := range []string{`origin = "git.invalid/example/gadget-works"`, `"widget"`, `"gadget-works"`} {
+	for _, want := range []string{`subjects = ["widget"]`, `"widget"`, `"gadget-works"`} {
 		if !strings.Contains(got, want) {
 			t.Errorf("the mutating command did not record %s:\n%s", want, got)
 		}
@@ -102,24 +107,21 @@ func TestDryRunOfAMutatingCommandLeavesTheIndexUnwritten(t *testing.T) {
 	}
 }
 
-func TestConfidentialRepositoryWithoutAnOriginRefusesMutatingCommands(t *testing.T) {
+// The index keys a repository by its record's releasable-name identities, so
+// a confidential repository without an origin remote runs mutating commands
+// and records its names.
+func TestConfidentialRepositoryWithoutAnOriginRecordsItsNames(t *testing.T) {
 	isolate(t)
 	dir := postProject(t, nil)
 	confidentialGitRepository(t, dir)
 	testproject.Git(t, dir, "remote", "remove", "origin")
 
-	result := run(t, dir, "gen-data", "--no-auto-commit")
-	if result.ExitCode == 0 {
-		t.Fatal("a confidential repository with no origin ran a mutating command without recording its names")
-	}
-	if !strings.Contains(result.Stderr, "git remote add origin") {
-		t.Errorf("the refusal does not name the fix:\n%s", result.Stderr)
-	}
-
-	// The refusal's fix: add the origin remote, and the command runs.
-	testproject.Git(t, dir, "remote", "add", "origin", "https://git.invalid/example/gadget-works.git")
 	if result := run(t, dir, "gen-data", "--no-auto-commit"); result.ExitCode != 0 {
-		t.Fatalf("gen-data still refused after the origin was added: %s", result.Stderr)
+		t.Fatalf("gen-data exited %d in a confidential repository without an origin: %s", result.ExitCode, result.Stderr)
+	}
+	got := readText(t, confidentialIndexPath(t))
+	if !strings.Contains(got, `subjects = ["widget"]`) || !strings.Contains(got, `"widget"`) {
+		t.Errorf("the mutating command did not record the repository's names:\n%s", got)
 	}
 }
 
@@ -160,7 +162,7 @@ func openAPublicLicensePeriod(t *testing.T, dir string) {
 	t.Helper()
 	writeText(t, filepath.Join(dir, ".strictmetadata", "lifecycle-and-license", "lifecycle-and-license.toml"),
 		"format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nuntil = 2021-01-01\nreason = \"the widget was proprietary\"\n\n"+
-			"[[licenses]]\nsubject = \"widget\"\nlicense = \"MIT\"\nfrom = 2021-01-01\nreason = \"the widget is open source\"\n")
+			"[[licenses]]\nsubject = \"widget\"\nlicense = \"MIT\"\nfrom = 2021-01-01\nreason = \"the widget is open source\"\n"+widgetName)
 }
 
 func TestDeployOfARepositoryWithEveryLicenseProprietaryIsRefused(t *testing.T) {

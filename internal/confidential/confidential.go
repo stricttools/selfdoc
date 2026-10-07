@@ -9,8 +9,8 @@
 //   - every mutating command keeps the machine-local confidential-name index
 //     (<os.UserConfigDir()>/strictspec/confidential-names.toml) current for the
 //     repository it runs in: [Refresh] upserts a confidential repository's
-//     names and removes a public repository's entry. A read-only command never
-//     writes the index.
+//     names, keyed by its record's open releasable-name identities, and removes
+//     a public repository's entry. A read-only command never writes the index.
 //   - every page and post a public output carries -- a deploy, a published
 //     post, a documentation publish -- is scanned against every name in the
 //     index, in every repository, and a match refuses the output ([ScanDir],
@@ -27,7 +27,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -62,7 +61,8 @@ type Repository struct {
 	Root string
 	// InGit reports whether the project directory is in a git work tree.
 	InGit bool
-	// Origin is the origin remote's URL, empty when there is none.
+	// Origin is the origin remote's URL, empty when there is none; its last
+	// path segment is one of the repository's names.
 	Origin string
 	// Record is the repository's lifecycle-and-license record; an absent
 	// record is the empty, public record.
@@ -106,57 +106,28 @@ func Locate(h *effects.Handle, dir string) (Repository, error) {
 }
 
 // Refresh brings the confidential-name index at indexPath up to date for repo
-// on the date of on, writing through w: a confidential repository's entry is
-// upserted with the names it protects, and a public repository's entry is
-// removed. Only mutating commands call it.
-//
-// A confidential repository with no origin remote is refused, because the
-// index keys every entry by the origin. A public repository with no origin
-// has no entry to remove.
+// on the date of on, writing through w: a confidential repository's entry,
+// keyed by its record's open releasable-name identities, is upserted with the
+// names it protects, and a public repository's entry is removed. Only mutating
+// commands call it. No remote is needed: the origin, when there is one, only
+// adds its name to the repository's names.
 func Refresh(w lifecycle.FileWriter, indexPath string, repo Repository, on time.Time) error {
-	confidential := repo.Record.Confidential(on)
-	if repo.Origin == "" {
-		if confidential {
-			return fmt.Errorf("this repository is confidential (a releasable has a proprietary license period in effect in %s), "+
-				"so the names it protects belong in the confidential-name index at %s, which keys every entry by the "+
-				"repository's origin remote, and this repository has no origin remote. Add it (git remote add origin <url>), "+
-				"then run the command again", lifecycle.RecordFile, indexPath)
-		}
-		return nil
+	names, err := index.RepositoryNames(repo.Root, repo.Origin)
+	if err != nil {
+		return err
+	}
+	update, err := index.Plan(repo.Record, on, names...)
+	if err != nil {
+		return fmt.Errorf("recording this repository's confidential names in the index at %s: %w", indexPath, err)
 	}
 	idx, err := index.Load(indexPath)
 	if err != nil {
 		return fmt.Errorf("reading the confidential-name index: %w", err)
 	}
-	if !confidential {
-		if err := idx.Remove(w, repo.Origin); err != nil {
-			return fmt.Errorf("removing this public repository's entry from the confidential-name index at %s: %w", indexPath, err)
-		}
-		return nil
-	}
-	name, err := RepositoryName(repo.Origin)
-	if err != nil {
-		return err
-	}
-	names, err := repo.Record.ConfidentialNames(on, name)
-	if err != nil {
-		return err
-	}
-	if err := idx.Upsert(w, repo.Origin, names); err != nil {
-		return fmt.Errorf("recording this repository's confidential names in the index at %s: %w", indexPath, err)
+	if err := idx.Apply(w, update); err != nil {
+		return fmt.Errorf("bringing this repository's entry in the confidential-name index at %s in step with its record: %w", indexPath, err)
 	}
 	return nil
-}
-
-// RepositoryName is the last path segment of the normalized origin: the name
-// the confidential-name rule protects when no releasable carries a public
-// license.
-func RepositoryName(origin string) (string, error) {
-	norm, err := index.NormalizeOrigin(origin)
-	if err != nil {
-		return "", fmt.Errorf("reading the origin remote %q: %w", origin, err)
-	}
-	return path.Base(strings.TrimPrefix(norm, "file://")), nil
 }
 
 // PublicOutputAllowed refuses output when the record has releasables with a
