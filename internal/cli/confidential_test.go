@@ -154,8 +154,18 @@ func TestDeployRefusesAPageNamingAConfidentialTerm(t *testing.T) {
 	}
 }
 
+// openAPublicLicensePeriod performs the fix the proprietary-output refusal
+// names: the widget's proprietary period ends, and a public one opens.
+func openAPublicLicensePeriod(t *testing.T, dir string) {
+	t.Helper()
+	writeText(t, filepath.Join(dir, ".strictmetadata", "lifecycle-and-license", "lifecycle-and-license.toml"),
+		"format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nuntil = 2021-01-01\nreason = \"the widget was proprietary\"\n\n"+
+			"[[licenses]]\nsubject = \"widget\"\nlicense = \"MIT\"\nfrom = 2021-01-01\nreason = \"the widget is open source\"\n")
+}
+
 func TestDeployOfARepositoryWithEveryLicenseProprietaryIsRefused(t *testing.T) {
 	tools := newFakeTools(t, "wrangler")
+	tools.Reply(toolReply{Match: "", Code: 0})
 	dir := deployProject(t, map[string]any{"provider": "cloudflare-pages", "project": "docs"})
 	confidentialGitRepository(t, dir)
 
@@ -170,6 +180,15 @@ func TestDeployOfARepositoryWithEveryLicenseProprietaryIsRefused(t *testing.T) {
 	}
 	if calls := tools.Matching("wrangler"); len(calls) != 0 {
 		t.Fatalf("the refused deploy reached wrangler: %v", calls)
+	}
+
+	// The refusal's fix: open a public license period, and the deploy runs.
+	openAPublicLicensePeriod(t, dir)
+	if result := run(t, dir, "deploy", "--approve-consequential"); result.ExitCode != 0 {
+		t.Fatalf("the deploy was refused after a public license period opened: %s", result.Stderr)
+	}
+	if calls := tools.Matching("wrangler pages deploy"); len(calls) != 1 {
+		t.Errorf("the deploy reached wrangler %d time(s), want 1", len(calls))
 	}
 }
 
@@ -190,6 +209,18 @@ func TestPostPublishOfARepositoryWithEveryLicenseProprietaryIsRefused(t *testing
 	}
 	if calls := tools.Calls(); len(calls) != 0 {
 		t.Errorf("the refused publish reached the assembly: %v", calls)
+	}
+
+	// The refusal's fix: open a public license period, and the publish goes
+	// on to the assembly.
+	openAPublicLicensePeriod(t, dir)
+	writePost(t, filepath.Join(dir, ".strictmetadata", "posts"), "a.md", []string{"title = \"Launch\"", "date = 2025-01-15"}, "\nSomething is coming.\n")
+	result = run(t, dir, "blog", "post", "publish", "--approve-consequential")
+	if strings.Contains(result.Stderr, "proprietary-refuses-public-output") {
+		t.Fatalf("the publish was refused after a public license period opened:\n%s", result.Stderr)
+	}
+	if calls := tools.Calls(); len(calls) == 0 {
+		t.Errorf("the publish did not go on to the assembly after a public license period opened:\n%s", result.Stderr)
 	}
 }
 
