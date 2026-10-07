@@ -396,6 +396,26 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 		return strictcli.Exit(0)
 	}
 
+	// The posts' sources are scanned for confidential names before anything
+	// is written: a revision records a post's content in a repository file,
+	// and the build writes its pages. The built pages are scanned again
+	// below, since a page carries more than its post's source.
+	postsDirRel := strings.TrimRight(postsDirOf(cfg), "/")
+	sources := map[string][]byte{}
+	for _, post := range published {
+		rel := filepath.ToSlash(filepath.Join(postsDirRel, filepath.FromSlash(post.Path)))
+		data, err := os.ReadFile(filepath.Join(postsDir, filepath.FromSlash(post.Path)))
+		if err != nil {
+			return c.fail(err)
+		}
+		sources[rel] = data
+	}
+	if err := c.confidentialNameRefusal("post publish", func(names []string) ([]confidential.Finding, error) {
+		return confidential.ScanFiles(names, sources), nil
+	}); err != nil {
+		return c.fail(err)
+	}
+
 	// Record revisions for posts whose body content changed.
 	revisionsRel := layout.RevisionsRel
 	revisionsPath := filepath.Join(dir, revisionsRel)

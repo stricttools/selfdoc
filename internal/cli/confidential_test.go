@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/testproject"
 	"github.com/stricttools/strictspec/go/lifecycle/index"
 )
@@ -208,5 +209,43 @@ func TestPublishDocsRefusesAPageNamingAConfidentialTerm(t *testing.T) {
 	}
 	if calls := tools.Matching("POST /repos/owner/assembly/git/blobs"); len(calls) != 0 {
 		t.Errorf("the refused publish pushed %d blob(s)", len(calls))
+	}
+}
+
+func TestPostPublishRefusesAPostNamingAConfidentialTermBeforeWritingAnything(t *testing.T) {
+	tools := newFakeTools(t, "gh")
+	writeConfidentialNames(t, "portal")
+	// No git repository and no record: a repository without a record is
+	// public, and its posts are scanned like any other's.
+	dir := postProject(t, map[string]any{
+		"assembly": map[string]any{"repo": "owner/assembly"},
+		"topology": map[string]any{"slug": "widget"},
+	})
+	postsDir := filepath.Join(dir, ".strictmetadata", "posts")
+	writePost(t, postsDir, "a.md", []string{"title = \"Launch\"", "date = 2025-01-15"}, "\nThe Portal is coming.\n")
+
+	result := run(t, dir, "blog", "post", "publish", "--approve-consequential")
+	if result.ExitCode == 0 {
+		t.Fatal("a post publish of a post naming a confidential term was accepted")
+	}
+	if !strings.Contains(result.Stderr, "post publish") || !strings.Contains(result.Stderr, "a.md, line 7, column 5: portal") {
+		t.Errorf("the refusal does not name the post, line, column, and term:\n%s", result.Stderr)
+	}
+	if _, err := os.Stat(filepath.Join(dir, filepath.FromSlash(layout.RevisionsRel))); !os.IsNotExist(err) {
+		t.Errorf("the refused publish wrote the post's revision into %s (stat: %v)", layout.RevisionsRel, err)
+	}
+	if calls := tools.Calls(); len(calls) != 0 {
+		t.Errorf("the refused publish reached the assembly: %v", calls)
+	}
+
+	// The refusal's fix: remove the term, and the publish goes on to the
+	// assembly.
+	writePost(t, postsDir, "a.md", []string{"title = \"Launch\"", "date = 2025-01-15"}, "\nSomething is coming.\n")
+	result = run(t, dir, "blog", "post", "publish", "--approve-consequential")
+	if strings.Contains(result.Stderr, "confidential-name index") {
+		t.Fatalf("the publish was refused after the term was removed:\n%s", result.Stderr)
+	}
+	if calls := tools.Calls(); len(calls) == 0 {
+		t.Errorf("the publish did not go on to the assembly after the term was removed:\n%s", result.Stderr)
 	}
 }
