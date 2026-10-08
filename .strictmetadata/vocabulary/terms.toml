@@ -28,6 +28,10 @@ word = "Plex"
 meaning = "IBM Plex, the typeface family the tinymoon theme vendors for prose and data."
 
 [[accepted]]
+word = "releasables"
+meaning = "The units rlsbl versions and releases together, one changelog and tag scheme each; the plural of releasable."
+
+[[accepted]]
 word = "rlsbl"
 meaning = "The release orchestrator that runs selfdoc gen and selfdoc check during a release."
 
