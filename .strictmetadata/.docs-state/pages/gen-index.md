@@ -1,6 +1,6 @@
 +++
 title = "API Reference"
-description = "API reference index for selfdoc covering 76 modules"
+description = "API reference index for release-checkout covering 76 modules"
 generated = true
 seeded = true
 nav_group = "API Reference"
