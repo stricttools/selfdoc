@@ -93,7 +93,7 @@
     "description": "a88fdbfd865bb583c35a594a76b0fd7c9f861cd6fd9c0ec5c29a23c60d80da52"
   },
   "en/check-guide.md": {
-    "content": "21bb56d8785608dbcd2e5d6e86daa861b114ffb3c8d69a942b62b51ce25de6cf",
+    "content": "98dd7d0383eef61c2c6a025cb2cb43e67b2884be0ea068d394b381b9bc96dfbc",
     "description": "0e873ecfdd8a4e169a703b930d42b3b492b21f135200543828280722504a1387"
   },
   "en/cli-assembly.md": {
@@ -223,7 +223,7 @@
     "description": "a06732d81dedac36b59c719e5e6ddb4f6e39b7250cb46cd8575ac4368d270663"
   },
   "en/directives-guide.md": {
-    "content": "1b466bb0e76aa93ea7c4f52f47deef345b586af5978ebc5e5b29634b3065d81f",
+    "content": "b29b30817420a19a3ad7c26ffa05c1391fe692423fe0f819f60c124bf34057d9",
     "description": "a97129def129fe3eac3002e6998e2286ea8312c1a0f1016e68fb48f4d7a12078"
   },
   "en/directives.md": {
@@ -252,7 +252,7 @@
     "seed_hash": "e2713e02ae072b37fef597e77db6d299b13c43be7cdd04d50984002db1b544cc"
   },
   "en/getting-started.md": {
-    "content": "34349ce8c6af8bf07eaf700322a0ae77e9cd53078af6b866fc147cf544092919",
+    "content": "568a41d3372f488c9026747aec22f54b79958de6b9c34f2a92fe59d8efc24a1d",
     "description": "997a99cc3c95957051c66a6970d4a4e3ec0e79b0819fe0fe9041a71af3a29987"
   },
   "en/glossary-guide.md": {
@@ -637,7 +637,7 @@
   "en/internal-staleness.md": {
     "content": "1fb8652ef7e6bca9cc2877554f943609a6e172964a28a8f6db26719c2ce4dec4",
     "description": "f99914066b97e22368d6ce224a6f1cad017285380b9231eb042b58d78f22ca22",
-    "source_docstring": "0d687374b3a63a62ddc2537a69ab97fcfdf290c63be8bd252b7228b90a9331ee"
+    "source_docstring": "85aab2aae68f759b5aef8e02bc5f5d156036abbe031714bc286105271fd02bc3"
   },
   "en/internal-strictclisupport.md": {
     "content": "9bf53022a166d680be7ee902534f31b28675bc8af314d14b44a1489fc5753ac4",
