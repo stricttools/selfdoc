@@ -26,3 +26,4 @@
 {"format_version":2,"id":"18dc907cea0186d2869264631dba443fbdd299306ac39dc6","commits":["152e516c6e3447a1e2f44d3e260b6f9fa1bf2ccb"],"user_facing":true,"description":"The built-in English word list and vocabulary baseline no longer accept a word that is a protected name in the confidential-name index, so selfdoc's own published files carry no confidential name; a project whose pages use that word accepts it in its own `.strictmetadata/vocabulary/terms.toml`.","type":"fix"}
 {"format_version":2,"id":"18dc907cf40a53d49046e78228114973bd226b1ff9e343b5","commits":["8bf5a47da42aed70f866310dae9a616540a4380f"],"user_facing":false}
 {"format_version":2,"id":"18dc90d25e322785d7182efaf2ee417f9ae7e2ff56bb70a4","commits":["1b770e1637414ee0815855a40bb84195b9835d41"],"user_facing":false}
+{"format_version":2,"id":"18dc90d266763b0834d08b4cd8ab47e5bc180d03144a67d2","commits":["164c8e4b0b30930576eaa15df35844d692d25c44"],"user_facing":false}
