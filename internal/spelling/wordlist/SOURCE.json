@@ -57,8 +57,11 @@
   "copyright_source": "https://raw.githubusercontent.com/en-wl/wordlist/rel-2026.02.25/Copyright",
   "copyright_tag": "rel-2026.02.25",
   "retrieved": "2026-08-12",
-  "word_count": 172497,
-  "words_sha256": "0e0f11839255b1fdbc72330fe9731abd05aa45ea36946b8cc9d3fcce55451cb8",
+  "word_count": 172496,
+  "words_sha256": "ff532ba2181666a0766312586cae4c9502787628aa31a90b85244341f589e9a9",
+  "omitted_word_digests": {
+    "ca22f6284d521ce0027529e8e04b32e5db2c837b9910dc8147cf7ae4fde6bf6c": "a protected name in the confidential-name index; a project whose pages need it accepts it in its own vocabulary"
+  },
   "generator_header": [
     "Custom wordlist generated from https://app.aspell.net/create using",
     "the English Speller Database (ESDB) with parameters:",

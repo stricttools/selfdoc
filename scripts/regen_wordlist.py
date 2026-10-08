@@ -17,8 +17,9 @@ What it writes into ``internal/spelling/wordlist/``:
   displayed, so shipping it verbatim is what makes redistribution legal.
 - ``SOURCE.json`` -- the retrieval record: generator URL, every parameter,
   the ESDB and app git revisions the generator reported, the pinned release
-  tag the copyright came from, the SHA-256 of ``words.txt`` and its word
-  count.
+  tag the copyright came from, the SHA-256 of ``words.txt``, its word count,
+  and the upstream words left out (``OMITTED_WORD_DIGESTS``) with their
+  reasons.
 
 Requires network access.  Read-only with respect to everything except the
 three files it writes.
@@ -78,6 +79,20 @@ COPYRIGHT_URL = (
     f"https://raw.githubusercontent.com/en-wl/wordlist/{ESDB_REPO_TAG}/Copyright"
 )
 
+# Words the snapshot leaves out of upstream's list, each named by the SHA-256
+# of its UTF-8 spelling (so neither this script nor SOURCE.json carries a
+# protected name) and given its reason.  The digest and count in SOURCE.json
+# describe the list after the omission, and SOURCE.json records the
+# omissions.
+OMITTED_WORD_DIGESTS: dict[str, str] = {
+    "ca22f6284d521ce0027529e8e04b32e5db2c837b9910dc8147cf7ae4fde6bf6c": "a protected name in the confidential-name index; a project whose pages need it accepts it in its own vocabulary",
+}
+
+
+def _word_digest(word: str) -> str:
+    """The SHA-256 an omitted word is named by."""
+    return hashlib.sha256(word.encode("utf-8")).hexdigest()
+
 # The generator separates its header from the words with a lone "---".
 _HEADER_SEPARATOR = "---"
 
@@ -136,6 +151,13 @@ def main(argv: list[str]) -> int:
 
     payload = _fetch(_generator_url())
     header, words = _split_payload(payload)
+    missing = sorted(set(OMITTED_WORD_DIGESTS) - {_word_digest(w) for w in words})
+    if missing:
+        raise SystemExit(
+            f"upstream no longer lists the words digesting to {', '.join(missing)}; "
+            "remove their entries from OMITTED_WORD_DIGESTS"
+        )
+    words = [word for word in words if _word_digest(word) not in OMITTED_WORD_DIGESTS]
     copyright_text = _fetch(COPYRIGHT_URL)
 
     words_blob = "\n".join(words) + "\n"
@@ -153,6 +175,7 @@ def main(argv: list[str]) -> int:
         "retrieved": date.today().isoformat(),
         "word_count": len(words),
         "words_sha256": digest,
+        "omitted_word_digests": OMITTED_WORD_DIGESTS,
         "generator_header": header,
         "regenerate_with": "python scripts/regen_wordlist.py",
     }

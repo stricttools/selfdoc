@@ -4108,10 +4108,6 @@ word = "WS"
 meaning = "WebSocket."
 
 [[accepted]]
-word = "WWW"
-meaning = "The World Wide Web."
-
-[[accepted]]
 word = "Xcode"
 meaning = "Apple's integrated development environment."
 
