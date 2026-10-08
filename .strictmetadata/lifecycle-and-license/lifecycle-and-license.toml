@@ -42,3 +42,12 @@ registry = ""
 tag_patterns = ["v*"]
 from = 2026-05-05
 reason = "recorded when rlsbl's records moved to the .strictmetadata layout"
+[[identities]]
+subject = "selfblog"
+facet = "releasable-name"
+value = "selfblog"
+registry = ""
+tag_patterns = ["selfblog@v*"]
+from = 2026-07-06
+until = 2026-09-13
+reason = "selfblog was a releasable of this repository from the three-package split until its rewrite in Go into the root module; its selfblog@v* tags are its releases"
