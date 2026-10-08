@@ -51,3 +51,12 @@ tag_patterns = ["selfblog@v*"]
 from = 2026-07-06
 until = 2026-09-13
 reason = "selfblog was a releasable of this repository from the three-package split until its rewrite in Go into the root module; its selfblog@v* tags are its releases"
+[[identities]]
+subject = "selfdoc-core"
+facet = "releasable-name"
+value = "selfdoc-core"
+registry = ""
+tag_patterns = ["selfdoc-core@v*"]
+from = 2026-07-06
+until = 2026-09-13
+reason = "selfdoc-core was a releasable of this repository from the three-package split until its rewrite in Go into the root module; its selfdoc-core@v* tags are its releases"
