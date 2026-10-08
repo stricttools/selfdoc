@@ -1,6 +1,6 @@
 +++
 title = "internal/gitcommit"
-description = "Committing the files a selfdoc command generated, preferring rlsbl, then safegit, then plain git, guarded so a hook that runs selfdoc cannot start a loop."
+description = "Committing the files a selfdoc command generated, preferring rlsbl, then safegit, then plain git; a commit that fails is an error, and a hook running selfdoc cannot start a loop."
 generated = true
 nav_group = "API Reference"
 nav_order = 43

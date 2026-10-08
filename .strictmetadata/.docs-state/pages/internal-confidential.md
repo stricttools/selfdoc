@@ -1,8 +1,7 @@
 +++
 title = "internal/confidential"
-description = "Package confidential is selfdoc's half of the confidential-name rules of the lifecycle-and-license record (.strictmetadata/lifecycle-and-license/lifecycle-and-license.toml)."
+description = "Applying the confidential-name rules to selfdoc's outputs: refusing a proprietary repository's public output, keeping the confidential-name index current, and scanning pages for names."
 generated = true
-seeded = true
 nav_group = "API Reference"
 nav_order = 21
 +++

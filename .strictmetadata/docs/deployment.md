@@ -1,6 +1,6 @@
 +++
 title = "Deployment"
-description = "Deploy your selfdoc site to Cloudflare Pages or GitHub Pages. Covers configuration, credentials, security headers, and CI integration."
+description = "Deploy your selfdoc site to Cloudflare Pages or GitHub Pages. Covers configuration, credentials, security headers, CI integration, and the confidential-name refusal."
 nav_group = "Guides"
 nav_order = 50
 +++
