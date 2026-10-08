@@ -370,6 +370,6 @@ func (b *unifiedBuild) run() error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(os.Stdout, "Pre-compressed %d files (gzip + brotli)\n", compressCount)
+	fmt.Fprintf(b.handle.Out(), "Pre-compressed %d files (gzip + brotli)\n", compressCount)
 	return nil
 }

@@ -291,7 +291,7 @@ The marker is opt-in per block: unmarked blocks are never executed and keep the 
 
 ### Text (default)
 
-Human-readable output with colored status indicators, file paths, line numbers, and lint names. This is the default format designed for local development where you read the output directly in a terminal and fix issues one by one:
+Plain-text output with status indicators, file paths, line numbers, and lint names, one finding per line, with no ANSI escapes. This is the default format:
 
 ```bash
 selfdoc check

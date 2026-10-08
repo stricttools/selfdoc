@@ -30,7 +30,7 @@ func postsDirOf(cfg map[string]any) string {
 
 func (c *cli) registerGen() {
 	c.app.Command("gen", "Auto-generate documentation pages from project structure",
-		c.cmdGen,
+		c.handler((*cli).cmdGen),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.BoolFlag("auto-commit", "Automatically commit generated documentation pages and root files to git. Omitted, it commits; pass --no-auto-commit to leave them uncommitted", strictcli.Optional()),

@@ -38,7 +38,7 @@ func (c *cli) registerPost(parent *strictcli.Group) {
 
 	group.Command("new",
 		"Scaffold a new blog post markdown file with a date-prefixed filename and frontmatter template containing title, date, slug, tags, draft status, and project metadata. Creates the file in the configured posts directory and exits with an error if the file already exists.",
-		c.cmdPostNew,
+		c.handler((*cli).cmdPostNew),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.StringFlag("title", "Title for the new blog post, used in frontmatter and filename generation", strictcli.Required()),
@@ -47,13 +47,13 @@ func (c *cli) registerPost(parent *strictcli.Group) {
 
 	group.Command("list",
 		"List all discovered blog posts with date, title, slug, and draft status. Scans the configured posts directory for markdown files with frontmatter, parses their metadata, and prints a formatted summary showing each post's publication date, title, slug identifier, and whether it is marked as a draft.",
-		c.cmdPostList,
+		c.handler((*cli).cmdPostList),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 	)
 
 	group.Command("generate",
 		"Generate a blog post markdown file from structured release metadata. Takes version, bump type, description, changelog, and registry URLs as inputs, produces a frontmatter-bearing post with title, date, tags, and body content, and updates the project manifest with the new post entry.",
-		c.cmdPostGenerate,
+		c.handler((*cli).cmdPostGenerate),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.BoolFlag("from-release", "Generate the post from structured release metadata rather than freeform content. Structured metadata is the only shape this command generates, so --no-from-release is refused; state --from-release to say what the post is built from", strictcli.Required()),
@@ -73,7 +73,7 @@ func (c *cli) registerPost(parent *strictcli.Group) {
 
 	group.Command("publish",
 		"Publish non-draft blog posts to the documentation assembly. Builds posts locally, pushes built HTML and manifest to the assembly repo via the Git Data API, then dispatches a shared-only workflow to regenerate cross-project elements.",
-		c.cmdPostPublish,
+		c.handler((*cli).cmdPostPublish),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential: this is the moment locally-authored, previously
 		// private post content becomes publicly readable. Unlike `assembly
@@ -109,7 +109,7 @@ func (c *cli) cmdPostNew(ctx *strictcli.Context, kwargs map[string]any) strictcl
 	fullPath := filepath.Join(c.dir(), relPath)
 
 	if info, err := os.Stat(fullPath); err == nil && !info.IsDir() {
-		return c.failf("Error: Post file already exists: %s", relPath)
+		return c.failf("Post file already exists: %s", relPath)
 	}
 
 	if err := layout.EnsureDir(handle, c.dir(), postsDirRel); err != nil {
@@ -184,12 +184,12 @@ func (c *cli) cmdPostGenerate(ctx *strictcli.Context, kwargs map[string]any) str
 	// command still owns which choice it can honour, and freeform generation
 	// was never implemented.
 	if !fromRelease {
-		return c.failf("Error: --no-from-release names a mode this command does not " +
+		return c.failf("--no-from-release names a mode this command does not " +
 			"have; pass --from-release.")
 	}
 
 	if strings.TrimSpace(version) == "" {
-		return c.failf("Error: --version must be a non-empty version.")
+		return c.failf("--version must be a non-empty version.")
 	}
 
 	cfg, outcome, ok := c.requireConfig()
@@ -313,7 +313,7 @@ func (c *cli) cmdPostGenerate(ctx *strictcli.Context, kwargs map[string]any) str
 		}
 		document, ok := decoded.(jsonObject)
 		if !ok {
-			return c.failf("Error: %s is not a JSON object.", manifestRel)
+			return c.failf("%s is not a JSON object.", manifestRel)
 		}
 		postsList := []any{}
 		if value, ok := document.get("posts"); ok {
@@ -367,11 +367,11 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 
 	repo := configString(cfg, "assembly", "repo")
 	if repo == "" {
-		return c.failf("Error: assembly.repo not configured in selfdoc.json.")
+		return c.failf("assembly.repo not configured in selfdoc.json.")
 	}
 	slug := configString(cfg, "topology", "slug")
 	if slug == "" {
-		return c.failf("Error: topology.slug not configured in selfdoc.json.")
+		return c.failf("topology.slug not configured in selfdoc.json.")
 	}
 
 	// A blog post is a public output: refused outright when no releasable may
@@ -529,9 +529,9 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 		// The same protection the posts-scope integrate has: a build that
 		// emitted no post pages is not an instruction to unpublish the posts
 		// already on the site, so the record is left exactly as it is.
-		c.eprintf("posts publish for %q: the build produced no post pages, "+
+		c.warnf("posts publish for %q: the build produced no post pages, "+
 			"so nothing was claimed and nothing was removed. Posts already "+
-			"published stay.\n", slug)
+			"published stay.", slug)
 	}
 
 	if _, err := assembly.PushFilesToRepo(handle, repo, files, "posts: "+slug,
@@ -576,7 +576,7 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 // assembly's cross-project elements, which three commands do identically.
 func (c *cli) dispatchSharedRebuild(handle *effects.Handle, repo string) (strictcli.Outcome, bool) {
 	if err := assembly.DispatchSharedRebuild(handle, repo); err != nil {
-		return c.failf("Error: %v", err), false
+		return c.failf("%v", err), false
 	}
 	return strictcli.Exit(0), true
 }

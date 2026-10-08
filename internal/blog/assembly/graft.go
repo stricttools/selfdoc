@@ -30,17 +30,16 @@ type GraftOptions struct {
 	// project changes about a graft.
 	Home bool
 	// Stderr is where the one advisory a graft prints goes -- the posts-scope
-	// build that produced no posts. Nil writes to the process's standard
-	// error.
+	// build that produced no posts. Nil sends it to the handle's warnings.
 	Stderr io.Writer
 }
 
 // stderr is the writer the graft's advisory goes to.
-func (o GraftOptions) stderr() io.Writer {
+func (o GraftOptions) stderr(h *effects.Handle) io.Writer {
 	if o.Stderr != nil {
 		return o.Stderr
 	}
-	return os.Stderr
+	return h.Warnings()
 }
 
 // ApplyProjectFiles grafts a built project into the assembly tree and returns
@@ -114,7 +113,7 @@ func ApplyProjectFiles(opts GraftOptions, h *effects.Handle) ([]string, error) {
 		// the ones already on the site: the pruning publisher would remove
 		// every path it claimed, and a posts build emits nothing when the
 		// source's posts directory is empty or absent for any reason at all.
-		fmt.Fprintf(opts.stderr(),
+		fmt.Fprintf(opts.stderr(h),
 			"posts scope for %s: the build produced no post pages, so there "+
 				"is nothing to publish. Nothing was written and nothing was "+
 				"removed -- posts already published stay. To unpublish a "+

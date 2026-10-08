@@ -152,7 +152,7 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 	// they write only each checkout's ignored build output.
 	buildHandle := h
 	if h.Previewing() {
-		buildHandle = effects.Unbound()
+		buildHandle = h.Live()
 	}
 	summary := &RepublishSummary{Repo: repo, Pin: pin, Published: !h.Previewing()}
 	for _, checkout := range checkouts {

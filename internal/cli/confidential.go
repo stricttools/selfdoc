@@ -44,7 +44,9 @@ func (c *cli) wrapIndexRefresh(cmd *strictcli.Command) {
 	next := cmd.Handler
 	cmd.Handler = func(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
 		if err := c.refreshIndex(effects.FromContext(ctx)); err != nil {
-			return c.fail(err)
+			d := c.bind(ctx)
+			defer d.flush()
+			return d.fail(err)
 		}
 		return next(ctx, kwargs)
 	}

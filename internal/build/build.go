@@ -77,7 +77,7 @@ type Options struct {
 func Build(opts Options, h *effects.Handle) (map[string]bool, error) {
 	stdout := opts.Stdout
 	if stdout == nil {
-		stdout = os.Stdout
+		stdout = h.Out()
 	}
 
 	cfg := opts.Config

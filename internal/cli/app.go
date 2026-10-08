@@ -16,10 +16,11 @@ package cli
 import (
 	"fmt"
 	"io"
-	"os"
+	"strings"
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
 	"github.com/stricttools/selfdoc/internal/config"
+	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/strictcli/go/strictcli"
 
 	// The language packages register their extractors from init, which is
@@ -51,9 +52,11 @@ type Options struct {
 	// Dir is the project directory every command operates on. Empty means
 	// the process's own working directory, spelled ".".
 	Dir string
-	// Stdout and Stderr are where a command's human output goes. Nil means
-	// the process's own streams, read at write time so strictcli's Test can
-	// capture them.
+	// Stdout and Stderr collect a command's human output, for the editor's
+	// publish path, which calls the command through strictcli's App.Call (a
+	// call whose context discards what it writes). Nil, as the binary and
+	// the suite leave them, sends the output through the dispatch's strictcli
+	// context: the answer through ctx.Out, a refusal through ctx.Error.
 	Stdout io.Writer
 	Stderr io.Writer
 	// Registry is how a toolchain pin is checked for publication. The zero
@@ -70,10 +73,73 @@ type Options struct {
 }
 
 // cli is the application under construction: its options, and the strictcli
-// app the handlers are registered on.
+// app the handlers are registered on. Each dispatch runs on a copy of it made
+// by bind, which carries that dispatch's output writers.
 type cli struct {
 	opts Options
 	app  *strictcli.App
+
+	// stdout, stderr, and warnings are the bound dispatch's writers; nil on
+	// the copy commands are registered from.
+	stdout   io.Writer
+	stderr   io.Writer
+	warnings io.Writer
+	flushers []*effects.LineWriter
+}
+
+// handler adapts a command's handler to run on a copy of c bound to the
+// dispatch's context, so everything the command prints goes through it.
+func (c *cli) handler(
+	h func(*cli, *strictcli.Context, map[string]any) strictcli.Outcome,
+) func(*strictcli.Context, map[string]any) strictcli.Outcome {
+	return func(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
+		d := c.bind(ctx)
+		defer d.flush()
+		return h(d, ctx, kwargs)
+	}
+}
+
+// bind returns a copy of c whose output goes to ctx: the answer through
+// ctx.Out, refusals through ctx.Error, and warnings through ctx.Warn, each a
+// line at a time. Options.Stdout and Options.Stderr, when set, collect the
+// output instead.
+func (c *cli) bind(ctx *strictcli.Context) *cli {
+	d := *c
+	d.flushers = nil
+	if c.opts.Stdout != nil {
+		d.stdout = c.opts.Stdout
+	} else {
+		d.stdout = d.lines(ctx.Out)
+	}
+	if c.opts.Stderr != nil {
+		d.stderr, d.warnings = c.opts.Stderr, c.opts.Stderr
+	} else {
+		// A blank line carries nothing as an error or a warning.
+		d.stderr = d.lines(nonBlank(ctx.Error))
+		d.warnings = d.lines(nonBlank(ctx.Warn))
+	}
+	return &d
+}
+
+func (c *cli) lines(emit func(string)) io.Writer {
+	w := effects.NewLineWriter(emit)
+	c.flushers = append(c.flushers, w)
+	return w
+}
+
+func nonBlank(emit func(string)) func(string) {
+	return func(line string) {
+		if strings.TrimSpace(line) != "" {
+			emit(line)
+		}
+	}
+}
+
+// flush emits the partial lines the dispatch's writers still hold.
+func (c *cli) flush() {
+	for _, w := range c.flushers {
+		w.Flush()
+	}
 }
 
 func (c *cli) dir() string {
@@ -83,36 +149,28 @@ func (c *cli) dir() string {
 	return c.opts.Dir
 }
 
-// out and errOut resolve the destination at WRITE time rather than at
-// construction. strictcli's Test swaps os.Stdout for a pipe around one
-// dispatch, and a writer captured at construction would miss the swap.
+// out is the dispatch's answer writer, errOut its refusal writer, and
+// warnOut its warning writer. Each panics outside a dispatch, where there is
+// no one to write to.
 func (c *cli) out() io.Writer {
-	if c.opts.Stdout != nil {
-		return c.opts.Stdout
+	if c.stdout == nil {
+		panic("selfdoc: command output written outside a dispatch")
 	}
-	return os.Stdout
+	return c.stdout
 }
 
 func (c *cli) errOut() io.Writer {
-	if c.opts.Stderr != nil {
-		return c.opts.Stderr
+	if c.stderr == nil {
+		panic("selfdoc: command output written outside a dispatch")
 	}
-	return os.Stderr
+	return c.stderr
 }
 
-// color reports whether the human report may carry ANSI escapes: the
-// destination is the process's own stdout and it is a terminal. The Python
-// decided this once at import time from sys.stdout, which made the report
-// untestable and wrong for any writer that was not that stream.
-func (c *cli) color() bool {
-	if c.opts.Stdout != nil {
-		return false
+func (c *cli) warnOut() io.Writer {
+	if c.warnings == nil {
+		panic("selfdoc: command output written outside a dispatch")
 	}
-	info, err := os.Stdout.Stat()
-	if err != nil {
-		return false
-	}
-	return info.Mode()&os.ModeCharDevice != 0
+	return c.warnings
 }
 
 func (c *cli) printf(format string, args ...any) {
@@ -127,10 +185,14 @@ func (c *cli) eprintf(format string, args ...any) {
 	fmt.Fprintf(c.errOut(), format, args...)
 }
 
+func (c *cli) warnf(format string, args ...any) {
+	fmt.Fprintf(c.warnOut(), format+"\n", args...)
+}
+
 // fail prints err as a refusal and exits 1, which is what the Python's _fail
 // did at every user-error site in both CLIs.
 func (c *cli) fail(err error) strictcli.Outcome {
-	c.eprintf("Error: %s\n", err)
+	c.eprintf("%s\n", err)
 	return strictcli.Exit(1)
 }
 
@@ -159,7 +221,7 @@ func (c *cli) requireConfig() (config.Config, strictcli.Outcome, bool) {
 		return nil, outcome, false
 	}
 	if cfg == nil {
-		return nil, c.failf("Error: No selfdoc.json found. Run 'selfdoc init' first."), false
+		return nil, c.failf("No selfdoc.json found. Run 'selfdoc init' first."), false
 	}
 	return cfg, strictcli.Exit(0), true
 }

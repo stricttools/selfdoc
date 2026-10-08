@@ -604,7 +604,7 @@ Used in a template:
 A custom directive that fails stops the build. A script that cannot be found or imported, one with no callable `resolve`, one that raises, one that exits non-zero, and a machine with no `python3` are each a hard error naming the directive and the script, with the script's own message on standard error carried through:
 
 ```
-Error: custom directive 'my-stats' failed: [Errno 2] No such file or directory: 'stats.json'
+error: custom directive 'my-stats' failed: [Errno 2] No such file or directory: 'stats.json'
 ```
 
 Nothing is substituted inline, because a published page reading "custom directive failed" where its content belongs is as easy to miss as any other paragraph.

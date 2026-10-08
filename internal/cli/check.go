@@ -23,7 +23,7 @@ func (c *cli) registerCheck() {
 			"A read-only verdict: it writes nothing and commits nothing. The staleness and drift baseline it compares against, "+
 			layout.HashesRel+", is written and committed by the commands that generate content, selfdoc gen among them, and by selfdoc baseline accept, "+
 			"and an archived version it checks is read from a temporary extraction, not from selfdoc's version cache",
-		c.cmdCheck,
+		c.handler((*cli).cmdCheck),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.PayloadSchema(payloadschemas.Check()),
 		strictcli.WithFlags(
@@ -79,7 +79,7 @@ func (c *cli) cmdCheck(ctx *strictcli.Context, kwargs map[string]any) strictcli.
 	ctx.Payload(check.SerializeCheckResult(result, exitCode))
 
 	if !ctx.JSON() {
-		check.PrintResults(c.out(), result, c.color())
+		check.PrintResults(c.out(), result)
 
 		if belowThreshold {
 			coverage := result.Coverage

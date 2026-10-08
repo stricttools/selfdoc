@@ -137,7 +137,7 @@ func CloudflarePages(outputDir, projectName, version string, h *effects.Handle) 
 		)}
 	}
 
-	fmt.Printf("Deployed docs v%s to Cloudflare Pages project '%s'\n", version, projectName)
+	fmt.Fprintf(h.Out(), "Deployed docs v%s to Cloudflare Pages project '%s'\n", version, projectName)
 	return nil
 }
 
@@ -301,7 +301,7 @@ func GitHubPages(outputDir, version, target string, h *effects.Handle) error {
 		return nil
 	}
 
-	fmt.Printf("Deployed docs v%s to GitHub Pages (gh-pages branch)\n", version)
+	fmt.Fprintf(h.Out(), "Deployed docs v%s to GitHub Pages (gh-pages branch)\n", version)
 	return nil
 }
 

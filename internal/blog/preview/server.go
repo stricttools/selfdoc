@@ -38,7 +38,7 @@ const ServerVersion = "selfdoc-preview"
 type PreviewHandler struct {
 	// Root is the served tree, absolute.
 	Root string
-	// Log is where the one line per request goes. nil means os.Stderr.
+	// Log is where the one line per request goes. nil discards it.
 	Log io.Writer
 }
 
@@ -72,7 +72,7 @@ func (h *PreviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *PreviewHandler) logRequest(r *http.Request, status int) {
 	stream := h.Log
 	if stream == nil {
-		stream = os.Stderr
+		stream = io.Discard
 	}
 	fmt.Fprintf(stream, "%s %s \"%s %s %s\" %d -\n",
 		r.Method, r.RequestURI, r.Method, r.RequestURI, r.Proto, status)
@@ -206,12 +206,14 @@ func (s *Server) Stop() error {
 // socket, and reports the exit code the command exits with.
 //
 // onReady, when given, is called with the bound port once the socket is
-// listening and before anything is served.
-func ServePreview(root string, port int, onReady func(port int)) (int, error) {
+// listening and before anything is served. log is where the one line per
+// request goes.
+func ServePreview(root string, port int, log io.Writer, onReady func(port int)) (int, error) {
 	server, err := MakePreviewServer(root, port)
 	if err != nil {
 		return 1, err
 	}
+	server.Handler().Log = log
 	if onReady != nil {
 		onReady(server.Port())
 	}

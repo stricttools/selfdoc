@@ -14,7 +14,7 @@ func (c *cli) registerEditor(parent *strictcli.Group) {
 
 	group.Command("list-repos",
 		"List every repository the editor registry declares, with its kind and where it points. Reads the hand-written registry TOML, validates every entry in full, and prints one line per entry -- a local entry's working tree, or a remote entry's repository, ref and whether it declares that rendering runs against a checkout.",
-		c.cmdEditorListRepos,
+		c.handler((*cli).cmdEditorListRepos),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.WithFlags(
 			strictcli.StringFlag("registry", "Path to the editor registry TOML. Omitted, the machine-local registry at ~/Projects/ark/selfdoc-registry.toml is read.", strictcli.Optional()),
@@ -23,7 +23,7 @@ func (c *cli) registerEditor(parent *strictcli.Group) {
 
 	group.Command("serve",
 		"Run the local authoring app: a browser UI over the registry's repositories, with the tinymoon editor component on the left and a live preview on the right. The preview is the publish renderer over the unsaved buffer, so what you approve is byte-for-byte what publishing produces, and rendering a preview writes nothing. Saving writes the buffer into the repository's working tree. Binds 127.0.0.1 only.",
-		c.cmdEditorServe,
+		c.handler((*cli).cmdEditorServe),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Not consequential: nothing here reaches the world, and the only
 		// writes are the ones the author asks for by pressing save. A

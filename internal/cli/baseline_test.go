@@ -140,7 +140,7 @@ func TestBaselineAcceptRefusesAnUnknownPage(t *testing.T) {
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code is %d, want 1\n%s", result.ExitCode, result.Stdout)
 	}
-	if !strings.Contains(result.Stderr, "Error:") {
+	if !strings.Contains(result.Stderr, "error: ") {
 		t.Errorf("no refusal printed: %s", result.Stderr)
 	}
 }

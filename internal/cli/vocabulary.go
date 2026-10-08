@@ -22,7 +22,7 @@ func (c *cli) registerVocabulary() {
 
 	group.Command("accept",
 		"Accept a word into "+layout.TermsRel+", in sorted position, with its meaning. Matching is case-insensitive, so one entry accepts every casing. Refuses a word already accepted (as a word or an alias, in the project or selfdoc's built-in baseline), a word a rejected term covers, and a word pending review, which 'selfdoc vocabulary approve' resolves instead",
-		c.cmdVocabularyAccept,
+		c.handler((*cli).cmdVocabularyAccept),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
 			strictcli.NewArg("word", "The word to accept, spelled as the project spells it (e.g. 'selfdoc')", strictcli.ArgRequired()),
@@ -35,7 +35,7 @@ func (c *cli) registerVocabulary() {
 
 	group.Command("reject",
 		"Reject a term in "+layout.TermsRel+", in sorted position, with the reason: every page whose prose uses it then fails 'selfdoc check' (rejected-term-in-prose). Refuses a term already rejected, and one that would reject an accepted word: a word of selfdoc's built-in baseline is changed only in selfdoc itself, so a pattern covering one is refused with every covered baseline word listed and must be narrowed to the specific words meant, while a pattern covering a word the project accepts is refused with the command that removes that word",
-		c.cmdVocabularyReject,
+		c.handler((*cli).cmdVocabularyReject),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
 			strictcli.NewArg("pattern", "The rejected text (e.g. 'leverage', 'in order to', '-ish'). Matched case-insensitively", strictcli.ArgRequired()),
@@ -54,7 +54,7 @@ func (c *cli) registerVocabulary() {
 
 	group.Command("remove",
 		"Remove every entry of "+layout.TermsRel+" whose word or pattern is the given one, compared case-insensitively: an accepted word, a rejected term, or both. It is also how a word both accepted and rejected is resolved: remove it, then accept or reject it again. An entry of selfdoc's built-in baseline is not the project's to remove, and is refused",
-		c.cmdVocabularyRemove,
+		c.handler((*cli).cmdVocabularyRemove),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
 			strictcli.NewArg("word", "The accepted word or rejected pattern to remove, compared case-insensitively", strictcli.ArgRequired()),
@@ -64,7 +64,7 @@ func (c *cli) registerVocabulary() {
 
 	group.Command("approve",
 		"Approve a word pending review: move its entry from "+layout.ReviewRel+" into the accepted words of "+layout.TermsRel+", with the proposed meaning or, with --meaning, a corrected one. Refuses a word that is not pending",
-		c.cmdVocabularyApprove,
+		c.handler((*cli).cmdVocabularyApprove),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
 			strictcli.NewArg("word", "The pending word, as review.toml spells it, compared case-insensitively", strictcli.ArgRequired()),
@@ -77,7 +77,7 @@ func (c *cli) registerVocabulary() {
 
 	group.Command("drop",
 		"Drop a word pending review: delete its entry from "+layout.ReviewRel+" without accepting it, so pages using it keep failing the spell check until the spelling is fixed. Refuses a word that is not pending",
-		c.cmdVocabularyDrop,
+		c.handler((*cli).cmdVocabularyDrop),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithArgs(
 			strictcli.NewArg("word", "The pending word, as review.toml spells it, compared case-insensitively", strictcli.ArgRequired()),

@@ -15,7 +15,7 @@ import (
 
 func (c *cli) registerDeploy() {
 	c.app.Command("deploy", "Deploy the built documentation site to the configured provider",
-		c.cmdDeploy,
+		c.handler((*cli).cmdDeploy),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential: this is the one command whose effects leave the
 		// machine and land on a live, publicly-visible site. The Cloudflare
@@ -52,12 +52,12 @@ func (c *cli) cmdDeploy(ctx *strictcli.Context, kwargs map[string]any) strictcli
 	outputRel := strings.TrimRight(outputDirOf(cfg), "/")
 	outputDir := filepath.Join(c.dir(), outputRel)
 	if info, err := os.Stat(outputDir); err != nil || !info.IsDir() {
-		return c.failf("Error: Output directory '%s' not found. Run 'selfdoc build' first.", outputRel)
+		return c.failf("Output directory '%s' not found. Run 'selfdoc build' first.", outputRel)
 	}
 
 	deployConfig := configTable(cfg, "deploy")
 	if len(deployConfig) == 0 {
-		return c.failf("Error: No 'deploy' section in selfdoc.json. " +
+		return c.failf("No 'deploy' section in selfdoc.json. " +
 			"Add a deploy provider configuration.")
 	}
 

@@ -3,7 +3,6 @@ package assembly
 import (
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -49,8 +48,8 @@ type VerifyOptions struct {
 	// Now is the clock the outbound cache window is measured against, in
 	// seconds since the epoch. Zero takes the wall clock.
 	Now float64
-	// Stderr is where the not-checked lines go. Nil writes to the process's
-	// standard error.
+	// Stderr is where the not-checked lines go. Nil sends them to the
+	// handle's warnings.
 	Stderr io.Writer
 }
 
@@ -81,7 +80,7 @@ func VerifyBeforeDeploy(opts VerifyOptions, h *effects.Handle) ([]string, error)
 	}
 	stderr := opts.Stderr
 	if stderr == nil {
-		stderr = os.Stderr
+		stderr = h.Warnings()
 	}
 	for _, skip := range report.Skipped {
 		fmt.Fprintf(stderr, "verify: %s was NOT checked -- %s\n", skip.Check, skip.Reason)
@@ -160,7 +159,7 @@ type IntegrateOptions struct {
 	// against, in seconds since the epoch. Zero takes the wall clock.
 	Now float64
 	// Stderr is where the graft's advisory and the verification's not-checked
-	// lines go. Nil writes to the process's standard error.
+	// lines go. Nil sends them to the handle's warnings.
 	Stderr io.Writer
 	// Screen holds the integration to the confidential-name rules: the
 	// source checkout's record before it is built (a project-scoped run),

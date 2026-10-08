@@ -76,34 +76,19 @@ func stringsOrEmpty(values []string) []any {
 	return documents
 }
 
-// colorize wraps text in an ANSI escape when colour is on.
-func colorize(text, code string, color bool) string {
-	if color {
-		return "\033[" + code + "m" + text + "\033[0m"
-	}
-	return text
-}
-
-// PrintResults writes a check result to out in the human-readable form.
-//
-// color decides whether the report carries ANSI escapes. It is a parameter
-// rather than a decision made here, because whether the destination is a
-// terminal is the caller's knowledge -- the Python decided it once at import
-// time from sys.stdout, which made the report untestable and wrong for any
-// writer that was not that stream.
-func PrintResults(out io.Writer, result *CheckResult, color bool) {
+// PrintResults writes a check result to out in the human-readable form. It
+// is plain text: the report goes through strictcli's ctx.Out, whose
+// destination may be the --json envelope's output member, so it carries no
+// ANSI escapes.
+func PrintResults(out io.Writer, result *CheckResult) {
 	if len(result.DirectiveResults) == 0 {
-		fmt.Fprintln(out, colorize(
-			"No directives found in documentation templates.", "1", color,
-		))
+		fmt.Fprintln(out, "No directives found in documentation templates.")
 	} else {
-		fmt.Fprintln(out, colorize("Directives", "1", color))
+		fmt.Fprintln(out, "Directives")
 		for _, directiveResult := range result.DirectiveResults {
-			statusString := colorize("OK", "32", color)
+			statusString := "OK"
 			if directiveResult.Error != "" {
-				statusString = colorize(
-					"FAILED: "+directiveResult.Error, "31", color,
-				)
+				statusString = "FAILED: " + directiveResult.Error
 			}
 			fmt.Fprintf(out, "  %s:%d  %s  %s\n",
 				directiveResult.File, directiveResult.Line,
@@ -126,29 +111,21 @@ func PrintResults(out io.Writer, result *CheckResult, color bool) {
 		)
 
 		if result.Coverage != nil {
-			printCoverage(out, result.Coverage, color)
+			printCoverage(out, result.Coverage)
 		}
 	}
 
 	// Every diagnostic is always shown.
 	if len(result.Lints) > 0 {
 		fmt.Fprintln(out)
-		fmt.Fprintln(out, colorize("Lints", "1", color))
+		fmt.Fprintln(out, "Lints")
 		for _, lint := range result.Lints {
 			linePart := ""
 			if lint.Line() != nil {
 				linePart = fmt.Sprintf(":%d", *lint.Line())
 			}
-			severityString := lint.Severity()
-			switch severityString {
-			case "error":
-				severityString = colorize(severityString, "31", color)
-			case "warning":
-				severityString = colorize(severityString, "33", color)
-			}
-			nameString := colorize("["+lint.Name()+"]", "36", color)
-			fmt.Fprintf(out, "  %s: %s %s%s - %s\n",
-				severityString, nameString, lint.File(), linePart, lint.Message(),
+			fmt.Fprintf(out, "  %s: [%s] %s%s - %s\n",
+				lint.Severity(), lint.Name(), lint.File(), linePart, lint.Message(),
 			)
 		}
 	} else {
@@ -157,7 +134,7 @@ func PrintResults(out io.Writer, result *CheckResult, color bool) {
 }
 
 // printCoverage writes the coverage section of the report.
-func printCoverage(out io.Writer, coverage *CoverageStats, color bool) {
+func printCoverage(out io.Writer, coverage *CoverageStats) {
 	if coverage.Total == 0 {
 		fmt.Fprintln(out, "Coverage: no public symbols found in source files")
 		return
@@ -173,7 +150,7 @@ func printCoverage(out io.Writer, coverage *CoverageStats, color bool) {
 		)
 	}
 	if len(coverage.UnreferencedSymbols) > 0 && refPct < 100 {
-		fmt.Fprintln(out, colorize("Unreferenced symbols:", "1", color))
+		fmt.Fprintln(out, "Unreferenced symbols:")
 		printSymbolsByFile(out, coverage.UnreferencedSymbols)
 	}
 	if docPct < 100 {
@@ -188,7 +165,7 @@ func printCoverage(out io.Writer, coverage *CoverageStats, color bool) {
 			}
 		}
 		if len(skeletonOnly) > 0 {
-			printSkeletonOnly(out, coverage, skeletonOnly, color)
+			printSkeletonOnly(out, coverage, skeletonOnly)
 		}
 	}
 }
@@ -203,8 +180,8 @@ func printCoverage(out io.Writer, coverage *CoverageStats, color bool) {
 // and nothing about the symbol's own documentation is involved. A section
 // listing symbols alone reads as a list of under-documented code and sends the
 // reader to rewrite doc comments that are already complete.
-func printSkeletonOnly(out io.Writer, coverage *CoverageStats, skeletonOnly []string, color bool) {
-	fmt.Fprintln(out, colorize("Skeleton-only symbols:", "1", color))
+func printSkeletonOnly(out io.Writer, coverage *CoverageStats, skeletonOnly []string) {
+	fmt.Fprintln(out, "Skeleton-only symbols:")
 	fmt.Fprintln(out, "  Each is named only on a generated page whose frontmatter still declares")
 	fmt.Fprintln(out, "  seeded = true, so that page's description is the one selfdoc emitted and")
 	fmt.Fprintln(out, "  nobody has rewritten. The symbols' own doc comments are not the cause and")

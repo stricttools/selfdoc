@@ -375,7 +375,7 @@ func TestSkeletonOnlySymbolsNameThePageAndTheSeededDescription(t *testing.T) {
 	}
 
 	var out bytes.Buffer
-	PrintResults(&out, result, false)
+	PrintResults(&out, result)
 	report := out.String()
 
 	index := strings.Index(report, "Skeleton-only symbols:")

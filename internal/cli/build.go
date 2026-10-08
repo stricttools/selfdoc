@@ -25,7 +25,7 @@ const hashStoreMessage = "selfdoc: update content hashes"
 
 func (c *cli) registerBuild() {
 	c.app.Command("build", "Build the documentation site from templates and source code",
-		c.cmdBuild,
+		c.handler((*cli).cmdBuild),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.BoolFlag("auto-commit", "Automatically commit updated content hash tracking files to git after the build. Omitted, it commits; pass --no-auto-commit to leave them uncommitted", strictcli.Optional()),
@@ -95,7 +95,7 @@ func (c *cli) cmdBuild(ctx *strictcli.Context, kwargs map[string]any) strictcli.
 	case "site":
 		return c.buildSite(kwargs, cfg, handle, locale, version, theme, drafts, autoCommit)
 	default:
-		return c.failf("Error: unknown build target '%s'. "+
+		return c.failf("unknown build target '%s'. "+
 			"Valid targets: 'site', 'posts', 'unified', 'home'.", target)
 	}
 }

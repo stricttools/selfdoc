@@ -16,7 +16,7 @@ import (
 func (c *cli) registerPublishDocs(group *strictcli.Group) {
 	group.Command("publish-docs",
 		"Publish this project's documentation to the assembly without a release. Builds the docs locally, pushes the built site, its manifest and its membership record into the assembly repo via the Git Data API -- deleting the pages this project published before and no longer produces -- then dispatches a shared-only workflow to regenerate cross-project elements. Refuses before pushing anything when the vocabulary this project's manifest records and another project's on the assembly disagree about a word -- one's rejected pattern covering a word the other, or selfdoc's built-in baseline, accepts -- naming both projects, the word, the pattern and the fix.",
-		c.cmdPublishDocs,
+		c.handler((*cli).cmdPublishDocs),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential for the same reason `blog post publish` is:
 		// locally-authored content becomes publicly readable at the moment
@@ -40,11 +40,11 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 
 	repo := configString(cfg, "assembly", "repo")
 	if repo == "" {
-		return c.failf("Error: assembly.repo not configured in selfdoc.json.")
+		return c.failf("assembly.repo not configured in selfdoc.json.")
 	}
 	slug := configString(cfg, "topology", "slug")
 	if slug == "" {
-		return c.failf("Error: topology.slug not configured in selfdoc.json.")
+		return c.failf("topology.slug not configured in selfdoc.json.")
 	}
 
 	// The published documentation is public: refused outright when no
@@ -90,7 +90,7 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 	outputRel := strings.TrimRight(outputDirOf(cfg), "/")
 	outputDir := filepath.Join(dir, outputRel)
 	if info, err := os.Stat(outputDir); err != nil || !info.IsDir() {
-		return c.failf("Error: the build produced no output at %s; there is "+
+		return c.failf("the build produced no output at %s; there is "+
 			"nothing to publish.", outputDir)
 	}
 

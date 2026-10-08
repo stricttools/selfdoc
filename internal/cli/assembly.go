@@ -58,7 +58,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("init",
 		"Create and initialize the assembly GitHub repository with workflow and configuration files. Creates a private GitHub repo, pushes initial files via the Contents API, creates a Cloudflare Pages project if credentials are available, and sets GitHub secrets for deployment authentication.",
-		c.cmdAssemblyInit,
+		c.handler((*cli).cmdAssemblyInit),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential: every one of its three effects creates a NAMED
 		// external resource that rerunning cannot un-create -- a GitHub
@@ -91,7 +91,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("push",
 		"Dispatch a GitHub Actions workflow to rebuild this project in the documentation assembly. Detects the source repository, resolves the latest git tag as the version reference, and sends a repository dispatch event to the assembly repo with the project slug, version, and commit SHA. Before dispatching it refuses a project whose lifecycle-and-license record lets no releasable publish documentation, and a ref whose tracked files name a term the confidential-name index protects, naming each file, line, and term.",
-		c.cmdAssemblyPush,
+		c.handler((*cli).cmdAssemblyPush),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Deliberately NOT consequential, though its grant escapes the
 		// process: the dispatch re-derives already-public documentation from
@@ -104,13 +104,13 @@ func (c *cli) registerAssembly() {
 
 	group.Command("status",
 		"Show the status of recent assembly build workflow runs on GitHub. Queries the assembly repository for recent workflow runs using the GitHub CLI and displays their status, conclusion, and timing information for monitoring deployment progress.",
-		c.cmdAssemblyStatus,
+		c.handler((*cli).cmdAssemblyStatus),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 	)
 
 	group.Command("rebuild",
 		"Dispatch rebuild workflows for every project registered in the assembly. Fetches the projects.json manifest from the assembly repository, then sends a separate GitHub Actions repository dispatch event for each registered project to trigger a full documentation rebuild.",
-		c.cmdAssemblyRebuild,
+		c.handler((*cli).cmdAssemblyRebuild),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Deliberately NOT consequential, for the same reason as `assembly
 		// push` and despite the wider reach: it re-derives every registered
@@ -121,7 +121,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("retire",
 		"Retire a project from the unified assembly: remove its [[project]] block from the roster and, in the same commit, delete its whole site subtree, all of its manifests and its membership record, then dispatch a shared-only rebuild so the listing, feed, sitemap and search index stop naming it.",
-		c.cmdAssemblyRetire,
+		c.handler((*cli).cmdAssemblyRetire),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential: it deletes a project's published section from the
 		// live site. Nothing else in the tree removes public content, and
@@ -136,7 +136,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("redirects",
 		"Generate a Cloudflare Pages _redirects file for this project that redirects standalone documentation URLs to the corresponding paths on the unified assembly site. Requires a project slug and assembly base URL as inputs, prints the redirect rules to stdout.",
-		c.cmdAssemblyRedirects,
+		c.handler((*cli).cmdAssemblyRedirects),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.WithFlags(
 			strictcli.StringFlag("slug", "Project slug used as the URL path segment in the assembly site structure", strictcli.Required()),
@@ -146,7 +146,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("generate-shared",
 		"Generate the shared cross-project elements for the assembled documentation site. Reads per-project manifest JSON files, merges post overlays, and produces a homepage, blog index, navigation JSON, RSS feed, XML sitemap, robots.txt, a site-wide llms.txt linking to each project's own, a root 404 page and a security headers file in the site output directory. It also deletes the redirect worker a deploy made before the worker was retired left at the site root.",
-		c.cmdAssemblyGenerateShared,
+		c.handler((*cli).cmdAssemblyGenerateShared),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.StringFlag("site-dir", "Path to the combined site output directory where shared HTML files are written", strictcli.Required()),
@@ -159,7 +159,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("integrate",
 		"Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. A project-scoped run refuses a source checkout whose lifecycle-and-license record lets no releasable publish documentation, and every run scans the whole site tree for terms the confidential-name index protects before it commits. A full-scope deploy first checks the vocabulary the project's manifest records against every other project's manifest on the site and selfdoc's built-in baseline, and refuses before touching the checkout when one project's rejected pattern covers a word another accepts, naming both projects, the word, the pattern and the fix. This is the whole body of the generated deploy workflow.",
-		c.cmdAssemblyIntegrate,
+		c.handler((*cli).cmdAssemblyIntegrate),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Deliberately NOT consequential: it runs unattended inside the
 		// assembly repo's own CI, re-deriving already-public docs from an
@@ -193,7 +193,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("verify",
 		"Assert every property a built assembly tree has to have before it is deployed: that the roster, the site subtrees and the manifests name the same projects, that each manifest's pages and posts were actually emitted, that the shared cross-project artifacts exist and parse, that every internal reference, sitemap entry, feed link and cross-project link resolves, that every page has a title and a canonical, and that no unresolved directive or per-project routing file survived. The deploy runs this itself before it pushes; this command is how you run the same assertions by hand against a checkout.",
-		c.cmdAssemblyVerify,
+		c.handler((*cli).cmdAssemblyVerify),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.WithFlags(
 			strictcli.StringFlag("assembly-dir", "Path to the assembly repository checkout to verify", strictcli.Default(".")),
@@ -203,7 +203,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("republish-all",
 		"Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version "+strconv.Itoa(manifest.SchemaVersion)+", which records each project's vocabulary. Before building anything it refuses a checkout not on the "+layout.Root+"/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project, which also converts the project's post overlay on the site, manifests/<slug>-posts.json, when an older selfdoc wrote it, keeping its posts and adding the vocabulary of the checkout's manifest), and sends one shared-only deploy request. A checkout whose lifecycle-and-license record lets no releasable publish documentation is refused before anything is built, and every build is scanned for terms the confidential-name index protects before anything is published. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.",
-		c.cmdAssemblyRepublishAll,
+		c.handler((*cli).cmdAssemblyRepublishAll),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Consequential for the reason `blog publish-docs` is, for every
 		// project at once: locally built content becomes publicly readable,
@@ -219,7 +219,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("preview",
 		"Assemble every named local checkout into a preview tree and serve it on loopback. Builds each project with the toolchain running this command, grafts the output exactly as the deploy does -- the home project at the site root, everybody else under their slug -- writes the roster, membership record and manifests the assembly keeps, generates the shared cross-project files and the site chrome, rebuilds the search index, runs the real pre-deploy verification and prints its report, then serves the result with a working 404. Nothing leaves the machine and nothing is published: this is the look-before-you-ship step.",
-		c.cmdAssemblyPreview,
+		c.handler((*cli).cmdAssemblyPreview),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Not consequential: everything it writes is a local build tree at a
 		// path the caller named, and nothing reaches the world.
@@ -249,7 +249,7 @@ func (c *cli) registerAssembly() {
 
 	group.Command("sync-workflow",
 		"Regenerate the assembly repository's deploy workflow from this project's configuration and push it. The deployed workflow is a generated artifact like any other: without this it stays frozen at whatever the template said when 'assembly init' ran. Pushes only when the content actually differs.",
-		c.cmdAssemblySyncWorkflow,
+		c.handler((*cli).cmdAssemblySyncWorkflow),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		// Deliberately NOT consequential: it rewrites one tool-owned
 		// generated file to match the generator, and rerunning converges.
@@ -266,7 +266,7 @@ func (c *cli) registerAssembly() {
 func (c *cli) assemblyRepo(cfg map[string]any) (string, strictcli.Outcome, bool) {
 	repo := configString(cfg, "assembly", "repo")
 	if repo == "" {
-		return "", c.failf("Error: assembly.repo not configured in selfdoc.json."), false
+		return "", c.failf("assembly.repo not configured in selfdoc.json."), false
 	}
 	return repo, strictcli.Exit(0), true
 }
@@ -284,11 +284,11 @@ func (c *cli) cmdAssemblyInit(ctx *strictcli.Context, kwargs map[string]any) str
 	}
 	pagesProject := configString(cfg, "assembly", "pages_project")
 	if pagesProject == "" {
-		return c.failf("Error: assembly.pages_project not configured in selfdoc.json.")
+		return c.failf("assembly.pages_project not configured in selfdoc.json.")
 	}
 	canonicalBase := configString(cfg, "topology", "docs_base")
 	if canonicalBase == "" {
-		return c.failf("Error: topology.docs_base not configured in selfdoc.json.")
+		return c.failf("topology.docs_base not configured in selfdoc.json.")
 	}
 	// The workflow init writes pins its toolchain exactly as the one
 	// sync-workflow rewrites later, and refuses an unpublishable pin the same
@@ -320,7 +320,7 @@ func (c *cli) cmdAssemblyInit(ctx *strictcli.Context, kwargs map[string]any) str
 		return c.fail(err)
 	}
 	if !result.Unsettled && result.ExitCode != 0 {
-		return c.failf("Error: Failed to create repository: %s", strings.TrimSpace(result.StderrString()))
+		return c.failf("Failed to create repository: %s", strings.TrimSpace(result.StderrString()))
 	}
 
 	// Paths are pushed in sorted order: Go maps carry none of their own, and
@@ -352,7 +352,7 @@ func (c *cli) cmdAssemblyInit(ctx *strictcli.Context, kwargs map[string]any) str
 			return c.fail(err)
 		}
 		if !result.Unsettled && result.ExitCode != 0 {
-			return c.failf("Error: Failed to create %s: %s", path, strings.TrimSpace(result.StderrString()))
+			return c.failf("Failed to create %s: %s", path, strings.TrimSpace(result.StderrString()))
 		}
 	}
 
@@ -376,10 +376,10 @@ func (c *cli) cmdAssemblyInit(ctx *strictcli.Context, kwargs map[string]any) str
 		case result.ExitCode == 0:
 			c.printf("Created CF Pages project: %s\n", pagesProject)
 		default:
-			c.eprintf("Warning: CF Pages project creation failed: %s\n", strings.TrimSpace(result.StderrString()))
+			c.warnf("CF Pages project creation failed: %s", strings.TrimSpace(result.StderrString()))
 		}
 	} else {
-		c.eprintf("Warning: CF_ACCOUNT_ID/CF_PAGES_API_TOKEN not set, skipping CF Pages project creation.\n")
+		c.warnf("CF_ACCOUNT_ID/CF_PAGES_API_TOKEN not set, skipping CF Pages project creation.")
 	}
 
 	for _, secret := range []struct{ name, value string }{
@@ -403,7 +403,7 @@ func (c *cli) cmdAssemblyInit(ctx *strictcli.Context, kwargs map[string]any) str
 		case result.ExitCode == 0:
 			c.printf("Set GitHub secret: %s\n", secret.name)
 		default:
-			c.eprintf("Warning: Failed to set %s secret: %s\n", secret.name,
+			c.warnf("Failed to set %s secret: %s", secret.name,
 				strings.TrimSpace(result.StderrString()))
 		}
 	}
@@ -425,7 +425,7 @@ func (c *cli) cmdAssemblyPush(ctx *strictcli.Context, kwargs map[string]any) str
 	}
 	slug := configString(cfg, "topology", "slug")
 	if slug == "" {
-		return c.failf("Error: topology.slug not configured in selfdoc.json.")
+		return c.failf("topology.slug not configured in selfdoc.json.")
 	}
 
 	result, err := handle.Run(
@@ -436,7 +436,7 @@ func (c *cli) cmdAssemblyPush(ctx *strictcli.Context, kwargs map[string]any) str
 		return c.fail(err)
 	}
 	if result.ExitCode != 0 {
-		return c.failf("Error: Failed to detect source repository: %s",
+		return c.failf("Failed to detect source repository: %s",
 			strings.TrimSpace(result.StderrString()))
 	}
 	sourceRepo := strings.TrimSpace(result.StdoutString())
@@ -508,7 +508,7 @@ func (c *cli) cmdAssemblyPush(ctx *strictcli.Context, kwargs map[string]any) str
 		return c.fail(err)
 	}
 	if !result.Unsettled && result.ExitCode != 0 {
-		return c.failf("Error: Failed to dispatch rebuild: %s", strings.TrimSpace(result.StderrString()))
+		return c.failf("Failed to dispatch rebuild: %s", strings.TrimSpace(result.StderrString()))
 	}
 
 	c.printf("Dispatched assembly rebuild for %s %s (ref: %s)\n",
@@ -574,7 +574,7 @@ func (c *cli) cmdAssemblyRebuild(ctx *strictcli.Context, kwargs map[string]any) 
 		// The only thing left to go wrong: the record was read successfully
 		// and is not a JSON document. Every other failure -- the read itself,
 		// the base64 decode -- is already a remote-read error above.
-		return c.failf("Error: %s:%s is not valid JSON: %s", repo, site.ProjectsPath, err)
+		return c.failf("%s:%s is not valid JSON: %s", repo, site.ProjectsPath, err)
 	}
 
 	if len(projects) == 0 {
@@ -605,7 +605,7 @@ func (c *cli) cmdAssemblyRebuild(ctx *strictcli.Context, kwargs map[string]any) 
 		switch {
 		case result.Unsettled:
 		case result.ExitCode != 0:
-			c.eprintf("  Warning: Failed to dispatch for %s: %s\n", dispatch.Slug,
+			c.warnf("Failed to dispatch for %s: %s", dispatch.Slug,
 				strings.TrimSpace(result.StderrString()))
 		default:
 			c.printf("  Dispatched rebuild for %s.\n", dispatch.Slug)
@@ -692,7 +692,7 @@ func (c *cli) cmdAssemblyIntegrate(ctx *strictcli.Context, kwargs map[string]any
 		Branch:        absentMeans(kwargs, "branch", assemblyDefaultBranch),
 		Attempts:      absentMeans(kwargs, "attempts", assembly.DefaultAttempts),
 		RetryDelay:    assembly.DefaultRetryDelay,
-		Stderr:        c.errOut(),
+		Stderr:        c.warnOut(),
 		Screen:        c.assemblyScreen(handle),
 	}, handle)
 	if err != nil {
@@ -723,7 +723,7 @@ func (c *cli) cmdAssemblyVerify(ctx *strictcli.Context, kwargs map[string]any) s
 	}
 
 	for _, skip := range report.Skipped {
-		c.eprintf("NOT CHECKED: %s -- %s\n", skip.Check, skip.Reason)
+		c.warnf("NOT CHECKED: %s -- %s", skip.Check, skip.Reason)
 	}
 
 	if !report.OK() {
@@ -794,11 +794,16 @@ func (c *cli) cmdAssemblyPreview(ctx *strictcli.Context, kwargs map[string]any) 
 	// verification on purpose -- that is the state worth looking at -- so the
 	// only thing standing between a broken tree and a wrong conclusion is
 	// that the reader was told.
-	c.eprintf("%s\n", preview.RenderReport(summary.Report, summary.OutDir))
+	report := preview.RenderReport(summary.Report, summary.OutDir)
+	if summary.Report.OK() {
+		c.printf("%s\n", report)
+	} else {
+		fmt.Fprintf(c.warnOut(), "%s\n", report)
+	}
 	c.printf("Preview of %d project(s) (home: %s) at %s\n",
 		len(summary.Slugs), summary.Home, summary.SiteDir)
 
-	code, err := preview.ServePreview(summary.SiteDir, strictcli.Get[int](kwargs, "port"),
+	code, err := preview.ServePreview(summary.SiteDir, strictcli.Get[int](kwargs, "port"), handle.Info(),
 		func(port int) {
 			c.printf("Preview: http://%s:%d/  (Ctrl-C to stop)\n", serving.Host, port)
 		})
@@ -821,11 +826,11 @@ func (c *cli) cmdAssemblySyncWorkflow(ctx *strictcli.Context, kwargs map[string]
 	}
 	pagesProject := configString(cfg, "assembly", "pages_project")
 	if pagesProject == "" {
-		return c.failf("Error: assembly.pages_project not configured in selfdoc.json.")
+		return c.failf("assembly.pages_project not configured in selfdoc.json.")
 	}
 	canonicalBase := configString(cfg, "topology", "docs_base")
 	if canonicalBase == "" {
-		return c.failf("Error: topology.docs_base not configured in selfdoc.json.")
+		return c.failf("topology.docs_base not configured in selfdoc.json.")
 	}
 
 	// Resolve every pin, then refuse any that the registry cannot serve --
@@ -904,7 +909,7 @@ func (c *cli) currentBranch(handle *effects.Handle) (string, strictcli.Outcome, 
 	branch := strings.TrimSpace(result.StdoutString())
 	if result.ExitCode != 0 || branch == "" {
 		return "", c.failf(
-			"Error: this checkout is not on a branch, so there is no ref to "+
+			"this checkout is not on a branch, so there is no ref to "+
 				"dispatch an unversioned project at. A project declaring "+
 				"'unversioned': true is cloned by the assembly at the branch "+
 				"it is pushed from; check one out. (%s)",
@@ -934,7 +939,7 @@ func (c *cli) requireBranchOnOrigin(
 	}
 	if result.ExitCode != 0 {
 		return c.failf(
-			"Error: origin carries no branch %s, so the assembly cannot "+
+			"origin carries no branch %s, so the assembly cannot "+
 				"clone this project at it. The dispatch names the ref the "+
 				"deploy fetches; push the branch first. (%s)",
 			util.PythonRepr(branch),

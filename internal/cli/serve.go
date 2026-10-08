@@ -35,7 +35,7 @@ const reloadPollInterval = 500 * time.Millisecond
 
 func (c *cli) registerServe() {
 	c.app.Command("serve", "Serve the documentation site locally with live reload",
-		c.cmdServe,
+		c.handler((*cli).cmdServe),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.IntFlag("port", "HTTP port number to serve on (e.g., 3000). Omitted, the server binds port 8000", strictcli.Short("p"), strictcli.Optional()),
@@ -75,7 +75,7 @@ func (c *cli) cmdServe(ctx *strictcli.Context, kwargs map[string]any) strictcli.
 
 	outputDir := filepath.Join(c.dir(), strings.TrimRight(outputDirOf(cfg), "/"))
 	if info, err := os.Stat(outputDir); err != nil || !info.IsDir() {
-		return c.failf("Error: Output directory '%s' not found. Run 'selfdoc build' first.",
+		return c.failf("Output directory '%s' not found. Run 'selfdoc build' first.",
 			strings.TrimRight(outputDirOf(cfg), "/"))
 	}
 

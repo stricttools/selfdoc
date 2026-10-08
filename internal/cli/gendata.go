@@ -11,7 +11,7 @@ import (
 
 func (c *cli) registerGenData() {
 	c.app.Command("gen-data", "Generate data files by running sandboxed scripts via bwrap",
-		c.cmdGenData,
+		c.handler((*cli).cmdGenData),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.BoolFlag("auto-commit", "Automatically commit the generated data output files to git after script execution. Omitted, it commits; pass --no-auto-commit to leave them uncommitted", strictcli.Optional()),

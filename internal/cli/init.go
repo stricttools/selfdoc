@@ -119,7 +119,7 @@ func projectName(dir string) string {
 
 func (c *cli) registerInit() {
 	c.app.Command("init", "Initialize selfdoc in this repository: write selfdoc.json (versioned at the version the project's manifest states, 0.0.0 when it states none), the ownership manifests of "+strings.Join(initDirectoryPaths(), ", ")+", and a starter docs page",
-		c.cmdInit,
+		c.handler((*cli).cmdInit),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.WithFlags(
 			strictcli.StringFlag("base-url", "Base URL the generated site will be served from (e.g. 'https://docs.example.com'). Required: it is the site's own address, which selfdoc cannot infer, and every canonical link, sitemap entry and feed URL is built from it", strictcli.Required()),

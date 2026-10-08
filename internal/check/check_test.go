@@ -244,30 +244,12 @@ func TestRootTemplateWithFrontmatter(t *testing.T) {
 
 func TestPrintResultsNoDirectives(t *testing.T) {
 	var out bytes.Buffer
-	PrintResults(&out, &CheckResult{}, false)
+	PrintResults(&out, &CheckResult{})
 	if !strings.Contains(out.String(), "No directives found in documentation templates.") {
 		t.Errorf("output = %q", out.String())
 	}
 	if !strings.Contains(out.String(), "No lints.") {
 		t.Errorf("output = %q, want the no-lints line", out.String())
-	}
-}
-
-func TestPrintResultsColorOnlyWhenAsked(t *testing.T) {
-	result := &CheckResult{
-		DirectiveResults: []DirectiveResult{{
-			File: "index.md", Line: 1, Directive: `ref path="foo"`, Outcome: StatusOK,
-		}},
-	}
-	var plain bytes.Buffer
-	PrintResults(&plain, result, false)
-	if strings.Contains(plain.String(), "\033[") {
-		t.Errorf("plain output carries escapes: %q", plain.String())
-	}
-	var colored bytes.Buffer
-	PrintResults(&colored, result, true)
-	if !strings.Contains(colored.String(), "\033[32mOK\033[0m") {
-		t.Errorf("colored output = %q, want a green OK", colored.String())
 	}
 }
 

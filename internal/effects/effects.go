@@ -144,6 +144,9 @@ func (r Result) StderrString() string {
 type Handle struct {
 	fx     *strictcli.Effects
 	dryRun bool
+	// ctx is the dispatch whose output streamed children and engine progress
+	// go to; nil on an unbound handle.
+	ctx *strictcli.Context
 }
 
 // FromContext builds the handle for a command dispatch.
@@ -155,7 +158,17 @@ func FromContext(ctx *strictcli.Context) *Handle {
 	if ctx == nil {
 		return Unbound()
 	}
-	return &Handle{fx: ctx.Effects(), dryRun: ctx.DryRun()}
+	return &Handle{fx: ctx.Effects(), dryRun: ctx.DryRun(), ctx: ctx}
+}
+
+// Live returns a handle that executes everything directly, as an unbound
+// handle does, while its output still goes to h's dispatch. A dry run uses it
+// for work that runs for real because it writes only output the run owns.
+func (h *Handle) Live() *Handle {
+	if h == nil {
+		return Unbound()
+	}
+	return &Handle{ctx: h.ctx}
 }
 
 // Unbound builds a handle with no strictcli effects handle behind it: every
@@ -351,7 +364,7 @@ func (h *Handle) Run(argv []string, options ...Option) (Result, error) {
 	}
 	fx := h.mint()
 	if fx == nil || o.read {
-		return directRun(argv, o)
+		return directRun(h, argv, o)
 	}
 	completed, err := fx.Run(toOperands(argv), o.mintOptions(true)...)
 	if err != nil {
@@ -373,8 +386,8 @@ func (h *Handle) Run(argv []string, options ...Option) (Result, error) {
 // a pipeline whose only write lands in a directory its caller owns and removes
 // changes nothing anyone else can observe.
 //
-// Only the last stage's stderr is captured; the earlier stages inherit this
-// process's stderr.
+// The last stage's stdout and every stage's stderr are captured into the
+// result.
 func (h *Handle) Pipeline(argvs [][]string, options ...Option) (Result, error) {
 	o, err := resolve("Pipeline", options, acceptedPipeline)
 	if err != nil {
@@ -471,16 +484,26 @@ func extract(c strictcli.Completed) (exit int, stdout, stderr string, settled bo
 }
 
 // directRun executes argv with the full subprocess semantics selfdoc relies
-// on: a deadline, an optional stdin payload, and byte captures.
-func directRun(argv []string, o opts) (Result, error) {
+// on: a deadline, an optional stdin payload, and byte captures. A run that
+// does not capture streams its output to h's dispatch, or, on a handle with no
+// dispatch behind it, is captured all the same.
+func directRun(h *Handle, argv []string, o opts) (Result, error) {
 	cmd, cancel, deadline := command(argv, o)
 	defer cancel()
 
 	var outBuf, errBuf bytes.Buffer
-	if o.capture {
+	capture := o.capture
+	if !capture {
+		if stdout, stderr, ok := h.streams(); ok {
+			cmd.Stdout, cmd.Stderr = stdout, stderr
+			defer stdout.Flush()
+			defer stderr.Flush()
+		} else {
+			capture = true
+		}
+	}
+	if capture {
 		cmd.Stdout, cmd.Stderr = &outBuf, &errBuf
-	} else {
-		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	}
 	if o.stdin != nil {
 		cmd.Stdin = bytes.NewReader(o.stdin)
@@ -495,7 +518,7 @@ func directRun(argv []string, o opts) (Result, error) {
 		return Result{}, runErr
 	}
 	res := Result{Argv: argv, ExitCode: cmd.ProcessState.ExitCode()}
-	if o.capture {
+	if capture {
 		res.Stdout, res.Stderr = outBuf.Bytes(), errBuf.Bytes()
 	}
 	if o.check && res.ExitCode != 0 {
@@ -504,7 +527,8 @@ func directRun(argv []string, o opts) (Result, error) {
 	return res, nil
 }
 
-// directPipeline executes the real multi-process pipeline.
+// directPipeline executes the real multi-process pipeline. The last stage's
+// stdout and every stage's stderr are captured into the [Result].
 func directPipeline(argvs [][]string, o opts) (Result, error) {
 	last := len(argvs) - 1
 	cmds := make([]*exec.Cmd, len(argvs))
@@ -521,11 +545,7 @@ func directPipeline(argvs [][]string, o opts) (Result, error) {
 		cmd, cancel, d := command(argv, o)
 		cancels = append(cancels, cancel)
 		deadline = d
-		if i == last {
-			cmd.Stderr = &errBuf
-		} else {
-			cmd.Stderr = os.Stderr
-		}
+		cmd.Stderr = &errBuf
 		cmds[i] = cmd
 	}
 	for i := 0; i < last; i++ {
@@ -535,7 +555,8 @@ func directPipeline(argvs [][]string, o opts) (Result, error) {
 		}
 		cmds[i+1].Stdin = pipe
 	}
-	cmds[last].Stdout = os.Stdout
+	var outBuf bytes.Buffer
+	cmds[last].Stdout = &outBuf
 
 	for _, cmd := range cmds {
 		if err := cmd.Start(); err != nil {
@@ -559,6 +580,7 @@ func directPipeline(argvs [][]string, o opts) (Result, error) {
 	return Result{
 		Argv:     argvs[0],
 		ExitCode: cmds[last].ProcessState.ExitCode(),
+		Stdout:   outBuf.Bytes(),
 		Stderr:   errBuf.Bytes(),
 	}, nil
 }

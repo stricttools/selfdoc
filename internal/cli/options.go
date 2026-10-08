@@ -19,14 +19,14 @@ func (c *cli) registerOptions() {
 
 	group.Command("registry",
 		"Print selfdoc's options registry: one option per lint, "+lints.OptionsTool+":<lint name>, with the subject it is filed under, the values it ranks strongest first, its default, its scope, and what the lint checks. The TOML printed is the registry document selfdoc ships, in the shape of strictspec's built-in options-registry schema, so a tool that reads every tool's options learns selfdoc's rankings from it; with --json the same declarations are the payload. Needs no selfdoc project",
-		c.cmdOptionsRegistry,
+		c.handler((*cli).cmdOptionsRegistry),
 		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.PayloadSchema(payloadschemas.OptionsRegistry()),
 	)
 
 	group.Command("set",
 		"Write one selfdoc entry into "+strictspec.OptionsDir+"/"+lints.OptionsSubject+".toml, or update the entry already there for the same option, keeping every other line of the document. Creates "+strictspec.OptionsDir+"/ and its "+layout.ManifestFileName+", naming "+layout.SharedOwner+" as the owner, when absent. strictspec validates the result before anything is written -- every document's shape, and every selfdoc entry with this one in place -- and each refusal is its catalogued diagnostic: a value the option does not declare, a current ranked above the ideal, an entry equal to the default, an empty reason. Refuses an id outside the selfdoc namespace and a directory whose manifest names another owner",
-		c.cmdOptionsSet,
+		c.handler((*cli).cmdOptionsSet),
 		strictcli.WithEffect(strictcli.EffectMutating),
 		strictcli.PayloadSchema(payloadschemas.OptionsSet()),
 		strictcli.WithArgs(

@@ -76,7 +76,7 @@ func referenceResult() *CheckResult {
 
 func TestPrintResultsMatchesTheReferenceReport(t *testing.T) {
 	var out bytes.Buffer
-	PrintResults(&out, referenceResult(), false)
+	PrintResults(&out, referenceResult())
 	if out.String() != pythonReferenceReport {
 		t.Errorf("report =\n%q\nwant\n%q", out.String(), pythonReferenceReport)
 	}
@@ -90,7 +90,7 @@ func TestPrintResultsCoverageWithNoPublicSymbols(t *testing.T) {
 		Coverage: &CoverageStats{},
 	}
 	var out bytes.Buffer
-	PrintResults(&out, result, false)
+	PrintResults(&out, result)
 	want := "Directives\n" +
 		"  a.md:1  ref  OK\n" +
 		"\n1 directive(s): 1 OK, 0 FAILED\n" +
