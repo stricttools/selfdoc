@@ -144,7 +144,7 @@ meaning = "The widget that turns."
 	if !strings.Contains(message, "selfdoc vocabulary remove frobnitz") {
 		t.Errorf("the remedy does not name the remove command: %s", message)
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "frobnitz"); err != nil {
+	if _, err := vocabulary.RemoveWord(effects.Unbound(), root, "frobnitz"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	noLint(t, root, "unused-accepted-word")
@@ -175,7 +175,7 @@ meaning = "The same widget."
 	if !strings.Contains(message, "selfdoc vocabulary remove Frobnitz") {
 		t.Errorf("the remedy does not name the remove command: %s", message)
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "Frobnitz"); err != nil {
+	if _, err := vocabulary.RemoveWord(effects.Unbound(), root, "Frobnitz"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	if _, err := vocabulary.Accept(effects.Unbound(), root, "frobnitz", "The widget that turns."); err != nil {
@@ -201,7 +201,7 @@ reason = "Say the color."
 			t.Errorf("the remedy does not carry %q: %s", want, message)
 		}
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "blue-ish"); err != nil {
+	if _, err := vocabulary.RemoveWord(effects.Unbound(), root, "blue-ish"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	noLint(t, root, "accepted-word-matches-rejected-pattern")
@@ -224,7 +224,7 @@ reason = "Say the color."
 	if !strings.Contains(message, "selfdoc vocabulary reject <word> --kind word --reason <text>") {
 		t.Errorf("the remedy does not name narrowing the pattern: %s", message)
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "-ish"); err != nil {
+	if _, err := vocabulary.RemoveWord(effects.Unbound(), root, "-ish"); err != nil {
 		t.Fatalf("removing the rejection failed: %v", err)
 	}
 	if _, err := vocabulary.Reject(effects.Unbound(), root, "red-ish", vocabulary.KindWord, "Say the color."); err != nil {
@@ -262,7 +262,7 @@ reason = "Say what it is."
 			t.Errorf("the remedy names removing a baseline word: %s", message)
 		}
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "ish"); err != nil {
+	if _, err := vocabulary.RemoveWord(effects.Unbound(), root, "ish"); err != nil {
 		t.Fatalf("removing the rejection failed: %v", err)
 	}
 	if _, err := vocabulary.Reject(effects.Unbound(), root, "youngish", vocabulary.KindWord, "Say the age."); err != nil {
@@ -288,7 +288,7 @@ reason = "Say use."
 			t.Errorf("the diagnostic does not carry %q: %s", want, message)
 		}
 	}
-	if _, err := vocabulary.Remove(effects.Unbound(), root, "leverage"); err != nil {
+	if _, err := vocabulary.RemoveWord(effects.Unbound(), root, "leverage"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	noLint(t, root, "rejected-term-in-prose")

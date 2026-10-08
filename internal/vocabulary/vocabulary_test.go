@@ -142,7 +142,7 @@ reason = "Say use."
 		}
 	}
 
-	if _, err := Remove(effects.Unbound(), dir, "Leverage"); err != nil {
+	if _, err := RemoveWord(effects.Unbound(), dir, "Leverage"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	if _, err := Accept(effects.Unbound(), dir, "Leverage", "The lever's advantage."); err != nil {
@@ -259,7 +259,7 @@ reason = "Say use."
 		t.Fatalf("a rejection covering an accepted word = %v", err)
 	}
 	// The remedy the refusal names lets the rejection through.
-	if _, err := Remove(effects.Unbound(), dir, "reddish"); err != nil {
+	if _, err := RemoveWord(effects.Unbound(), dir, "reddish"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := Reject(effects.Unbound(), dir, "dish", KindSuffix, "r"); err != nil {
@@ -314,14 +314,14 @@ meaning = "a"
 word = "beta"
 meaning = "b"
 `)
-	if _, err := Remove(effects.Unbound(), dir, "ALPHA"); err != nil {
+	if _, err := RemoveWord(effects.Unbound(), dir, "ALPHA"); err != nil {
 		t.Fatalf("Remove: %v", err)
 	}
 	got := readTerms(t, dir)
 	if strings.Contains(got, "alpha") || !strings.Contains(got, "beta") {
 		t.Errorf("terms.toml after removing alpha:\n%s", got)
 	}
-	if _, err := Remove(effects.Unbound(), dir, "gamma"); err == nil || !strings.Contains(err.Error(), "no entry") {
+	if _, err := RemoveWord(effects.Unbound(), dir, "gamma"); err == nil || !strings.Contains(err.Error(), "no entry") {
 		t.Errorf("removing an absent word = %v", err)
 	}
 }
@@ -477,7 +477,7 @@ meaning = "a again"
 		t.Fatalf("problems = %+v, want the second entry on line 7", problems)
 	}
 	// The remedy the problem names clears it.
-	if _, err := Remove(effects.Unbound(), dir, "alpha"); err != nil {
+	if _, err := RemoveWord(effects.Unbound(), dir, "alpha"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := Accept(effects.Unbound(), dir, "alpha", "a"); err != nil {
@@ -522,7 +522,7 @@ meaning = "Somewhat blue."
 		strings.Contains(message, "selfdoc vocabulary reject") {
 		t.Errorf("the remedy names more than removing the project's word: %s", message)
 	}
-	if _, err := Remove(effects.Unbound(), dir, "blue-ish"); err != nil {
+	if _, err := RemoveWord(effects.Unbound(), dir, "blue-ish"); err != nil {
 		t.Fatalf("the remedy failed: %v", err)
 	}
 	if problems := CoveredAccepted(withBaselineRejection()); len(problems) != 0 {
@@ -564,7 +564,7 @@ meaning = "b"
 word = "gamma"
 meaning = "g"
 `)
-	if _, err := Remove(effects.Unbound(), dir, "beta"); err != nil {
+	if _, err := RemoveWord(effects.Unbound(), dir, "beta"); err != nil {
 		t.Fatalf("Remove: %v", err)
 	}
 	want := EmptyTerms + `

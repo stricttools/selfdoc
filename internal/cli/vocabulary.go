@@ -106,7 +106,7 @@ func (c *cli) cmdVocabularyReject(ctx *strictcli.Context, kwargs map[string]any)
 func (c *cli) cmdVocabularyRemove(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
 	word := strictcli.Get[string](kwargs, "word")
 	return c.vocabularyEdit(ctx, kwargs, "remove "+word, func(h *effects.Handle) (vocabulary.Edit, error) {
-		return vocabulary.Remove(h, c.dir(), word)
+		return vocabulary.RemoveWord(h, c.dir(), word)
 	})
 }
 

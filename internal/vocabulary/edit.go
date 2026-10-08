@@ -138,13 +138,13 @@ const baselineIsSelfdocs = "A word of " + BaselineSource + " is changed only in 
 // specific words it meant, one entry each.
 const narrowingFix = "reject the specific words meant, one at a time, with 'selfdoc vocabulary reject <word> --kind word --reason <text>'"
 
-// Remove deletes every entry of the project's terms file whose word or
+// RemoveWord deletes every entry of the project's terms file whose word or
 // pattern is word, compared case-insensitively.
 //
 // It reads the file without the conflict check, because removing an entry is
 // how a word both accepted and rejected is resolved. An entry of the baseline
 // is not the project's to remove, and is refused by name.
-func Remove(h *effects.Handle, baseDir, word string) (Edit, error) {
+func RemoveWord(h *effects.Handle, baseDir, word string) (Edit, error) {
 	path := layout.Path(baseDir, layout.TermsRel)
 	project, err := loadTermsFile(path, layout.TermsRel)
 	if err != nil {
