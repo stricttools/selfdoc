@@ -219,6 +219,50 @@ func scanPage(names []string, page string, data []byte) []Finding {
 	return findings
 }
 
+// ScanRef scans every tracked text file of the git tree at ref, in the work
+// tree at root, against names; each finding's page is the file's path in the
+// tree. git grep picks the files holding a name ignoring case, and each is
+// read at ref and matched on whole tokens, as every other scan matches. Both
+// git questions are declared reads, so they run under --dry-run too.
+func ScanRef(h *effects.Handle, root, ref string, names []string) ([]Finding, error) {
+	if len(names) == 0 {
+		return nil, nil
+	}
+	argv := []string{"git", "grep", "-I", "-i", "-l", "-z", "-F"}
+	for _, n := range names {
+		argv = append(argv, "-e", n)
+	}
+	argv = append(argv, ref, "--")
+	grep, err := h.Run(argv, effects.Cwd(root), effects.CaptureOutput(), effects.Read())
+	if err != nil {
+		return nil, fmt.Errorf("searching %s for confidential names: %w", ref, err)
+	}
+	switch grep.ExitCode {
+	case 0:
+	case 1:
+		// git grep's answer for no match.
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("searching %s for confidential names: git grep exited %d: %s", ref, grep.ExitCode, grep.StderrString())
+	}
+	var findings []Finding
+	for _, entry := range strings.Split(string(grep.Stdout), "\x00") {
+		if entry == "" {
+			continue
+		}
+		page := strings.TrimPrefix(entry, ref+":")
+		show, err := h.Run([]string{"git", "show", ref + ":" + page}, effects.Cwd(root), effects.CaptureOutput(), effects.Read())
+		if err != nil {
+			return nil, fmt.Errorf("reading %s at %s: %w", page, ref, err)
+		}
+		if show.ExitCode != 0 {
+			return nil, fmt.Errorf("reading %s at %s: git show exited %d: %s", page, ref, show.ExitCode, show.StderrString())
+		}
+		findings = append(findings, scanPage(names, page, show.Stdout)...)
+	}
+	return findings, nil
+}
+
 // Refusal is the error a public output with findings refuses with: it names
 // the output, every page, line, column, and term, and the index the names come
 // from. It is nil when there are no findings.

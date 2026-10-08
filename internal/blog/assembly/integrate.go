@@ -162,6 +162,10 @@ type IntegrateOptions struct {
 	// Stderr is where the graft's advisory and the verification's not-checked
 	// lines go. Nil writes to the process's standard error.
 	Stderr io.Writer
+	// Screen holds the integration to the confidential-name rules: the
+	// source checkout's record before it is built (a project-scoped run),
+	// and the whole site tree before it is committed. Required.
+	Screen Screen
 }
 
 // IntegrateSummary is what one [IntegrateProject] run did.
@@ -215,6 +219,9 @@ func IntegrateProject(opts IntegrateOptions, h *effects.Handle) (*IntegrateSumma
 	if opts.Attempts < 1 {
 		return nil, errorf("attempts must be at least 1")
 	}
+	if err := opts.Screen.require("assembly integrate"); err != nil {
+		return nil, err
+	}
 
 	assemblyDir := opts.AssemblyDir
 	if assemblyDir == "" {
@@ -259,6 +266,12 @@ func IntegrateProject(opts IntegrateOptions, h *effects.Handle) (*IntegrateSumma
 			return nil, err
 		}
 		isHome = opts.Slug == roster.Home
+	}
+
+	if scope != SharedOnlyScope {
+		if err := opts.Screen.Allow(sourceDir); err != nil {
+			return nil, err
+		}
 	}
 
 	if scope != SharedOnlyScope && !opts.SkipBuild {
@@ -409,6 +422,12 @@ func IntegrateProject(opts IntegrateOptions, h *effects.Handle) (*IntegrateSumma
 			return nil, err
 		}
 		summary.Verified = verified
+
+		// The whole tree the push publishes is scanned for confidential
+		// names before anything is committed.
+		if err := opts.Screen.Scan("assembly integration", siteDir); err != nil {
+			return nil, err
+		}
 
 		staged := []string{"site", "manifests", site.ProjectsPath}
 		if isFile(filepath.Join(assemblyDir, site.OutboundCachePath)) {

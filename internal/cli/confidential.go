@@ -1,8 +1,11 @@
 package cli
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
+	"github.com/stricttools/selfdoc/internal/blog/assembly"
 	"github.com/stricttools/selfdoc/internal/confidential"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/strictcli/go/strictcli"
@@ -89,4 +92,59 @@ func (c *cli) confidentialNameRefusal(what string, scan func(names []string) ([]
 		return err
 	}
 	return confidential.Refusal(what, findings, indexPath)
+}
+
+// assemblyScreen is the confidential-name screen the assembly's publishing
+// commands hold their output to, as every other publishing command is held:
+// a source checkout whose record lets no releasable publish public
+// documentation is refused outright, and every page a built tree holds is
+// scanned against the confidential-name index.
+func (c *cli) assemblyScreen(h *effects.Handle) assembly.Screen {
+	return assembly.Screen{
+		Allow: func(sourceDir string) error {
+			repo, err := confidential.Locate(h, sourceDir)
+			if err != nil {
+				return err
+			}
+			return confidential.PublicOutputAllowed(repo.Record, lifecycle.PublicDocs, time.Now())
+		},
+		Scan: func(what, dir string) error {
+			return c.confidentialNameRefusal(what, func(names []string) ([]confidential.Finding, error) {
+				return confidential.ScanDir(names, dir)
+			})
+		},
+	}
+}
+
+// refRefusal scans every tracked text file of the git tree at ref against the
+// confidential-name index, for a dispatch whose output the assembly builds
+// from that ref, and returns the refusal naming each file, line, and term, or
+// nil when nothing matched.
+func (c *cli) refRefusal(h *effects.Handle, ref string) error {
+	repo, err := confidential.Locate(h, c.dir())
+	if err != nil {
+		return err
+	}
+	indexPath, err := index.DefaultPath()
+	if err != nil {
+		return err
+	}
+	names, err := confidential.Names(indexPath)
+	if err != nil {
+		return err
+	}
+	findings, err := confidential.ScanRef(h, repo.Root, ref, names)
+	if err != nil {
+		return err
+	}
+	if len(findings) == 0 {
+		return nil
+	}
+	lines := make([]string, 0, len(findings))
+	for _, f := range findings {
+		lines = append(lines, fmt.Sprintf("%s, line %d, column %d: %s", f.Page, f.Line, f.Column, f.Term))
+	}
+	return fmt.Errorf("refusing the assembly push: the assembly builds the documentation from %s, whose tracked files name terms the confidential-name index protects:\n  %s\n"+
+		"Remove each term from the files it came from, commit, and push the ref that carries the removal (for a versioned project, a release's tag). "+
+		"The index is %s; commands in the confidential repositories keep it current", ref, strings.Join(lines, "\n  "), indexPath)
 }

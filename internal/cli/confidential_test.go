@@ -282,3 +282,71 @@ func TestPostPublishRefusesAPostNamingAConfidentialTermBeforeWritingAnything(t *
 		t.Errorf("the publish did not go on to the assembly after the term was removed:\n%s", result.Stderr)
 	}
 }
+
+// `assembly push` has the assembly publish the documentation built from a
+// ref, so every tracked file at that ref is scanned before the dispatch.
+func TestAssemblyPushRefusesARefNamingAConfidentialTerm(t *testing.T) {
+	tools := newFakeTools(t, "gh")
+	dir := assemblyProject(t, map[string]any{
+		"assembly": map[string]any{"repo": "owner/assembly", "pages_project": "site"},
+		"topology": map[string]any{"slug": "myproject", "docs_base": "https://docs.example.com"},
+	})
+	writeConfidentialNames(t, "portal")
+	writeText(t, filepath.Join(dir, "notes.md"), "Prose about the Portal.\n")
+	testproject.Git(t, dir, "init")
+	testproject.Git(t, dir, "add", "selfdoc.json", "notes.md")
+	testproject.Git(t, dir, "commit", "-m", "initial")
+	testproject.Git(t, dir, "tag", "v1.0.0")
+	tools.Reply(
+		toolReply{Match: "repo view", Stdout: "owner/source-repo\n"},
+		toolReply{Match: "", Stdout: ""},
+	)
+
+	result := run(t, dir, "assembly", "push")
+	if result.ExitCode == 0 {
+		t.Fatal("a push of a ref naming a confidential term was dispatched")
+	}
+	if !strings.Contains(result.Stderr, "notes.md, line 1, column 17: portal") {
+		t.Errorf("the refusal does not name the file, line, and term:\n%s", result.Stderr)
+	}
+	if dispatches := tools.Matching("/dispatches"); len(dispatches) != 0 {
+		t.Fatalf("the refused push dispatched: %v", dispatches)
+	}
+
+	// The refusal's fix: remove the term, commit, and push the ref that
+	// carries the removal.
+	writeText(t, filepath.Join(dir, "notes.md"), "Prose about the server.\n")
+	testproject.Git(t, dir, "commit", "-am", "remove the term")
+	testproject.Git(t, dir, "tag", "-f", "v1.0.0")
+	if result := run(t, dir, "assembly", "push"); result.ExitCode != 0 {
+		t.Fatalf("the push was refused after the term was removed: %s", result.Stderr)
+	}
+	if dispatches := tools.Matching("/dispatches"); len(dispatches) != 1 {
+		t.Fatalf("expected one dispatch, got %d", len(dispatches))
+	}
+}
+
+// `assembly republish-all` publishes every checkout's build, so each build is
+// scanned before anything is published, in a dry run too.
+func TestRepublishAllRefusesABuildNamingAConfidentialTerm(t *testing.T) {
+	s := newRepublishSite(t, testVersion, nil)
+	writeConfidentialNames(t, "moonbeam")
+	page := filepath.Join(testproject.DocsDir(s.alpha), "index.md")
+	writeText(t, page, "# Alpha\n\nThe moonbeam work.\n")
+	commitAll(t, s.alpha)
+
+	result := s.republish("--dry-run")
+	if result.ExitCode == 0 {
+		t.Fatal("a republish whose build names a confidential term was accepted")
+	}
+	if !strings.Contains(result.Stderr, "republish of alpha") || !strings.Contains(result.Stderr, "moonbeam") {
+		t.Errorf("the refusal does not name the output and term:\n%s", result.Stderr)
+	}
+
+	// The refusal's fix: remove the term, and the republish goes through.
+	writeText(t, page, "# Alpha\n\nThe server work.\n")
+	commitAll(t, s.alpha)
+	if result := s.republish("--dry-run"); result.ExitCode != 0 {
+		t.Fatalf("the republish was refused after the term was removed: %s", result.Stderr)
+	}
+}

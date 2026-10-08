@@ -2,6 +2,7 @@ package assembly
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -443,7 +444,14 @@ func (a *assemblyTree) integrateOptions() IntegrateOptions {
 		RetryDelay:    0,
 		SkipBuild:     true,
 		Stderr:        &strings.Builder{},
+		Screen:        passingScreen,
 	}
+}
+
+// passingScreen is a confidential-name screen with nothing to refuse.
+var passingScreen = Screen{
+	Allow: func(string) error { return nil },
+	Scan:  func(string, string) error { return nil },
 }
 
 // Integrate runs one integration with the fixture's defaults, as modified.
@@ -673,6 +681,41 @@ func TestFullIntegrateGraftsTheBuildAndCommits(t *testing.T) {
 	}
 	if tree.Exists("site/alpha/retired") {
 		t.Error("a page the build no longer produces stayed")
+	}
+}
+
+// The integration holds its output to the confidential-name screen: the
+// source checkout's record before the build, and the whole site tree before
+// anything is committed or pushed.
+func TestIntegrateRefusesWhatItsScreenRefusesBeforeCommitting(t *testing.T) {
+	tree := newAssemblyTree(t)
+	var scanned []string
+	_, err := tree.Integrate(func(o *IntegrateOptions) {
+		o.Screen.Scan = func(what, dir string) error {
+			scanned = append(scanned, what+" "+dir)
+			return errors.New("a page names a confidential term")
+		}
+	})
+	if err == nil || !strings.Contains(err.Error(), "confidential term") {
+		t.Fatalf("a refused scan did not refuse the integration: %v", err)
+	}
+	if len(scanned) != 1 || !strings.HasSuffix(scanned[0], filepath.Join(tree.Root, "site")) {
+		t.Errorf("the scan read %v, want the site tree", scanned)
+	}
+	if len(tree.GitCallsOf("commit")) != 0 || len(tree.GitCallsOf("push ")) != 0 {
+		t.Errorf("a refused integration committed or pushed: %v", tree.GitCalls())
+	}
+
+	_, err = tree.Integrate(func(o *IntegrateOptions) {
+		o.Screen.Allow = func(string) error { return errors.New("every license is proprietary") }
+	})
+	if err == nil || !strings.Contains(err.Error(), "proprietary") {
+		t.Fatalf("a refused record did not refuse the integration: %v", err)
+	}
+
+	_, err = tree.Integrate(func(o *IntegrateOptions) { o.Screen = Screen{} })
+	if err == nil || !strings.Contains(err.Error(), "confidential-name screen") {
+		t.Fatalf("an integration without its screen ran: %v", err)
 	}
 }
 

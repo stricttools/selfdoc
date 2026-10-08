@@ -34,6 +34,10 @@ type RepublishOptions struct {
 	// Running is the running selfdoc's own version, which the assembly's
 	// deploy workflow must pin at least.
 	Running string
+	// Screen holds every checkout to the confidential-name rules: its record
+	// before anything is built, and its build output before anything is
+	// published. Required.
+	Screen Screen
 }
 
 // RepublishedProject is one project a [RepublishAll] published, or would.
@@ -74,6 +78,8 @@ type RepublishSummary struct {
 // with one on the current manifest schema, and it refuses before building
 // anything when:
 //
+//   - a checkout's lifecycle-and-license record lets no releasable publish
+//     public documentation (the screen's record check);
 //   - a checkout is not on the .strictmetadata/ layout, or its manifest is missing
 //     or on an older schema (each named, with its fix);
 //   - the checkouts do not declare one assembly repository;
@@ -84,15 +90,26 @@ type RepublishSummary struct {
 //     about a word (every conflict listed).
 //
 // Then it builds every project locally, the home project last, against the
-// checkouts' own manifests -- the site's are what this pass replaces -- and
-// publishes each through [PublishProjectDocs]. Under a previewing handle the
+// checkouts' own manifests -- the site's are what this pass replaces --,
+// scans each build for confidential names, and only then publishes each
+// through [PublishProjectDocs]. Under a previewing handle the
 // builds still run, since what a dry run reports is what they produce, and
 // nothing is published.
 func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, error) {
+	if err := opts.Screen.require(RepublishCommand); err != nil {
+		return nil, err
+	}
 	dirs := append([]string{opts.HomeDir}, opts.ProjectDirs...)
 	configs, err := refuseUnpublishable(dirs, h)
 	if err != nil {
 		return nil, err
+	}
+	// A checkout whose record lets nothing publish public documentation is
+	// refused before anything is built.
+	for _, dir := range dirs {
+		if err := opts.Screen.Allow(dir); err != nil {
+			return nil, fmt.Errorf("%s: %w", dir, err)
+		}
 	}
 	checkouts, err := site.ResolveCheckouts(opts.HomeDir, opts.ProjectDirs)
 	if err != nil {
@@ -147,6 +164,11 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 			return nil, fmt.Errorf("building %s at %s: %w", util.PythonRepr(checkout.Slug), checkout.SourceDir, err)
 		}
 		outputDir := filepath.Join(checkout.SourceDir, strings.TrimRight(config.OutputRel(cfg), "/"))
+		// Every built page is scanned for confidential names before any
+		// project is published, in a dry run too.
+		if err := opts.Screen.Scan("republish of "+checkout.Slug, outputDir); err != nil {
+			return nil, err
+		}
 		rels, err := site.BuildOutputPaths(outputDir, true)
 		if err != nil {
 			return nil, err
