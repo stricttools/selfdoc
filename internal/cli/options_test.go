@@ -44,7 +44,7 @@ func undescribedProject(t *testing.T) string {
 	dir := initialized(t)
 	writeText(t, filepath.Join(dir, ".strictmetadata", "docs", "index.md"),
 		"+++\ntitle = \"Test\"\n+++\n\n# Test\n\nContent.\n")
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode != 1 || !strings.Contains(result.Stdout, "[missing-frontmatter-description]") {
 		t.Fatalf("the undescribed project does not fail on missing-frontmatter-description: exit %d\n%s\n%s",
 			result.ExitCode, result.Stdout, result.Stderr)
@@ -70,7 +70,7 @@ func TestCheckReportsAnErrorLintAsANonBlockingWarningWhenItsOptionIsWarn(t *test
 	writeOptions(t, dir, "docs.toml", "format_version = 1\n\n"+
 		entry("selfdoc:missing-frontmatter-description", "warn", "error", "the landing page is being rewritten"))
 
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	if result.ExitCode != 0 {
 		t.Fatalf("exit %d, want 0 with the lint at warn:\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
@@ -90,7 +90,7 @@ func TestCheckDoesNotReportALintWhoseOptionIsOff(t *testing.T) {
 	writeOptions(t, dir, "docs.toml", "format_version = 1\n\n"+
 		entry("selfdoc:missing-frontmatter-description", "off", "error", "the landing page is being rewritten"))
 
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	if result.ExitCode != 0 {
 		t.Fatalf("exit %d, want 0 with the lint off:\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
@@ -123,7 +123,7 @@ func TestCheckRefusesAnInvalidSelfdocEntryWithStrictspecsDiagnostic(t *testing.T
 	writeOptions(t, dir, "docs.toml", "format_version = 1\n\n"+
 		entry("selfdoc:missing-frontmatter-description", "loud", "error", "a value the option does not declare"))
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode == 0 || !strings.Contains(result.Stderr, "STRICTSPEC_OPTIONS_UNDECLARED_CURRENT") ||
 		!strings.Contains(result.Stderr, ".strictmetadata/options/docs.toml") {
 		t.Errorf("exit %d, want the strictspec refusal:\n%s", result.ExitCode, result.Stderr)
@@ -139,12 +139,12 @@ func TestCheckValidatesOnlyTheShapeOfAnotherToolsEntries(t *testing.T) {
 	dir := initialized(t)
 	writeOptions(t, dir, "changelog.toml", "format_version = 1\n\n"+
 		entry("rlsbl:no-such-option", "whatever", "anything", "another tool judges this entry"))
-	if result := run(t, dir, "check", "--no-auto-commit"); result.ExitCode != 0 {
+	if result := run(t, dir, "check"); result.ExitCode != 0 {
 		t.Errorf("another tool's entry was judged: exit %d\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
 
 	writeOptions(t, dir, "changelog.toml", entry("rlsbl:no-such-option", "whatever", "anything", "no format_version"))
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode == 0 || !strings.Contains(result.Stderr, "STRICTSPEC_GATE_ABSENT") ||
 		!strings.Contains(result.Stderr, "changelog.toml") {
 		t.Errorf("a document of the wrong shape was accepted: exit %d\n%s", result.ExitCode, result.Stderr)
@@ -211,7 +211,7 @@ func TestEveryNamedFixOfARefusedEntryClearsIt(t *testing.T) {
 			for file, content := range tc.files {
 				writeOptions(t, dir, file, content)
 			}
-			refused := run(t, dir, "check", "--no-auto-commit")
+			refused := run(t, dir, "check")
 			if refused.ExitCode == 0 {
 				t.Fatalf("the entry was accepted:\n%s", refused.Stdout)
 			}
@@ -228,7 +228,7 @@ func TestEveryNamedFixOfARefusedEntryClearsIt(t *testing.T) {
 			for file, content := range tc.fixed {
 				writeOptions(t, dir, file, content)
 			}
-			if fixed := run(t, dir, "check", "--no-auto-commit"); fixed.ExitCode != 0 {
+			if fixed := run(t, dir, "check"); fixed.ExitCode != 0 {
 				t.Errorf("the fix did not clear the refusal: exit %d\n%s\n%s", fixed.ExitCode, fixed.Stdout, fixed.Stderr)
 			}
 		})
@@ -238,7 +238,7 @@ func TestEveryNamedFixOfARefusedEntryClearsIt(t *testing.T) {
 func TestCheckNoLongerAcceptsAnIgnoreFlag(t *testing.T) {
 	isolate(t)
 	dir := initialized(t)
-	result := run(t, dir, "check", "--ignore", "low-numeric-data-density", "--no-auto-commit")
+	result := run(t, dir, "check", "--ignore", "low-numeric-data-density")
 	if result.ExitCode == 0 || !strings.Contains(result.Stderr, "--ignore") {
 		t.Errorf("--ignore was accepted: exit %d\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
@@ -257,7 +257,7 @@ func TestLintIgnoreIsRefusedNamingTheOptionsEntriesAndTheFixClearsIt(t *testing.
 	config["lint_ignore"] = []any{"SEO007", "low-numeric-data-density"}
 	testproject.WriteJSON(t, configPath, config)
 
-	refused := run(t, dir, "check", "--no-auto-commit")
+	refused := run(t, dir, "check")
 	if refused.ExitCode == 0 {
 		t.Fatal("a selfdoc.json carrying lint_ignore was accepted")
 	}
@@ -280,7 +280,7 @@ func TestLintIgnoreIsRefusedNamingTheOptionsEntriesAndTheFixClearsIt(t *testing.
 	}
 	delete(config, "lint_ignore")
 	testproject.WriteJSON(t, configPath, config)
-	fixed := run(t, dir, "check", "--no-auto-commit")
+	fixed := run(t, dir, "check")
 	if fixed.ExitCode != 0 {
 		t.Fatalf("the fix did not clear the refusal: exit %d\n%s\n%s", fixed.ExitCode, fixed.Stdout, fixed.Stderr)
 	}
@@ -299,7 +299,7 @@ func TestLintIgnoreNamingNoLintIsRefusedAsSuch(t *testing.T) {
 	config := readJSON(t, configPath)
 	config["lint_ignore"] = []any{"SEO0O8"}
 	testproject.WriteJSON(t, configPath, config)
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode == 0 || !strings.Contains(result.Stderr, "SEO0O8") ||
 		!strings.Contains(result.Stderr, "names no lint") {
 		t.Errorf("exit %d, want the refusal naming the unknown code:\n%s", result.ExitCode, result.Stderr)
@@ -461,7 +461,7 @@ func TestOptionsSetAcceptsAnIdealSelfdocDoesNotOfferYet(t *testing.T) {
 	if class := payloadOf(t, result)["class"]; class != "waiting-on-tool" {
 		t.Errorf("class = %v, want waiting-on-tool", class)
 	}
-	if check := run(t, dir, "check", "--json", "--no-auto-commit"); strings.Contains(check.Stderr, "STRICTSPEC_") {
+	if check := run(t, dir, "check", "--json"); strings.Contains(check.Stderr, "STRICTSPEC_") {
 		t.Errorf("the check refuses the entry options set wrote:\n%s", check.Stderr)
 	}
 }

@@ -144,7 +144,7 @@ func TestCheckResolvesTheSiteDirectivesOfTheHomeProject(t *testing.T) {
 			`<a href="alpha/">Alpha</a>`+"\n"+
 			"</selfdoc-region>\n</body>\n</html>\n")
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	report := result.Stdout + result.Stderr
 	if strings.Contains(report, "Unknown directive") {
 		t.Fatalf("the site directives were refused as unknown:\n%s", report)
@@ -172,7 +172,7 @@ func TestCheckNamesTheMissingAssemblyBlockForASiteDirective(t *testing.T) {
 	isolate(t)
 	dir := homeSiteProject(t, map[string]any{"assembly": nil})
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode == 0 {
 		t.Fatalf("check passed with an unresolvable site directive:\n%s", result.Stdout)
 	}
@@ -190,7 +190,7 @@ func TestCheckRefusesASiteDirectiveOnANonHomeProject(t *testing.T) {
 	dir := homeSiteProject(t, nil)
 	serveAssembly(t, tools, "someone-else")
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode == 0 {
 		t.Fatalf("check passed on a project that is not home:\n%s", result.Stdout)
 	}
@@ -255,7 +255,7 @@ func TestBaselineAcceptResolvesTheSiteDirectivesOfTheHomeProject(t *testing.T) {
 	// Establish the baseline, then rewrite the front page's prose while
 	// leaving its description alone: that is the stale-page-description dead end
 	// `baseline accept` exists to clear.
-	run(t, dir, "check", "--no-auto-commit")
+	recordBaseline(t, dir)
 	writeHomeFrontPage(t, dir, "Completely rewritten prose about the site.")
 	stale := staleIdentifiers(t, dir)
 	if len(stale) != 1 {

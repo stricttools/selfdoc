@@ -159,8 +159,8 @@ func GenerateDocs(config map[string]any, baseDir, versionOverride string, handle
 	// Resolve the project name for the index description.
 	projectName := resolveProjectName(config, baseDir)
 
-	// Load the staleness store once. gen is a second writer of this store
-	// (alongside build and check): it reads each page's seed_hash to decide
+	// Load the staleness store once. gen is one of the writers of this
+	// store: it reads each page's seed_hash to decide
 	// preserve-versus-reseed, and records fresh seed hashes for the pages it
 	// seeds.
 	storedHashes, err := staleness.LoadHashes(baseDir)
@@ -701,7 +701,7 @@ func readFrontmatterDescription(path string) (string, bool) {
 // wrote this run.
 //
 // filenames are basenames relative to localeDocsDir. The store is merged into
-// in place, so every field build and check own is left alone. A page that no
+// in place, so every other field of the entry is left alone. A page that no
 // longer carries machine text has its seed hash cleared, but only when the
 // store already holds an entry for it -- writing one for a page that has none
 // would put an otherwise empty entry into the store, which is not the same

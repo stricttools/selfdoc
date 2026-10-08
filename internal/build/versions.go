@@ -44,36 +44,10 @@ func ExtractVersionContent(version string, config map[string]any, baseDir string
 		return "", err
 	}
 
-	tagName := ""
-	for _, candidate := range []string{"v" + version, version} {
-		result, err := h.Run([]string{"git", "rev-parse", "refs/tags/" + candidate},
-			effects.CaptureOutput(), effects.Timeout(gitProbeTimeout),
-			effects.Cwd(baseDir), effects.Read())
-		if err != nil {
-			return "", err
-		}
-		if result.ExitCode == 0 {
-			tagName = candidate
-			break
-		}
-	}
-	if tagName == "" {
-		return "", fmt.Errorf(
-			"Git tag for version '%s' not found. Tried 'v%s' and '%s'.",
-			version, version, version)
-	}
-
-	result, err := h.Run([]string{"git", "rev-parse", tagName + "^{commit}"},
-		effects.CaptureOutput(), effects.Timeout(gitProbeTimeout),
-		effects.Cwd(baseDir), effects.Read())
+	tagName, commitHash, err := resolveVersionTag(version, baseDir, h)
 	if err != nil {
 		return "", err
 	}
-	if result.ExitCode != 0 {
-		return "", fmt.Errorf("Failed to resolve commit for tag '%s': %s",
-			tagName, util.PythonStrip(string(result.Stderr)))
-	}
-	commitHash := util.PythonStrip(string(result.Stdout))
 
 	if cached, readErr := os.ReadFile(hashFile); readErr == nil {
 		if util.PythonStrip(string(cached)) == commitHash {
@@ -90,43 +64,10 @@ func ExtractVersionContent(version string, config map[string]any, baseDir string
 		return "", err
 	}
 
-	docsPath := strings.TrimRight(configString(config, "docs"), "/")
-	archivePaths := []string{docsPath}
-	// The generated pages are the second docs root, and a tag that predates
-	// them carries none: asking git archive for a path the tag does not
-	// hold is an error, so the path is named only when the tag holds it.
-	//
-	// The ownership manifests travel with them: the extracted checkout is
-	// built like any other repository, and creating its output directory
-	// needs the manifest that permits it. A manifest already inside an
-	// archived path -- the docs directory's own -- is not named twice.
-	optionalPaths := []string{layout.GeneratedPagesRel}
-	for _, claimed := range layout.Declared() {
-		manifestPath := layout.DirectoryManifestRel(claimed.Name)
-		if strings.HasPrefix(manifestPath, docsPath+"/") {
-			continue
-		}
-		optionalPaths = append(optionalPaths, manifestPath)
+	archivePaths, err := versionArchivePaths(tagName, config, baseDir, h)
+	if err != nil {
+		return "", err
 	}
-	for _, optional := range optionalPaths {
-		inTag, err := pathInTag(tagName, optional, baseDir, h)
-		if err != nil {
-			return "", err
-		}
-		if inTag {
-			archivePaths = append(archivePaths, optional)
-		}
-	}
-	if declaresSource(config) {
-		rawSourcePaths, sourceErr := extractors.SourcePaths(config)
-		if sourceErr != nil {
-			return "", sourceErr
-		}
-		for _, sourcePath := range rawSourcePaths {
-			archivePaths = append(archivePaths, strings.TrimRight(sourcePath, "/"))
-		}
-	}
-
 	gitCmd := append([]string{"git", "archive", tagName}, archivePaths...)
 	tarCmd := []string{"tar", "-x", "-C", cacheDir}
 
@@ -152,6 +93,114 @@ func ExtractVersionContent(version string, config map[string]any, baseDir string
 		return "", err
 	}
 	return cacheDir, nil
+}
+
+// ExtractVersionInto extracts the same content [ExtractVersionContent] does
+// into destDir, an existing empty directory the caller owns and removes, and
+// keeps no cache.
+//
+// It is the read-only path: `selfdoc check` reads archived versions through
+// it, and a command that writes nothing cannot fill selfdoc's cache. The
+// extraction is a declared read, since its only write lands in the caller's
+// own directory, so it runs under --dry-run as well.
+func ExtractVersionInto(version string, config map[string]any, baseDir, destDir string, h *effects.Handle) error {
+	tagName, _, err := resolveVersionTag(version, baseDir, h)
+	if err != nil {
+		return err
+	}
+	archivePaths, err := versionArchivePaths(tagName, config, baseDir, h)
+	if err != nil {
+		return err
+	}
+	gitCmd := append([]string{"git", "archive", tagName}, archivePaths...)
+	tarCmd := []string{"tar", "-x", "-C", destDir}
+	outcome, err := h.Pipeline([][]string{gitCmd, tarCmd},
+		effects.Cwd(baseDir), effects.Timeout(archiveTimeout), effects.Read())
+	if err != nil {
+		return err
+	}
+	if outcome.ExitCode != 0 {
+		return fmt.Errorf("tag archive extraction failed for tag '%s': %s",
+			tagName, util.PythonStrip(string(outcome.Stderr)))
+	}
+	return nil
+}
+
+// resolveVersionTag finds a version's tag, "v{version}" and then "{version}",
+// and the commit it points at, an annotated tag dereferenced.
+func resolveVersionTag(version, baseDir string, h *effects.Handle) (tagName, commitHash string, err error) {
+	for _, candidate := range []string{"v" + version, version} {
+		result, err := h.Run([]string{"git", "rev-parse", "refs/tags/" + candidate},
+			effects.CaptureOutput(), effects.Timeout(gitProbeTimeout),
+			effects.Cwd(baseDir), effects.Read())
+		if err != nil {
+			return "", "", err
+		}
+		if result.ExitCode == 0 {
+			tagName = candidate
+			break
+		}
+	}
+	if tagName == "" {
+		return "", "", fmt.Errorf(
+			"Git tag for version '%s' not found. Tried 'v%s' and '%s'.",
+			version, version, version)
+	}
+
+	result, err := h.Run([]string{"git", "rev-parse", tagName + "^{commit}"},
+		effects.CaptureOutput(), effects.Timeout(gitProbeTimeout),
+		effects.Cwd(baseDir), effects.Read())
+	if err != nil {
+		return "", "", err
+	}
+	if result.ExitCode != 0 {
+		return "", "", fmt.Errorf("Failed to resolve commit for tag '%s': %s",
+			tagName, util.PythonStrip(string(result.Stderr)))
+	}
+	return tagName, util.PythonStrip(string(result.Stdout)), nil
+}
+
+// versionArchivePaths are the paths a version's extraction asks git archive
+// for: the docs directory, the generated pages and the ownership manifests
+// the tag holds, and the declared source paths.
+func versionArchivePaths(tagName string, config map[string]any, baseDir string, h *effects.Handle) ([]string, error) {
+	docsPath := strings.TrimRight(configString(config, "docs"), "/")
+	archivePaths := []string{docsPath}
+	// The generated pages are the second docs root, and a tag that predates
+	// them carries none: asking git archive for a path the tag does not
+	// hold is an error, so the path is named only when the tag holds it.
+	//
+	// The ownership manifests travel with them: the extracted checkout is
+	// built like any other repository, and creating its output directory
+	// needs the manifest that permits it. A manifest already inside an
+	// archived path -- the docs directory's own -- is not named twice.
+	optionalPaths := []string{layout.GeneratedPagesRel}
+	for _, claimed := range layout.Declared() {
+		manifestPath := layout.DirectoryManifestRel(claimed.Name)
+		if strings.HasPrefix(manifestPath, docsPath+"/") {
+			continue
+		}
+		optionalPaths = append(optionalPaths, manifestPath)
+	}
+	for _, optional := range optionalPaths {
+		inTag, err := pathInTag(tagName, optional, baseDir, h)
+		if err != nil {
+			return nil, err
+		}
+		if inTag {
+			archivePaths = append(archivePaths, optional)
+		}
+	}
+	if declaresSource(config) {
+		rawSourcePaths, sourceErr := extractors.SourcePaths(config)
+		if sourceErr != nil {
+			return nil, sourceErr
+		}
+		for _, sourcePath := range rawSourcePaths {
+			archivePaths = append(archivePaths, strings.TrimRight(sourcePath, "/"))
+		}
+	}
+	return archivePaths, nil
 }
 
 // pathInTag reports whether a tag's tree carries a path.

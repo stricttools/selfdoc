@@ -27,7 +27,7 @@ func vocabularyCLIProject(t *testing.T, body string) string {
 // diagnosticsOf runs the check and returns its stderr and stdout together.
 func diagnosticsOf(t *testing.T, dir string) string {
 	t.Helper()
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	return result.Stdout + result.Stderr
 }
 

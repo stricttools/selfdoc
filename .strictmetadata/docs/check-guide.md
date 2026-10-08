@@ -1,6 +1,6 @@
 +++
 title = "Check Guide"
-description = "Run selfdoc check to validate directives, measure two-tier coverage and read what a skeleton-only symbol really means, execute marked examples, spell-check page prose, lint blog posts alongside documentation pages, and apply every registered lint rule at the value its option sets, never above its declared severity."
+description = "Run selfdoc check to validate directives, measure two-tier coverage and read what a skeleton-only symbol really means, execute marked examples, spell-check page prose, lint blog posts alongside documentation pages, apply every registered lint rule at the value its option sets, never above its declared severity, and do all of it without writing anything."
 nav_group = "Guides"
 nav_order = 10
 +++
@@ -259,7 +259,7 @@ project, and with `--json` the same declarations are the payload.
 
 selfdoc tracks SHA-256 hashes of each page's raw template body (directives unresolved) and its frontmatter description. When the content changes but the description stays the same, it raises a stale-page-description error. This catches the common case where you update a page's content but forget to revise the description that feeds into meta tags and search results.
 
-Hashes are stored in `.strictmetadata/.docs-state/hashes/hashes.json` and auto-committed after each check (unless you pass `--no-auto-commit` or `--dry-run`).
+Hashes are stored in `.strictmetadata/.docs-state/hashes/hashes.json`. `selfdoc check` only compares against them and writes nothing; `selfdoc gen` records and commits them.
 
 ## Example Validation
 

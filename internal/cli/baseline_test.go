@@ -15,7 +15,7 @@ import (
 // stale-page-description fires when a page's resolved content changed versus its stored
 // baseline but its frontmatter description did not. The baseline is
 // deliberately frozen while a page is in an error state, so re-running
-// gen/check can never clear the error on its own -- the only other escape is
+// gen or check can never clear the error on its own -- the only other escape is
 // editing the description. `baseline accept <page>` is the deliberate,
 // auditable human action that clears such a dead end when the existing
 // description was reviewed and is still accurate.
@@ -36,11 +36,21 @@ func writePage(t *testing.T, dir, description, body, name string) {
 		"+++\ndescription = \""+description+"\"\n+++\n# Page\n\n"+body+"\n")
 }
 
+// recordBaseline runs gen, which records the staleness and drift baseline
+// check compares against (check itself writes nothing), leaving it
+// uncommitted.
+func recordBaseline(t *testing.T, dir string) {
+	t.Helper()
+	if result := run(t, dir, "gen", "--no-auto-commit"); result.ExitCode != 0 {
+		t.Fatalf("gen failed: %s\n%s", result.Stdout, result.Stderr)
+	}
+}
+
 // staleIdentifiers runs the check and returns every page the run reports as
 // stale, named exactly as the report names it.
 func staleIdentifiers(t *testing.T, dir string) []string {
 	t.Helper()
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	payload := payloadOf(t, result)
 	var pages []string
 	for _, raw := range payload["lints"].([]any) {
@@ -56,8 +66,9 @@ func TestBaselineAcceptClearsTheDeadEnd(t *testing.T) {
 	isolate(t)
 	dir := baselineProject(t)
 
-	// First check: establish the baseline -- a new page is not stale.
+	// gen establishes the baseline -- a new page is not stale.
 	writePage(t, dir, "Original description", "Original content here.", "page.md")
+	recordBaseline(t, dir)
 	if stale := staleIdentifiers(t, dir); len(stale) != 0 {
 		t.Fatalf("a fresh page is reported stale: %v", stale)
 	}
@@ -97,7 +108,7 @@ func TestBaselineAcceptClearsSeveralPagesAtOnce(t *testing.T) {
 	dir := baselineProject(t)
 	writePage(t, dir, "Desc A original", "Body A original.", "a.md")
 	writePage(t, dir, "Desc B original", "Body B original.", "b.md")
-	staleIdentifiers(t, dir)
+	recordBaseline(t, dir)
 
 	writePage(t, dir, "Desc A original", "Body A rewritten.", "a.md")
 	writePage(t, dir, "Desc B original", "Body B rewritten.", "b.md")
@@ -209,6 +220,7 @@ func stalePageInAGitRepository(t *testing.T) (string, string) {
 	testproject.Git(t, dir, "add", "selfdoc.json", ".strictmetadata/docs/page.md", "src/__init__.py")
 	testproject.Git(t, dir, "commit", "-m", "initial")
 
+	recordBaseline(t, dir)
 	if stale := staleIdentifiers(t, dir); len(stale) != 0 {
 		t.Fatalf("a fresh page is reported stale: %v", stale)
 	}
@@ -266,30 +278,60 @@ func TestBaselineAcceptCommitsTheStoreByDefault(t *testing.T) {
 	}
 }
 
-// The "selfdoc: update content hashes" commit belongs to check and build,
-// which commit the hash store by default. Naming it here pins where it comes
-// from: an acceptance never writes that message, so such a commit appearing
-// beside an acceptance came from the check that reported the staleness.
-func TestTheHashStoreMessageBelongsToCheck(t *testing.T) {
+// check is a read-only verdict: run in a repository where it has a page whose
+// baseline it could advance (content and description both rewritten) and a
+// page it reports stale, it makes no commit and leaves every tracked file as
+// it was. The baseline is gen's to write.
+func TestCheckCommitsNothingAndChangesNoTrackedFile(t *testing.T) {
 	isolate(t)
 	gitOnlyPath(t)
-	dir, _ := stalePageInAGitRepository(t)
+	dir := baselineProject(t)
+	writePage(t, dir, "Original description", "Original content here.", "page.md")
+	writePage(t, dir, "Other description", "Other content here.", "other.md")
+	testproject.Git(t, dir, "init")
+	testproject.Git(t, dir, "add", "-A")
+	testproject.Git(t, dir, "commit", "-m", "initial")
+	if result := run(t, dir, "gen"); result.ExitCode != 0 {
+		t.Fatalf("gen failed: %s\n%s", result.Stdout, result.Stderr)
+	}
+	if status := gitStatus(t, dir); status != "" {
+		t.Fatalf("gen left changes uncommitted:\n%s", status)
+	}
+
+	writePage(t, dir, "Rewritten description", "Rewritten content.", "page.md")
+	writePage(t, dir, "Other description", "Rewritten other content.", "other.md")
+	testproject.Git(t, dir, "commit", "-am", "edit the pages")
+	before := headSubject(t, dir)
 
 	result := run(t, dir, "check")
 	if result.ExitCode == 0 {
 		t.Fatalf("the stale page did not fail the check: %s", result.Stdout)
 	}
-
-	if subject := headSubject(t, dir); subject != hashStoreMessage {
-		t.Fatalf("HEAD subject = %q, want %q", subject, hashStoreMessage)
+	if after := headSubject(t, dir); after != before {
+		t.Errorf("check committed %q", after)
 	}
+	if status := gitStatus(t, dir); status != "" {
+		t.Errorf("check changed tracked files:\n%s", status)
+	}
+}
+
+// gitStatus is the repository's porcelain status, empty when nothing changed.
+func gitStatus(t *testing.T, dir string) string {
+	t.Helper()
+	command := exec.Command("git", "status", "--porcelain")
+	command.Dir = dir
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("git status in %s: %v\n%s", dir, err, output)
+	}
+	return strings.TrimSpace(string(output))
 }
 
 // driftIdentifiers runs the check and returns every page the run reports as
 // drifted, named exactly as the report names it.
 func driftIdentifiers(t *testing.T, dir string) []string {
 	t.Helper()
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	payload := payloadOf(t, result)
 	var pages []string
 	for _, raw := range payload["lints"].([]any) {
@@ -322,6 +364,7 @@ func TestADescriptionEditClearsDriftThroughGen(t *testing.T) {
 	writeSource("Original docstring.")
 	body := ":-: ref path=\"mylib\""
 	writePage(t, dir, "Library docs for the mylib package and its greeting helper.", body, "mylib.md")
+	recordBaseline(t, dir)
 	if drift := driftIdentifiers(t, dir); len(drift) != 0 {
 		t.Fatalf("a fresh page is reported drifted: %v", drift)
 	}

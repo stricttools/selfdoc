@@ -124,7 +124,7 @@ func TestAnOutdatedManifestIsRefusedNamingMigrateAndMigrateConvertsIt(t *testing
 	dir := outdatedCurrentLayoutProject(t)
 	for _, argv := range [][]string{
 		{"gen", "--no-auto-commit"},
-		{"check", "--no-auto-commit"},
+		{"check"},
 	} {
 		result := run(t, dir, argv...)
 		if result.ExitCode == 0 || !strings.Contains(result.Stderr, "'selfdoc layout migrate'") {
@@ -159,7 +159,7 @@ func TestAnOutdatedManifestIsRefusedNamingMigrateAndMigrateConvertsIt(t *testing
 	}
 	for _, argv := range [][]string{
 		{"gen", "--no-auto-commit"},
-		{"check", "--no-auto-commit"},
+		{"check"},
 	} {
 		if result := run(t, dir, argv...); strings.Contains(result.Stderr, "'selfdoc layout migrate'") {
 			t.Errorf("%v still refuses after the conversion:\n%s", argv, result.Stderr)

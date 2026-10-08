@@ -6,13 +6,13 @@ import (
 	"strings"
 
 	"github.com/stricttools/selfdoc/internal/blog/posts"
+	"github.com/stricttools/selfdoc/internal/check"
 	"github.com/stricttools/selfdoc/internal/docs"
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/gen"
 	"github.com/stricttools/selfdoc/internal/gitcommit"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/manifest"
-	"github.com/stricttools/selfdoc/internal/staleness"
 	"github.com/stricttools/strictcli/go/strictcli"
 )
 
@@ -111,30 +111,14 @@ func (c *cli) cmdGen(ctx *strictcli.Context, kwargs map[string]any) strictcli.Ou
 
 	commitFiles = append(commitFiles, rootGenerated...)
 
-	// Update content/description hashes so that a subsequent 'check' does not
-	// report freshly-generated pages as stale.
-	allDocs, err := docs.ResolveAll(cfg, "", dir, nil, handle)
-	if err != nil {
+	// Record the staleness and drift baseline `selfdoc check` compares
+	// against, measured as check measures it: check is a read-only verdict,
+	// so the commands that generate content are the ones that write it.
+	if err := check.RecordBaselines(dir, cfg, handle); err != nil {
 		return c.fail(err)
 	}
-	// gen regenerates content and description together, so no page is left
-	// stale here -- the skeleton exemption is unnecessary, and the empty set
-	// is passed explicitly because there is no default.
-	hashDocs := docs.StalenessDocs(allDocs)
-	if locales, ok := cfg["locales"].([]any); ok && len(locales) > 0 {
-		if first, ok := locales[0].(map[string]any); ok {
-			if code, ok := first["code"].(string); ok {
-				prefixed := make(map[string]staleness.Doc, len(hashDocs))
-				for rel, doc := range hashDocs {
-					prefixed[code+"/"+rel] = doc
-				}
-				hashDocs = prefixed
-			}
-		}
-	}
-	if _, _, err := staleness.UpdateHashes(
-		hashDocs, dir, false, nil, nil, map[string]bool{}, handle,
-	); err != nil {
+	allDocs, err := docs.ResolveAll(cfg, "", dir, nil, handle)
+	if err != nil {
 		return c.fail(err)
 	}
 	commitFiles = append(commitFiles, hashStorePath)

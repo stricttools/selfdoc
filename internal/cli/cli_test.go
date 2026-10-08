@@ -251,7 +251,7 @@ func TestCheckFindsDirectives(t *testing.T) {
 	requirePython3(t)
 	dir := initialized(t)
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	for _, want := range []string{"OK", "ref", "directive(s)"} {
 		if !strings.Contains(result.Stdout, want) {
 			t.Errorf("report does not mention %q:\n%s", want, result.Stdout)
@@ -265,7 +265,7 @@ func TestCheckAlwaysRunsSEOLints(t *testing.T) {
 	requirePython3(t)
 	dir := initialized(t)
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode != 0 {
 		t.Fatalf("exit code is %d, want 0\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
@@ -281,7 +281,7 @@ func TestCheckExitsOneOnErrors(t *testing.T) {
 	dir := initialized(t)
 	writeText(t, filepath.Join(dir, ".strictmetadata", "docs", "index.md"), "# Test\n\nContent.\n")
 
-	result := run(t, dir, "check", "--no-auto-commit")
+	result := run(t, dir, "check")
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code is %d, want 1\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}
@@ -317,7 +317,7 @@ func TestCheckExitsOneOnABrokenValidatedExample(t *testing.T) {
 		"def greet(name):\n    return 'Hello, ' + name\n\ngreet()\n",
 		"A page whose executable example parses fine but raises when it runs")
 
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	if result.ExitCode != 1 {
 		t.Fatalf("exit code is %d, want 1\n%s\n%s", result.ExitCode, result.Stdout, result.Stderr)
 	}

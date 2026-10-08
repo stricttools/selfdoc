@@ -157,7 +157,7 @@ func TestSchemaCoveragePropertiesMatchTheEmittedFields(t *testing.T) {
 	requirePython3(t)
 	dir := initialized(t)
 
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	payload := payloadOf(t, result)
 	coverage, ok := payload["coverage"].(map[string]any)
 	if !ok {
@@ -300,23 +300,20 @@ func commandEntry(t *testing.T, name string) map[string]any {
 	return entry
 }
 
-// TestCheckHelpSaysThatItWrites asserts that the check command's own help says
-// it advances the staleness baselines and commits them.
-//
-// check is one of the two declared writers of the hash store, and it is
-// registered as a mutating command -- but a command called "check" is run as a
-// read-only audit, and a help line that only promises to check leaves the
-// write to be discovered from a dirty working tree.
-func TestCheckHelpSaysThatItWrites(t *testing.T) {
+// TestCheckIsAReadOnlyVerdictAndItsHelpSaysWhoWritesTheBaseline asserts that
+// check is registered read-only and that its help names the commands that
+// write and commit the staleness baseline it compares against, so the help
+// does not leave a reader looking for the writer.
+func TestCheckIsAReadOnlyVerdictAndItsHelpSaysWhoWritesTheBaseline(t *testing.T) {
 	entry := commandEntry(t, "check")
-	if entry["effect"] != "mutating" {
-		t.Errorf("check declares effect %v, want mutating", entry["effect"])
+	if entry["effect"] != "read_only" {
+		t.Errorf("check declares effect %v, want read_only", entry["effect"])
 	}
 	help, ok := entry["help"].(string)
 	if !ok {
 		t.Fatal("check declares no help")
 	}
-	for _, want := range []string{"baseline", "commits"} {
+	for _, want := range []string{"writes nothing and commits nothing", "selfdoc gen", "selfdoc baseline accept"} {
 		if !strings.Contains(help, want) {
 			t.Errorf("the check help does not say %q:\n%s", want, help)
 		}

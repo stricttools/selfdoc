@@ -61,13 +61,14 @@ var commandEffects = map[string]string{
 	"serve": "mutating",
 	// wrangler deploy, or a force-push of the remote gh-pages branch
 	"deploy": "mutating",
-	// rewrites the content-hash store (the staleness baseline) and
-	// auto-commits it -- an app-level cache write is an ordinary mutation
-	"check": "mutating",
+	// reports against the staleness baseline and writes nothing; gen and
+	// build write the baseline
+	"check": "read_only",
 	// advances the stored staleness/drift baselines, then auto-commits
 	"baseline.accept": "mutating",
 	// writes generated doc pages and the read-only root files, deletes stale
-	// generated pages, updates hashes + manifest, then auto-commits
+	// generated pages, records the staleness baseline check compares against
+	// and the manifest, then auto-commits
 	"gen": "mutating",
 	// runs the configured scripts under bwrap and writes their data outputs
 	"gen-data": "mutating",
@@ -330,7 +331,7 @@ func TestANonConsequentialCommandRunsWithoutAConsentFlag(t *testing.T) {
 	// flag, and fails on its own terms rather than at a confirmation, which
 	// is what proves no confirmation is there.
 	isolate(t)
-	result := runCLI(t, t.TempDir(), "check", "--no-auto-commit")
+	result := runCLI(t, t.TempDir(), "check")
 	if strings.Contains(result.Stderr, "stdin is not interactive") {
 		t.Errorf("check asked for confirmation: %s", result.Stderr)
 	}

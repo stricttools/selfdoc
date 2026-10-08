@@ -1,10 +1,13 @@
 package check
 
 import (
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/stricttools/selfdoc/internal/layout"
 )
 
 // versionProject writes a project whose config document is the given one, with
@@ -336,4 +339,52 @@ func TestVersionFilterControlsVER001(t *testing.T) {
 			t.Error("version-tag-not-extractable fired under a version filter")
 		}
 	})
+}
+
+// A check that writes nothing reads an archived version from a temporary
+// extraction: the older version's pages are checked, labelled with their
+// version, and selfdoc's version cache is never created.
+func TestACheckThatWritesNothingReadsAnArchivedVersionWithoutTheCache(t *testing.T) {
+	isolate(t)
+	root := filepath.Join(t.TempDir(), "proj")
+	projectConfig := configForSource(
+		map[string]any{"path": "src/", "language": "python"},
+	)
+	projectConfig["version"] = "0.2.0"
+	projectConfig["versions"] = []any{
+		map[string]any{"version": "0.1.0"},
+		map[string]any{"version": "0.2.0"},
+	}
+	writeConfig(t, root, projectConfig)
+	write(t, filepath.Join(root, "src", "__init__.py"), `"""Pkg."""`+"\n")
+	write(t, filepath.Join(root, ".strictmetadata", "docs", "index.md"),
+		"# Project\n\n:-: ref path=\"gone_module\"\n")
+	gitInit(t, root)
+	runGit(t, root, "tag", "v0.1.0")
+
+	write(t, filepath.Join(root, ".strictmetadata", "docs", "index.md"), "# Project\n\nWelcome.\n")
+	runGit(t, root, "add", ".strictmetadata/docs/")
+	runGit(t, root, "commit", "-m", "rewrite the docs")
+	runGit(t, root, "tag", "v0.2.0")
+
+	result, err := CheckDocs(root, nil, true, "", "", handle())
+	if err != nil {
+		t.Fatalf("CheckDocs: %v", err)
+	}
+	if hasCode(result.Lints, "version-tag-not-extractable") {
+		t.Fatalf("the archived version was not extracted: %v",
+			messagesOf(withCode(result.Lints, "version-tag-not-extractable")))
+	}
+	archivedFailure := false
+	for _, directiveResult := range result.DirectiveResults {
+		if directiveResult.Outcome == StatusFailed && strings.HasPrefix(directiveResult.File, "[0.1.0] ") {
+			archivedFailure = true
+		}
+	}
+	if !archivedFailure {
+		t.Errorf("the archived version's broken directive was not reported: %+v", result.DirectiveResults)
+	}
+	if _, err := os.Stat(layout.Path(root, layout.VersionsRel)); !os.IsNotExist(err) {
+		t.Errorf("the check created selfdoc's version cache (stat: %v)", err)
+	}
 }

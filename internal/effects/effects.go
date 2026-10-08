@@ -282,7 +282,7 @@ func Stream(stream bool) Option {
 
 var (
 	acceptedRun      = optionSet("cwd", "env", "timeout", "check", "capture_output", "input", "read", "resource", "skip_if_current", "grant", "stream")
-	acceptedPipeline = optionSet("cwd", "timeout", "resource", "skip_if_current", "grant")
+	acceptedPipeline = optionSet("cwd", "timeout", "read", "resource", "skip_if_current", "grant")
 )
 
 func optionSet(names ...string) map[string]bool {
@@ -369,6 +369,10 @@ func (h *Handle) Run(argv []string, options ...Option) (Result, error) {
 // multi-process pipeline, which is what streams a `git archive` into `tar`
 // without buffering the whole tree in memory.
 //
+// A declared read ([Read]) executes in every mode, as it does on [Handle.Run]:
+// a pipeline whose only write lands in a directory its caller owns and removes
+// changes nothing anyone else can observe.
+//
 // Only the last stage's stderr is captured; the earlier stages inherit this
 // process's stderr.
 func (h *Handle) Pipeline(argvs [][]string, options ...Option) (Result, error) {
@@ -384,7 +388,7 @@ func (h *Handle) Pipeline(argvs [][]string, options ...Option) (Result, error) {
 			return Result{}, fmt.Errorf("effects: Pipeline stage %d has an empty argv", i)
 		}
 	}
-	if fx := h.mint(); fx != nil {
+	if fx := h.mint(); fx != nil && !o.read {
 		stages := make([]string, 0, len(argvs))
 		for _, argv := range argvs {
 			parts := make([]string, 0, len(argv))

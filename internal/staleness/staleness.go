@@ -15,19 +15,21 @@
 // baseline on the first report would make the second run pass with nothing
 // fixed, which is how a stale description used to become permanent.
 //
-// # Two writers, one store
+// # The writers of one store
 //
-// The store is written by two independent passes: gen owns each page's
-// seed_hash, while build and check own content, description, source_docstring
-// and schema_hash. UpdateHashes therefore MERGES into an existing entry
-// instead of replacing it, so neither writer erases the other's fields.
+// check only compares against the store and never writes it. gen, build, and
+// baseline accept write it: gen owns each page's seed_hash, and the content,
+// description, source_docstring and schema_hash fields are advanced by every
+// writer through UpdateHashes or Merge, which MERGE into an existing entry
+// instead of replacing it, so no writer erases another's fields.
 //
-// gen and build also run UpdateHashes, with neither drift input, so they
-// advance content and description without measuring source_docstring or
-// schema_hash. A description certifies the drift hashes beside it, so when a
-// page's description advances, its drift hashes are replaced with what that
-// pass measured -- nothing, for gen and build -- and the next check records
-// them again without a report.
+// gen runs UpdateHashes with both drift inputs, measured as check measures
+// them, so the store it leaves reports what the next check reports. build
+// runs it with neither, advancing content and description without measuring
+// source_docstring or schema_hash. A description certifies the drift hashes
+// beside it, so when a page's description advances, its drift hashes are
+// replaced with what that pass measured -- nothing, for build -- and the next
+// gen records them again without a report.
 //
 // # The empty string stands for an absent hash
 //
@@ -127,8 +129,8 @@ type Entry struct {
 	// SchemaHash is the hash of the CLI schema slice a CLI page documents.
 	SchemaHash string
 	// SeedHash is the hash of the machine-emitted description text gen last
-	// wrote onto the page. gen owns this field; build and check own the
-	// other four.
+	// wrote onto the page. gen owns this field; the other four are
+	// advanced by every writer of the store.
 	SeedHash string
 }
 
@@ -572,14 +574,14 @@ func ComputeCurrentHashes(
 // staleness or drift report would hold their baseline in error forever and
 // never advance: they are exempt, their baselines always advance, and neither
 // warning list ever mentions them. Pass an empty set where no exemption
-// applies -- the build and gen paths, which regenerate content and
-// description together. There is deliberately no default, because a caller
+// applies -- the build path, which regenerates content and description
+// together. There is deliberately no default, because a caller
 // that has not decided has not thought about the deadlock.
 //
 // A page reported stale or drifted keeps its ENTIRE previous entry, so the
 // error persists until the description is rewritten. Every other page's
 // freshly computed fields are MERGED into its existing entry, so the
-// gen-owned seed_hash survives a check pass and vice versa. The one exception
+// gen-owned seed_hash survives every other writer's pass. The one exception
 // is a page whose description changed: its drift hashes are replaced with the
 // ones this pass measured, which are none when pageDirectives or schemaHashes
 // is nil.
@@ -661,9 +663,9 @@ func UpdateHashes(
 			// The description certifies the source hashes stored beside
 			// it, so a new description is paired with the sources THIS
 			// pass measured, and with none where it measured none. A pass
-			// that does not measure drift (gen, build) used to keep the old
+			// that does not measure drift (build) used to keep the old
 			// hashes here, pairing the rewrite with sources it was never
-			// reviewed against: the next check reported drift the edit had
+			// reviewed against: a later check reported drift the edit had
 			// cleared. An absent hash is re-recorded by the next measuring
 			// pass without a report.
 			advanced.SourceDocstring = entry.SourceDocstring

@@ -36,10 +36,11 @@ const pagefindProbeTimeout = 10 * time.Second
 // and runs every lint rule over the pages and the project's published posts.
 //
 // projectConfig may be nil, in which case it is loaded from selfdoc.json.
-// dryRun reports staleness without writing the hash store -- under a
-// previewing effects handle the write is recorded rather than performed, which
-// gives the same reporting and an honest preview, so the command layer leaves
-// this false and lets the handle decide. versionFilter, when non-empty, skips
+// dryRun writes nothing: staleness is reported without writing the hash
+// store, and an archived version is read from a temporary extraction removed
+// before the call returns instead of from selfdoc's version cache. `selfdoc
+// check` passes true, since it is a read-only verdict; the build's lint pass
+// passes false, writing the store and filling the cache. versionFilter, when non-empty, skips
 // the multi-version validation pass (version-tag-not-extractable), which is what `build --version`
 // wants: it is checking one version and needs no cross-version answer.
 // versionOverride is the version that version-bearing generated content is
@@ -382,9 +383,12 @@ func CheckDocs(
 			if versionString == latestVersion {
 				continue // already validated above, from the working tree
 			}
-			cacheDir, err := build.ExtractVersionContent(
-				versionString, projectConfig, dirPath, handle,
+			cacheDir, cleanup, err := versionContent(
+				versionString, projectConfig, dirPath, dryRun, handle,
 			)
+			if cleanup != nil {
+				defer cleanup()
+			}
 			if err != nil {
 				result.Lints = append(result.Lints, lints.MustLintResult(
 					"["+versionString+"]", nil, "version-tag-not-extractable",
@@ -437,6 +441,34 @@ func CheckDocs(
 	}
 
 	return result, nil
+}
+
+// versionContent is the directory holding an archived version's content:
+// selfdoc's version cache when the check may write, and otherwise a temporary
+// extraction, removed by the returned cleanup (nil when there is nothing to
+// remove).
+//
+// The temporary directory is this check's own: created here, read by the
+// check, and removed before the check returns, so nothing outside it can
+// observe it, which is why it is made directly and not through the effects
+// handle.
+func versionContent(
+	version string, projectConfig map[string]any, dirPath string,
+	dryRun bool, handle *effects.Handle,
+) (string, func(), error) {
+	if !dryRun {
+		dir, err := build.ExtractVersionContent(version, projectConfig, dirPath, handle)
+		return dir, nil, err
+	}
+	dir, err := os.MkdirTemp("", "selfdoc-version-")
+	if err != nil {
+		return "", nil, err
+	}
+	cleanup := func() { _ = os.RemoveAll(dir) }
+	if err := build.ExtractVersionInto(version, projectConfig, dirPath, dir, handle); err != nil {
+		return "", cleanup, err
+	}
+	return dir, cleanup, nil
 }
 
 // versionEntryString reads the version out of one entry of the "versions"

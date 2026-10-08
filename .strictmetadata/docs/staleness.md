@@ -1,6 +1,6 @@
 +++
 title = "Staleness Detection"
-description = "How selfdoc detects stale frontmatter descriptions by hashing page content, which command records each stored hash, the two alternative ways to clear a stale-page-description or description-drifted-from-source finding, and how to accept a reviewed dead-end."
+description = "How selfdoc detects stale frontmatter descriptions by hashing page content, which commands record the baseline that the read-only selfdoc check compares against, the two alternative ways to clear a stale-page-description or description-drifted-from-source finding, and how to accept a reviewed dead-end."
 nav_group = "Guides"
 nav_order = 18
 +++
@@ -17,7 +17,7 @@ This is easy to miss during normal editing. You change the content, the page loo
 
 ## How It Works
 
-selfdoc maintains a hash store at `.strictmetadata/.docs-state/hashes/hashes.json` that tracks each page's content and description independently. By comparing current hashes against stored baselines on every `selfdoc check` run, it detects when content has drifted from its description. For each documentation page with a frontmatter description, it tracks two SHA-256 hashes:
+selfdoc maintains a hash store at `.strictmetadata/.docs-state/hashes/hashes.json` that tracks each page's content and description independently. By comparing current hashes against stored baselines on every `selfdoc check` run, it detects when content has drifted from its description. `selfdoc check` only compares: it writes nothing and commits nothing. The baseline is recorded by `selfdoc gen`, which every release runs before `selfdoc check`, by `selfdoc build`, and by `selfdoc baseline accept`. For each documentation page with a frontmatter description, it tracks two SHA-256 hashes:
 
 - **Content hash** -- computed from the page's raw template body: frontmatter stripped, directives left unresolved, and each directive marker's attribute values canonicalized. A directive whose output changes (a version bump, a renamed symbol) therefore does not trip staleness, and neither does a mechanical `path="x"` -> `path="y"` rename
 - **Description hash** -- computed from the frontmatter `description` string
@@ -46,7 +46,7 @@ This is an error, not a warning -- it causes `selfdoc check` to exit with code 1
 
 ## Fixing It
 
-Update the frontmatter `description` to reflect the current page content, then run `selfdoc check` again to record the new baseline hashes and clear the error. Aim for 110-160 characters that accurately summarize what the page covers after the content change:
+Update the frontmatter `description` to reflect the current page content. A changed description clears the error on the next `selfdoc check`, and the next `selfdoc gen` records the new baseline hashes. Aim for 110-160 characters that accurately summarize what the page covers after the content change:
 
 ```markdown
 +++
@@ -55,7 +55,7 @@ description = "Install selfdoc, initialize a project, and build your first docum
 +++
 ```
 
-Then run `selfdoc check` again. The hashes update and the error clears.
+Then run `selfdoc check` again: the error is gone.
 
 ## Accepting a Reviewed Dead-End
 
@@ -74,7 +74,7 @@ Acceptance is intentionally per-page and unforgiving:
 - The two courses are alternatives, not steps. Editing the description clears the finding on its own, so a page whose description was just rewritten is already cleared and accepting it afterwards is the "nothing to accept" error. Accept is for the other course: the description was reviewed against the change and deliberately left as it is.
 - The same guardrails apply to description-drifted-from-source (source-docstring and CLI-schema drift); accepting advances every tracked hash for the page.
 
-Like `selfdoc check`, the command commits the updated `.strictmetadata/.docs-state/hashes/hashes.json` by default; pass `--no-auto-commit` to stage the change for a larger manual commit.
+Like `selfdoc gen`, the command commits the updated `.strictmetadata/.docs-state/hashes/hashes.json` by default; pass `--no-auto-commit` to leave the change for a larger manual commit.
 
 ## Hash Storage
 
@@ -93,12 +93,12 @@ Without it, every page looks new and no staleness is detected.
 
 ### Store schema version
 
-The store carries a `_hash_version` field. When the meaning of the stored hashes changes, the version is bumped and any older store is discarded wholesale and re-baselined on the next `selfdoc check` (nothing is silently reused). Two bumps so far:
+The store carries a `_hash_version` field. When the meaning of the stored hashes changes, the version is bumped and any older store is discarded wholesale and re-baselined on the next `selfdoc gen` (nothing is silently reused). Two bumps so far:
 
 - **v1 -> v2** switched the content hash from resolved output to the raw template body, so directive output changes (like a version bump) no longer trip staleness.
 - **v2 -> v3** added a per-page `seed_hash` and canonicalizes directive marker lines before hashing, so a pure `path="x"` -> `path="y"` rename no longer changes the content hash.
 
-Because a bump discards the old store, run `selfdoc check` once after upgrading to re-record the baseline. (Releases run `selfdoc gen` then `selfdoc check`, so this happens automatically.)
+Because a bump discards the old store, run `selfdoc gen` once after upgrading to re-record the baseline. (Releases run `selfdoc gen` then `selfdoc check`, so this happens automatically.)
 
 ### Description ownership (`seed_hash`)
 
@@ -114,31 +114,15 @@ Descriptions are handwritten; machine-emitted text is only ever a placeholder. T
 }
 ```
 
-Only `selfdoc gen` writes `seed_hash`. The `content` and `description` hashes are recorded by every command that writes the store -- `selfdoc gen` and `selfdoc build` as well as `selfdoc check` -- and each of them holds the baseline of a page with an outstanding stale-page-description. Only `selfdoc check` measures the drift hashes (`source_docstring` and `schema_hash`). A description certifies the drift hashes stored beside it, so a command that records a changed description pairs it with the drift hashes it measured: `selfdoc check` records the current ones, while `selfdoc gen` and `selfdoc build` drop them, and the next `selfdoc check` records them again without a finding. An edited description therefore clears description-drifted-from-source whichever of these commands runs first after the edit. Each writer merges rather than overwriting, so none of them clobbers a field it does not write.
+Only `selfdoc gen` writes `seed_hash`. The `content` and `description` hashes are recorded by every command that writes the store -- `selfdoc gen` and `selfdoc build` -- and each of them holds the baseline of a page with an outstanding stale-page-description. `selfdoc gen` also measures the drift hashes (`source_docstring` and `schema_hash`) as `selfdoc check` measures them, and holds the baseline of a page with an outstanding description-drifted-from-source, so the store it leaves reports what the next `selfdoc check` reports. A description certifies the drift hashes stored beside it, so a command that records a changed description pairs it with the drift hashes it measured: `selfdoc gen` records the current ones, while `selfdoc build` drops them, and the next `selfdoc gen` records them again without a finding. An edited description therefore clears description-drifted-from-source whichever of these commands runs first after the edit. Each writer merges rather than overwriting, so none of them clobbers a field it does not write.
 
 This is what lets `selfdoc gen` safely regenerate: a description is reseeded only when it is machine-owned (it matches the recorded `seed_hash` or a known machine template), and a description you rewrote by hand is preserved -- even if a stale `seeded: true` marker was left in the frontmatter. The same predicate drives the stale-page-description/description-drifted-from-source exemption: only genuinely machine-generated descriptions are exempt from the staleness hold, so a generated page you describe by hand is checked like any other page.
 
-## Dry Run Mode
+## A Read-Only Check
 
-To preview staleness results without updating the hash file on disk, use the `--dry-run` flag. This computes all hashes, compares them against the stored baselines, and reports any stale pages but does not write changes to `.strictmetadata/.docs-state/hashes/hashes.json`. Useful for previewing what would be flagged:
-
-```bash
-selfdoc check --dry-run
-```
-
-This computes all hashes and reports stale pages but does not write to `.strictmetadata/.docs-state/hashes/hashes.json`. Useful for seeing what would be flagged without changing state.
-
-## The `--no-auto-commit` Flag
-
-By default, `selfdoc check` auto-commits hash updates when it writes to the hash file, using the best available commit tool (rlsbl, safegit, or plain git). Use `--no-auto-commit` to write the updated hashes to disk without creating a commit, which is useful when the hash update is part of a larger change you will commit manually:
-
-```bash
-selfdoc check --no-auto-commit
-```
-
-This is useful when you want to update hashes as part of a larger change that you will commit manually.
+`selfdoc check` computes all hashes, compares them against the stored baselines, and reports any stale or drifted pages, and it never writes `.strictmetadata/.docs-state/hashes/hashes.json` or commits anything. Run it as often as you like; the working tree is the same afterwards. The store changes only when a command that generates content (`selfdoc gen`, `selfdoc build`) or `selfdoc baseline accept` writes it, and those commit it unless you pass `--no-auto-commit`.
 
 > [!TIP]
-> New pages (ones not yet in the hash store) never trigger stale-page-description. Staleness is only detected on subsequent runs after the initial hashes are recorded. Run `selfdoc check` once after adding new pages to establish the baseline.
+> New pages (ones not yet in the hash store) never trigger stale-page-description. Staleness is only detected once their initial hashes are recorded. Run `selfdoc gen` after adding new pages to establish the baseline.
 
 Next: [Glossary](../glossary-terms/)

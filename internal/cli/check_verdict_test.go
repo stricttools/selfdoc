@@ -73,13 +73,13 @@ func TestBothProjectKindsHonorTheConfiguredCoverageThreshold(t *testing.T) {
 	requirePython3(t)
 	lib, site := loweredThresholdProjects(t)
 
-	standalone := run(t, lib, "check", "--no-auto-commit")
+	standalone := run(t, lib, "check")
 	if standalone.ExitCode != 0 {
 		t.Fatalf("the standalone check should pass at 50%% documented coverage "+
 			"with a configured threshold of 0.4:\n%s\n%s", standalone.Stdout, standalone.Stderr)
 	}
 
-	unified := run(t, site, "check", "--no-auto-commit")
+	unified := run(t, site, "check")
 	if unified.ExitCode != standalone.ExitCode {
 		t.Fatalf("the unified check reached a different verdict than the "+
 			"standalone one for the same project state -- the unified path is "+
@@ -96,7 +96,7 @@ func TestTheUnifiedCheckEmitsThePayloadToo(t *testing.T) {
 	requirePython3(t)
 	_, site := loweredThresholdProjects(t)
 
-	result := run(t, site, "check", "--json", "--no-auto-commit")
+	result := run(t, site, "check", "--json")
 	payload := payloadOf(t, result)
 	for _, key := range []string{"directives", "coverage", "lints", "exit_code"} {
 		if _, ok := payload[key]; !ok {
@@ -123,7 +123,7 @@ func TestTheCheckRunsThePostLintsForAnOrdinaryProject(t *testing.T) {
 	writeText(t, filepath.Join(dir, ".strictmetadata", "posts", "broken.md"),
 		"+++\ntitle = \"Broken\"\ndate = \"15-01-2024\"\ndirectives = false\n+++\n\nBad date.\n")
 
-	result := run(t, dir, "check", "--json", "--no-auto-commit")
+	result := run(t, dir, "check", "--json")
 	payload := payloadOf(t, result)
 	found := false
 	for _, raw := range payload["lints"].([]any) {

@@ -139,6 +139,119 @@ func prefixKeys[V any](values map[string]V, localePrefix string) map[string]V {
 	return prefixed
 }
 
+// stalenessInputs are the measurements every staleness pass hashes: the
+// pages, the directives each page's drift is measured over, the CLI pages'
+// schema hashes, and the machine-owned pages exempt from the baseline hold,
+// all keyed as the hash store keys them.
+type stalenessInputs struct {
+	docs        map[string]staleness.Doc
+	directives  map[string][]staleness.PageDirective
+	schema      map[string]string
+	exemptPages map[string]bool
+}
+
+// measureStalenessInputs measures what [CheckDocs] hashes for stale-page-description/description-drifted-from-source
+// detection, writing nothing.
+//
+// projectConfig may be nil, in which case it is loaded from selfdoc.json.
+func measureStalenessInputs(
+	dirPath string, projectConfig map[string]any, handle *effects.Handle,
+) (stalenessInputs, error) {
+	if projectConfig == nil {
+		loaded, err := config.Load(dirPath)
+		if err != nil {
+			return stalenessInputs{}, err
+		}
+		projectConfig = loaded
+	}
+	if projectConfig == nil {
+		return stalenessInputs{}, errors.New(
+			"No selfdoc.json found. Run 'selfdoc init' to initialize.",
+		)
+	}
+
+	docsDir := filepath.Join(
+		dirPath, strings.TrimRight(configString(projectConfig, "docs", layout.DocsDefault), "/"),
+	)
+	if !isDir(docsDir) {
+		return stalenessInputs{}, fmt.Errorf(
+			"Docs directory '%s' not found.",
+			configString(projectConfig, "docs", layout.DocsDefault),
+		)
+	}
+
+	res, err := resolver.MakeResolver(projectConfig, dirPath, handle)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+	validNames, err := docs.ValidNames(projectConfig)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+
+	allDocs, err := docs.ResolveAll(projectConfig, "", dirPath, nil, handle)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+	_, resolvedDirectives, err := validateDirectives(allDocs, res, validNames, "", true)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+
+	driftDirectives := driftDirectivesOf(resolvedDirectives)
+
+	cliSchema, err := strictclisupport.ReadSchemaJSON(dirPath)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+	hashes, err := schemaHashes(cliSchema)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+
+	localePrefix := localePrefixOf(projectConfig)
+
+	// Machine-owned pages are exempt from the staleness/drift hold (see
+	// [CheckDocs]); the exempt set comes from the ownership predicate,
+	// prefixed to line up with the docs.
+	exemptPages, err := machineOwnedKeys(allDocs, dirPath, cliSchema, localePrefix)
+	if err != nil {
+		return stalenessInputs{}, err
+	}
+
+	return stalenessInputs{
+		docs:        prefixKeys(docs.StalenessDocs(allDocs), localePrefix),
+		directives:  prefixKeys(driftDirectives, localePrefix),
+		schema:      prefixKeys(hashes, localePrefix),
+		exemptPages: exemptPages,
+	}, nil
+}
+
+// RecordBaselines writes the staleness and drift baseline `selfdoc check`
+// compares against: every page's content, description, source-docstring and
+// schema hashes, measured as [CheckDocs] measures them, advanced for every page
+// not stale or drifted and held for every page that is.
+//
+// `selfdoc check` is a read-only verdict and never writes the store, so the
+// commands that generate content record the baseline through this, which
+// leaves the store reporting what the next check reports. The caller commits
+// the store.
+//
+// projectConfig may be nil, in which case it is loaded from selfdoc.json.
+func RecordBaselines(
+	dirPath string, projectConfig map[string]any, handle *effects.Handle,
+) error {
+	inputs, err := measureStalenessInputs(dirPath, projectConfig, handle)
+	if err != nil {
+		return err
+	}
+	_, _, err = staleness.UpdateHashes(
+		inputs.docs, dirPath, false,
+		inputs.directives, inputs.schema, inputs.exemptPages, handle,
+	)
+	return err
+}
+
 // ComputeStalenessState computes the current page hashes and the pages frozen
 // in an error state.
 //
@@ -150,80 +263,20 @@ func prefixKeys[V any](values map[string]V, localePrefix string) map[string]V {
 func ComputeStalenessState(
 	dirPath string, projectConfig map[string]any, handle *effects.Handle,
 ) (StalenessState, error) {
-	if projectConfig == nil {
-		loaded, err := config.Load(dirPath)
-		if err != nil {
-			return StalenessState{}, err
-		}
-		projectConfig = loaded
-	}
-	if projectConfig == nil {
-		return StalenessState{}, errors.New(
-			"No selfdoc.json found. Run 'selfdoc init' to initialize.",
-		)
-	}
-
-	docsDir := filepath.Join(
-		dirPath, strings.TrimRight(configString(projectConfig, "docs", layout.DocsDefault), "/"),
-	)
-	if !isDir(docsDir) {
-		return StalenessState{}, fmt.Errorf(
-			"Docs directory '%s' not found.",
-			configString(projectConfig, "docs", layout.DocsDefault),
-		)
-	}
-
-	res, err := resolver.MakeResolver(projectConfig, dirPath, handle)
-	if err != nil {
-		return StalenessState{}, err
-	}
-	validNames, err := docs.ValidNames(projectConfig)
-	if err != nil {
-		return StalenessState{}, err
-	}
-
-	allDocs, err := docs.ResolveAll(projectConfig, "", dirPath, nil, handle)
-	if err != nil {
-		return StalenessState{}, err
-	}
-	_, resolvedDirectives, err := validateDirectives(allDocs, res, validNames, "", true)
-	if err != nil {
-		return StalenessState{}, err
-	}
-
-	driftDirectives := driftDirectivesOf(resolvedDirectives)
-
-	cliSchema, err := strictclisupport.ReadSchemaJSON(dirPath)
-	if err != nil {
-		return StalenessState{}, err
-	}
-	hashes, err := schemaHashes(cliSchema)
-	if err != nil {
-		return StalenessState{}, err
-	}
-
-	localePrefix := localePrefixOf(projectConfig)
-	prefixedDocs := prefixKeys(docs.StalenessDocs(allDocs), localePrefix)
-	prefixedDirectives := prefixKeys(driftDirectives, localePrefix)
-	prefixedSchema := prefixKeys(hashes, localePrefix)
-
-	// Machine-owned pages are exempt from the staleness/drift hold (see
-	// [CheckDocs]); the exempt set comes from the ownership predicate,
-	// prefixed to line up with the docs.
-	skeletonPages, err := machineOwnedKeys(allDocs, dirPath, cliSchema, localePrefix)
+	inputs, err := measureStalenessInputs(dirPath, projectConfig, handle)
 	if err != nil {
 		return StalenessState{}, err
 	}
 
 	current, err := staleness.ComputeCurrentHashes(
-		prefixedDocs, dirPath, prefixedDirectives, prefixedSchema,
+		inputs.docs, dirPath, inputs.directives, inputs.schema,
 	)
 	if err != nil {
 		return StalenessState{}, err
 	}
 	staleWarnings, driftWarnings, err := staleness.UpdateHashes(
-		prefixedDocs, dirPath, true,
-		prefixedDirectives, prefixedSchema, skeletonPages, handle,
+		inputs.docs, dirPath, true,
+		inputs.directives, inputs.schema, inputs.exemptPages, handle,
 	)
 	if err != nil {
 		return StalenessState{}, err
@@ -308,8 +361,8 @@ func AcceptBaselines(
 			))
 		case !hasKey(state.Stored, page):
 			refusals = append(refusals, fmt.Sprintf(
-				"'%s': has no baseline yet -- run 'selfdoc gen' or "+
-					"'selfdoc check' to record one before accepting", page,
+				"'%s': has no baseline yet -- run 'selfdoc gen' to "+
+					"record one before accepting", page,
 			))
 		case state.ErrorPages[page] == "":
 			refusals = append(refusals, fmt.Sprintf(

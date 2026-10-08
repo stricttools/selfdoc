@@ -9,7 +9,6 @@ import (
 	"github.com/stricttools/selfdoc/internal/check"
 	"github.com/stricttools/selfdoc/internal/config"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/stricttools/selfdoc/internal/gitcommit"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/lints"
 	"github.com/stricttools/selfdoc/internal/payloadschemas"
@@ -20,22 +19,20 @@ import (
 
 func (c *cli) registerCheck() {
 	c.app.Command("check",
-		"Check documentation coverage, directive resolution, and lint rules, each lint at the value its option in "+strictspec.OptionsDir+"/docs.toml sets (off: not reported; warn: reported, never blocking; error: as registered) -- and write: it "+
-			"advances the content and description baseline of every page it does not report "+
-			"stale or drifted in "+layout.HashesRel+" and commits the store, which is why "+
-			"check is a mutating command and not a read-only one",
+		"Check documentation coverage, directive resolution, and lint rules, each lint at the value its option in "+strictspec.OptionsDir+"/docs.toml sets (off: not reported; warn: reported, never blocking; error: as registered). "+
+			"A read-only verdict: it writes nothing and commits nothing. The staleness and drift baseline it compares against, "+
+			layout.HashesRel+", is written and committed by the commands that generate content, selfdoc gen among them, and by selfdoc baseline accept, "+
+			"and an archived version it checks is read from a temporary extraction, not from selfdoc's version cache",
 		c.cmdCheck,
-		strictcli.WithEffect(strictcli.EffectMutating),
+		strictcli.WithEffect(strictcli.EffectReadOnly),
 		strictcli.PayloadSchema(payloadschemas.Check()),
 		strictcli.WithFlags(
-			strictcli.BoolFlag("auto-commit", "Automatically commit "+layout.HashesRel+", the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way", strictcli.Optional()),
 			strictcli.StringFlag("version-override", "Project version that version-bearing generated content is expected to embed (version-mismatch-in-generated-root-file), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump", strictcli.Optional()),
 		),
 	)
 }
 
 func (c *cli) cmdCheck(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
-	autoCommit := absentMeans(kwargs, "auto_commit", true)
 	versionOverride := optString(kwargs, "version_override")
 	handle := effects.FromContext(ctx)
 
@@ -50,33 +47,24 @@ func (c *cli) cmdCheck(ctx *strictcli.Context, kwargs map[string]any) strictcli.
 		return c.fail(err)
 	}
 
-	// No dryRun is threaded into the check: under --dry-run the hash write is
-	// RECORDED by the effects chokepoint rather than executed, which both
-	// preserves the old "report staleness without writing" behavior and makes
-	// the preview honest about the write a real run would perform.
+	// The check is a read-only verdict, so it is told to write nothing: the
+	// hash store is compared against and never advanced, and an archived
+	// version is extracted to a temporary directory instead of the cache.
 	//
-	// The project's kind decides which check runs. There is no refusal here
-	// any more: one binary answers for a unified docs-site and for an
+	// The project's configuration decides which check runs. There is no
+	// refusal here: one binary answers for a unified docs-site and for an
 	// ordinary project alike, and a project's posts are checked either way.
 	var result *check.CheckResult
 	if cfg != nil && cfg["unified"] != nil {
-		result, err = unifiedcheck.CheckUnified(cfg, c.dir(), false, handle)
+		result, err = unifiedcheck.CheckUnified(cfg, c.dir(), true, handle)
 	} else {
 		result, err = check.CheckDocs(
-			c.dir(), c.withSiteDirectives(cfg, handle), false, "",
+			c.dir(), c.withSiteDirectives(cfg, handle), true, "",
 			versionOverride, handle,
 		)
 	}
 	if err != nil {
 		return c.fail(err)
-	}
-
-	if autoCommit {
-		if _, _, err := gitcommit.AutoCommit(
-			[]string{hashStorePath}, hashStoreMessage, c.dir(), handle,
-		); err != nil {
-			return c.fail(err)
-		}
 	}
 
 	// Each lint at the value the repository's options set for it.

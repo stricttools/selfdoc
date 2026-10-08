@@ -16,7 +16,8 @@ import (
 	"github.com/stricttools/strictcli/go/strictcli"
 )
 
-// hashStorePath is the content-hash store every build and check auto-commits.
+// hashStorePath is the content-hash store gen, build, and baseline accept
+// write and auto-commit; check only reads it.
 var hashStorePath = layout.HashesRel
 
 // hashStoreMessage is the commit message that store is committed under.

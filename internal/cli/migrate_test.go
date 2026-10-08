@@ -67,7 +67,7 @@ func TestAnUnmigratedRepositoryIsRefusedNamingTheMove(t *testing.T) {
 	isolate(t)
 	dir := previousLayoutProject(t, false)
 	for _, argv := range [][]string{
-		{"check", "--no-auto-commit"},
+		{"check"},
 		{"gen", "--no-auto-commit"},
 		{"layout", "validate"},
 		{"vocabulary", "accept", "frobnitz", "--meaning", "The widget.", "--no-auto-commit"},
@@ -376,7 +376,7 @@ func TestARepositoryOnTheVisibleRootIsRefusedNamingTheMove(t *testing.T) {
 	isolate(t)
 	dir := visibleRootProject(t, false)
 	for _, argv := range [][]string{
-		{"check", "--no-auto-commit"},
+		{"check"},
 		{"gen", "--no-auto-commit"},
 		{"build", "--no-auto-commit"},
 		{"layout", "validate"},

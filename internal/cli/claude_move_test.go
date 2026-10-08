@@ -59,7 +59,7 @@ func TestAGeneratedRootClaudeMovesUnderDotClaudeAndGenAndCheckClear(t *testing.T
 	if gen.ExitCode == 0 || !strings.Contains(gen.Stderr, "'selfdoc layout migrate'") {
 		t.Fatalf("gen exited %d without naming the move:\n%s", gen.ExitCode, gen.Stderr)
 	}
-	check := run(t, dir, "check", "--no-auto-commit")
+	check := run(t, dir, "check")
 	if check.ExitCode == 0 || !strings.Contains(check.Stdout+check.Stderr, "generated-claude-md-at-repository-root") {
 		t.Fatalf("check exited %d without reporting the root file:\n%s\n%s", check.ExitCode, check.Stdout, check.Stderr)
 	}
@@ -110,7 +110,7 @@ func TestAGeneratedRootClaudeMovesUnderDotClaudeAndGenAndCheckClear(t *testing.T
 	if exists(filepath.Join(dir, "CLAUDE.md")) {
 		t.Error("gen wrote a CLAUDE.md at the repository root")
 	}
-	if check := run(t, dir, "check", "--no-auto-commit"); check.ExitCode != 0 {
+	if check := run(t, dir, "check"); check.ExitCode != 0 {
 		t.Errorf("check after the move exited %d:\n%s\n%s", check.ExitCode, check.Stdout, check.Stderr)
 	}
 	if result := run(t, dir, "layout", "migrate"); result.ExitCode == 0 ||
