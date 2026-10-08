@@ -2,7 +2,9 @@
 
 # Changelog
 
-## Unreleased
+## 0.47.0
+
+selfdoc moves into the .strictmetadata layout with the Go rlsbl: `selfdoc check` becomes a read-only verdict, deploys and publishes refuse confidential names, every command's output goes through strictcli, failed auto-commits fail the command, and nested command groups are documented and checked.
 
 ### Breaking
 
@@ -10,6 +12,7 @@
 - **Each uncommitted directory carries its own ignore file.** `.strictmetadata/` now holds directories only, with `go.mod` as the one file beside them: selfdoc writes `.strictmetadata/.docs-cache/.gitignore` instead of a block in `.strictmetadata/.gitignore`, and `selfdoc layout validate` reports a `.strictmetadata/.gitignore` with the command that converts it and no longer reports `.strictmetadata/go.mod`. `selfdoc layout dump` names each directory's `ignore_path` and `ignore_content` and the `root_files`, in place of the one `ignore_file`. Convert a repository with `selfdoc layout migrate` (run `--dry-run` first).
 - **Every `root_files` entry names its template and every file it generates: `{"template": ".strictmetadata/docs/_README.md", "outputs": ["README.md", "pypi/README.md"]}`.** One template can now generate several files, such as a package directory's own README kept in step with the root one. A plain template string is refused with an error naming the migration: run `selfdoc layout migrate --dry-run`, then `selfdoc layout migrate`, which converts every entry to the output selfdoc generated from it. `gen` writes every declared output and refuses a hand-written or git-ignored one before writing any, and `check` reads every output for the version check.
 - **`selfdoc check` writes nothing and commits nothing.** It compares against the staleness and drift baseline and reports; it no longer advances `.strictmetadata/.docs-state/hashes/hashes.json` or commits "selfdoc: update content hashes", and its `--auto-commit`/`--no-auto-commit` flag is removed. `selfdoc gen` records the baseline instead, measuring source-docstring and CLI-schema drift as `selfdoc check` does, and commits it with the generated docs; `selfdoc build` and `selfdoc baseline accept` still write it too. An archived version named in `versions` is checked from a temporary extraction, so `selfdoc check` no longer fills the version cache. Migration: drop `--no-auto-commit` from every `selfdoc check` invocation, and run `selfdoc gen` (not `selfdoc check`) to record a baseline for new pages.
+- **No Windows archives.** GitHub Releases carry prebuilt binaries for Linux and macOS on amd64 and arm64 only; on Windows, install with `go install github.com/stricttools/selfdoc@v0`.
 
 ### Features
 
@@ -23,6 +26,11 @@
 - **CLI reference pages document nested command groups.** A group declared inside another group (`apple testers`, say) and its subcommands were left off the generated pages; each nested group now gets a section on its top-level group's page, at any depth, followed by a section for each of its commands under its full path (`apple testers remove`).
 - **`selfdoc check` covers nested command groups.** `cli-help-text-too-short` now measures the help of groups nested inside other groups and of their commands, flags, and arguments, and `undocumented-cli-command-or-flag` now requires the flags of those commands to appear on the top-level group's page; both had looked only one level deep.
 - **A refused post publish writes nothing.** `selfdoc blog post publish` scans the posts' sources for confidential names before recording their revisions or building them, so a publish refused for a confidential term no longer leaves that term in the revisions file; the refusal names the post source, line, column, and term.
+- The confidential-name scan of published pages no longer refuses a confidential repository's releasable names, which are often common words, nor a term lying inside a URL or a dotted hostname; it still refuses registry names, repository names, codenames, and distinctive terms
+- Auto-commits through rlsbl work with the Go rlsbl: selfdoc passes the commit message as `--message`, so `selfdoc gen`, `selfdoc layout migrate`, and the other committing commands no longer leave their files uncommitted after an unknown-flag error.
+- A failed auto-commit fails the command: when `rlsbl commit`, `safegit commit`, or git exits nonzero, times out, or cannot start, `selfdoc gen`, `selfdoc layout migrate`, and the other committing commands exit 1 with an error naming the tool and carrying its output, instead of printing it and exiting 0 with their files left uncommitted.
+- Every command's output goes through strictcli, so `--json` runs no longer fail on output written outside the framework: refusals print as `error: ...` and warnings as `warning: ...` (the framework's prefixes, replacing `Error:` and `Warning:`), a streamed child's stderr and `assembly preview`'s request log are informational lines hidden by `--quiet`, and the `selfdoc check` report is plain text without ANSI colors.
+- The built-in English word list and vocabulary baseline no longer accept a word that is a protected name in the confidential-name index, so selfdoc's own published files carry no confidential name; a project whose pages use that word accepts it in its own `.strictmetadata/vocabulary/terms.toml`.
 
 ## 0.46.0
 
