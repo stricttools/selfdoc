@@ -17,3 +17,4 @@
 {"format_version":1,"id":"18dc61afc87bd82c149052b460234db880d10f3ff2ba2b7d","commits":["c7adf0cc5fbda11d199e6ec38efce62866cb0cf6"],"user_facing":true,"description":"**A refused post publish writes nothing.** `selfdoc blog post publish` scans the posts' sources for confidential names before recording their revisions or building them, so a publish refused for a confidential term no longer leaves that term in the revisions file; the refusal names the post source, line, column, and term.","type":"fix"}
 {"format_version":1,"id":"18dc61b096ec58830232a6b9849e49128294c63aaed2e717","commits":["dc871bdb08b4ad40df4838e49b50b9f74f40aee6"],"user_facing":false}
 {"format_version":1,"id":"18dc646de4ea786d90c126b370f54cf78f2eb0a7aaa8e458","commits":["da5a71c3d47df21536b70284f4763d662755aa7e"],"user_facing":false}
+{"format_version":1,"id":"18dc6531c81feae78fa5394df4cb48e1b5258448e70881cd","commits":["2e38c5ffea58ae0a43280ed2714445b19cc19f7c"],"user_facing":false}
