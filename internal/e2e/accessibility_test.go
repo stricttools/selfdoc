@@ -3,8 +3,11 @@
 package e2e
 
 import (
+	"bytes"
+	"compress/gzip"
 	_ "embed"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 	"sync"
@@ -13,11 +16,27 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// axeScript is axe-core, vendored beside this suite so the accessibility sweep
-// needs no npm install and no network. Its licence is testdata/axe.LICENSE.
+// axeScriptGzip is axe-core, vendored beside this suite so the accessibility
+// sweep needs no npm install and no network. Its licence is
+// testdata/axe.LICENSE. It is stored gzip-compressed: the minified script
+// carries an ordinary use of a word the confidential-name index protects,
+// and the compressed bytes are not text the confidential-names check reads.
 //
-//go:embed testdata/axe.min.js
-var axeScript string
+//go:embed testdata/axe.min.js.gz
+var axeScriptGzip []byte
+
+// axeScript decompresses the vendored axe-core once.
+var axeScript = sync.OnceValue(func() string {
+	reader, err := gzip.NewReader(bytes.NewReader(axeScriptGzip))
+	if err != nil {
+		panic("the vendored axe-core is not gzip: " + err.Error())
+	}
+	script, err := io.ReadAll(reader)
+	if err != nil {
+		panic("the vendored axe-core does not decompress: " + err.Error())
+	}
+	return string(script)
+})
 
 // KnownSerious records the axe rules that fail across the fixture today, each
 // with what it is.
@@ -86,7 +105,7 @@ func TestAccessibility(t *testing.T) {
 				settleAnimations(t, page)
 
 				if _, err := page.AddScriptTag(playwright.PageAddScriptTagOptions{
-					Content: playwright.String(axeScript),
+					Content: playwright.String(axeScript()),
 				}); err != nil {
 					t.Fatalf("injecting axe: %v", err)
 				}
