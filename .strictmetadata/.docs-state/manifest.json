@@ -12270,7 +12270,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-08T13:45:10.659361+00:00",
+  "last_gen": "2026-10-08T13:46:07.977601+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
@@ -12280,6 +12280,10 @@
       },
       {
         "word": "canonicals",
+        "aliases": []
+      },
+      {
+        "word": "codenames",
         "aliases": []
       },
       {
@@ -12296,6 +12300,10 @@
       },
       {
         "word": "Plex",
+        "aliases": []
+      },
+      {
+        "word": "releasables",
         "aliases": []
       },
       {

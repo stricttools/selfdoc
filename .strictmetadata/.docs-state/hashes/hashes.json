@@ -219,8 +219,8 @@
     "description": "63fbcda5f669cb2860cdb48094349f5bf792e22cd4d1e576fdc29614162824ec"
   },
   "en/deployment.md": {
-    "content": "003aa55443dac8fd4218b0b4a132d471da55ee7d6b3fe0881659099e565543e6",
-    "description": "a06732d81dedac36b59c719e5e6ddb4f6e39b7250cb46cd8575ac4368d270663"
+    "content": "08c6c5f627b77eb0fdcc2ca989fadcff3f872f0e5e6bbc8f8a18fdc5aad2d600",
+    "description": "372ab9abd4a1936e45c83f4bed6f1d5dc856d63d5aa3d6c3f43708ce57756b9d"
   },
   "en/directives-guide.md": {
     "content": "b29b30817420a19a3ad7c26ffa05c1391fe692423fe0f819f60c124bf34057d9",
@@ -384,8 +384,7 @@
   },
   "en/internal-confidential.md": {
     "content": "0af035d11337ea70b1ff6b53e2d433a3bb32702d88c1fbbabcec250a913935cc",
-    "description": "2a0b43b76a42b5ce058a2ac70e8bf0dd4b2e59fdd49a5a222e94fd502b0eb630",
-    "seed_hash": "2a0b43b76a42b5ce058a2ac70e8bf0dd4b2e59fdd49a5a222e94fd502b0eb630",
+    "description": "196a2958f3d2bd6e653a3186c192e25a0627970bf2471cec0ed1f21aa788aa64",
     "source_docstring": "7968e91c81ed2de32b5099222d1c890fa8c46b11edc542220b289f35cb460467"
   },
   "en/internal-config.md": {
@@ -515,8 +514,8 @@
   },
   "en/internal-gitcommit.md": {
     "content": "bab502a472dcd6d9a56b046cfad7880c46ae11147af6b1acae12d6eaeb45c1a2",
-    "description": "65bb68a9468a1612be01f2591ecba3e682a784f0255d9593b222545b24565fe5",
-    "source_docstring": "f0ba69c8475732f9fd024ad06200587c129a937787eef64d8ebb417eafce7a15"
+    "description": "f51c48cef751d055c6f9848de97176d85f5fcc7af86b0564f87f770b137fa835",
+    "source_docstring": "55053ecc78abe124059e04411ecf0c81d26f53b262c2e0e73bc41940e2fdae68"
   },
   "en/internal-html.md": {
     "content": "08ba6f75e2b543e8101bec12d3085b3cc92b0505e5b7c747fd5bab27d89d3dc6",
