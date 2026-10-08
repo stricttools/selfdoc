@@ -153,12 +153,13 @@ func TestQualityEmitsItsPayload(t *testing.T) {
 	dir := postProject(t, nil)
 	result := run(t, dir, "quality", "--json")
 	if result.ExitCode != 0 {
-		// dirstat is an external tool; without it the command says so on
-		// stderr and exits 1, which is the other declared outcome.
-		if strings.Contains(result.Stderr, "dirstat") {
+		// dirstat is an external tool; without it the command refuses and
+		// exits 1, which is the other declared outcome. Under --json the
+		// refusal is a diagnostic of the envelope on stdout.
+		if strings.Contains(result.Stdout, "dirstat") {
 			t.Skip("dirstat is not installed: quality reports that and exits 1")
 		}
-		t.Fatalf("quality failed: %s", result.Stderr)
+		t.Fatalf("quality failed: %s%s", result.Stdout, result.Stderr)
 	}
 	payload := payloadOf(t, result)
 	for _, key := range []string{
