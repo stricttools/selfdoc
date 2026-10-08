@@ -12,6 +12,10 @@ word = "canonicals"
 meaning = "The canonical links pages declare: the address a search engine treats as a page's own."
 
 [[accepted]]
+word = "codenames"
+meaning = "Internal names of confidential projects that the confidential-name index protects in every public output."
+
+[[accepted]]
 word = "dirstat"
 meaning = "The tool selfdoc quality runs to count a project's source lines."
 
