@@ -539,13 +539,15 @@ func directPipeline(argvs [][]string, o opts) (Result, error) {
 		}
 	}()
 
-	var errBuf bytes.Buffer
+	// Each stage writes its own stderr buffer: the stages run at once, and a
+	// bytes.Buffer is not safe for concurrent writes.
+	errBufs := make([]bytes.Buffer, len(argvs))
 	var deadline time.Time
 	for i, argv := range argvs {
 		cmd, cancel, d := command(argv, o)
 		cancels = append(cancels, cancel)
 		deadline = d
-		cmd.Stderr = &errBuf
+		cmd.Stderr = &errBufs[i]
 		cmds[i] = cmd
 	}
 	for i := 0; i < last; i++ {
@@ -581,8 +583,17 @@ func directPipeline(argvs [][]string, o opts) (Result, error) {
 		Argv:     argvs[0],
 		ExitCode: cmds[last].ProcessState.ExitCode(),
 		Stdout:   outBuf.Bytes(),
-		Stderr:   errBuf.Bytes(),
+		Stderr:   bytes.Join(stderrs(errBufs), nil),
 	}, nil
+}
+
+// stderrs is each stage's captured stderr, in stage order.
+func stderrs(bufs []bytes.Buffer) [][]byte {
+	out := make([][]byte, len(bufs))
+	for i := range bufs {
+		out[i] = bufs[i].Bytes()
+	}
+	return out
 }
 
 // command builds the exec.Cmd for one stage, with the deadline the timeout
