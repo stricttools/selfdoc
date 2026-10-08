@@ -5751,6 +5751,11 @@
         },
         {
           "level": 3,
+          "text": "`LineWriter`",
+          "anchor": "linewriter"
+        },
+        {
+          "level": 3,
           "text": "`FromContext`",
           "anchor": "fromcontext"
         },
@@ -5821,6 +5826,11 @@
         },
         {
           "level": 3,
+          "text": "`NewLineWriter`",
+          "anchor": "newlinewriter"
+        },
+        {
+          "level": 3,
           "text": "`ExitError.Error`",
           "anchor": "exiterrorerror"
         },
@@ -5833,6 +5843,11 @@
           "level": 3,
           "text": "`Result.StderrString`",
           "anchor": "resultstderrstring"
+        },
+        {
+          "level": 3,
+          "text": "`Handle.Live`",
+          "anchor": "handlelive"
         },
         {
           "level": 3,
@@ -5933,6 +5948,36 @@
           "level": 3,
           "text": "`Handle.CopyTree`",
           "anchor": "handlecopytree"
+        },
+        {
+          "level": 3,
+          "text": "`LineWriter.Write`",
+          "anchor": "linewriterwrite"
+        },
+        {
+          "level": 3,
+          "text": "`LineWriter.Flush`",
+          "anchor": "linewriterflush"
+        },
+        {
+          "level": 3,
+          "text": "`Handle.Out`",
+          "anchor": "handleout"
+        },
+        {
+          "level": 3,
+          "text": "`Handle.Info`",
+          "anchor": "handleinfo"
+        },
+        {
+          "level": 3,
+          "text": "`Handle.Warnings`",
+          "anchor": "handlewarnings"
+        },
+        {
+          "level": 3,
+          "text": "`wholeWrites.Write`",
+          "anchor": "wholewriteswrite"
         }
       ]
     },
@@ -11297,8 +11342,8 @@
         },
         {
           "level": 3,
-          "text": "`Remove`",
-          "anchor": "remove"
+          "text": "`RemoveWord`",
+          "anchor": "removeword"
         },
         {
           "level": 3,
@@ -12225,7 +12270,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-08T11:26:06.234283+00:00",
+  "last_gen": "2026-10-08T13:45:10.659361+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
