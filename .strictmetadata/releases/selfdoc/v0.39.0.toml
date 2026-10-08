@@ -1,0 +1,57 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "minor"
+# Short description of this release (required)
+description = "Rewritten in Go as one binary; the selfblog command folds into selfdoc"
+# Optional context explaining why these changes were made
+context = """
+selfdoc, selfdoc-core and selfblog were three Python packages that had to be
+installed and upgraded together, and the two command-line tools refused each
+other's projects even though they built the same pages out of the same engine.
+This release replaces all three with one Go module, github.com/smm-h/selfdoc,
+and one binary, selfdoc, that carries the engine, the blog, the assembly and
+the editor. Every line of Python in the repository is deleted, and the
+repository itself stops being a single-member workspace and becomes an
+ordinary standalone rlsbl project. The only interpreter the binary ever
+starts is python3, and only for a project's own custom directives: Python
+source is parsed in process now, so documenting a Python project needs no
+interpreter on the machine.
+
+The port was verified by building every consumer in the fleet twice -- once
+with the released Python tools, once with the new binary -- and diffing the
+output trees. The output is byte-identical everywhere except where a library
+was deliberately swapped: chroma replaces pygments for syntax highlighting and
+emits its own token class names, and Open Graph cards are the basic generated
+PNG now that the rich pre-drawn path is gone.
+
+Distribution is the Go binary alone. `go install
+github.com/smm-h/selfdoc/cmd/selfdoc@v0` installs it directly, and every
+release publishes prebuilt archives for Linux, macOS and Windows on amd64 and
+arm64 for a machine with no Go toolchain. The npm and PyPI launcher packages
+this repository used to publish are gone and stop receiving updates.
+
+What consumers have to change: a post-release hook that runs `selfblog
+assembly push` becomes `selfdoc assembly push`, and every other `selfblog X`
+invocation becomes `selfdoc X`. Writing commands sit under one `blog` group,
+so `selfdoc post X` is `selfdoc blog post X`, `selfdoc editor X` is `selfdoc
+blog editor X`, and `selfdoc docs publish` is `selfdoc blog publish-docs`.
+Custom CSS written against pygments highlight classes must be re-pointed at
+chroma's. An assembly's deploy workflow is regenerated with `selfdoc assembly
+sync-workflow`, which now installs the Go binary and pins one version.
+"""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["go"]
+exclude = []
+release_commit = "aa9be6d28a1fdb2da54fc628c1f8808d80db40ba"
+
+[released_trees]
+"." = "d6670ac0810d75c2bc36c49dd2622dd76c5f35e4"

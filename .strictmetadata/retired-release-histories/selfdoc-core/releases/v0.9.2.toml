@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+description = "A reference crossing a shared site's mount names the root that serves it"
+context = "A mounted project is served two roots at once: its documentation under its\nslug, its posts at the site root. The earlier mount fix covered one surface,\nthe sidebar's project-page-to-post link, and left three writing a relative hop\ninto nothing -- cross-page term links in both directions, the auto-glossary's\nSource link to a term defined in a post, and every project-page reference a\npost itself writes. The hop is now chosen per reference from the root the\ntarget belongs to, and the grafted-assembly fixture defines a term on each\nside of the boundary so the deploy's own verification sees them."
+release_commit = "dc4895570a87e5702841641ae4118a4def7f5f7b"
+
+[released_trees]
+selfdoc_core = "ac10fc6e17dfefdce69ef5660704f2504d0fb51d"

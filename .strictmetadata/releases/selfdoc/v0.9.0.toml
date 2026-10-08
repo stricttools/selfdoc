@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["npm", "pypi", "docs"]
+exclude = []
+release_commit = "695200de7a57605c2cfe57e06ca121dfecf47b92"
+description = "**New feature.** Consolidated version detection with new VER002/VER003 lint codes that error when `selfdoc.json` version drifts from the project manifest."
+
+[released_trees]
+selfdoc = "8c4dab89c741f26de759059ece5b34e4e794e70d"
+# description reconstructed by `rlsbl release backfill` from github-release:v0.9.0

@@ -1,0 +1,25 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "patch"
+# Short description of this release (required)
+description = "A home project's check stops reporting the assembled site's links"
+# Optional context explaining why these changes were made
+context = """
+The previous release let a home project's site-level directives resolve, which made its check reach the links those regions render -- links into other projects' subtrees that only the assembled site holds. The resolution check now takes the elements a build does not answer for, so a project exempts its regions and the assembly, where those links must resolve, exempts nothing.
+"""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["go"]
+exclude = []
+release_commit = "853a9488ec60ab6f0938d7453f16f920c758cb89"
+
+[released_trees]
+"." = "b3533e9df47f8ffbe7cf6e6a1f0cae350d548b72"

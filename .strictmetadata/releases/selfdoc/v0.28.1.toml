@@ -1,0 +1,18 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# Backfilled 2026-08-08: this release predates archive synthesis, so the file
+# never existed. description/context/bump recovered from the GitHub Release
+# notes for v0.28.1; include/exclude mirror v0.36.0.toml (not recoverable).
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["npm", "pypi"]
+exclude = []
+description = "Fix CI: install playwright browsers before running tests, fix publish gate regex"
+context = "v0.28.0 CI failed because playwright browsers were not installed. The publish gate regex also did not match the actual CI job name. Both are fixed."
+release_commit = "d073d17e05c67e5b1f0b303328530e85816b6af2"
+
+[released_trees]
+selfdoc = "c8b9dffb1fcb2c5e53e1e56bf142e417c830f5bd"

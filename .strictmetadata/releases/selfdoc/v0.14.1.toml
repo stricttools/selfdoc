@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "patch"
+# Short description of this release (required)
+description = "Exclude Python test files from coverage"
+# Optional context explaining why these changes were made
+context = ""
+include = ["npm", "pypi", "docs"]
+exclude = []
+release_commit = "fe3372f7c7a6ed804612480f10dbb96ee22e84ea"
+
+[released_trees]
+selfdoc = "e6a9e837fd21090d15b324d379012dff8443110e"

@@ -1,0 +1,60 @@
+{"format_version":2,"id":"18dc8815f8bfa1d283409fa3ee374d67be8daa4ad7dee067","commits":["3c7751ec022c58757e00a4d8335eeed9290317c9"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8bfe23c7df10195dacc48089959f5f1a17d701e","commits":["a748ebaaaf060e7ab7e77ce85121fe5bcf0b18c4"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c01ab5e52da10b67f6422cab87eefc5a2ec2f8","commits":["7532e9dabf2942832bcc416107091c53ec6a78f6","7990284d8d59c25fe87550fae5a4d46e4e0f4a6f"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c05d96819320557af44adfb549b362cbf5a7ed","commits":["9cca6950ed2909b49cd45d58c3a878ad241b7598"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c096cd586df5f29f63426aafb502998dccb863","commits":["b98217d8c3722f7c0a037b4604f8a76631c62ae5"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c0ce56fc059df78aa8418baae39b6c15e07b24","commits":["15bb41da20ba039ef0455fd55582a1b0655f8d94"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c1042f672503ce7e15421a8c184f4556fa1b8a","commits":["46fb0d98cd1f806efaf0646d008deb2305d81e0c"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c13c937619c3b21f164ee9904193c92c23fb74","commits":["f7d4bb3c96a449cd4252aad3983c4adb2eda9e1b"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c173cbe4112bcd0a5e40dbba8879919dbc48de","commits":["5e49042a4d344a9825dbd663c251ff2aed4a0b6a"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c1aa1daac1815f3ed2455594d2eff1cc53b5b8","commits":["e1cb4e7d6d1343bb109040a051c33e013764a5a4"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c1e1cd4c523f7aa4b741a79a10e6ec05496f4d","commits":["54ef0c5074d6b827d5ba5a5d91ca3e3e907ada97"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c21c95d0b7bc58d82b4749a599f83f5ba54904","commits":["3998ef22b2b868a821d9501736b15d219e4f3cb9"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c320ab9a4dd27b05744f488f4c741525218343","commits":["be94b973ef6d4cc0f768a5b348fa50812c8d07ed"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c5efe2e50fb3b2f9e442bea09e339380880a7a","commits":["3e0b399e5945e2459b15f6464ec1c380560826cb"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c694c20ba13cd09fe142cd81ced8abe2cabf20","commits":["6151bd14f5b42c4317ea070d9b98f79e7b10664d"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c6f1dcfe03ae48e8014dd2bb2c58af4500fc1d","commits":["8d5a489376b0ed2496d20c538d4dd0f58523f071"],"user_facing":true,"description":"**New feature.** `version_source` config field for reading version from primary manifest.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8c937fc65ed363288af4777a3b23ad464c42de3","commits":["ace5adc7aafe28b54e0190323c1816bc5ace3ae8"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c9915e31eb2915ebc84f74a7f5b9e8da0652cc","commits":["acb05a2844c958063b8bc85b21add2716aebcd0d"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8c9d5e46cff2b5ce2bc4423a4cf338e597aa0d4","commits":["edf50ad9dd0cc0593c8779bc5e67982dd7a1e67e"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ca190c1020e4537e9842aa98a15920284fc5f0","commits":["cafbfda09ed15244960feeeafb630ee6853ae66d"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ca51fd72bdb096fc7d4976abb9ec3ef972c1b6","commits":["8ba69a6c50b6facabc8d674fb602eda0e4a38f18"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ca8f8c20b9f2b38405403c8a645050f2453b83","commits":["a9b902e7a70ecd25034e5d9e68c7494b50002f09"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cac5dd2ed56065f596416f9f1e219be1a03201","commits":["3ba09de83db6ee7d607155f409a8237485b6de97"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cafdd402346c7d985241ae94b1233cf8424dce","commits":["f2a0b53abd3df2a4550512f924c7f1eac4912ce0"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cb3a184061ba1d94e840cc9ed195b2f27b5d2a","commits":["750238f50d661d0f72843027fc662f56b2a52e3e"],"user_facing":true,"description":"**New feature.** Swift language extractor with doc comment parsing, struct schema extraction, and public symbol detection.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8cbb695f6424d2cd20a4da8a34bf936e41eb1ed","commits":["2e167f4d02b40f3936dd4217a810b1c3a9657ad8"],"user_facing":true,"description":"**New feature.** Kotlin language extractor with KDoc parsing.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8cc1c2c486102bd3d6c4e82a51c492cf4347e3e","commits":["823e919f3fa7afae4703506c90d614a50380a375"],"user_facing":true,"description":"**New extractor.** Svelte language extractor for component documentation -- extracts props, instance/module exports, and JSDoc from .svelte files.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8cc8369fba51ef115f2411f8a34e193ab39b947","commits":["8e51c13747c89a261541570c312f32d3bc225070"],"user_facing":true,"description":"**Fix.** Svelte detection now runs before TypeScript in auto-detection order, preventing Svelte projects from being misidentified as TypeScript.","type":"fix"}
+{"format_version":2,"id":"18dc8815f8cce3226a1361e084a749e29e8a662899dc7795","commits":["868b9c703884047231eee6b72911d164aa0e6650"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cd2eb43d07438355894ce5b9dc3eb8253080ef","commits":["2f72fbed5f2c74355c52d48c5df57a1ee4aa4152"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cd7a13b9ed4c7e897f47e8bb77e9e6c1aa15e9","commits":["18a9a081e3762f9289b3cdd131b345de1fd447a9"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cdc2ab6f9756d55d4f4ddaacc2035f046118f1","commits":["45a3be7e9b596934cb5391fb8be73948be141c74"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ce0b8a4a9c0edc09fd4dce82cb81d2bb1dc572","commits":["4b6151c80c6f0cedafb14231777ebbbb2a6be66c"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ce558162f067bd4da6485faa188e8cc2e4d83e","commits":["8ea8bbb78a06db4e89bbedd53bb15f499a15181e"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ceb1c8d8e904b82252462181489524d9f0ebe6","commits":["2f72fbed5f2c74355c52d48c5df57a1ee4aa4152","18a9a081e3762f9289b3cdd131b345de1fd447a9","45a3be7e9b596934cb5391fb8be73948be141c74","4b6151c80c6f0cedafb14231777ebbbb2a6be66c","8ea8bbb78a06db4e89bbedd53bb15f499a15181e","c41487b9cde02c6d65ba27257586e56368be98c4"],"user_facing":true,"description":"**New feature.** Dart language extractor with class/mixin modifier detection, doc comment parsing, part file following, and export following with show/hide combinators and cycle detection.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8cf60e89b990acbc689436eaf9dd8e042a4e063","commits":["37532584423cdba1446b43c28d54c257ab2947b1"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8cfbf2588dafae50e0542be81e458c5777d535f","commits":["96f2bf655567a996e4d2965ad5322d3f224ccf63","55fa3fccace4910e0cda6285307ed1dfc61849fd"],"user_facing":true,"description":"**New feature.** SQL schema extractor for PostgreSQL DDL -- parses CREATE TABLE/VIEW/TYPE/FUNCTION statements and COMMENT ON documentation from .sql files.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8d03297130d6bc08d0642c791629b522b979009","commits":["5916e9a02f5b9b9d242aed7e59711d2cef1f2c3a","41ce68f4d9ac2b93719279d7fb562ddec21caf6b","8f6dcf837969f5985e2a2ce1473612553c60527b"],"user_facing":true,"description":"**New feature.** XREF002 lint check -- verifies that resolved directive source files actually exist on disk.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8d0a19df67b1a29ee7a423e92ded058f96a77fb","commits":["8a9665f69da1ecdaccf166e987ae128e523a047c"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d0ec2b009aac20e50d4af0b5764323aea04021","commits":["2869839af42970c9ed3c4993dbedf506e3f6b80a"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d13332f8820216879f4cdca14832d41c753129","commits":["0b8f79e29d98c29c63f5c3bc6a146765c62c5ce3"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d17a6cf5de78eac21a4a83af3e744e8c669b3a","commits":["61150ef6ab32eb3bacbc5b2c6cd875882e94347f"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d1c304dfb5c9a7202c4e748a6bc6e97faac6b6","commits":["71322a4e93cac4457e63efb73279aae78ae4cb2b"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d20c64fe74132f8819474c91733629c6f93efe","commits":["b7b48135f165de805df6c9026c8cf403a3047c56"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d25004d161ad0466ef4b5db3e4fbb43ec2a2ed","commits":["93368b2e81b9985e78b1219993b6564015b61272"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d2a6d15992f9917b6a4fce9da8fa6d6790c65d","commits":["8a9665f69da1ecdaccf166e987ae128e523a047c","2869839af42970c9ed3c4993dbedf506e3f6b80a","0b8f79e29d98c29c63f5c3bc6a146765c62c5ce3","61150ef6ab32eb3bacbc5b2c6cd875882e94347f","93368b2e81b9985e78b1219993b6564015b61272"],"user_facing":true,"description":"**New feature.** Doc quality checks: XREF001 (broken page links), DQ001 (restated description), DQ002 (short description), DQ003 (missing function info).","type":"feature"}
+{"format_version":2,"id":"18dc8815f8d328b498a19a875d284a5ea14b3cd62be88d98","commits":["01e23cd568962fbb487bf1adfa61766331e7586b"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d36f9e0aa1bccb6b70413f84a5728511200625","commits":["07047d914e5d5d10f654930dce1a82686b2b7b47"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d3b7bea8d06713ef15489994c7cfb38395912b","commits":["8d26fd941d6b1ceef679178876174bf1349a349d"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d3ff7907d4a51b98194f80917953ebac8c5596","commits":["2f9ca99e8e3f25673769d2a64378614c6f27c313"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d446dbc39fa74c48b14c11ba986c8709a43a7e","commits":["6f4d4c6edc80366c27ba9157efe8a686c4b51fcf"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d4c52ff3ad3744ac7740ae8d8749d7aa43c983","commits":["9c1d0325c2d3eea6ffdb8b31cadeeaaddd4ab7ce"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d50b1d0fad65d82c9a4496856f59040214fe34","commits":["92d5196946cd5cfa05afe8661ffc6b520cdc33ef"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d5603259436f986c4f4b218d614bee79c946f9","commits":["c70ab2e1a303e63e2d6374f36f83ed5f56bc21b7"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d5c56f15498395b1a14e24abd6a06a31568755","commits":["9faa0704a947303a563c4076e07f750f438a3281"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d61603210d9745ebee45d1a44bab643ca828ad","commits":["12b887ef27c077a639a25294b7700588b9b534f5"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d6768598abea555b1c4629904a5ffff2328b17","commits":["c2e68874f42d857ede185bb953e32f7fa699ef7e"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d6bcd8e3b2710fba8c41e6806be0a9c24d0c23","commits":["2abfefe4e4139b3df3cfda8b7e6c2e7859ce024c"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d72bfc17b87d204d5743d4bb6a492f5d60c275","commits":["1a1fabeaacd3c68ed17a8333f33ce3d271250165","2b9de01a672f26b76b0eaaad9f04d47e20092d31"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8d7905378ca30fca9aa44149b0185fd635e3238","commits":["f6b1a35f8741896c95c441966748bcfa46361039"],"user_facing":false}

@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+description = "Fixes the spelling engine reading HTML entity references as English words, and gives it a vocabulary of its own for the fixed words selfdoc's renderers emit."
+context = "The scanner blanked tags, URLs and code spans before reading a line as prose\nbut had no notion of an entity reference, so '&nbsp;' was read as the word\n'nbsp' -- four times per indent level in the flag tables selfdoc renders.\nNamed and both numeric forms are now blanked the same way, with their columns\npreserved.\n\nThe engine also carries a renderer vocabulary now: the fixed words selfdoc's\nown renderers write into generated pages, consulted on every run regardless of\nthe machine's accept list. A consumer cannot put selfdoc's own headings on the\naccept list of every machine that checks the page, so the engine owns them."
+release_commit = "578771902a1d9e11c8bf1b261af804f313a5f627"
+
+[released_trees]
+selfdoc_core = "bbf426e120665802058360f5259a05ed0df5a065"

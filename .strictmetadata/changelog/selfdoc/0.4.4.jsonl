@@ -1,0 +1,2 @@
+{"format_version":2,"id":"18dc8815fa68e29575a243bbd95d41f0a506506dc7e07944","commits":["a9e50ca98e8e0063ddb897b3ef005a0ad0d8ddfb"],"user_facing":true,"description":"Build now cleans the output directory before writing, preventing stale files from previous builds","type":"fix"}
+{"format_version":2,"id":"18dc8815fa693d882598b8ddaeb64c8ebe5f023c1c4e8aa8","commits":["dc24e7bbf0f67e256c4e56c3bfbd5a6623771c3e"],"user_facing":false}

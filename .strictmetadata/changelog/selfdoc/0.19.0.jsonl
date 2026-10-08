@@ -1,0 +1,16 @@
+{"format_version":2,"id":"18dc8815f8ebca865684c3a3c9cf4f05a074373a2e061c63","commits":["f73481f2df6f0075e83169a6a652abb2a2de62cc"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ec522a8a5c8763d52149adbe0def5f2fe84648","commits":["2b9688731482633ec2b20d52d6818681ed34778e"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8eccd840b977f9c9a7c401aab07dd4888226dca","commits":["929adde63640ebd59e5021664c4bd7a9613932dd"],"user_facing":true,"description":"**Fixed.** TypeScript module-level JSDoc detection no longer misidentifies function-attached JSDoc as module documentation.","type":"fix"}
+{"format_version":2,"id":"18dc8815f8ed764db42535d73101461099d493cba0aeb6e4","commits":["51a86abb5bc53a195802770136de37c663039769"],"user_facing":true,"description":"**Fixed.** Coverage computation no longer falsely matches symbols that are substrings of other symbol names.","type":"fix"}
+{"format_version":2,"id":"18dc8815f8ee179dfd5dc606fcdd414b943d9c95a50465f4","commits":["2f0a8fdacf1063067986df49bda2800038919e20"],"user_facing":true,"description":"**New lint.** CLI002 warns when CLI help texts are shorter than 50 characters (commands, flags, args, and group subcommands).","type":"feature"}
+{"format_version":2,"id":"18dc8815f8eeb2b5cbeb7127670d4493932638faf32386d7","commits":["5cbe0dd98c52378ab254c6cdbeb8c330c6b8b02f"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8ef34156abd3ca9f5bb47db84d421e5e4a9ca41","commits":["5e4e3e33a5bdade288c7a595f6a55dfa7b3987cb"],"user_facing":true,"description":"**All languages get auto-extracted descriptions.** gen now uses the `module_docstring` protocol method for all extractors instead of hardcoded Go/Python paths. TypeScript, Zig, Swift, Kotlin, Svelte, Dart, and SQL pages now show real module descriptions.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8efec4acbd3b3367ccd4cdbbf428ee910df9cc5","commits":["4e4ef08f53382463765c14da2a8b49d246c98694"],"user_facing":true,"description":"**Fix.** TypeScript ref output now includes re-exported symbols (`export { X }` and `export { X } from '...'`), fixing coverage reports that showed them as undocumented.","type":"fix"}
+{"format_version":2,"id":"18dc8815f8f08ce69eefb9b6da3640c1a79b0980298c8e3a","commits":["e9a7fdd25c301d5dbc238b3a378c2eb48a0dac8d"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f0fcddd7e702a249684b709dbe11dd07310a2f","commits":["a8df15eca9405c075e775ecdd7d9097063aafb10"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f16ade00a74dbdd555486391fe6963db15b4db","commits":["9233f91a3cf7b08f509d6f023f98e28693b6d189"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f1d71367c24976363646f688706e69aec025a4","commits":["ff1e57d8eeae3d47d52769b5c595906eee59eb19"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f2435c16e5cac0ad934c3c9579231aaf40962e","commits":["d5deb7fe91f575368a3b74fb96a6580c9e1dc388"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f2b2b38e5708c677c54900ac77c8669ca0767b","commits":["9a86954713725c081e1d9e4010217ff475493230"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f320e7aa0789275a434abaa1b7e2ad8c77d82f","commits":["652cb62ed263652e2d430556bfa9129ee91b791d"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8f38b27e48d5770c58b4e35969be793b5743858","commits":["91ed71191d95b4fd0fe5220ce1b9fc9be590e772"],"user_facing":false}

@@ -1,3 +1,0 @@
-{"format_version":1,"commits":["9a08bc3d267df1aeb851cf5ccb820cd2bc00dc34"],"user_facing":true,"description":"**CLI page preservation fix end-to-end.** Handwritten CLI page descriptions now actually survive `selfdoc gen` (the 0.5.1 preservation logic was defeated by stale-file cleanup deleting CLI pages before they could be read for preservation).","type":"fix"}
-{"format_version":1,"commits":["2f4ee78430c714f294a03fbc1ba299e52423e7b8"],"user_facing":false}
-{"format_version":1,"commits":["082635b9c81a1a4cd644cb9059d0ddd1b7b81a3d"],"user_facing":false}

@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["pypi"]
+exclude = []
+description = "Fix root and config-driven redirect stubs so their hop resolves inside the site subtree instead of at the origin root."
+context = "The generated root index.html stub hopped to /<locale>/<version>/. That is\ncorrect only when the build output is served from an origin root. A\nmulti-project documentation assembly serves each project's output under\n/<slug>/, so the hop left the project entirely and landed on whatever the\nassembly root serves -- every project's landing page on the assembly was\nbroken. GitHub Pages project sites, served under /<repo>/, had the same\nproblem. The hop is now document-relative, so it resolves correctly under any\nmount point, origin root included; the rel=canonical stays absolute."
+release_commit = "9b0b83e7a4d294eedc4c5d8131a123075fe8fc13"
+
+[released_trees]
+selfdoc_core = "c40bf3e5f82681a32efb860d1f943b586bb14b7a"

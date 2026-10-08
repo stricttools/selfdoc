@@ -1,0 +1,4 @@
+{"format_version":2,"id":"18dc8815f8faf478fbbd7f1b88094ae8bc6dc16d77df7daa","commits":["da161d022e1021a8deb48f2f3892ae05825ae116"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8fb3778aa84506ebd5e474a8beb977c1823a210","commits":["74b203f86c60c9db0cfb175857719a2447fb2761"],"user_facing":true,"description":"**Bug fix.** Go public_symbols now returns dotted Type.Method names for methods, fixing collision when two types share a method name.","type":"fix"}
+{"format_version":2,"id":"18dc8815f8fb8e81dc72d0bb6ef34ab7a4862377273c7e06","commits":["107418b7522ad9375f27eec028f4d90d5a8b863b"],"user_facing":true,"description":"**New feature.** ref directives now support the target attribute to render a single symbol instead of the entire module.","type":"feature"}
+{"format_version":2,"id":"18dc8815f8fbdc2ffca8efbb9ed241f3b0b21378c8954bd8","commits":["4e521dc6100d54555ad626e4836f8713f8ac6737"],"user_facing":false}

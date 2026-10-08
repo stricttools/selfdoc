@@ -1,5 +1,0 @@
-{"format_version":1,"id":"18d4ca122be8212d7a8ad8ea2ba74733aed9da50589d7538","commits":["70aded50a1965700aa6fb009eee31ea4e5bfc71c","cb2ed14c314706ec94c41b864ca8ff0bb445e4c9"],"user_facing":false}
-{"format_version":1,"id":"18d5069cf069d787677073e8845141bf8af12beab2bd3525","commits":["e985421f8344ab6e7fbda9f347bb04df0454323e"],"user_facing":true,"description":"**Install with `go install github.com/smm-h/selfdoc@v0`.** The entry point moved to the module root, so the former `.../cmd/selfdoc` path no longer exists.","type":"breaking"}
-{"format_version":1,"id":"18d5069dbc0b8519e5aec36283c54432a60508340109d9fd","commits":["220f76702f237ba6abc46530f381acda6ae8d1a4","fa83df66639475244c23806a1aa328b988b231ff"],"user_facing":false}
-{"format_version":1,"id":"18d5069dcf6a27d59ec9cf198e9847018ed99559dcc6b3e5","commits":["5dba3bd0ca728b19660ef10ca311164d7814a742"],"user_facing":false}
-{"format_version":1,"id":"18d506c1c1351416562a1a719e244636a1c4d1aeb1f29a60","commits":["443dcc4f28b74bf4839e245e0b07132e0ab2579a"],"user_facing":false}

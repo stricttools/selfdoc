@@ -1,8 +1,0 @@
-{"format_version":1,"commits":["8d67295d5cc763d71d474aaa75f5599b5390442f"],"user_facing":true,"description":"**CLI page description preservation.** Handwritten `description` frontmatter on CLI pages (per-command, per-group, and the CLI index) now survives `selfdoc gen` runs, matching the behavior added for module pages in 0.5.0.","type":"fix"}
-{"format_version":1,"commits":["772f894c0c1c1090f9f33122ab047aa79423666d"],"user_facing":false}
-{"format_version":1,"commits":["40868fba5c03a8c5e818d587e485282f07b5aae3"],"user_facing":false}
-{"format_version":1,"commits":["c70ff1b54e734797bf6ef89665c364cc3bcf4540"],"user_facing":false}
-{"format_version":1,"commits":["b2bbb8f6a67bc48bffa0324d274315bfdfcf4bf1"],"user_facing":true,"description":"**Module page descriptions from docstrings.** `selfdoc gen` now seeds new module pages with the first line of the module's docstring instead of the generic 'API reference for X' template; quote-wrapping length is also fixed.","type":"feature"}
-{"format_version":1,"commits":["c78ecd14b5d23a96a11b193877a1e7ad30e4cee9"],"user_facing":true,"description":"**Sticky column visuals.** Sticky first column in tables now preserves row stripe and hover backgrounds instead of showing a flat fill.","type":"fix"}
-{"format_version":1,"commits":["183c0a422125d5eef9af222ef51998ece333d932"],"user_facing":false}
-{"format_version":1,"commits":["4b13ab2dae8d4038cb900a18408122c54764a1b5"],"user_facing":false}

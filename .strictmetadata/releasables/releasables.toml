@@ -1,0 +1,27 @@
+format_version = 1
+repository_layout = "standalone"
+release_branches = ["main", "master"]
+environment_file = "~/Projects/.env"
+
+[timeouts]
+push_seconds = 120
+
+[[releasables]]
+name = "selfdoc"
+tag_format = "v{version}"
+publish_mode = "ci"
+hooks = { pre_checks = ["bash .strictmetadata/release-hooks/selfdoc/pre-checks.sh"], post_release = ["bash .strictmetadata/release-hooks/selfdoc/post-release.sh"] }
+
+[[members]]
+path = "."
+name = "root"
+releasable = "selfdoc"
+targets = [{ name = "go" }]
+
+[[members.pipelines]]
+name = "go"
+type = "go"
+target = "go"
+local = false
+artifact = "binary"
+install_paths = ["."]

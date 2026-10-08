@@ -1,0 +1,11 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["npm", "pypi", "docs"]
+exclude = []
+release_commit = "6db33017b7819d5a090a87c7c8f2d661ce3331de"
+description = "**Fix.** Go gen root package now correctly uses `ref path=\".\"` instead of the module name."
+
+[released_trees]
+selfdoc = "2c52b4befcbab7c9cfd5396d265c1da009ccad7a"
+# description reconstructed by `rlsbl release backfill` from github-release:v0.9.1

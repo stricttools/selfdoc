@@ -1,0 +1,4 @@
+{"format_version":2,"id":"18dc8815f8b5cc10ee9dc9ee09dd40cfaea369f744ca78de","commits":["d2bef15d2a672f68ab4877679b11b38323215b74"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8b61eade1502ed9341d436a8912d8f57e92de1b","commits":["e3a831634ebebc6b9cc1e1ce2df43cf4e5ea7a66","47e80c8885e1119d2346c79ad36323897be50015"],"user_facing":true,"description":"**Fix.** Go root packages in multi-source-path projects no longer crash with ambiguity errors. Each source path's root package gets a unique qualified path instead of the ambiguous `path=\".\"`.","type":"fix"}
+{"format_version":2,"id":"18dc8815f8b69ed8b81d34416f284fc8b521dd0befcb6240","commits":["63b93e442fd420d0cefbd38455c31c2036e1ff28","1ecc5614b1a5a254a4d9ec92c65f09a3cc07067f","723a1d85f0c4df862b9d15ffa680eefac968d051"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f8b6ea695172a69a63684a7cbcdf6dc94b3d0e67","commits":["99998328f6c64bc761828a703cd5cefac3a5df7c"],"user_facing":false}

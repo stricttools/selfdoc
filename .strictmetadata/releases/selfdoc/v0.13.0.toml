@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "minor"
+# Short description of this release (required)
+description = "Multi-language project support and Zig extractor"
+# Optional context explaining why these changes were made
+context = ""
+include = ["npm", "pypi", "docs"]
+exclude = []
+release_commit = "b9e2adccc40ffb14854f5148ff52bb9f4687c657"
+
+[released_trees]
+selfdoc = "e46ac7cff9cca5f3b8367dae10bad1b2da7c3a9a"

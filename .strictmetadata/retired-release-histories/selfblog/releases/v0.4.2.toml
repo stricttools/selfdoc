@@ -1,0 +1,14 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["npm", "pypi"]
+exclude = []
+description = "Repairs the assembly deploy: no unreachable per-project 404 page and no canonical on the site's own error page, and the wheel declares its dependency floors."
+release_commit = "12bf613b43152f5ccffdce763b79225905ef281c"
+
+[released_trees]
+selfblog = "37f6039269034a7735551858edd0946b3fa9b9df"

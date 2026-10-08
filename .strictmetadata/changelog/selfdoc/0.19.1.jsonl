@@ -1,0 +1,2 @@
+{"format_version":2,"id":"18dc8815f8f4703f87c73b9c97224a709bde063a7fbcf3ba","commits":["d06a794e296d1453dca628368eb252505d6f4353"],"user_facing":true,"description":"**Breaking.** Removed `version_source` config field. rlsbl already handles selfdoc.json version bumping during releases.","type":"breaking"}
+{"format_version":2,"id":"18dc8815f8f519e454e428b567974088bc8987dfd1ccc359","commits":["99abd5fdb68e8a0edb87aa486bc6409b9cfff0a1"],"user_facing":false}

@@ -1,0 +1,12 @@
+{"format_version":2,"id":"18dc8815fa69ad1b3f4b1e7a9dfa4b338db0a65903db0677","commits":["6cd03dc853fa500406102598611dbe0a1a45ad20"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa69f2a5035ae98bfa634c82aa4a4d561558ef81","commits":["a358937ff0e79f27e169bdf816bb24494b3a4b2a"],"user_facing":true,"description":"Removed deprecated --warn-only flag (warnings are non-fatal by default since 0.4.0)","type":"breaking"}
+{"format_version":2,"id":"18dc8815fa6a47917afbeff65c51404ba941a43ab5d26770","commits":["107133286190f9b299d0c619b40410d2fcb461b2"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6a80a01f5b0e997405428c8794a05815e269c8","commits":["e6c178131dfdaeaa887ffbf6479024d3d4d805b1"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6ab9d747f71735d32243d9bcc53d76682d29d3","commits":["95fb4131baae7a66d9f4f031eec8556eea90982f"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6af21e233fbf42a4814f80b1fedc37c11fdc53","commits":["c77a51f5afc7e46342d56f3859a87af97095bc0e"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6b2a9606ac3af8477c4d768d34efb1fba029e0","commits":["22e91683f71a9301edea86dd10c9bcfa0c7841e8"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6b6323b564b946ec36483abc2fbcac8d7a3c2b","commits":["e9990345982517646b58c3cf0e9358b70d22049b"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6b9b738b6f6812ddde4033945708d99605bbe0","commits":["dc0155afee416f593be04160552d62bd4796fc32"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6bd81c19baf0c9755f4b38bb5e517aed9fa1ba","commits":["263025008882f040b61171321fb2b675ddf41168"],"user_facing":true,"description":"JSON schema for `selfdoc check --format json` output (schemas/check-output.schema.json)","type":"feature"}
+{"format_version":2,"id":"18dc8815fa6c2e16d89d65deff014dd0ac8ed9217abcefa1","commits":["31154de79f262ae88dadba08a2d4bc78cf19c151"],"user_facing":false}
+{"format_version":2,"id":"18dc8815fa6c67892195c140ad1446cab1d3eb7227bad6b8","commits":["3ef3df11c6a3be95ff3467306d0256ae942ddae5","83f2ddc1eb09d62655de62ea4d0d2de211c1d1d0","c41141cb8f5811fd4dfea6b73a75739edecb5130"],"user_facing":false}

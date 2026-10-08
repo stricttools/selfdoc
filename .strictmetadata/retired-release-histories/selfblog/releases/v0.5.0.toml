@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["npm", "pypi"]
+exclude = []
+description = "A local authoring app, a whole-site preview before it ships, and one stylesheet for the assembled site"
+context = "Three things a person publishing to the assembly could not do before.\n`selfblog editor serve` opens a browser UI over a declared registry of\nrepositories, with the publish renderer running over the unsaved buffer so\nwhat is approved is what publishes. `selfblog assembly preview` builds\nevery named checkout, grafts them exactly as the deploy does, runs the real\npre-deploy verification and serves the result on loopback. And the\nassembled site carries one site-level stylesheet rather than a copy per\nproject subtree, so the shared pages ship styled.\n\nThe CLI also declares its presence on strictcli 0.41's terms, which is what\nthe flags that used to be enforced by a hand-written check now say in their\nown declaration."
+release_commit = "c9da7a36e8ca7e395a29822e0ebb98bc17d55a4c"
+
+[released_trees]
+selfblog = "2b30d71b8435a5a25ff388cf6f1d9783e9e360c2"

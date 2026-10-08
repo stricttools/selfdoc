@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["npm", "pypi"]
+exclude = []
+description = "check lints posts, spell-checks prose and resolves every link the build emits; init requires the base URL and the author; lint suppression is validated against the registry and reaches warnings only."
+context = "One program across all three packages: the site's addressing, the assembly that\nserves it, and the authoring checks that keep it honest.\n\nAddressing changed first. A page's current version now lives at a stable,\nunversioned address and superseded versions are archives under v/, declared as\nsuch in canonicals, sitemaps and feeds. Posts moved to one site-level blog/\nnamespace shared by every project. Every link, canonical and sitemap entry the\nbuild emits is now resolved against the files it actually wrote (LINK001), and\nthe assembly worker carries a redirect map generated from the manifests, so the\nretired address schemes still land somewhere real in a single hop.\n\nThe assembly stopped being CI shell. The deploy body is a command\n(assembly integrate), the workflow that calls it is a thin generated artifact\nwhose tool pins are rewritten and checked against PyPI on every sync, and the\nassembled tree is verified before anything is pushed. Membership is a declared\nroster with a required home project served at the site root, documentation can\nbe published without a release, and a project can be retired.\n\nThe authoring checks grew a spine: every emittable lint code is declared in a\nregistry with its severity, suppression is validated against that registry and\ncan no longer silence an error, posts are linted like pages, and prose is\nspell-checked -- including the prose a directive renders out of an authored\ndocument.\n\nSearch switched to Pagefind and the builtin engine was deleted, so\nsearch_engine is required and names the one valid value. The author block is\nrequired too: one Person is built from it rather than an Organization invented\nfrom a directory name.\n\nBreaking changes are minor bumps under the pre-1.0 convention; each is a\nbreaking-type entry in the changelog."
+release_commit = "34f638cf7783d8afd5ff47d5549a15a53e36e4ce"
+
+[released_trees]
+selfdoc = "e4df3bbf467dc2dec0b74f135c1bb8e23785f3a0"

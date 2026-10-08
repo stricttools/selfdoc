@@ -1,0 +1,6 @@
+{"format_version":2,"id":"18dc8815f91c8f3f13088c9897a548359fc041cefb03780e","commits":["84e47dbc00ad2ee49785b08d4b8da0dca3543274"],"user_facing":true,"description":"**Breaking:** `--no-commit` renamed to `--auto-commit` (default=True). `--dry-run` and `--drafts` now require explicit defaults. `--from-release` is now required.","type":"breaking"}
+{"format_version":2,"id":"18dc8815f91cf795688787d1e82d44efb6fc0669c62d674b","commits":["88fb0ddffff8df606790274b4c4d28834098cc1f"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f91d3220c882fb4c6c474c1cae0c0df55420e03d","commits":["e2cb6bdaaac2768ef6692bff8fa0f4268ba4addf"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f91d6c0b556208b0a7f54a6986fda478ab0d5f7f","commits":["1fab2d8842b84376d56c83b32b7a5b8c682483c7"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f91da77d48871730716d4fe4833a788dd4319627","commits":["9b2c02b90ea862f0ca41d264f1ffd757fa6c79ec"],"user_facing":false}
+{"format_version":2,"id":"18dc8815f91ddec9f1c460700ba54fbf926e6cc1b9967bc5","commits":["9eb7b9a7f90edff2670af43b623384745e9ae958"],"user_facing":false}

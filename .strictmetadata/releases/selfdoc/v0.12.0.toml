@@ -1,0 +1,12 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "minor"
+include = ["npm", "pypi", "docs"]
+exclude = []
+release_commit = "ab91b06c58794908749bf444c0feadf01ca0ecff"
+description = "**100% coverage enforced.** `selfdoc check` now requires all public symbols to be documented on non-skeleton pages. The `min_coverage` config field is removed."
+
+[released_trees]
+selfdoc = "50b0487cc330ba5e47a0241858d51a815e4c6196"
+# description reconstructed by `rlsbl release backfill` from github-release:v0.12.0

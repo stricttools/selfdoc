@@ -1,5 +1,0 @@
-{"format_version":1,"commits":["95279677ea61c8d72a4444009b847582ff0a6451","70f269242eaedda7e67a16fefdd2d0c2e069be5e"],"user_facing":true,"description":"**New feature.** Config-driven redirects for renamed/deleted doc pages. Add a `redirects` list in `selfdoc.json` with `{from, to}` page slugs \u2014 the build expands across all locale/version combos, generating both Cloudflare `_redirects` rules and HTML meta-refresh pages. Existing pages in cached old versions are preserved.","type":"feature"}
-{"format_version":1,"commits":["da6a0c09e41e6fc5f9c826286d313d8a64264432"],"user_facing":true,"description":"**Docs.** Added prose documentation for the `exclude` attribute on `table-schema` and `table-config` directives.","type":"feature"}
-{"format_version":1,"commits":["237a60cb8753a9395fdb90673079dcfb41fe7af4","5e45c13cd65c2840b00ef95a0f4732ec9d76dc96","bd3506a66a7ceef61875fabb707065fde5eaadc6","a36676e0632da7ca7305164f3e51acf4dad68b19"],"user_facing":false}
-{"format_version":1,"commits":["196869fb6fbc90ae209bb4c8c77f3b57d06c9caa"],"user_facing":false}
-{"format_version":1,"commits":["1ac8adb52a9b3fa373c289b0de92368559703810"],"user_facing":false}

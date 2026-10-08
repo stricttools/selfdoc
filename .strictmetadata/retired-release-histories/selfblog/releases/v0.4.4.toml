@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "patch"
+include = ["npm", "pypi"]
+exclude = []
+description = "The site home keeps its own pages across a deploy"
+context = "Publishing the assembly's home project revealed it: the site root is the\nhome project's content root, so a page of its at cv/index.html emits at\nsite/cv/, beside the project subtrees rather than inside one. The\nmembership reconciler swept every directory under site/ as a project and\ndeleted that one on every deploy. home_owned_root_names has answered this\nsince it was written, and only the roster check was asking it."
+release_commit = "8887ce4640a45644f4ed308c4263039414eac859"
+
+[released_trees]
+selfblog = "f387b13b46835c3426f00151d83abce0c13c56bd"

@@ -1,3 +1,0 @@
-{"format_version":1,"commits":["4b6b534ee273b8190e1f2318845bcc6e5c427fed"],"user_facing":true,"description":"**Fix.** Python test files (`test_*.py`, `conftest.py`) and test directories (`tests/`, `test/`, `__tests__/`) are now excluded from documentation coverage, matching what `selfdoc gen` already excluded.","type":"fix"}
-{"format_version":1,"commits":["f13a85317181a30bcb154781c4a8f4231adbff28"],"user_facing":false}
-{"format_version":1,"commits":["16b4dfec0724391d3c0c066862b3be543fa1032b"],"user_facing":false}

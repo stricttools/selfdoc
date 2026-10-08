@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "patch"
+# Short description of this release (required)
+description = "Fix Go root package ambiguity in multi-language projects"
+# Optional context explaining why these changes were made
+context = ""
+include = ["npm", "pypi", "docs"]
+exclude = []
+release_commit = "9caef2dc164a91c987130568381dc1d851c52067"
+
+[released_trees]
+selfdoc = "3be59296066f61b3eca0586f66fc3650521dfcda"

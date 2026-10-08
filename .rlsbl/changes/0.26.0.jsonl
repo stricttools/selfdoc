@@ -1,4 +1,0 @@
-{"format_version":1,"commits":["d400accec8895feddcf183630d9c0f27f29fd110","3aa113af44fe02f1ed51f38443e90ab88a0cbd5b"],"user_facing":true,"description":"**Posts repo archival.** New `posts.repo` config field archives resolved post content to a git repo during post publish.","type":"feature"}
-{"format_version":1,"commits":["d2bfda7fd0ed13f400f11111271250fa025ea6b3"],"user_facing":false}
-{"format_version":1,"commits":["4b15724baa2efe6e3b3def36f786ff0dae333e9a"],"user_facing":true,"description":"**Assembly workflow fix.** Pass `--docs-base` to `generate-shared` in the assembly workflow.","type":"fix"}
-{"format_version":1,"commits":["a6bbe24a784e1c8d7fa3418ca946d48a15735202"],"user_facing":true,"description":"**Blog redirect via Pages Function.** Replace Cloudflare Pages `_redirects` with `_worker.js` for host-specific blog.smmh.dev redirect.","type":"feature"}

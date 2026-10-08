@@ -1,9 +1,0 @@
-{"format_version":1,"commits":["5b0aaed0c547b9170a36758f7b9e43ff91b6b0ae"],"user_facing":true,"description":"**Fix frontmatter list parsing.** Use bracket syntax `[a, b, c]` for list values instead of comma detection, which broke description fields containing commas.","type":"fix"}
-{"format_version":1,"commits":["c7b0883017aec155cc1c2da6881790f18fd7511d"],"user_facing":false}
-{"format_version":1,"commits":["9f4688b611f27b275ec075ec339b9b96430a4cd7"],"user_facing":false}
-{"format_version":1,"commits":["d409b021657ce464ad3063f547cd86126662cdb5"],"user_facing":true,"description":"**Check validates all versions.** `selfdoc check` now extracts and validates old tagged versions, not just the working tree. Monorepo version pinning lets docs-site releases freeze constituent project versions.","type":"feature"}
-{"format_version":1,"commits":["9bd0df6c41eb780ce931eab3449a6908d9507d23"],"user_facing":true,"description":"**gen_data dogfooding.** selfdoc's own docs now use a gen_data script that extracts the directive catalog from source code.","type":"feature"}
-{"format_version":1,"commits":["804820ef723be110b7cd4eef2782ea67bd63c840","818552a90aa4e135326ba410318e42c4652b090c","b6c71692245ce92e5ba0543f96662624aa241f83","7b84f788140b8bef3d3b7c4cdf273c584e6f5c8d"],"user_facing":false}
-{"format_version":1,"commits":["562e7be36b0aaca62375f215ea8b918527523b0d"],"user_facing":false}
-{"format_version":1,"commits":["121a5cfc30814371ca3f2785412db4ebb67c8907"],"user_facing":false}
-{"format_version":1,"commits":["d3aeba8c8c539d1bac246a78b16f8654733cca96"],"user_facing":false}

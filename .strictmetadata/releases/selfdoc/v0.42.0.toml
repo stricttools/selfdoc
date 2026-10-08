@@ -1,0 +1,23 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "minor"
+# Short description of this release (required)
+description = "Every selfdoc-owned directory lives under .stricttools/ with a manifest.toml per directory, moved by a dry-run-capable script; titles compose written values only; topology.projects, legacy_blog_host and the Pages worker are gone; the lint table renders from the registry; check resolves generated pages through both docs roots."
+# Optional context explaining why these changes were made
+context = ""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["go"]
+exclude = []
+release_commit = "8f37d8d0d202cfe0f9d385afb77b4e7813a2e368"
+
+[released_trees]
+"." = "7956bd43f14c8bf746acf95509621949eae25221"

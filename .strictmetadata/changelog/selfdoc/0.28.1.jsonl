@@ -1,0 +1,1 @@
+{"format_version":2,"id":"18c066fe3ee5c04abce7ace579e44adba3d0216cf2cc93eb","commits":["341002dc3981398122f75a1b836f03827329f9f5"],"user_facing":true,"description":"**Fix CI.** Install playwright browsers before running tests so CI passes and the package publishes to PyPI.","type":"fix","packages":["selfdoc"]}

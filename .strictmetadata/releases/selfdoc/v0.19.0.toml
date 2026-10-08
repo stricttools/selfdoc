@@ -1,0 +1,14 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, or major
+bump = "minor"
+# Short description of this release (required)
+description = "Dotted target syntax, TS re-export fix, CLI002 lint, gen.py protocol integration, coverage matching fix, and TS module JSDoc fix."
+# Optional context explaining why these changes were made
+context = "symbol_details across all extractors now supports Type.Method dotted targets for class member disambiguation. TypeScript _extract_exports handles export { X } re-exports. Coverage matching uses heading-based regex instead of fragile substring check. gen.py uses module_docstring protocol for all 9 languages (7 gained auto-descriptions). CLI002 validates help text length. TS _extract_module_jsdoc no longer misclassifies function JSDoc as module-level."
+include = ["npm", "pypi"]
+exclude = []
+release_commit = "f5d1843cb670dbe63e8778b79ca454260f3fb4f7"
+
+[released_trees]
+selfdoc = "fd5ea5378fd6a19d934f3f9434315cdf5c62487e"

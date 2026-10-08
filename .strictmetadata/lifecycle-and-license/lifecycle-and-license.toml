@@ -1,0 +1,44 @@
+format_version = 1
+[[lifecycle]]
+subject = "selfdoc"
+status = "active"
+from = 2026-10-08
+reason = "active when rlsbl's records moved to the .strictmetadata layout"
+[[licenses]]
+subject = "selfdoc"
+license = "MIT"
+from = 2026-10-08
+reason = "declared by the owner when rlsbl's records moved to the .strictmetadata layout"
+[[lifecycle]]
+subject = "selfblog"
+status = "retired"
+from = 2026-09-12
+reason = "rewritten in Go into the root module github.com/smm-h/selfdoc; no further releases"
+[[lifecycle]]
+subject = "selfdoc-core"
+status = "retired"
+from = 2026-09-12
+reason = "rewritten in Go into the root module github.com/smm-h/selfdoc; no further releases"
+[[registry_names]]
+registry = "npm"
+name = "selfblog"
+subject = "selfblog"
+recorded_since = 2026-10-08
+[[registry_names]]
+registry = "pypi"
+name = "selfblog"
+subject = "selfblog"
+recorded_since = 2026-10-08
+[[registry_names]]
+registry = "pypi"
+name = "selfdoc-core"
+subject = "selfdoc-core"
+recorded_since = 2026-10-08
+[[identities]]
+subject = "selfdoc"
+facet = "releasable-name"
+value = "selfdoc"
+registry = ""
+tag_patterns = ["v*"]
+from = 2026-05-05
+reason = "recorded when rlsbl's records moved to the .strictmetadata layout"

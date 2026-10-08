@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["npm", "pypi"]
+exclude = []
+description = "CLI reference pages read strictcli schema version 2, and selfdoc's own CLI declares its presence"
+context = "strictcli 0.41.0 turned a set of previously-inferred facts into mandatory\ndeclarations, every one of them a registration-time hard error, and it\npublishes the result at schema_version 2. Both halves reach selfdoc.\n\nIts own CLI could not start under 0.41 until every flag and argument\ndeclared its presence, which is what makes selfdoc runnable at all for a\nfleet already on the new floor -- selfdoc gen and selfdoc check are steps\nin every project's release, so nothing downstream could release until\nthis shipped.\n\nIts reader of other projects' schemas was worse than broken: it read a\n`type` key v2 deleted and a `required` key an earlier round deleted, and\nboth reads had a fallback, so every page claimed every flag was a string\nand every positional argument required, silently and successfully. The\nreader is now v2-only and refuses any other version rather than guessing,\nand it renders the constructs v2 adds -- presence, choices records,\nselectors and their scopes, constraints, update declarations -- instead of\nflattening them away."
+release_commit = "c9da7a36e8ca7e395a29822e0ebb98bc17d55a4c"
+
+[released_trees]
+selfdoc = "87b14dccbc9b7661ce58beb8592d9768c7ffdec1"

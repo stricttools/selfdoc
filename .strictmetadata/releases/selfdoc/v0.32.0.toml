@@ -1,0 +1,18 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# Backfilled 2026-08-08: this release predates archive synthesis, so the file
+# never existed. description/context/bump recovered from the GitHub Release
+# notes for v0.32.0; include/exclude mirror v0.36.0.toml (not recoverable).
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["npm", "pypi"]
+exclude = []
+description = "Description ownership by content: handwritten text is never overwritten; machine placeholders identified by hash/template/live-recompute"
+context = "gen now classifies a page's description text itself -- via current/historical module templates, the per-page seed hash, or a live recompute of CLI defaults -- instead of trusting the seeded flag. Hand-rewritten descriptions survive regeneration even with a stale seeded:true marker, and the STALE001/DRIFT001 exemption keys on the ownership predicate so hand-described generated pages get full staleness protection."
+release_commit = "df63d95f17b462bf61e612efceb59c4083050c71"
+
+[released_trees]
+selfdoc = "b8cf59c6db60a79037883b7fece91ce66d4511f5"

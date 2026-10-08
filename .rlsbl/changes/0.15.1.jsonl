@@ -1,3 +1,0 @@
-{"format_version":1,"commits":["f384925a7b153e6f3b365c2fbc44d997b4cb5a87"],"user_facing":true,"description":"**Bug fix.** Pipes inside unclosed backtick spans in table cells are now correctly escaped.","type":"fix"}
-{"format_version":1,"commits":["b012e361ca4791687c5c293e990eb9317b8d8cad","433d11bb7388c08a5460e24e18233f3d49509e3a","9191ac5405e2c400de2f0a98f9f9dd6dd5b11e81"],"user_facing":false}
-{"format_version":1,"commits":["2b09a2fcf351ff764fc684f7b46edd6b80c11a9b"],"user_facing":false}

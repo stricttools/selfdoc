@@ -1,1 +1,0 @@
-{"format_version":1,"id":"18c066ff7a9f465467951602be664185afd2a9951a87aef3","commits":["92e8297cc5864709337c80d78f61ddf814afed5e"],"user_facing":true,"description":"**Fix CI.** Point test paths at selfdoc-core's own test directory so CI passes and the package publishes to PyPI.","type":"fix","packages":["selfdoc-core"]}

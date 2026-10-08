@@ -1,0 +1,4 @@
+{"format_version":2,"id":"18dc8815faf005bf315e4f3c5ce6406ea2b0ebd89e5aa695","commits":["897e26b942a1b2b583c8ff74975b9a7e5bde2199","1c8689f605b4f9133dcfa927514621ee0b66c637"],"user_facing":true,"description":"**Fix.** Go gen root package now correctly uses `ref path=\".\"` instead of the module name.","type":"fix"}
+{"format_version":2,"id":"18dc8815faf06c20e7b77123a8004a85a0d045150dc28caa","commits":["88ca5fbf1e761b3e9c39353a9a6cdbd0166342c0","c25084fecd2e978e761f5e69cd73ca7c29081b1d","c7235a5e6885a826f194466141cb1be7ea6a15b7"],"user_facing":false}
+{"format_version":2,"id":"18dc8815faf0b30933c26293081044d2a86412656daa0caa","commits":["942d6ade4aa9693fe04b14ba02f7e407ab4e1606"],"user_facing":false}
+{"format_version":2,"id":"18dc8815faf0ec4a034ed848f55e4c12b3b36faf5993be1d","commits":["9350d8ab2f7a8f6706b87c7f35b15d41b6224327"],"user_facing":false}

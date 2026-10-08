@@ -1,0 +1,25 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "minor"
+# Short description of this release (required)
+description = "selfdoc init adopts a fresh repository (all three directory manifests) and writes the versioned form; baseline accept keeps seed_hash; CI runs the development Go"
+# Optional context explaining why these changes were made
+context = """
+`selfdoc init` refused every repository that had not already been granted `.stricttools/docs/`, so a new project could not start from it, and it declared codeless projects `"unversioned": true`, which gen refuses once source code appears. Init now performs the adoption itself and always writes `version`/`versions` (0.0.0 for a new project). That changed output is why this is a minor release.
+"""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["go"]
+exclude = []
+release_commit = "2957572429ca7e8637c3d43cdc887fb258af95c4"
+
+[released_trees]
+"." = "55dc7712b7db25dee30ebbd0a7d3e72ef2cca42b"

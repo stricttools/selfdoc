@@ -1,0 +1,26 @@
+# strictspec document version gate (do not remove)
+format_version = 2
+# Version bump type: patch, minor, major, infra, or prerelease
+#   prerelease: advance an existing pre-release (0.6.0-beta.0 -> -beta.1)
+bump = "patch"
+# Short description of this release (required)
+description = "The Go module is fetchable again"
+# Optional context explaining why these changes were made
+context = """
+0.39.0 is tagged and has a GitHub Release, but the Go module proxy refuses to build its module zip because one source file was named aux.go, and aux is reserved as a path component on Windows -- so go install github.com/smm-h/selfdoc/cmd/selfdoc@v0 failed for that version. A retraction cannot make a published version fetchable, so this patch renames the file to auxiliary.go.
+A guard test walks every path in the module and fails on any component whose name is one of the names Go refuses (CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9), so the module can never again be published unfetchable.
+"""
+# Pre-release channel: alpha, beta, rc, or stable (ordered;
+# demotion is an error). With patch/minor/major it ENTERS the
+# channel (0.5.2 + minor + alpha -> 0.6.0-alpha.0); with
+# bump = "prerelease" it promotes, and "stable" strips the
+# suffix. See docs/release-workflow.md#the-pre-release-channel.
+# preid = ""
+# Set to true to generate a blog post for this release
+# blog = false
+include = ["go"]
+exclude = []
+release_commit = "bafe3c4fab6b35d10286016cca89cf168eb8fe58"
+
+[released_trees]
+"." = "995a74e374f17fb37d6f09ccf8addd1281767b6a"

@@ -1,0 +1,15 @@
+# Archived by rlsbl at release time. This release had no unreleased.toml
+# (a batch member takes its metadata from the batch release file); the
+# archive is written so later changelog regenerations keep the
+# description and context.
+# strictspec document version gate (do not remove)
+format_version = 2
+bump = "minor"
+include = ["npm", "pypi"]
+exclude = []
+description = "Generated CLI reference pages carry effects metadata, and selfdoc check executes validate-marked examples instead of merely parsing them."
+context = "Two gaps closed in the same visit.\n\nGenerated cli-*.md pages threw away every effects field the strictcli schema\ncarries. A reader of the published docs could not learn that a command was\nconsequential, what it would refuse to do under --dry-run, or which dangerous\nsteps it had authored grant reasons for -- the first notice was a CI job dying\non a confirmation prompt. The pages now render the effect classification, the\nconsequential badge with --approve-consequential, the dry-run-unsupported\nreason and the grants table, and the index gains global flags, the reserved\nframework-flag quartet, infrastructure and deprecated sections.\n\nSeparately, code blocks in documentation were only ever parsed for syntax, so\nan example that parsed but could not run shipped looking correct. A block\nmarked validate is now assembled and executed through the validator its\nlanguage declares under the new examples config key; a failing run is\nEXAMPLE002 with the validator's output, and a validate marker with no\nconfigured command is EXAMPLE003 rather than a silent skip. Unmarked blocks are\nunaffected and are never executed.\n\nAlso: schemas/check-output.schema.json now enumerates every lint code selfdoc\ncheck emits and declares the two coverage fields it was omitting, so consumers\nvalidating or generating types from the JSON output stop losing data."
+release_commit = "60681f6c600fe1df9ea85a9684603b021ee7d4ab"
+
+[released_trees]
+selfdoc = "2a4fe141ebe29192526cb34c9588112665e7b901"
