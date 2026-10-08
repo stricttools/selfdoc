@@ -364,8 +364,8 @@ func assertNotTracked(t *testing.T, dir, file string) {
 // --- tool selection --------------------------------------------------------
 
 // TestAutoCommitToolSelection covers the order rlsbl, safegit, plain git, and
-// the argv each receives: the message after -m, then the "--" separator, then
-// the files -- and no confirmation flag.
+// the argv each receives: the message after --message (rlsbl) or -m (safegit),
+// then the "--" separator, then the files -- and no confirmation flag.
 //
 // strictcli prompts only for commands that declare themselves consequential;
 // neither `rlsbl commit` nor `safegit commit` does, because a commit is
@@ -407,8 +407,14 @@ func TestAutoCommitToolSelection(t *testing.T) {
 			if len(argvs) != 1 {
 				t.Fatalf("%s invocations = %v, want one", tt.wantTool, argvs)
 			}
-			if argvs[0] != "commit -m add file -- file.txt" {
-				t.Errorf("%s argv = %q", tt.wantTool, argvs[0])
+			// rlsbl commit names its message --message and has no short
+			// flags; safegit commit takes -m.
+			want := map[string]string{
+				"rlsbl":   "commit --message add file -- file.txt",
+				"safegit": "commit -m add file -- file.txt",
+			}[tt.wantTool]
+			if argvs[0] != want {
+				t.Errorf("%s argv = %q, want %q", tt.wantTool, argvs[0], want)
 			}
 			for _, banned := range []string{"--yes", "--approve-consequential"} {
 				if strings.Contains(argvs[0], banned) {
@@ -623,7 +629,7 @@ func TestAutoCommitUnderPreview(t *testing.T) {
 		{
 			name:      "through an external tool",
 			installed: "rlsbl",
-			wantVerbs: []string{"rlsbl commit -m msg -- file.txt"},
+			wantVerbs: []string{"rlsbl commit --message msg -- file.txt"},
 		},
 		{
 			name:      "through plain git",

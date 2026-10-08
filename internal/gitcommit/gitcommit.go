@@ -125,7 +125,7 @@ func AutoCommit(files []string, message, cwd string, h *effects.Handle) (committ
 	var label string
 	switch {
 	case have("rlsbl"):
-		argv = append([]string{"rlsbl", "commit", "-m", message, "--"}, committable...)
+		argv = append([]string{"rlsbl", "commit", "--message", message, "--"}, committable...)
 		label = "rlsbl"
 	case have("safegit"):
 		argv = append([]string{"safegit", "commit", "-m", message, "--"}, committable...)
