@@ -52,6 +52,7 @@
       "flags": [],
       "flag_sets": [],
       "args": [],
+      "args_after_separator": null,
       "tags": [],
       "constraints": [],
       "hidden": false,
@@ -236,8 +237,8 @@
     },
     "check": {
       "name": "check",
-      "help": "Check documentation coverage, directive resolution, and lint rules, each lint at the value its option in .strictmetadata/options/docs.toml sets (off: not reported; warn: reported, never blocking; error: as registered) -- and write: it advances the content and description baseline of every page it does not report stale or drifted in .strictmetadata/.docs-state/hashes/hashes.json and commits the store, which is why check is a mutating command and not a read-only one",
-      "effect": "mutating",
+      "help": "Check documentation coverage, directive resolution, and lint rules, each lint at the value its option in .strictmetadata/options/docs.toml sets (off: not reported; warn: reported, never blocking; error: as registered). A read-only verdict: it writes nothing and commits nothing. The staleness and drift baseline it compares against, .strictmetadata/.docs-state/hashes/hashes.json, is written and committed by the commands that generate content, selfdoc gen among them, and by selfdoc baseline accept, and an archived version it checks is read from a temporary extraction, not from selfdoc's version cache",
+      "effect": "read_only",
       "payload_schema": {
         "additionalProperties": false,
         "properties": {
@@ -429,15 +430,6 @@
         "type": "object"
       },
       "flags": [
-        {
-          "name": "auto-commit",
-          "help": "Automatically commit .strictmetadata/.docs-state/hashes/hashes.json, the staleness baseline store this run advanced, after checking. Omitted, it commits; pass --no-auto-commit to leave the store written but uncommitted -- the store is written either way",
-          "value_schema": {
-            "type": "boolean"
-          },
-          "presence": "optional",
-          "negatable": true
-        },
         {
           "name": "version-override",
           "help": "Project version that version-bearing generated content is expected to embed (version-mismatch-in-generated-root-file), instead of the version currently recorded in the project manifest (VERSION, pyproject.toml or package.json). Pass the same value given to 'selfdoc gen --version-override' so the check runs correctly in the release window between generation and the version bump",
@@ -783,6 +775,12 @@
                     "description": {
                       "type": "string"
                     },
+                    "ignore_content": {
+                      "type": "string"
+                    },
+                    "ignore_path": {
+                      "type": "string"
+                    },
                     "manifest_content": {
                       "type": "string"
                     },
@@ -811,20 +809,25 @@
                     "description",
                     "deprecated_names",
                     "manifest_path",
-                    "manifest_content"
+                    "manifest_content",
+                    "ignore_path",
+                    "ignore_content"
                   ],
                   "type": "object"
                 },
                 "type": "array"
-              },
-              "ignore_file": {
-                "type": "string"
               },
               "manifest_file": {
                 "type": "string"
               },
               "root": {
                 "type": "string"
+              },
+              "root_files": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               "tool": {
                 "type": "string"
@@ -834,7 +837,7 @@
               "tool",
               "root",
               "manifest_file",
-              "ignore_file",
+              "root_files",
               "directories"
             ],
             "type": "object"
@@ -842,7 +845,7 @@
         },
         "validate": {
           "name": "validate",
-          "help": "Check this repository's .strictmetadata/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, and the derived ignore file is what selfdoc's declaration renders",
+          "help": "Check this repository's .strictmetadata/ directory: every directory carries a manifest.toml naming a tool this machine has, every directory selfdoc claims names selfdoc, a directory selfdoc owns starts with a dot exactly when it is generated, every directory selfdoc owns holds only what its side allows, nothing inside selfdoc's committed directories starts with a dot, every uncommitted directory selfdoc owns carries the .gitignore its declaration derives, and .strictmetadata/ holds directories and go.mod only",
           "effect": "read_only",
           "payload_schema": {
             "additionalProperties": false,
@@ -889,11 +892,30 @@
         },
         "migrate": {
           "name": "migrate",
-          "help": "Move this repository off a layout before this one: every directory whose manifest.toml names selfdoc under stricttools/ (the layout before this one, whose generated directories already start with a dot) or under .stricttools/ (the layout before that, which named every directory bare) moves under .strictmetadata/, a generated one behind a dot (stricttools/docs -> .strictmetadata/docs, stricttools/.docs-state -> .strictmetadata/.docs-state, stricttools/.docs-cache -> .strictmetadata/.docs-cache, stricttools/posts -> .strictmetadata/posts, stricttools/vocabulary -> .strictmetadata/vocabulary, .stricttools/docs -> .strictmetadata/docs, .stricttools/docs-state -> .strictmetadata/.docs-state, .stricttools/docs-cache -> .strictmetadata/.docs-cache, .stricttools/posts -> .strictmetadata/posts, .stricttools/vocabulary -> .strictmetadata/vocabulary). It creates .strictmetadata/ (the manifests naming selfdoc are the grant), writes the derived ignore file for the new names, removes selfdoc's block from the previous root's .gitignore (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, moves a CLAUDE.md an earlier selfdoc generated at the repository root to .claude/CLAUDE.md (where selfdoc generates it now, and Claude Code reads it), writes .strictmetadata/vocabulary/terms.toml empty when the project has none, converts the manifests (.strictmetadata/.docs-state/manifest.json and .strictmetadata/.docs-state/post-manifest.json) from schema_version 1 to 2, which records the project's accepted words and rejected patterns from .strictmetadata/vocabulary/terms.toml, and commits. A repository already on .strictmetadata/ whose manifests are on schema_version 1 gets the manifest conversion alone, and one whose .strictmetadata/vocabulary/ carries no manifest.toml -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and .strictmetadata/vocabulary/terms.toml empty when the project has none, and one whose generated CLAUDE.md is still at its root gets that move. Another tool's directories stay where they are, and so does a hand-written CLAUDE.md. Refuses a repository already migrated with its manifests converted, its vocabulary directory granted, and no generated CLAUDE.md at its root; part-way through a move; holding selfdoc's directories under both previous roots; never on a previous layout; holding .claude/CLAUDE.md beside a generated root CLAUDE.md; or ignoring .claude/CLAUDE.md in git. --dry-run prints the plan and changes nothing",
+          "help": "Move this repository off a layout before this one: every directory whose manifest.toml names selfdoc under stricttools/ (the layout before this one, whose generated directories already start with a dot) or under .stricttools/ (the layout before that, which named every directory bare) moves under .strictmetadata/, a generated one behind a dot (stricttools/docs -> .strictmetadata/docs, stricttools/.docs-state -> .strictmetadata/.docs-state, stricttools/.docs-cache -> .strictmetadata/.docs-cache, stricttools/posts -> .strictmetadata/posts, stricttools/vocabulary -> .strictmetadata/vocabulary, .stricttools/docs -> .strictmetadata/docs, .stricttools/docs-state -> .strictmetadata/.docs-state, .stricttools/docs-cache -> .strictmetadata/.docs-cache, .stricttools/posts -> .strictmetadata/posts, .stricttools/vocabulary -> .strictmetadata/vocabulary). It creates .strictmetadata/ (the manifests naming selfdoc are the grant), writes each uncommitted directory's own .gitignore, removes selfdoc's block from the previous root's .gitignore (the file and the previous root go when nothing else is left), rewrites every selfdoc.json value naming a moved path and every generated root file's header, moves a CLAUDE.md an earlier selfdoc generated at the repository root to .claude/CLAUDE.md (where selfdoc generates it now, and Claude Code reads it), writes .strictmetadata/vocabulary/terms.toml empty when the project has none, converts the manifests (.strictmetadata/.docs-state/manifest.json and .strictmetadata/.docs-state/post-manifest.json) from schema_version 1 to 2, which records the project's accepted words and rejected patterns from .strictmetadata/vocabulary/terms.toml, and commits. In every repository it also converts the .strictmetadata/.gitignore an earlier selfdoc derived into one .gitignore per uncommitted directory, and moves strictcli's files out of every .strictcli/ directory into the .strictmetadata/ beside it: schema.json to .strictmetadata/.cli-schema/schema.json, test-coverage.json to .strictmetadata/.cli-test-coverage/manifest.json, and the coverage/ shards to .strictmetadata/.cli-test-coverage/shards/, writing each directory's manifest.toml naming strictcli and the .gitignore that keeps the shards out of the repository, deleting the stub go.mod, and removing the emptied .strictcli/ and an empty coverage/; for the repository root's .strictcli/ it also deletes .rlsbl/bases/.strictcli/go.mod, drops .strictcli/go.mod from .rlsbl/managed-files.json, and removes the root .gitignore's coverage/ line. A repository already on .strictmetadata/ whose manifests are on schema_version 1 gets the manifest conversion alone, and one whose .strictmetadata/vocabulary/ carries no manifest.toml -- a repository moved from the older .selfdoc/ layout -- also gets that directory's grant and .strictmetadata/vocabulary/terms.toml empty when the project has none, and one whose generated CLAUDE.md is still at its root gets that move. Another tool's directories stay where they are, and so does a hand-written CLAUDE.md. Refuses a repository already migrated with its manifests converted, its vocabulary directory granted, its ignore files converted, no .strictcli/ left, and no generated CLAUDE.md at its root; a .strictcli/ holding a file it does not know the place of, or one git does not track; a .strictcli/ file whose new place is taken; an .strictmetadata/.gitignore holding another tool's lines; part-way through a move; holding selfdoc's directories under both previous roots; never on a previous layout; holding .claude/CLAUDE.md beside a generated root CLAUDE.md; or ignoring .claude/CLAUDE.md in git. --dry-run prints the plan and changes nothing",
           "effect": "mutating",
           "payload_schema": {
             "additionalProperties": false,
             "properties": {
+              "cli_moves": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
               "committed": {
                 "type": "boolean"
               },
@@ -944,6 +966,12 @@
               "previous_root": {
                 "type": "string"
               },
+              "removed_directories": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
               "removed_previous_root": {
                 "type": "boolean"
               },
@@ -972,6 +1000,32 @@
               "root": {
                 "type": "string"
               },
+              "shard_moves": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "files": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to",
+                    "files"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
               "writes": {
                 "items": {
                   "type": "string"
@@ -984,9 +1038,12 @@
               "root",
               "moves",
               "file_moves",
+              "cli_moves",
+              "shard_moves",
               "writes",
               "rewrites",
               "deletes",
+              "removed_directories",
               "removed_previous_root",
               "committed"
             ],
@@ -1400,7 +1457,7 @@
         },
         "push": {
           "name": "push",
-          "help": "Dispatch a GitHub Actions workflow to rebuild this project in the documentation assembly. Detects the source repository, resolves the latest git tag as the version reference, and sends a repository dispatch event to the assembly repo with the project slug, version, and commit SHA.",
+          "help": "Dispatch a GitHub Actions workflow to rebuild this project in the documentation assembly. Detects the source repository, resolves the latest git tag as the version reference, and sends a repository dispatch event to the assembly repo with the project slug, version, and commit SHA. Before dispatching it refuses a project whose lifecycle-and-license record lets no releasable publish documentation, and a ref whose tracked files name a term the confidential-name index protects, naming each file, line, and term.",
           "effect": "mutating",
           "grants": [
             {
@@ -1527,7 +1584,7 @@
         },
         "integrate": {
           "name": "integrate",
-          "help": "Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. A full-scope deploy first checks the vocabulary the project's manifest records against every other project's manifest on the site and selfdoc's built-in baseline, and refuses before touching the checkout when one project's rejected pattern covers a word another accepts, naming both projects, the word, the pattern and the fix. This is the whole body of the generated deploy workflow.",
+          "help": "Integrate one dispatched project into the assembly repository checkout and push the result. Builds the cloned source project, replaces its subtree under site/, refreshes its manifest and membership record, regenerates the shared cross-project elements, rebuilds the search index, then commits and pushes with a re-sync retry loop so concurrent deploys converge instead of clobbering each other. A project-scoped run refuses a source checkout whose lifecycle-and-license record lets no releasable publish documentation, and every run scans the whole site tree for terms the confidential-name index protects before it commits. A full-scope deploy first checks the vocabulary the project's manifest records against every other project's manifest on the site and selfdoc's built-in baseline, and refuses before touching the checkout when one project's rejected pattern covers a word another accepts, naming both projects, the word, the pattern and the fix. This is the whole body of the generated deploy workflow.",
           "effect": "mutating",
           "dry_run_supported": false,
           "dry_run_unsupported_reason": "'assembly integrate' cannot be previewed: every step after the first reads what the step before it wrote -- the shared generator reads the manifests the graft just copied, the search index reads the pages it just wrote, and the commit reads the tree all of them produced. A recorded run writes none of that, so the preview would stop at the first effect and misrepresent everything after it. To see what an integration would produce, use 'assembly preview'.",
@@ -1647,7 +1704,7 @@
         },
         "republish-all": {
           "name": "republish-all",
-          "help": "Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version 2, which records each project's vocabulary. Before building anything it refuses a checkout not on the .strictmetadata/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project, which also converts the project's post overlay on the site, manifests/<slug>-posts.json, when an older selfdoc wrote it, keeping its posts and adding the vocabulary of the checkout's manifest), and sends one shared-only deploy request. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.",
+          "help": "Publish every project on the assembly's roster again, from local checkouts, in one pass: the one-time step that replaces every project's manifest on the site with one on manifest schema_version 2, which records each project's vocabulary. Before building anything it refuses a checkout not on the .strictmetadata/ layout or whose manifest is missing or on an older schema (naming 'selfdoc layout migrate'), checkouts that declare no single assembly.repo, slugs that are not the roster's exactly or a --home that is not the roster's home project, an assembly deploy workflow pinning a selfdoc older than this one (naming 'selfdoc assembly sync-workflow --pin-selfdoc <version>'), and any two projects' vocabularies, or one and selfdoc's built-in baseline, that disagree about a word, listing every conflict. Then it builds every project locally against the checkouts' own manifests, the home project last, publishes each the way 'blog publish-docs' does (one assembly commit per project, which also converts the project's post overlay on the site, manifests/<slug>-posts.json, when an older selfdoc wrote it, keeping its posts and adding the vocabulary of the checkout's manifest), and sends one shared-only deploy request. A checkout whose lifecycle-and-license record lets no releasable publish documentation is refused before anything is built, and every build is scanned for terms the confidential-name index protects before anything is published. --dry-run runs the checks and the local builds, which write only each checkout's build output, and prints what it would publish without publishing anything.",
           "effect": "mutating",
           "consequential": true,
           "flags": [
