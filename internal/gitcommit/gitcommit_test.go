@@ -490,55 +490,52 @@ func TestAutoCommitPassesDeletionsToTheTool(t *testing.T) {
 	}
 }
 
-// TestAutoCommitForwardsToolStderr covers the failing-tool path: the tool's
-// own stderr reaches this process's stderr and nothing is reported committed.
-func TestAutoCommitForwardsToolStderr(t *testing.T) {
-	bin := isolate(t)
-	fakeTool(t, bin, "rlsbl", "echo \"error: pathspec 'file.txt' did not match\" >&2; exit 1")
-	dir := t.TempDir()
-	initRepo(t, dir)
-	write(t, dir, "file.txt", "data")
+// TestAutoCommitFailingToolIsAnError covers the failing-tool path: a commit
+// tool that exits nonzero is an error carrying the tool's own stderr, so the
+// command that asked for the commit fails instead of reporting success with
+// its files left uncommitted.
+func TestAutoCommitFailingToolIsAnError(t *testing.T) {
+	for _, tool := range []string{"rlsbl", "safegit"} {
+		t.Run(tool, func(t *testing.T) {
+			bin := isolate(t)
+			fakeTool(t, bin, tool, "echo \"error: pathspec 'file.txt' did not match\" >&2; exit 1")
+			dir := t.TempDir()
+			initRepo(t, dir)
+			write(t, dir, "file.txt", "data")
 
-	captured := captureStderr(t, func() {
-		if committed, _ := commit(t, []string{"file.txt"}, "msg", dir); committed {
-			t.Error("committed = true, want false")
-		}
-	})
-	if !strings.Contains(captured, "error: pathspec") {
-		t.Errorf("stderr = %q, want the tool's own message", captured)
+			committed, _, err := AutoCommit([]string{"file.txt"}, "msg", dir, effects.Unbound())
+			if committed {
+				t.Error("committed = true, want false")
+			}
+			if err == nil {
+				t.Fatal("err = nil, want the failed commit")
+			}
+			if !strings.Contains(err.Error(), "error: pathspec") || !strings.Contains(err.Error(), tool) {
+				t.Errorf("err = %q, want the tool's name and its own message", err)
+			}
+		})
 	}
 }
 
-// captureStderr redirects this process's stderr for the duration of body and
-// returns what was written. os.Stderr is read at every call site, so no
-// production seam is needed to observe it.
-func captureStderr(t *testing.T, body func()) string {
-	t.Helper()
-	reader, writer, err := os.Pipe()
-	if err != nil {
-		t.Fatalf("Pipe: %v", err)
+// TestAutoCommitFailingPlainGitIsAnError covers the same path when neither
+// rlsbl nor safegit is installed: a git commit that fails is an error.
+func TestAutoCommitFailingPlainGitIsAnError(t *testing.T) {
+	isolate(t)
+	dir := t.TempDir()
+	initRepo(t, dir)
+	write(t, dir, "file.txt", "data")
+	write(t, dir, ".git/hooks/pre-commit", "#!/bin/sh\necho 'hook refused' >&2\nexit 1\n")
+	if err := os.Chmod(filepath.Join(dir, ".git/hooks/pre-commit"), 0o755); err != nil {
+		t.Fatalf("Chmod: %v", err)
 	}
-	original := os.Stderr
-	os.Stderr = writer
-	done := make(chan string, 1)
-	go func() {
-		var sb strings.Builder
-		buf := make([]byte, 4096)
-		for {
-			n, err := reader.Read(buf)
-			sb.Write(buf[:n])
-			if err != nil {
-				break
-			}
-		}
-		done <- sb.String()
-	}()
-	body()
-	os.Stderr = original
-	writer.Close()
-	captured := <-done
-	reader.Close()
-	return captured
+
+	committed, _, err := AutoCommit([]string{"file.txt"}, "msg", dir, effects.Unbound())
+	if committed {
+		t.Error("committed = true, want false")
+	}
+	if err == nil || !strings.Contains(err.Error(), "hook refused") {
+		t.Fatalf("err = %v, want the failed commit with git's own message", err)
+	}
 }
 
 // TestAutoCommitDashSeparator covers the "--" separator on every argv, which
