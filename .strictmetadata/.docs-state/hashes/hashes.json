@@ -93,8 +93,8 @@
     "description": "a88fdbfd865bb583c35a594a76b0fd7c9f861cd6fd9c0ec5c29a23c60d80da52"
   },
   "en/check-guide.md": {
-    "content": "f0bf915ce3bc626cafb84d78c8e664f50ffdb7ce3e559181e5e56d3d5db43b4a",
-    "description": "fe5313d98ae979d2b2a7c471e7063004badd289cb8466f5caf321266eb30e7bf"
+    "content": "21bb56d8785608dbcd2e5d6e86daa861b114ffb3c8d69a942b62b51ce25de6cf",
+    "description": "0e873ecfdd8a4e169a703b930d42b3b492b21f135200543828280722504a1387"
   },
   "en/cli-assembly.md": {
     "content": "eef4d81177e5cf22ab397298b0ec66b01ef5d485655f8c22fc278bf467ab3421",
@@ -247,9 +247,9 @@
     "description": "b987b85e7d65fca02cfb007948ec96dc77f35fb6b5cf331b0759a8037f2adb82"
   },
   "en/gen-index.md": {
-    "content": "9def7a3f2d81b3205035599c2eb388693e38f8aa1b9d57b52151be766b193861",
-    "description": "44fef8ff484223a8eba35c1dee61dbacd7e9bd7675562ca64c1a24ce1c20ea06",
-    "seed_hash": "44fef8ff484223a8eba35c1dee61dbacd7e9bd7675562ca64c1a24ce1c20ea06"
+    "content": "886f46c48dc7ceb6f7df0b903bfdcbb57209c88bfe72c55d70e34567cdbcfc6a",
+    "description": "e2713e02ae072b37fef597e77db6d299b13c43be7cdd04d50984002db1b544cc",
+    "seed_hash": "e2713e02ae072b37fef597e77db6d299b13c43be7cdd04d50984002db1b544cc"
   },
   "en/getting-started.md": {
     "content": "34349ce8c6af8bf07eaf700322a0ae77e9cd53078af6b866fc147cf544092919",
@@ -381,6 +381,12 @@
     "content": "08b62e87a9077af3c52bf936736a98d7c660f1fb031128edff0f63c75be55a87",
     "description": "62f5ba2828d1b5b0096f302ef11d74a1747d5dae4765411f9c3f45ac0c7ab9ae",
     "source_docstring": "b10c8befc7c6dd97d05b83a9ffc840b7b33bcdc67a28f862801a4b4003c9696a"
+  },
+  "en/internal-confidential.md": {
+    "content": "0af035d11337ea70b1ff6b53e2d433a3bb32702d88c1fbbabcec250a913935cc",
+    "description": "2a0b43b76a42b5ce058a2ac70e8bf0dd4b2e59fdd49a5a222e94fd502b0eb630",
+    "seed_hash": "2a0b43b76a42b5ce058a2ac70e8bf0dd4b2e59fdd49a5a222e94fd502b0eb630",
+    "source_docstring": "7968e91c81ed2de32b5099222d1c890fa8c46b11edc542220b289f35cb460467"
   },
   "en/internal-config.md": {
     "content": "e2fc71f9686720d45a6044595aa30dc771f721f2b519a2c4e57a83e9fec47f04",
@@ -915,8 +921,8 @@
     "description": "459bf62cb188c627f8b79d9e10f3a47c9304420ad6fdd0464dcdb2541d19df25"
   },
   "en/staleness.md": {
-    "content": "9fd0aec301d01388c42e6a33c63254dd599b9c7504a183197b65f212ffa80df4",
-    "description": "46f718b4a1604298b3476b1c428019cbb9054d1515f2a3125ba9196474a22663"
+    "content": "79b1df60bacd019f2b386738ca9dd5abbc427d6667eb023fc09e4312f3f24f6e",
+    "description": "60f882ada010cb29bc46a382a57a301d155d15b943ad9027d8880b8819df35ff"
   },
   "en/theming.md": {
     "content": "8539a4ce35a00e41cdbad7a249ea5a37415a3b67efac4e911531274256171aac",

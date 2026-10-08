@@ -1,6 +1,6 @@
 +++
 title = "API Reference"
-description = "API reference index for selfdoc covering 75 modules"
+description = "API reference index for selfdoc covering 76 modules"
 generated = true
 seeded = true
 nav_group = "API Reference"
@@ -29,6 +29,7 @@ nav_order = 90
 - [internal/catalog](../internal-catalog/)
 - [internal/check](../internal-check/)
 - [internal/cli](../internal-cli/)
+- [internal/confidential](../internal-confidential/)
 - [internal/config](../internal-config/)
 - [internal/content](../internal-content/)
 - [internal/cv](../internal-cv/)

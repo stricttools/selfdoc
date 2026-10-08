@@ -1190,6 +1190,11 @@
         },
         {
           "level": 2,
+          "text": "Confidential names and proprietary licenses",
+          "anchor": "confidential-names-and-proprietary-licenses"
+        },
+        {
+          "level": 2,
           "text": "Directory-Index URLs",
           "anchor": "directory-index-urls"
         },
@@ -2138,6 +2143,11 @@
           "level": 3,
           "text": "`RetireSummary`",
           "anchor": "retiresummary"
+        },
+        {
+          "level": 3,
+          "text": "`Screen`",
+          "anchor": "screen"
         },
         {
           "level": 3,
@@ -4758,6 +4768,11 @@
         },
         {
           "level": 3,
+          "text": "`RecordBaselines`",
+          "anchor": "recordbaselines"
+        },
+        {
+          "level": 3,
           "text": "`ComputeStalenessState`",
           "anchor": "computestalenessstate"
         },
@@ -4927,6 +4942,88 @@
           "level": 3,
           "text": "`injectingWriter.Write`",
           "anchor": "injectingwriterwrite"
+        }
+      ]
+    },
+    {
+      "path": "internal-confidential.md",
+      "title": "internal/confidential",
+      "type": "doc",
+      "headings": [
+        {
+          "level": 1,
+          "text": "internal/confidential",
+          "anchor": "internalconfidential"
+        },
+        {
+          "level": 2,
+          "text": "`internal/confidential`",
+          "anchor": "internalconfidential"
+        },
+        {
+          "level": 3,
+          "text": "`Writer`",
+          "anchor": "writer"
+        },
+        {
+          "level": 3,
+          "text": "`Repository`",
+          "anchor": "repository"
+        },
+        {
+          "level": 3,
+          "text": "`Finding`",
+          "anchor": "finding"
+        },
+        {
+          "level": 3,
+          "text": "`Locate`",
+          "anchor": "locate"
+        },
+        {
+          "level": 3,
+          "text": "`Refresh`",
+          "anchor": "refresh"
+        },
+        {
+          "level": 3,
+          "text": "`PublicOutputAllowed`",
+          "anchor": "publicoutputallowed"
+        },
+        {
+          "level": 3,
+          "text": "`ScanFiles`",
+          "anchor": "scanfiles"
+        },
+        {
+          "level": 3,
+          "text": "`ScanDir`",
+          "anchor": "scandir"
+        },
+        {
+          "level": 3,
+          "text": "`ScanRef`",
+          "anchor": "scanref"
+        },
+        {
+          "level": 3,
+          "text": "`Refusal`",
+          "anchor": "refusal"
+        },
+        {
+          "level": 3,
+          "text": "`Names`",
+          "anchor": "names"
+        },
+        {
+          "level": 3,
+          "text": "`Writer.WriteFile`",
+          "anchor": "writerwritefile"
+        },
+        {
+          "level": 3,
+          "text": "`Writer.MkdirAll`",
+          "anchor": "writermkdirall"
         }
       ]
     },
@@ -9647,8 +9744,8 @@
         },
         {
           "level": 3,
-          "text": "Two writers, one store",
-          "anchor": "two-writers-one-store"
+          "text": "The writers of one store",
+          "anchor": "the-writers-of-one-store"
         },
         {
           "level": 3,
@@ -11997,13 +12094,8 @@
         },
         {
           "level": 2,
-          "text": "Dry Run Mode",
-          "anchor": "dry-run-mode"
-        },
-        {
-          "level": 2,
-          "text": "The `--no-auto-commit` Flag",
-          "anchor": "the-no-auto-commit-flag"
+          "text": "A Read-Only Check",
+          "anchor": "a-read-only-check"
         }
       ]
     },
@@ -12133,7 +12225,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-06T13:22:56.634617+00:00",
+  "last_gen": "2026-10-08T11:26:06.234283+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
