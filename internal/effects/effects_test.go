@@ -2,6 +2,7 @@ package effects
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -176,6 +177,31 @@ func TestRunLiveCwd(t *testing.T) {
 	}
 	if res.StdoutString() != want {
 		t.Errorf("pwd = %q, want %q", res.StdoutString(), want)
+	}
+}
+
+// TestRunTimeoutWhileAGrandchildHoldsTheOutput covers a timed-out child whose
+// own child outlives it while holding the output pipes: the shell is killed at
+// the deadline, the sleep it started is not, and the run still returns
+// promptly instead of waiting for the sleep to close the pipes.
+func TestRunTimeoutWhileAGrandchildHoldsTheOutput(t *testing.T) {
+	for _, capture := range []bool{false, true} {
+		t.Run(fmt.Sprintf("capture=%v", capture), func(t *testing.T) {
+			hygiene.Isolate(t)
+			options := []Option{Timeout(150 * time.Millisecond)}
+			if capture {
+				options = append(options, CaptureOutput())
+			}
+			start := time.Now()
+			// The trailing command keeps the shell from exec'ing the sleep.
+			_, err := Unbound().Run([]string{"/bin/sh", "-c", "sleep 30; :"}, options...)
+			if !errors.Is(err, ErrTimeout) {
+				t.Fatalf("Run error = %v, want one wrapping ErrTimeout", err)
+			}
+			if elapsed := time.Since(start); elapsed > 10*time.Second {
+				t.Errorf("the deadline was not enforced: the run took %s", elapsed)
+			}
+		})
 	}
 }
 

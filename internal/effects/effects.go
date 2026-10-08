@@ -607,9 +607,17 @@ func command(argv []string, o opts) (*exec.Cmd, func(), time.Time) {
 	deadline := time.Now().Add(o.timeout)
 	ctx, cancel := context.WithDeadline(context.Background(), deadline)
 	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
+	// Killing the child at the deadline does not kill a process it started,
+	// which can hold the output pipes open; past this delay Wait closes them
+	// and returns, so the deadline bounds the run.
+	cmd.WaitDelay = timeoutWaitDelay
 	applyEnv(cmd, o)
 	return cmd, cancel, deadline
 }
+
+// timeoutWaitDelay is how long a run past its deadline waits for its output
+// pipes to close before closing them itself.
+const timeoutWaitDelay = time.Second
 
 func applyEnv(cmd *exec.Cmd, o opts) {
 	cmd.Dir = o.cwd
