@@ -28,3 +28,4 @@
 {"format_version":2,"id":"18dc90d25e322785d7182efaf2ee417f9ae7e2ff56bb70a4","commits":["1b770e1637414ee0815855a40bb84195b9835d41"],"user_facing":false}
 {"format_version":2,"id":"18dc90d266763b0834d08b4cd8ab47e5bc180d03144a67d2","commits":["164c8e4b0b30930576eaa15df35844d692d25c44"],"user_facing":false}
 {"format_version":2,"id":"18dc9116bf1e3b038daa28053a8f4487af862cf444ff24ff","commits":["274cb112372563036a14253b933c685907f3399b","e62444ad3fbf4a5aa414aceab2098a17572a1728"],"user_facing":true,"description":"**No Windows archives.** GitHub Releases carry prebuilt binaries for Linux and macOS on amd64 and arm64 only; on Windows, install with `go install github.com/stricttools/selfdoc@v0`.","type":"breaking"}
+{"format_version":2,"id":"18dc91e820559841ed6705e7406840688a0a86ed33b8e9c0","commits":["22d4e0429639b795e7433bc67d29a134fa633b76"],"user_facing":false}
