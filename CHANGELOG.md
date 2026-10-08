@@ -31,6 +31,7 @@ selfdoc moves into the .strictmetadata layout with the Go rlsbl: `selfdoc check`
 - A failed auto-commit fails the command: when `rlsbl commit`, `safegit commit`, or git exits nonzero, times out, or cannot start, `selfdoc gen`, `selfdoc layout migrate`, and the other committing commands exit 1 with an error naming the tool and carrying its output, instead of printing it and exiting 0 with their files left uncommitted.
 - Every command's output goes through strictcli, so `--json` runs no longer fail on output written outside the framework: refusals print as `error: ...` and warnings as `warning: ...` (the framework's prefixes, replacing `Error:` and `Warning:`), a streamed child's stderr and `assembly preview`'s request log are informational lines hidden by `--quiet`, and the `selfdoc check` report is plain text without ANSI colors.
 - The built-in English word list and vocabulary baseline no longer accept a word that is a protected name in the confidential-name index, so selfdoc's own published files carry no confidential name; a project whose pages use that word accepts it in its own `.strictmetadata/vocabulary/terms.toml`.
+- A command run with a timeout returns at its deadline even when a process the command started keeps its output open, instead of waiting for that process to exit.
 
 ## 0.46.0
 
