@@ -1,3 +1,5 @@
+c2sp.org/CCTV/age v0.0.0-20260829155415-4448f2097b2d h1:Blprhc2SbChNZtWcU+BLTM4YdoqYAS9V7cJgOwJKyAs=
+c2sp.org/CCTV/age v0.0.0-20260829155415-4448f2097b2d/go.mod h1:SrHC2C7r5GkDk8R+NFVzYy/sdj0Ypg9htaPXQq5Cqeo=
 filippo.io/age v1.3.2 h1:r6RSZLFSMm6rzKepZ7ZAYkKCu14f3/Me8c7uKYh7C8c=
 filippo.io/age v1.3.2/go.mod h1:TH/Yr2sSRhCKbaH4XPxpUV0Us8Gv6txYUpiZQWz8Evk=
 filippo.io/hpke v0.4.0 h1:p575VVQ6ted4pL+it6M00V/f2qTZITO0zgmdKCkd5+A=
@@ -44,8 +46,8 @@ github.com/stricttools/go-toml-edit v0.5.1 h1:lJPrnujDBwcFcMxfI4wauLAas7bf53nbZ/
 github.com/stricttools/go-toml-edit v0.5.1/go.mod h1:7eeWlpfpfjScMk3JTUttd+JOusRnNSAYUSXIJCJzbB8=
 github.com/stricttools/strictcli/go v0.39.1 h1:pfdgW0UcRZtV+I9LuiVTCvMdIOd+LpCE05Wl6Ox4870=
 github.com/stricttools/strictcli/go v0.39.1/go.mod h1:ejXzQB8aRi/uIQFlyqWi783nze+BmIp0iT0Vzp6vWWE=
-github.com/stricttools/strictspec/go v0.6.0 h1:fNCiLfmeMpNHtSJNMeVJTCdy9m5CItBgesataAwoE7Q=
-github.com/stricttools/strictspec/go v0.6.0/go.mod h1:0vvnp7+7PxQLLxWmYnHJgnChrlmjUV502Uljm9pPtZs=
+github.com/stricttools/strictspec/go v0.7.0 h1:ILhojGBFo4GIDncSQqrndJP0YSkL+tYlVhvVnlNUIHw=
+github.com/stricttools/strictspec/go v0.7.0/go.mod h1:/AOvFHT2zmPdsYEqsGegUoXBii7hFJS84wTovCYAd5I=
 github.com/stricttools/testisolation/go v0.3.0 h1:L9CeDnuBA3laRsRhE3HkUl6gZH1mR/7tXQz187CivZw=
 github.com/stricttools/testisolation/go v0.3.0/go.mod h1:rLfo/WBRt3thVzVHSO0R+dN/7lN1a1KF0b8ySt69bWY=
 github.com/toml-lang/toml-test/v2 v2.2.0 h1:q3ELZu7oPnpl9TClC6OOcAccXwj+jwAyFP8WvzBdK1M=
@@ -83,6 +85,8 @@ golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuX
 golang.org/x/term v0.5.0/go.mod h1:jMB1sMXY+tzblOD4FWmEbocvup2/aLOaQEp7JmGp78k=
 golang.org/x/term v0.8.0/go.mod h1:xPskH00ivmX89bAKVGSKKtLOWNx2+17Eiy94tnKShWo=
 golang.org/x/term v0.17.0/go.mod h1:lLRBjIVuehSbZlaOtGMbcMncT+aqLLLmKrsjNrUguwk=
+golang.org/x/term v0.45.0 h1:NwWyBmoJCbfTHpxrWoZ9C6/VxOf7ic219I8xZZFdrf0=
+golang.org/x/term v0.45.0/go.mod h1:9aqxs0blBcrm/n0L9QW0aRVD+ktan8ssZromtqJC43w=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.3/go.mod h1:5Zoc/QRtKVWzQhOtBMvqHzDpF6irO9z98xDceosuGiQ=
 golang.org/x/text v0.3.7/go.mod h1:u+2+/6zg+i71rQMx5EYifcz6MCKuco9NR6JIITiCfzQ=

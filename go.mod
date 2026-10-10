@@ -5,6 +5,7 @@ go 1.26.3
 toolchain go1.26.6
 
 require (
+	filippo.io/age v1.3.2
 	github.com/stricttools/go-toml-edit v0.5.1
 	github.com/stricttools/strictcli/go v0.39.1
 	github.com/stricttools/testisolation/go v0.3.0
@@ -20,12 +21,11 @@ require (
 	github.com/odvcencio/gotreesitter v0.52.0
 	github.com/playwright-community/playwright-go v0.6000.0
 	github.com/smm-h/tinymoon v0.11.0
-	github.com/stricttools/strictspec/go v0.6.0
+	github.com/stricttools/strictspec/go v0.7.0
 	golang.org/x/text v0.42.0
 )
 
 require (
-	filippo.io/age v1.3.2 // indirect
 	filippo.io/hpke v0.4.0 // indirect
 	github.com/deckarep/golang-set/v2 v2.8.0 // indirect
 	github.com/dlclark/regexp2/v2 v2.2.1 // indirect
