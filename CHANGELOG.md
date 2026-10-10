@@ -2,6 +2,14 @@
 
 # Changelog
 
+## 0.48.1
+
+Publishing commands report the confidential-term list's status as normal output instead of an error line.
+
+### Fixes
+
+- **The confidential-term list's status is no longer printed as an error.** Publishing commands said `error: Confidential terms: ...` on stderr even when nothing was refused; the status line is now part of the command's normal output.
+
 ## 0.48.0
 
 Publishing scans for the age-encrypted confidential-term list and refuses only hits that have no recorded resolution; selfdoc no longer reads or writes the machine-local confidential-name index.
