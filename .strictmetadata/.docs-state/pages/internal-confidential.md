@@ -1,6 +1,6 @@
 +++
 title = "internal/confidential"
-description = "Applying the confidential-name rules to selfdoc's outputs: refusing a proprietary repository's public output, keeping the confidential-name index current, and scanning pages for names."
+description = "Applying the publishing rules and the confidential-term list to selfdoc's outputs: refusing a proprietary repository's public output, and scanning pages and posts for confidential-term hits nothing resolves."
 generated = true
 nav_group = "API Reference"
 nav_order = 21
