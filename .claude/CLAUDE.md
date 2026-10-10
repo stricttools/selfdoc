@@ -214,7 +214,7 @@ The suite needs Chromium through playwright-go and Pagefind. Each missing depend
 - **internal/cli**: Package cli registers selfdoc's whole command tree on one strictcli application.
 - **internal/cli/faketool**: Package faketool is the fake external tool the cli suite puts at the front of PATH under whatever names a test asks for -- "gh", "npx", and so on.
 - **internal/cli/faketoolcmd**: Command faketoolcmd is the executable the cli suite installs at the front of PATH under each external tool's name.
-- **internal/confidential**: Package confidential is selfdoc's half of the confidential-name rules of the lifecycle-and-license record (.strictmetadata/lifecycle-and-license/lifecycle-and-license.toml).
+- **internal/confidential**: Package confidential is selfdoc's half of two rules: the publishing rules of the lifecycle-and-license record (.strictmetadata/lifecycle-and-license/lifecycle-and-license.toml), and the confidential-term list.
 - **internal/config**: Package config loads and validates a project's selfdoc.json.
 - **internal/content**: Package content resolves the content directives: the ones that need no language extractor.
 - **internal/cv**: Package cv holds the CV as data: one declared document, rendered as a page and as a Person.

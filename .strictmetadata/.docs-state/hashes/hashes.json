@@ -97,9 +97,9 @@
     "description": "0e873ecfdd8a4e169a703b930d42b3b492b21f135200543828280722504a1387"
   },
   "en/cli-assembly.md": {
-    "content": "28feded822667421a00283dbd28a29f48201d09edd2ebff1832addc0851de6fc",
+    "content": "79b1668a6137e5864da24998945775aa961a9eb6f53222d7e91b8bf4cbc85ac8",
     "description": "c5eee38c282ee28795a6abad2c5c68e590dc64732a326a3e837ffa8ac6ebf2fe",
-    "schema_hash": "a4383f673a13ddfefab2836693f2348cc013e528cc24b80978c7c21a01ccb884",
+    "schema_hash": "8bf0a307e77ef576466a70815aff52f752536927095d24e931cc29c62cfe5ef5",
     "seed_hash": "c5eee38c282ee28795a6abad2c5c68e590dc64732a326a3e837ffa8ac6ebf2fe"
   },
   "en/cli-baseline.md": {
@@ -219,8 +219,8 @@
     "description": "63fbcda5f669cb2860cdb48094349f5bf792e22cd4d1e576fdc29614162824ec"
   },
   "en/deployment.md": {
-    "content": "08c6c5f627b77eb0fdcc2ca989fadcff3f872f0e5e6bbc8f8a18fdc5aad2d600",
-    "description": "372ab9abd4a1936e45c83f4bed6f1d5dc856d63d5aa3d6c3f43708ce57756b9d"
+    "content": "d91ca068a8c59f29b1c025da5a98aa36649dd8f1208090a75547da8ec2fe19fe",
+    "description": "ca08b2f5e01c29e2157d065a091752590afc4e84d93915e1feec52bc4be66c7a"
   },
   "en/directives-guide.md": {
     "content": "b29b30817420a19a3ad7c26ffa05c1391fe692423fe0f819f60c124bf34057d9",
@@ -384,8 +384,8 @@
   },
   "en/internal-confidential.md": {
     "content": "0af035d11337ea70b1ff6b53e2d433a3bb32702d88c1fbbabcec250a913935cc",
-    "description": "196a2958f3d2bd6e653a3186c192e25a0627970bf2471cec0ed1f21aa788aa64",
-    "source_docstring": "7968e91c81ed2de32b5099222d1c890fa8c46b11edc542220b289f35cb460467"
+    "description": "2d8571789ce1131c018cb12143d37bb7a042c9b95f858ce1f0933af4f336ff73",
+    "source_docstring": "b043fcf2370910e9a6dc85eb45662a277c6e3b5e268fb29a786c8547d5173d36"
   },
   "en/internal-config.md": {
     "content": "e2fc71f9686720d45a6044595aa30dc771f721f2b519a2c4e57a83e9fec47f04",

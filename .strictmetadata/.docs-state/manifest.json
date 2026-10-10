@@ -2,7 +2,7 @@
   "schema_version": 2,
   "name": "release-checkout",
   "slug": "selfdoc",
-  "version": "0.46.0",
+  "version": "0.47.0",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -1190,8 +1190,8 @@
         },
         {
           "level": 2,
-          "text": "Confidential names and proprietary licenses",
-          "anchor": "confidential-names-and-proprietary-licenses"
+          "text": "Confidential terms and proprietary licenses",
+          "anchor": "confidential-terms-and-proprietary-licenses"
         },
         {
           "level": 2,
@@ -4962,8 +4962,8 @@
         },
         {
           "level": 3,
-          "text": "`Writer`",
-          "anchor": "writer"
+          "text": "`Fix`",
+          "anchor": "fix"
         },
         {
           "level": 3,
@@ -4972,8 +4972,8 @@
         },
         {
           "level": 3,
-          "text": "`Finding`",
-          "anchor": "finding"
+          "text": "`Text`",
+          "anchor": "text"
         },
         {
           "level": 3,
@@ -4982,48 +4982,28 @@
         },
         {
           "level": 3,
-          "text": "`Refresh`",
-          "anchor": "refresh"
-        },
-        {
-          "level": 3,
           "text": "`PublicOutputAllowed`",
           "anchor": "publicoutputallowed"
         },
         {
           "level": 3,
-          "text": "`ScanFiles`",
-          "anchor": "scanfiles"
+          "text": "`Check`",
+          "anchor": "check"
         },
         {
           "level": 3,
-          "text": "`ScanDir`",
-          "anchor": "scandir"
+          "text": "`FilesTexts`",
+          "anchor": "filestexts"
         },
         {
           "level": 3,
-          "text": "`ScanRef`",
-          "anchor": "scanref"
+          "text": "`DirTexts`",
+          "anchor": "dirtexts"
         },
         {
           "level": 3,
-          "text": "`Refusal`",
-          "anchor": "refusal"
-        },
-        {
-          "level": 3,
-          "text": "`Names`",
-          "anchor": "names"
-        },
-        {
-          "level": 3,
-          "text": "`Writer.WriteFile`",
-          "anchor": "writerwritefile"
-        },
-        {
-          "level": 3,
-          "text": "`Writer.MkdirAll`",
-          "anchor": "writermkdirall"
+          "text": "`RefTexts`",
+          "anchor": "reftexts"
         }
       ]
     },
@@ -12270,7 +12250,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-08T13:47:19.664583+00:00",
+  "last_gen": "2026-10-10T21:18:54.404069+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
@@ -12280,10 +12260,6 @@
       },
       {
         "word": "canonicals",
-        "aliases": []
-      },
-      {
-        "word": "codenames",
         "aliases": []
       },
       {
