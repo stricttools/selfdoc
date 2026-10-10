@@ -2,6 +2,21 @@
 
 # Changelog
 
+## 0.48.0
+
+Publishing scans for the age-encrypted confidential-term list and refuses only hits that have no recorded resolution; selfdoc no longer reads or writes the machine-local confidential-name index.
+
+<details>
+<summary>Context</summary>
+
+Confidential terms now live in one encrypted list outside every repository. A release and selfdoc's publishing scan against it and report every hit at once, and a hit judged a false positive or approved by the owner, recorded with rlsbl, passes.
+
+</details>
+
+### Breaking
+
+- **Publishing scans for the confidential-term list, and resolved hits pass.** `deploy`, `blog post publish`, `blog publish-docs`, and the assembly's publishing commands scan what they publish against the age-encrypted confidential-term list (a missing list has no terms, and the command says so), report every hit at once with its id, location, and surrounding text, and refuse while a hit has no resolution in `.strictmetadata/confidential-hits/resolutions.toml` (recorded with rlsbl's `confidential` commands). Matching finds a term anywhere, ignoring case. Mutating commands no longer read or write the machine-local confidential-name index.
+
 ## 0.47.0
 
 selfdoc moves into the .strictmetadata layout with the Go rlsbl: `selfdoc check` becomes a read-only verdict, deploys and publishes refuse confidential names, every command's output goes through strictcli, failed auto-commits fail the command, and nested command groups are documented and checked.
