@@ -85,7 +85,7 @@ COPYRIGHT_URL = (
 # describe the list after the omission, and SOURCE.json records the
 # omissions.
 OMITTED_WORD_DIGESTS: dict[str, str] = {
-    "ca22f6284d521ce0027529e8e04b32e5db2c837b9910dc8147cf7ae4fde6bf6c": "a protected name in the confidential-name index; a project whose pages need it accepts it in its own vocabulary",
+    "ca22f6284d521ce0027529e8e04b32e5db2c837b9910dc8147cf7ae4fde6bf6c": "a protected term of the confidential-term list; a project whose pages need it accepts it in its own vocabulary",
 }
 
 

@@ -34,9 +34,9 @@ type RepublishOptions struct {
 	// Running is the running selfdoc's own version, which the assembly's
 	// deploy workflow must pin at least.
 	Running string
-	// Screen holds every checkout to the confidential-name rules: its record
-	// before anything is built, and its build output before anything is
-	// published. Required.
+	// Screen holds every checkout to the publishing and confidential-term
+	// rules: its record before anything is built, and its build output
+	// before anything is published. Required.
 	Screen Screen
 }
 
@@ -91,7 +91,7 @@ type RepublishSummary struct {
 //
 // Then it builds every project locally, the home project last, against the
 // checkouts' own manifests -- the site's are what this pass replaces --,
-// scans each build for confidential names, and only then publishes each
+// scans each build for confidential terms, and only then publishes each
 // through [PublishProjectDocs]. Under a previewing handle the
 // builds still run, since what a dry run reports is what they produce, and
 // nothing is published.
@@ -164,7 +164,7 @@ func RepublishAll(opts RepublishOptions, h *effects.Handle) (*RepublishSummary, 
 			return nil, fmt.Errorf("building %s at %s: %w", util.PythonRepr(checkout.Slug), checkout.SourceDir, err)
 		}
 		outputDir := filepath.Join(checkout.SourceDir, strings.TrimRight(config.OutputRel(cfg), "/"))
-		// Every built page is scanned for confidential names before any
+		// Every built page is scanned for confidential terms before any
 		// project is published, in a dry run too.
 		if err := opts.Screen.Scan("republish of "+checkout.Slug, outputDir); err != nil {
 			return nil, err

@@ -1,29 +1,25 @@
-// Package confidential is selfdoc's half of the confidential-name rules of
-// the lifecycle-and-license record
-// (.strictmetadata/lifecycle-and-license/lifecycle-and-license.toml).
+// Package confidential is selfdoc's half of two rules: the publishing rules
+// of the lifecycle-and-license record
+// (.strictmetadata/lifecycle-and-license/lifecycle-and-license.toml), and the
+// confidential-term list.
 //
-// A repository is confidential while one of its releasables has a proprietary
-// license period in effect, and public otherwise; a repository without a record
-// is public. Three things follow for selfdoc:
-//
-//   - every mutating command keeps the machine-local confidential-name index
-//     (<os.UserConfigDir()>/strictspec/confidential-names.toml) current for the
-//     repository it runs in: [Refresh] upserts a confidential repository's
-//     names, keyed by its record's open releasable-name identities, and removes
-//     a public repository's entry. A read-only command never writes the index.
-//   - every page and post a public output carries -- a deploy, a published
-//     post, a documentation publish -- is scanned against every name in the
-//     index, in every repository, and a match refuses the output ([ScanDir],
-//     [ScanFiles], [Refusal]).
-//   - a repository whose record has no releasable that may publish (every
-//     license in effect is proprietary) refuses the output outright
+//   - A repository whose record has no releasable that may publish (every
+//     license in effect is proprietary) refuses a public output outright
 //     ([PublicOutputAllowed]).
+//   - Every page and post a public output carries -- a deploy, a published
+//     post, a documentation publish, an assembly push -- is scanned against
+//     the confidential-term list (an age-encrypted list outside every
+//     repository, decrypted in memory; a missing list has no terms), and a hit
+//     the repository's resolutions (.strictmetadata/confidential-hits/
+//     resolutions.toml) do not resolve refuses the output, every hit at once
+//     ([Check]).
 //
-// Every index write goes through a [Writer] backed by the command's effects
-// handle, so --dry-run records the write instead of making it.
+// selfdoc writes nothing for either rule: resolutions are recorded with
+// rlsbl's confidential commands.
 package confidential
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"os"
@@ -31,30 +27,15 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/stricttools/selfdoc/internal/effects"
+	"github.com/stricttools/strictspec/go/confidential"
 	"github.com/stricttools/strictspec/go/lifecycle"
-	"github.com/stricttools/strictspec/go/lifecycle/index"
 )
 
-// Writer backs lifecycle.FileWriter with a selfdoc effects handle.
-type Writer struct {
-	Handle *effects.Handle
-}
-
-// WriteFile replaces the file at path atomically, so a concurrent reader of
-// the shared index never sees half of it.
-func (w Writer) WriteFile(path string, data []byte) error {
-	return w.Handle.AtomicWrite(path, data, effects.ModeDefault)
-}
-
-// MkdirAll creates the directory at path and its parents.
-func (w Writer) MkdirAll(path string) error {
-	return w.Handle.MkdirAll(path)
-}
-
 // Repository is the repository a selfdoc command runs in, as far as the
-// confidential-name rules need it.
+// publishing rules and the confidential-term scan need it.
 type Repository struct {
 	// Root is the git work tree's root, or the project directory itself when
 	// it is in no git work tree.
@@ -105,31 +86,6 @@ func Locate(h *effects.Handle, dir string) (Repository, error) {
 	return repo, nil
 }
 
-// Refresh brings the confidential-name index at indexPath up to date for repo
-// on the date of on, writing through w: a confidential repository's entry,
-// keyed by its record's open releasable-name identities, is upserted with the
-// names it protects, and a public repository's entry is removed. Only mutating
-// commands call it. No remote is needed: the origin, when there is one, only
-// adds its name to the repository's names.
-func Refresh(w lifecycle.FileWriter, indexPath string, repo Repository, on time.Time) error {
-	names, err := index.RepositoryNames(repo.Root, repo.Origin)
-	if err != nil {
-		return err
-	}
-	update, err := index.Plan(repo.Record, on, names...)
-	if err != nil {
-		return fmt.Errorf("recording this repository's confidential names in the index at %s: %w", indexPath, err)
-	}
-	idx, err := index.Load(indexPath)
-	if err != nil {
-		return fmt.Errorf("reading the confidential-name index: %w", err)
-	}
-	if err := idx.Apply(w, update); err != nil {
-		return fmt.Errorf("bringing this repository's entry in the confidential-name index at %s in step with its record: %w", indexPath, err)
-	}
-	return nil
-}
-
 // PublicOutputAllowed refuses output when the record has releasables with a
 // license in effect on the date of on and every one of them is proprietary:
 // there is then no releasable the output may publish for. It returns the
@@ -157,36 +113,70 @@ func PublicOutputAllowed(record *lifecycle.Record, output lifecycle.Output, on t
 	return refusal
 }
 
-// Finding is one confidential name in a published page or post: the page's
-// path, the 1-based line and column, and the name as the index spells it.
-type Finding struct {
-	Page   string
-	Line   int
-	Column int
-	Term   string
+// Text is one published text: its page or file path, and its content.
+type Text struct {
+	Page    string
+	Content string
 }
 
-// ScanFiles scans every file of files (page path to content) against names.
-func ScanFiles(names []string, files map[string][]byte) []Finding {
+// Fix is what a refusal of an unresolved hit tells the agent to do.
+const Fix = "Judge each hit. When you are at least 70% certain it is a false positive, record it with " +
+	"`rlsbl confidential judge-false-positive --hit <id> --certainty <70-100> --reason <one line, without the term>`, " +
+	"run in this repository. Every other hit goes to the owner, who either has it fixed (reword the source of the page " +
+	"or post, rebuild, and run the command again) or approves publishing it, hit by hit: " +
+	"`rlsbl confidential approve-hit --hit <id> --reason <the owner's reason>`. rlsbl accepts the id of a hit the " +
+	"repository's tracked files or next push carry; a hit only built output carries is fixed in its source."
+
+// Check refuses, naming what (the output), every hit of list in texts that
+// the resolutions of repo do not resolve. Hits are found with the entries
+// that apply to repo (an entry's except scope names a repository by its
+// directory's or its origin's name). The list's status is returned for the
+// caller to report: a missing list has no terms, which the output says.
+func Check(list *confidential.List, repo Repository, what string, texts []Text) (string, error) {
+	names, err := confidential.RepositoryNames(repo.Root, repo.Origin)
+	if err != nil {
+		return "", err
+	}
+	m := list.For(names)
+	var hits []confidential.Hit
+	for _, t := range texts {
+		hits = append(hits, m.Scan(t.Page, t.Content)...)
+	}
+	if len(hits) == 0 {
+		return list.Status(), nil
+	}
+	resolutions, err := confidential.LoadResolutions(repo.Root)
+	if err != nil {
+		return "", err
+	}
+	o := confidential.Resolve(hits, resolutions)
+	if err := o.Refusal("the "+what, Fix); err != nil {
+		return "", fmt.Errorf("refusing the %s: %w", what, err)
+	}
+	return fmt.Sprintf("%s; %d hit(s) resolved:\n%s", list.Status(), len(o.Resolved), strings.TrimRight(o.ReportResolved(), "\n")), nil
+}
+
+// FilesTexts are the texts of files (page path to content), in page order,
+// leaving out binary content.
+func FilesTexts(files map[string][]byte) []Text {
 	pages := make([]string, 0, len(files))
 	for page := range files {
 		pages = append(pages, page)
 	}
 	sort.Strings(pages)
-	var findings []Finding
+	var out []Text
 	for _, page := range pages {
-		findings = append(findings, scanPage(names, page, files[page])...)
+		if isText(files[page]) {
+			out = append(out, Text{Page: page, Content: string(files[page])})
+		}
 	}
-	return findings
+	return out
 }
 
-// ScanDir scans every regular file under dir against names; each finding's
-// page is the file's slash-separated path relative to dir.
-func ScanDir(names []string, dir string) ([]Finding, error) {
-	if len(names) == 0 {
-		return nil, nil
-	}
-	var findings []Finding
+// DirTexts are the texts of every regular file under dir, each page the
+// file's slash-separated path relative to dir, leaving out binary content.
+func DirTexts(dir string) ([]Text, error) {
+	var out []Text
 	err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -202,55 +192,67 @@ func ScanDir(names []string, dir string) ([]Finding, error) {
 		if err != nil {
 			return err
 		}
-		findings = append(findings, scanPage(names, filepath.ToSlash(rel), data)...)
+		if isText(data) {
+			out = append(out, Text{Page: filepath.ToSlash(rel), Content: string(data)})
+		}
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("scanning %s for confidential names: %w", dir, err)
+		return nil, fmt.Errorf("reading %s to scan it for confidential terms: %w", dir, err)
 	}
-	return findings, nil
+	return out, nil
 }
 
-func scanPage(names []string, page string, data []byte) []Finding {
-	var findings []Finding
-	for _, m := range index.ScanTerms(string(data), names) {
-		findings = append(findings, Finding{Page: page, Line: m.Line, Column: m.Column, Term: m.Term})
-	}
-	return findings
-}
-
-// ScanRef scans every tracked text file of the git tree at ref, in the work
-// tree at root, against names; each finding's page is the file's path in the
-// tree. git grep picks the files holding a name ignoring case, and each is
-// read at ref and matched on whole tokens, as every other scan matches. Both
-// git questions are declared reads, so they run under --dry-run too.
-func ScanRef(h *effects.Handle, root, ref string, names []string) ([]Finding, error) {
-	if len(names) == 0 {
+// RefTexts are the texts of every tracked text file of the git tree at ref,
+// in the work tree at root, each page the file's path in the tree. When every
+// entry of m is a literal, git grep picks the files holding one ignoring
+// case first; a pattern entry reads every file. Every git question is a
+// declared read, so it runs under --dry-run too.
+func RefTexts(h *effects.Handle, root, ref string, m *confidential.Matcher) ([]Text, error) {
+	if m.Len() == 0 {
 		return nil, nil
 	}
-	argv := []string{"git", "grep", "-I", "-i", "-l", "-z", "-F"}
-	for _, n := range names {
-		argv = append(argv, "-e", n)
-	}
-	argv = append(argv, ref, "--")
-	grep, err := h.Run(argv, effects.Cwd(root), effects.CaptureOutput(), effects.Read())
-	if err != nil {
-		return nil, fmt.Errorf("searching %s for confidential names: %w", ref, err)
-	}
-	switch grep.ExitCode {
-	case 0:
-	case 1:
-		// git grep's answer for no match.
-		return nil, nil
-	default:
-		return nil, fmt.Errorf("searching %s for confidential names: git grep exited %d: %s", ref, grep.ExitCode, grep.StderrString())
-	}
-	var findings []Finding
-	for _, entry := range strings.Split(string(grep.Stdout), "\x00") {
-		if entry == "" {
-			continue
+	var pages []string
+	terms, literal := m.Terms()
+	if literal {
+		argv := []string{"git", "grep", "-I", "-i", "-l", "-z", "-F"}
+		for _, t := range terms {
+			argv = append(argv, "-e", t)
 		}
-		page := strings.TrimPrefix(entry, ref+":")
+		argv = append(argv, ref, "--")
+		grep, err := h.Run(argv, effects.Cwd(root), effects.CaptureOutput(), effects.Read())
+		if err != nil {
+			return nil, fmt.Errorf("searching %s for confidential terms: %w", ref, err)
+		}
+		switch grep.ExitCode {
+		case 0:
+		case 1:
+			// git grep's answer for no match.
+			return nil, nil
+		default:
+			return nil, fmt.Errorf("searching %s for confidential terms: git grep exited %d: %s", ref, grep.ExitCode, grep.StderrString())
+		}
+		for _, entry := range strings.Split(string(grep.Stdout), "\x00") {
+			if entry != "" {
+				pages = append(pages, strings.TrimPrefix(entry, ref+":"))
+			}
+		}
+	} else {
+		ls, err := h.Run([]string{"git", "ls-tree", "-r", "-z", "--name-only", ref}, effects.Cwd(root), effects.CaptureOutput(), effects.Read())
+		if err != nil {
+			return nil, fmt.Errorf("listing the files of %s: %w", ref, err)
+		}
+		if ls.ExitCode != 0 {
+			return nil, fmt.Errorf("listing the files of %s: git ls-tree exited %d: %s", ref, ls.ExitCode, ls.StderrString())
+		}
+		for _, entry := range strings.Split(string(ls.Stdout), "\x00") {
+			if entry != "" {
+				pages = append(pages, entry)
+			}
+		}
+	}
+	var out []Text
+	for _, page := range pages {
 		show, err := h.Run([]string{"git", "show", ref + ":" + page}, effects.Cwd(root), effects.CaptureOutput(), effects.Read())
 		if err != nil {
 			return nil, fmt.Errorf("reading %s at %s: %w", page, ref, err)
@@ -258,33 +260,14 @@ func ScanRef(h *effects.Handle, root, ref string, names []string) ([]Finding, er
 		if show.ExitCode != 0 {
 			return nil, fmt.Errorf("reading %s at %s: git show exited %d: %s", page, ref, show.ExitCode, show.StderrString())
 		}
-		findings = append(findings, scanPage(names, page, show.Stdout)...)
+		if isText(show.Stdout) {
+			out = append(out, Text{Page: page, Content: string(show.Stdout)})
+		}
 	}
-	return findings, nil
+	return out, nil
 }
 
-// Refusal is the error a public output with findings refuses with: it names
-// the output, every page, line, column, and term, and the index the names come
-// from. It is nil when there are no findings.
-func Refusal(output string, findings []Finding, indexPath string) error {
-	if len(findings) == 0 {
-		return nil
-	}
-	lines := make([]string, 0, len(findings))
-	for _, f := range findings {
-		lines = append(lines, fmt.Sprintf("%s, line %d, column %d: %s", f.Page, f.Line, f.Column, f.Term))
-	}
-	return fmt.Errorf("refusing the %s: what it would publish names terms the confidential-name index protects:\n  %s\n"+
-		"Remove each term from the pages and posts it came from, rebuild, and run the command again. "+
-		"The index is %s; commands in the confidential repositories keep it current",
-		output, strings.Join(lines, "\n  "), indexPath)
-}
-
-// Names reads the index at indexPath and returns every name it holds.
-func Names(indexPath string) ([]string, error) {
-	idx, err := index.Load(indexPath)
-	if err != nil {
-		return nil, fmt.Errorf("reading the confidential-name index: %w", err)
-	}
-	return idx.Names(), nil
+// isText reports whether data is UTF-8 text holding no NUL byte.
+func isText(data []byte) bool {
+	return bytes.IndexByte(data, 0) < 0 && utf8.Valid(data)
 }

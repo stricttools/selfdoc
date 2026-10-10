@@ -1,70 +1,14 @@
 package cli
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/stricttools/selfdoc/internal/blog/assembly"
 	"github.com/stricttools/selfdoc/internal/confidential"
 	"github.com/stricttools/selfdoc/internal/effects"
-	"github.com/stricttools/strictcli/go/strictcli"
+	strictconfidential "github.com/stricttools/strictspec/go/confidential"
 	"github.com/stricttools/strictspec/go/lifecycle"
-	"github.com/stricttools/strictspec/go/lifecycle/index"
 )
-
-// refreshIndexOnMutatingCommands wraps the handler of every mutating command
-// so that, before the command's own work, it brings the machine-local
-// confidential-name index up to date for the repository the command runs in
-// (see confidential.Refresh). Read-only commands are left as they are, so a
-// read-only command never writes the index. It runs once, after every command
-// is registered.
-func (c *cli) refreshIndexOnMutatingCommands() {
-	for _, cmd := range c.app.Commands() {
-		c.wrapIndexRefresh(cmd)
-	}
-	var walk func(g *strictcli.Group)
-	walk = func(g *strictcli.Group) {
-		for _, cmd := range g.Commands {
-			c.wrapIndexRefresh(cmd)
-		}
-		for _, sub := range g.Groups {
-			walk(sub)
-		}
-	}
-	for _, g := range c.app.Groups() {
-		walk(g)
-	}
-}
-
-func (c *cli) wrapIndexRefresh(cmd *strictcli.Command) {
-	if cmd.Effect != strictcli.EffectMutating || cmd.Handler == nil {
-		return
-	}
-	next := cmd.Handler
-	cmd.Handler = func(ctx *strictcli.Context, kwargs map[string]any) strictcli.Outcome {
-		if err := c.refreshIndex(effects.FromContext(ctx)); err != nil {
-			d := c.bind(ctx)
-			defer d.flush()
-			return d.fail(err)
-		}
-		return next(ctx, kwargs)
-	}
-}
-
-// refreshIndex upserts or removes this repository's entry in the
-// confidential-name index, writing through h.
-func (c *cli) refreshIndex(h *effects.Handle) error {
-	repo, err := confidential.Locate(h, c.dir())
-	if err != nil {
-		return err
-	}
-	indexPath, err := index.DefaultPath()
-	if err != nil {
-		return err
-	}
-	return confidential.Refresh(confidential.Writer{Handle: h}, indexPath, repo, time.Now())
-}
 
 // publicOutputAllowed refuses a public output outright when the repository's
 // lifecycle-and-license record leaves no releasable that may publish it.
@@ -76,31 +20,46 @@ func (c *cli) publicOutputAllowed(h *effects.Handle, output lifecycle.Output) er
 	return confidential.PublicOutputAllowed(repo.Record, output, time.Now())
 }
 
-// confidentialNameRefusal scans what a public output would publish against
-// every name in the confidential-name index, in every repository, and returns
-// the refusal naming each page, line, and term, or nil when nothing matched.
-// what names the output in the refusal; scan reads the content.
-func (c *cli) confidentialNameRefusal(what string, scan func(names []string) ([]confidential.Finding, error)) error {
-	indexPath, err := index.DefaultPath()
+// confidentialTermRefusal scans what a public output would publish against
+// the confidential-term list, with the entries that apply to the repository
+// holding dir and that repository's resolutions, and returns the refusal
+// naming every unresolved hit, or nil. what names the output in the refusal;
+// texts reads the content. The list's status (a missing list has no terms)
+// is reported on stderr.
+func (c *cli) confidentialTermRefusal(h *effects.Handle, dir, what string, texts func(*strictconfidential.Matcher) ([]confidential.Text, error)) error {
+	loc, err := strictconfidential.DefaultLocation()
 	if err != nil {
 		return err
 	}
-	names, err := confidential.Names(indexPath)
+	list, err := strictconfidential.Load(loc)
 	if err != nil {
 		return err
 	}
-	findings, err := scan(names)
+	repo, err := confidential.Locate(h, dir)
 	if err != nil {
 		return err
 	}
-	return confidential.Refusal(what, findings, indexPath)
+	names, err := strictconfidential.RepositoryNames(repo.Root, repo.Origin)
+	if err != nil {
+		return err
+	}
+	read, err := texts(list.For(names))
+	if err != nil {
+		return err
+	}
+	status, err := confidential.Check(list, repo, what, read)
+	if err != nil {
+		return err
+	}
+	c.eprintf("Confidential terms: %s\n", status)
+	return nil
 }
 
-// assemblyScreen is the confidential-name screen the assembly's publishing
-// commands hold their output to, as every other publishing command is held:
-// a source checkout whose record lets no releasable publish public
-// documentation is refused outright, and every page a built tree holds is
-// scanned against the confidential-name index.
+// assemblyScreen is the screen the assembly's publishing commands hold their
+// output to, as every other publishing command is held: a source checkout
+// whose record lets no releasable publish public documentation is refused
+// outright, and every page a built tree holds is scanned against the
+// confidential-term list, with the resolutions of the repository holding it.
 func (c *cli) assemblyScreen(h *effects.Handle) assembly.Screen {
 	return assembly.Screen{
 		Allow: func(sourceDir string) error {
@@ -111,42 +70,22 @@ func (c *cli) assemblyScreen(h *effects.Handle) assembly.Screen {
 			return confidential.PublicOutputAllowed(repo.Record, lifecycle.PublicDocs, time.Now())
 		},
 		Scan: func(what, dir string) error {
-			return c.confidentialNameRefusal(what, func(names []string) ([]confidential.Finding, error) {
-				return confidential.ScanDir(names, dir)
+			return c.confidentialTermRefusal(h, dir, what, func(*strictconfidential.Matcher) ([]confidential.Text, error) {
+				return confidential.DirTexts(dir)
 			})
 		},
 	}
 }
 
 // refRefusal scans every tracked text file of the git tree at ref against the
-// confidential-name index, for a dispatch whose output the assembly builds
-// from that ref, and returns the refusal naming each file, line, and term, or
-// nil when nothing matched.
+// confidential-term list, for a dispatch whose output the assembly builds
+// from that ref, and returns the refusal naming every unresolved hit, or nil.
 func (c *cli) refRefusal(h *effects.Handle, ref string) error {
-	repo, err := confidential.Locate(h, c.dir())
-	if err != nil {
-		return err
-	}
-	indexPath, err := index.DefaultPath()
-	if err != nil {
-		return err
-	}
-	names, err := confidential.Names(indexPath)
-	if err != nil {
-		return err
-	}
-	findings, err := confidential.ScanRef(h, repo.Root, ref, names)
-	if err != nil {
-		return err
-	}
-	if len(findings) == 0 {
-		return nil
-	}
-	lines := make([]string, 0, len(findings))
-	for _, f := range findings {
-		lines = append(lines, fmt.Sprintf("%s, line %d, column %d: %s", f.Page, f.Line, f.Column, f.Term))
-	}
-	return fmt.Errorf("refusing the assembly push: the assembly builds the documentation from %s, whose tracked files name terms the confidential-name index protects:\n  %s\n"+
-		"Remove each term from the files it came from, commit, and push the ref that carries the removal (for a versioned project, a release's tag). "+
-		"The index is %s; commands in the confidential repositories keep it current", ref, strings.Join(lines, "\n  "), indexPath)
+	return c.confidentialTermRefusal(h, c.dir(), "assembly push of "+ref, func(m *strictconfidential.Matcher) ([]confidential.Text, error) {
+		repo, err := confidential.Locate(h, c.dir())
+		if err != nil {
+			return nil, err
+		}
+		return confidential.RefTexts(h, repo.Root, ref, m)
+	})
 }

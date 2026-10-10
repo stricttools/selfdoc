@@ -19,8 +19,8 @@ import (
 // axeScriptGzip is axe-core, vendored beside this suite so the accessibility
 // sweep needs no npm install and no network. Its licence is
 // testdata/axe.LICENSE. It is stored gzip-compressed: the minified script
-// carries an ordinary use of a word the confidential-name index protects,
-// and the compressed bytes are not text the confidential-names check reads.
+// carries an ordinary use of a word the confidential-term list holds, and
+// the compressed bytes are not text the confidential-term scan reads.
 //
 //go:embed testdata/axe.min.js.gz
 var axeScriptGzip []byte

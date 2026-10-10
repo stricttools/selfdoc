@@ -21,6 +21,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/revisions"
 	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/stricttools/strictcli/go/strictcli"
+	strictconfidential "github.com/stricttools/strictspec/go/confidential"
 	"github.com/stricttools/strictspec/go/lifecycle"
 )
 
@@ -396,7 +397,7 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 		return strictcli.Exit(0)
 	}
 
-	// The posts' sources are scanned for confidential names before anything
+	// The posts' sources are scanned for confidential terms before anything
 	// is written: a revision records a post's content in a repository file,
 	// and the build writes its pages. The built pages are scanned again
 	// below, since a page carries more than its post's source.
@@ -410,8 +411,8 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 		}
 		sources[rel] = data
 	}
-	if err := c.confidentialNameRefusal("post publish", func(names []string) ([]confidential.Finding, error) {
-		return confidential.ScanFiles(names, sources), nil
+	if err := c.confidentialTermRefusal(handle, c.dir(), "post publish", func(*strictconfidential.Matcher) ([]confidential.Text, error) {
+		return confidential.FilesTexts(sources), nil
 	}); err != nil {
 		return c.fail(err)
 	}
@@ -484,10 +485,10 @@ func (c *cli) cmdPostPublish(ctx *strictcli.Context, kwargs map[string]any) stri
 		files["manifests/"+slug+"-revisions.json"] = data
 	}
 
-	// Everything this publish pushes is scanned for confidential names before
+	// Everything this publish pushes is scanned for confidential terms before
 	// anything leaves the machine.
-	if err := c.confidentialNameRefusal("post publish", func(names []string) ([]confidential.Finding, error) {
-		return confidential.ScanFiles(names, files), nil
+	if err := c.confidentialTermRefusal(handle, c.dir(), "post publish", func(*strictconfidential.Matcher) ([]confidential.Text, error) {
+		return confidential.FilesTexts(files), nil
 	}); err != nil {
 		return c.fail(err)
 	}

@@ -448,7 +448,7 @@ func (a *assemblyTree) integrateOptions() IntegrateOptions {
 	}
 }
 
-// passingScreen is a confidential-name screen with nothing to refuse.
+// passingScreen is a confidential-term screen with nothing to refuse.
 var passingScreen = Screen{
 	Allow: func(string) error { return nil },
 	Scan:  func(string, string) error { return nil },
@@ -684,7 +684,7 @@ func TestFullIntegrateGraftsTheBuildAndCommits(t *testing.T) {
 	}
 }
 
-// The integration holds its output to the confidential-name screen: the
+// The integration holds its output to the confidential-term screen: the
 // source checkout's record before the build, and the whole site tree before
 // anything is committed or pushed.
 func TestIntegrateRefusesWhatItsScreenRefusesBeforeCommitting(t *testing.T) {
@@ -714,7 +714,7 @@ func TestIntegrateRefusesWhatItsScreenRefusesBeforeCommitting(t *testing.T) {
 	}
 
 	_, err = tree.Integrate(func(o *IntegrateOptions) { o.Screen = Screen{} })
-	if err == nil || !strings.Contains(err.Error(), "confidential-name screen") {
+	if err == nil || !strings.Contains(err.Error(), "confidential-term screen") {
 		t.Fatalf("an integration without its screen ran: %v", err)
 	}
 }

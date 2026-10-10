@@ -10,6 +10,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/strictcli/go/strictcli"
+	strictconfidential "github.com/stricttools/strictspec/go/confidential"
 	"github.com/stricttools/strictspec/go/lifecycle"
 )
 
@@ -94,10 +95,10 @@ func (c *cli) cmdPublishDocs(ctx *strictcli.Context, kwargs map[string]any) stri
 			"nothing to publish.", outputDir)
 	}
 
-	// Every built page is scanned for confidential names before anything is
+	// Every built page is scanned for confidential terms before anything is
 	// pushed.
-	if err := c.confidentialNameRefusal("documentation publish", func(names []string) ([]confidential.Finding, error) {
-		return confidential.ScanDir(names, outputDir)
+	if err := c.confidentialTermRefusal(handle, c.dir(), "documentation publish", func(*strictconfidential.Matcher) ([]confidential.Text, error) {
+		return confidential.DirTexts(outputDir)
 	}); err != nil {
 		return c.fail(err)
 	}

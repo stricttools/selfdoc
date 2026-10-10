@@ -60,7 +60,7 @@
   "word_count": 172496,
   "words_sha256": "ff532ba2181666a0766312586cae4c9502787628aa31a90b85244341f589e9a9",
   "omitted_word_digests": {
-    "ca22f6284d521ce0027529e8e04b32e5db2c837b9910dc8147cf7ae4fde6bf6c": "a protected name in the confidential-name index; a project whose pages need it accepts it in its own vocabulary"
+    "ca22f6284d521ce0027529e8e04b32e5db2c837b9910dc8147cf7ae4fde6bf6c": "a protected term of the confidential-term list; a project whose pages need it accepts it in its own vocabulary"
   },
   "generator_header": [
     "Custom wordlist generated from https://app.aspell.net/create using",

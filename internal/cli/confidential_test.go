@@ -1,50 +1,59 @@
 package cli
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"filippo.io/age"
 	"github.com/stricttools/selfdoc/internal/layout"
 	"github.com/stricttools/selfdoc/internal/testproject"
-	"github.com/stricttools/strictspec/go/lifecycle/index"
+	"github.com/stricttools/strictspec/go/confidential"
 )
 
-// The confidential-name rules at selfdoc's command boundary: every mutating
-// command keeps the machine-local index current for its repository and a
-// read-only command never writes it, and every public output -- a deploy, a
-// post publish, a documentation publish -- is refused when what it would
-// publish names a confidential term, or when no releasable may publish it.
+// The confidential-term rules at selfdoc's command boundary: every public
+// output -- a deploy, a post publish, a documentation publish, an assembly
+// push -- is refused while what it would publish carries a hit of the
+// confidential-term list nothing resolves, or when no releasable may publish
+// it; and no command keeps a machine-local name index.
 
-// confidentialIndexPath is the index path the application under test uses:
-// the isolation floor points the user configuration directory at a throwaway
-// one.
-func confidentialIndexPath(t *testing.T) string {
+// writeTermList writes a confidential-term list naming terms, encrypted to a
+// fresh identity, where the application under test looks for it: under the
+// throwaway home directory the isolation floor sets.
+func writeTermList(t *testing.T, terms ...string) {
 	t.Helper()
-	path, err := index.DefaultPath()
+	home, err := os.UserHomeDir()
 	if err != nil {
-		t.Fatalf("locating the confidential-name index: %v", err)
+		t.Fatal(err)
 	}
-	return path
+	var b strings.Builder
+	b.WriteString("format_version = 1\n")
+	for _, term := range terms {
+		b.WriteString("\n[[terms]]\nterm = \"" + term + "\"\nadded = 2026-10-01\nreason = \"a private name\"\nscope = \"everywhere\"\n")
+	}
+	id, err := age.GenerateX25519Identity()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buf bytes.Buffer
+	w, err := age.Encrypt(&buf, id.Recipient())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write([]byte(b.String())); err != nil {
+		t.Fatal(err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+	loc := confidential.LocationIn(home)
+	writeText(t, loc.List, buf.String())
+	writeText(t, loc.Identity, id.String()+"\n")
 }
 
-// writeConfidentialNames writes an index holding one other repository's
-// entry with the given names.
-func writeConfidentialNames(t *testing.T, names ...string) string {
-	t.Helper()
-	path := confidentialIndexPath(t)
-	quoted := make([]string, len(names))
-	for i, n := range names {
-		quoted[i] = `"` + n + `"`
-	}
-	writeText(t, path, "format_version = 1\n\n[[repositories]]\nsubjects = [\"portal-works\"]\nnames = ["+
-		strings.Join(quoted, ", ")+"]\n")
-	return path
-}
-
-// widgetName is the widget's releasable-name identity, which keys the
-// repository's entry in the confidential-name index.
+// widgetName is the widget's releasable-name identity.
 const widgetName = "\n[[identities]]\nsubject = \"widget\"\nfacet = \"releasable-name\"\nvalue = \"widget\"\nregistry = \"\"\ntag_patterns = [\"v*\"]\nfrom = 2020-01-01\nreason = \"its name\"\n"
 
 // confidentialGitRepository makes dir a git repository with an origin remote
@@ -59,76 +68,29 @@ func confidentialGitRepository(t *testing.T, dir string) {
 			widgetName)
 }
 
-func indexExists(t *testing.T) bool {
-	t.Helper()
-	_, err := os.Stat(confidentialIndexPath(t))
-	if err == nil {
-		return true
-	}
-	if !os.IsNotExist(err) {
-		t.Fatal(err)
-	}
-	return false
-}
-
-func TestReadOnlyCommandLeavesTheIndexUnwrittenAndAMutatingOneWritesIt(t *testing.T) {
+// No command keeps a machine-local name index: a mutating command in a
+// confidential repository writes nothing under the user's configuration
+// directory.
+func TestAMutatingCommandWritesNoNameIndex(t *testing.T) {
 	isolate(t)
 	dir := postProject(t, nil)
 	confidentialGitRepository(t, dir)
-
-	// Whatever a read-only command's verdict, it writes no index.
-	run(t, dir, "blog", "post", "list")
-	if indexExists(t) {
-		t.Fatal("a read-only command wrote the confidential-name index")
-	}
-
-	// gen-data is mutating; with nothing configured it does nothing else.
 	if result := run(t, dir, "gen-data", "--no-auto-commit"); result.ExitCode != 0 {
 		t.Fatalf("gen-data exited %d: %s", result.ExitCode, result.Stderr)
 	}
-	got := readText(t, confidentialIndexPath(t))
-	for _, want := range []string{`subjects = ["widget"]`, `"widget"`, `"gadget-works"`} {
-		if !strings.Contains(got, want) {
-			t.Errorf("the mutating command did not record %s:\n%s", want, got)
-		}
+	config, err := os.UserConfigDir()
+	if err != nil {
+		t.Fatal(err)
 	}
-}
-
-func TestDryRunOfAMutatingCommandLeavesTheIndexUnwritten(t *testing.T) {
-	isolate(t)
-	dir := postProject(t, nil)
-	confidentialGitRepository(t, dir)
-
-	if result := run(t, dir, "--dry-run", "gen-data", "--no-auto-commit"); result.ExitCode != 0 {
-		t.Fatalf("gen-data --dry-run exited %d: %s", result.ExitCode, result.Stderr)
-	}
-	if indexExists(t) {
-		t.Error("a dry run wrote the confidential-name index")
-	}
-}
-
-// The index keys a repository by its record's releasable-name identities, so
-// a confidential repository without an origin remote runs mutating commands
-// and records its names.
-func TestConfidentialRepositoryWithoutAnOriginRecordsItsNames(t *testing.T) {
-	isolate(t)
-	dir := postProject(t, nil)
-	confidentialGitRepository(t, dir)
-	testproject.Git(t, dir, "remote", "remove", "origin")
-
-	if result := run(t, dir, "gen-data", "--no-auto-commit"); result.ExitCode != 0 {
-		t.Fatalf("gen-data exited %d in a confidential repository without an origin: %s", result.ExitCode, result.Stderr)
-	}
-	got := readText(t, confidentialIndexPath(t))
-	if !strings.Contains(got, `subjects = ["widget"]`) || !strings.Contains(got, `"widget"`) {
-		t.Errorf("the mutating command did not record the repository's names:\n%s", got)
+	if _, err := os.Stat(filepath.Join(config, "strictspec")); !os.IsNotExist(err) {
+		t.Fatalf("a command wrote under %s: %v", filepath.Join(config, "strictspec"), err)
 	}
 }
 
 func TestDeployRefusesAPageNamingAConfidentialTerm(t *testing.T) {
 	tools := newFakeTools(t, "wrangler")
 	tools.Reply(toolReply{Match: "", Code: 0})
-	writeConfidentialNames(t, "portal")
+	writeTermList(t, "portal")
 	// No git repository and no record: a repository without a record is
 	// public, and its pages are scanned like any other's.
 	dir := deployProject(t, map[string]any{"provider": "cloudflare-pages", "project": "docs"})
@@ -139,7 +101,7 @@ func TestDeployRefusesAPageNamingAConfidentialTerm(t *testing.T) {
 	if result.ExitCode == 0 {
 		t.Fatal("a deploy of a page naming a confidential term was accepted")
 	}
-	if !strings.Contains(result.Stderr, "guide/index.html, line 2, column 8: portal") {
+	if !strings.Contains(result.Stderr, "guide/index.html, line 2, column 8: <p>The >>Portal<< is coming.</p>") || !strings.Contains(result.Stderr, "rlsbl confidential judge-false-positive") {
 		t.Errorf("the refusal does not name the page, line, and term:\n%s", result.Stderr)
 	}
 	if calls := tools.Matching("wrangler"); len(calls) != 0 {
@@ -231,13 +193,13 @@ func TestPublishDocsRefusesAPageNamingAConfidentialTerm(t *testing.T) {
 	dir := homeSiteProject(t, nil)
 	writeHomeFrontPage(t, dir, "Prose about the portal.")
 	servePush(t, tools, "home")
-	writeConfidentialNames(t, "portal")
+	writeTermList(t, "portal")
 
 	result := run(t, dir, "blog", "publish-docs")
 	if result.ExitCode == 0 {
 		t.Fatal("a documentation publish of a page naming a confidential term was accepted")
 	}
-	if !strings.Contains(result.Stderr, "documentation publish") || !strings.Contains(result.Stderr, ": portal") {
+	if !strings.Contains(result.Stderr, "documentation publish") || !strings.Contains(result.Stderr, ">>portal<<") {
 		t.Errorf("the refusal does not name the output and the term:\n%s", result.Stderr)
 	}
 	if calls := tools.Matching("POST /repos/owner/assembly/git/blobs"); len(calls) != 0 {
@@ -247,7 +209,7 @@ func TestPublishDocsRefusesAPageNamingAConfidentialTerm(t *testing.T) {
 
 func TestPostPublishRefusesAPostNamingAConfidentialTermBeforeWritingAnything(t *testing.T) {
 	tools := newFakeTools(t, "gh")
-	writeConfidentialNames(t, "portal")
+	writeTermList(t, "portal")
 	// No git repository and no record: a repository without a record is
 	// public, and its posts are scanned like any other's.
 	dir := postProject(t, map[string]any{
@@ -261,7 +223,7 @@ func TestPostPublishRefusesAPostNamingAConfidentialTermBeforeWritingAnything(t *
 	if result.ExitCode == 0 {
 		t.Fatal("a post publish of a post naming a confidential term was accepted")
 	}
-	if !strings.Contains(result.Stderr, "post publish") || !strings.Contains(result.Stderr, "a.md, line 7, column 5: portal") {
+	if !strings.Contains(result.Stderr, "post publish") || !strings.Contains(result.Stderr, "a.md, line 7, column 5: The >>Portal<< is coming.") {
 		t.Errorf("the refusal does not name the post, line, column, and term:\n%s", result.Stderr)
 	}
 	if _, err := os.Stat(filepath.Join(dir, filepath.FromSlash(layout.RevisionsRel))); !os.IsNotExist(err) {
@@ -275,7 +237,7 @@ func TestPostPublishRefusesAPostNamingAConfidentialTermBeforeWritingAnything(t *
 	// assembly.
 	writePost(t, postsDir, "a.md", []string{"title = \"Launch\"", "date = 2025-01-15"}, "\nSomething is coming.\n")
 	result = run(t, dir, "blog", "post", "publish", "--approve-consequential")
-	if strings.Contains(result.Stderr, "confidential-name index") {
+	if strings.Contains(result.Stderr, "confidential-term hits nothing resolves") {
 		t.Fatalf("the publish was refused after the term was removed:\n%s", result.Stderr)
 	}
 	if calls := tools.Calls(); len(calls) == 0 {
@@ -291,7 +253,7 @@ func TestAssemblyPushRefusesARefNamingAConfidentialTerm(t *testing.T) {
 		"assembly": map[string]any{"repo": "owner/assembly", "pages_project": "site"},
 		"topology": map[string]any{"slug": "myproject", "docs_base": "https://docs.example.com"},
 	})
-	writeConfidentialNames(t, "portal")
+	writeTermList(t, "portal")
 	writeText(t, filepath.Join(dir, "notes.md"), "Prose about the Portal.\n")
 	testproject.Git(t, dir, "init")
 	testproject.Git(t, dir, "add", "selfdoc.json", "notes.md")
@@ -306,7 +268,7 @@ func TestAssemblyPushRefusesARefNamingAConfidentialTerm(t *testing.T) {
 	if result.ExitCode == 0 {
 		t.Fatal("a push of a ref naming a confidential term was dispatched")
 	}
-	if !strings.Contains(result.Stderr, "notes.md, line 1, column 17: portal") {
+	if !strings.Contains(result.Stderr, "notes.md, line 1, column 17: Prose about the >>Portal<<.") {
 		t.Errorf("the refusal does not name the file, line, and term:\n%s", result.Stderr)
 	}
 	if dispatches := tools.Matching("/dispatches"); len(dispatches) != 0 {
@@ -330,7 +292,7 @@ func TestAssemblyPushRefusesARefNamingAConfidentialTerm(t *testing.T) {
 // scanned before anything is published, in a dry run too.
 func TestRepublishAllRefusesABuildNamingAConfidentialTerm(t *testing.T) {
 	s := newRepublishSite(t, testVersion, nil)
-	writeConfidentialNames(t, "moonbeam")
+	writeTermList(t, "moonbeam")
 	page := filepath.Join(testproject.DocsDir(s.alpha), "index.md")
 	writeText(t, page, "# Alpha\n\nThe moonbeam work.\n")
 	commitAll(t, s.alpha)

@@ -161,9 +161,10 @@ type IntegrateOptions struct {
 	// Stderr is where the graft's advisory and the verification's not-checked
 	// lines go. Nil sends them to the handle's warnings.
 	Stderr io.Writer
-	// Screen holds the integration to the confidential-name rules: the
-	// source checkout's record before it is built (a project-scoped run),
-	// and the whole site tree before it is committed. Required.
+	// Screen holds the integration to the publishing and confidential-term
+	// rules: the source checkout's record before it is built (a
+	// project-scoped run), and the whole site tree before it is committed.
+	// Required.
 	Screen Screen
 }
 

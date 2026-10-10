@@ -4,30 +4,16 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/stricttools/selfdoc/internal/effects"
+	strictconfidential "github.com/stricttools/strictspec/go/confidential"
 	"github.com/stricttools/strictspec/go/lifecycle"
 	"github.com/stricttools/testisolation/go/hygiene"
 )
-
-// recordingWriter is a lifecycle.FileWriter that records the writes it is
-// asked for and makes them, so a test can assert both what was written and
-// that nothing was written.
-type recordingWriter struct {
-	writes []string
-}
-
-func (w *recordingWriter) WriteFile(path string, data []byte) error {
-	w.writes = append(w.writes, path)
-	return os.WriteFile(path, data, 0o644)
-}
-
-func (w *recordingWriter) MkdirAll(path string) error {
-	return os.MkdirAll(path, 0o755)
-}
 
 var today = time.Date(2026, 10, 7, 12, 0, 0, 0, time.UTC)
 
@@ -40,8 +26,7 @@ func parseRecord(t *testing.T, src string) *lifecycle.Record {
 	return record
 }
 
-// widgetName is the widget's releasable-name identity, which keys the
-// repository's entry in the confidential-name index.
+// widgetName is the widget's releasable-name identity.
 const widgetName = "\n[[identities]]\nsubject = \"widget\"\nfacet = \"releasable-name\"\nvalue = \"widget\"\nregistry = \"\"\ntag_patterns = [\"v*\"]\nfrom = 2020-01-01\nreason = \"its name\"\n"
 
 const proprietaryWidget = "format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"proprietary\"\nfrom = 2020-01-01\nreason = \"the widget is proprietary\"\n" + widgetName
@@ -49,117 +34,6 @@ const proprietaryWidget = "format_version = 1\n\n[[licenses]]\nsubject = \"widge
 const publicWidget = "format_version = 1\n\n[[licenses]]\nsubject = \"widget\"\nlicense = \"MIT\"\nfrom = 2020-01-01\nreason = \"the widget is public\"\n" + widgetName
 
 const mixedLicenses = proprietaryWidget + "\n[[licenses]]\nsubject = \"gadget\"\nlicense = \"MIT\"\nfrom = 2020-01-01\nreason = \"the gadget client is public\"\n"
-
-func writeIndex(t *testing.T, path, text string) {
-	t.Helper()
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(path, []byte(text), 0o644); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func readFile(t *testing.T, path string) string {
-	t.Helper()
-	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return string(data)
-}
-
-func TestRefreshUpsertsAConfidentialRepository(t *testing.T) {
-	hygiene.Isolate(t)
-	indexPath := filepath.Join(t.TempDir(), "strictspec", "confidential-names.toml")
-	w := &recordingWriter{}
-	repo := Repository{Root: "/work/widget-checkout", Origin: "https://git.invalid/example/gadget-works.git", Record: parseRecord(t, proprietaryWidget)}
-
-	if err := Refresh(w, indexPath, repo, today); err != nil {
-		t.Fatalf("refresh: %v", err)
-	}
-	got := readFile(t, indexPath)
-	for _, want := range []string{`subjects = ["widget"]`, `"widget"`, `"gadget-works"`, `"widget-checkout"`} {
-		if !strings.Contains(got, want) {
-			t.Errorf("the index does not hold %s:\n%s", want, got)
-		}
-	}
-
-	// An unchanged upsert writes nothing.
-	w.writes = nil
-	if err := Refresh(w, indexPath, repo, today); err != nil {
-		t.Fatalf("second refresh: %v", err)
-	}
-	if len(w.writes) != 0 {
-		t.Errorf("an unchanged refresh wrote %v", w.writes)
-	}
-}
-
-func TestRefreshRemovesAPublicRepositoryAndKeepsTheOthers(t *testing.T) {
-	hygiene.Isolate(t)
-	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
-	writeIndex(t, indexPath, "format_version = 1\n\n[[repositories]]\nsubjects = [\"portal\"]\nnames = [\"portal\"]\n\n[[repositories]]\nsubjects = [\"widget\"]\nnames = [\"gadget-works\"]\n")
-	w := &recordingWriter{}
-	repo := Repository{Root: "/work/gadget-works", Record: parseRecord(t, publicWidget)}
-
-	if err := Refresh(w, indexPath, repo, today); err != nil {
-		t.Fatalf("refresh: %v", err)
-	}
-	got := readFile(t, indexPath)
-	if strings.Contains(got, "gadget-works") {
-		t.Errorf("the public repository's entry was not removed:\n%s", got)
-	}
-	if !strings.Contains(got, `"portal"`) {
-		t.Errorf("another repository's entry was removed:\n%s", got)
-	}
-}
-
-func TestRefreshOfAPublicRepositoryWithoutAReleasableNameWritesNothing(t *testing.T) {
-	hygiene.Isolate(t)
-	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
-	w := &recordingWriter{}
-	if err := Refresh(w, indexPath, Repository{Root: "/work/site", Record: parseRecord(t, "format_version = 1\n")}, today); err != nil {
-		t.Fatalf("refresh: %v", err)
-	}
-	if len(w.writes) != 0 {
-		t.Errorf("refresh wrote %v", w.writes)
-	}
-}
-
-// The index keys a repository by its record's releasable-name identities, so
-// a confidential repository without an origin remote records its names.
-func TestRefreshUpsertsAConfidentialRepositoryWithoutAnOrigin(t *testing.T) {
-	hygiene.Isolate(t)
-	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
-	w := &recordingWriter{}
-	if err := Refresh(w, indexPath, Repository{Root: "/work/gadget-works", Record: parseRecord(t, proprietaryWidget)}, today); err != nil {
-		t.Fatalf("refresh: %v", err)
-	}
-	got := readFile(t, indexPath)
-	for _, want := range []string{`subjects = ["widget"]`, `"widget"`, `"gadget-works"`} {
-		if !strings.Contains(got, want) {
-			t.Errorf("the index does not hold %s:\n%s", want, got)
-		}
-	}
-}
-
-func TestRefreshRefusesAConfidentialRepositoryWithoutAReleasableName(t *testing.T) {
-	hygiene.Isolate(t)
-	indexPath := filepath.Join(t.TempDir(), "confidential-names.toml")
-	w := &recordingWriter{}
-	unnamed := strings.TrimSuffix(proprietaryWidget, widgetName)
-	err := Refresh(w, indexPath, Repository{Root: "/work/gadget-works", Record: parseRecord(t, unnamed)}, today)
-	if err == nil || !strings.Contains(err.Error(), "rlsbl transition identity --facet releasable-name") {
-		t.Fatalf("a confidential repository with no releasable-name identity was not refused naming the fix: %v", err)
-	}
-	if len(w.writes) != 0 {
-		t.Errorf("a refused refresh wrote %v", w.writes)
-	}
-	// The refusal's fix: the identity recorded, the refresh records the names.
-	if err := Refresh(w, indexPath, Repository{Root: "/work/gadget-works", Record: parseRecord(t, proprietaryWidget)}, today); err != nil {
-		t.Fatalf("the refresh was refused after the identity was recorded: %v", err)
-	}
-}
 
 func TestPublicOutputAllowed(t *testing.T) {
 	hygiene.Isolate(t)
@@ -191,7 +65,20 @@ func TestPublicOutputAllowed(t *testing.T) {
 	}
 }
 
-func TestScanDirNamesThePageLineAndTerm(t *testing.T) {
+// portalList is a confidential-term list naming "portal", scoped
+// everywhere but a repository named portal-works.
+func portalList(t *testing.T) *strictconfidential.List {
+	t.Helper()
+	l, err := strictconfidential.FromEntries("the test list", []strictconfidential.Entry{
+		{Term: "portal", Added: "2026-10-01", Reason: "a private project", Except: []string{"portal-works"}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return l
+}
+
+func TestCheckRefusesAnUnresolvedHitAndAcceptsAResolvedOne(t *testing.T) {
 	hygiene.Isolate(t)
 	dir := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(dir, "guide"), 0o755); err != nil {
@@ -200,43 +87,74 @@ func TestScanDirNamesThePageLineAndTerm(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dir, "guide", "index.html"), []byte("<p>intro</p>\n<p>the Portal opens</p>\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "index.html"), []byte("<p>portals and portal-like things</p>\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "logo.png"), []byte("portal\x00\x01"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-
-	findings, err := ScanDir([]string{"portal"}, dir)
+	texts, err := DirTexts(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(findings) != 1 {
-		t.Fatalf("findings = %+v, want one (whole tokens only)", findings)
+	if len(texts) != 1 || texts[0].Page != "guide/index.html" {
+		t.Fatalf("texts %+v: the binary file is not a text", texts)
 	}
-	want := Finding{Page: "guide/index.html", Line: 2, Column: 8, Term: "portal"}
-	if findings[0] != want {
-		t.Errorf("finding = %+v, want %+v", findings[0], want)
+	root := t.TempDir()
+	repo := Repository{Root: root, Record: &lifecycle.Record{}}
+	_, err = Check(portalList(t), repo, "deploy", texts)
+	if err == nil {
+		t.Fatal("a page carrying a term was accepted")
 	}
-
-	err = Refusal("deploy", findings, "/index/path")
-	if err == nil || !strings.Contains(err.Error(), "guide/index.html, line 2, column 8: portal") {
-		t.Errorf("the refusal does not name the page, line, and term: %v", err)
+	for _, want := range []string{"refusing the deploy", "guide/index.html, line 2, column 8: <p>the >>Portal<< opens</p>", "rlsbl confidential judge-false-positive"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("the refusal does not say %q:\n%v", want, err)
+		}
 	}
-	if Refusal("deploy", nil, "/index/path") != nil {
-		t.Error("no findings refused the output")
+	id := regexp.MustCompile(`hit ([0-9a-f]{16})`).FindStringSubmatch(err.Error())[1]
+	resolution := strictconfidential.Resolution{Hit: id, Location: "guide/index.html, line 2, column 8", Decision: strictconfidential.FalsePositive, Certainty: 80, Reason: "a door in a story", Recorded: "2026-10-01"}
+	store := filepath.Join(root, filepath.FromSlash(strictconfidential.StoreFile))
+	if err := os.MkdirAll(filepath.Dir(store), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(store, strictconfidential.RenderResolutions([]strictconfidential.Resolution{resolution}), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	status, err := Check(portalList(t), repo, "deploy", texts)
+	if err != nil {
+		t.Fatalf("the resolved hit is still refused: %v", err)
+	}
+	if !strings.Contains(status, "1 hit(s) resolved") || !strings.Contains(status, "a door in a story") {
+		t.Errorf("status %q", status)
 	}
 }
 
-func TestScanFilesScansEveryPublishedFile(t *testing.T) {
+func TestAnEntryScopedAwayFromTheRepositoryDoesNotApply(t *testing.T) {
 	hygiene.Isolate(t)
-	findings := ScanFiles([]string{"widget"}, map[string][]byte{
-		"site/blog/launch/index.html": []byte("<h1>Launch</h1>\n<p>about the widget</p>\n"),
-		"manifests/home-posts.json":   []byte(`{"title": "Widget news"}`),
-		"site/blog/other/index.html":  []byte("nothing here\n"),
-	})
-	if len(findings) != 2 {
-		t.Fatalf("findings = %+v, want two", findings)
+	repo := Repository{Root: filepath.Join(t.TempDir(), "portal-works"), Record: &lifecycle.Record{}}
+	if _, err := Check(portalList(t), repo, "deploy", FilesTexts(map[string][]byte{"index.html": []byte("the portal\n")})); err != nil {
+		t.Errorf("a repository the entry exempts was refused: %v", err)
 	}
-	if findings[0].Page != "manifests/home-posts.json" || findings[1].Page != "site/blog/launch/index.html" {
-		t.Errorf("findings are not in page order: %+v", findings)
+}
+
+func TestAMissingListHasNoTermsAndSaysSo(t *testing.T) {
+	hygiene.Isolate(t)
+	list, err := strictconfidential.Load(strictconfidential.LocationIn(t.TempDir()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	status, err := Check(list, Repository{Root: t.TempDir(), Record: &lifecycle.Record{}}, "deploy", FilesTexts(map[string][]byte{"a.html": []byte("anything\n")}))
+	if err != nil || !strings.Contains(status, "does not exist, so there are no confidential terms") {
+		t.Errorf("status %q, err %v", status, err)
+	}
+}
+
+func TestFilesTextsAreInPageOrder(t *testing.T) {
+	hygiene.Isolate(t)
+	texts := FilesTexts(map[string][]byte{
+		"site/blog/launch/index.html": []byte("<h1>Launch</h1>\n"),
+		"manifests/home-posts.json":   []byte(`{"title": "news"}`),
+		"site/logo.png":               []byte("\x00\x01"),
+	})
+	if len(texts) != 2 || texts[0].Page != "manifests/home-posts.json" || texts[1].Page != "site/blog/launch/index.html" {
+		t.Errorf("texts %+v", texts)
 	}
 }
 

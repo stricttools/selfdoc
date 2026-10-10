@@ -10,6 +10,7 @@ import (
 	"github.com/stricttools/selfdoc/internal/effects"
 	"github.com/stricttools/selfdoc/internal/util"
 	"github.com/stricttools/strictcli/go/strictcli"
+	strictconfidential "github.com/stricttools/strictspec/go/confidential"
 	"github.com/stricttools/strictspec/go/lifecycle"
 )
 
@@ -76,12 +77,13 @@ func (c *cli) cmdDeploy(ctx *strictcli.Context, kwargs map[string]any) strictcli
 	project, _ := deployConfig["project"].(string)
 
 	// A deploy is public documentation: refused outright when no releasable
-	// may publish, and refused when any built page names a confidential term.
+	// may publish, and refused when a built page carries an unresolved
+	// confidential-term hit.
 	if err := c.publicOutputAllowed(handle, lifecycle.PublicDocs); err != nil {
 		return c.fail(err)
 	}
-	if err := c.confidentialNameRefusal("deploy", func(names []string) ([]confidential.Finding, error) {
-		return confidential.ScanDir(names, outputDir)
+	if err := c.confidentialTermRefusal(handle, c.dir(), "deploy", func(*strictconfidential.Matcher) ([]confidential.Text, error) {
+		return confidential.DirTexts(outputDir)
 	}); err != nil {
 		return c.fail(err)
 	}
