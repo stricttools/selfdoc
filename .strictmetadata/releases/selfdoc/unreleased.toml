@@ -1,11 +1,11 @@
 # The next release of selfdoc. Fill in bump and description, then run `rlsbl release run --watch`.
 format_version = 2
 # How the release moves the version: patch, minor, major, or infra (moved as a patch, recorded as infra).
-bump = ""
+bump = "minor"
 # What this release is, in a sentence or two. Required.
-description = ""
+description = "Publishing scans for the age-encrypted confidential-term list and refuses only hits that have no recorded resolution; selfdoc no longer reads or writes the machine-local confidential-name index."
 # Why these changes were made. Optional.
-context = ""
+context = "Confidential terms now live in one encrypted list outside every repository. A release and selfdoc's publishing scan against it and report every hit at once, and a hit judged a false positive or approved by the owner, recorded with rlsbl, passes."
 # The targets released, and the ones left out; between them they name every target of the releasable's members.
 include = ["go"]
 exclude = []
