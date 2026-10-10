@@ -9,3 +9,6 @@ context = "Confidential terms now live in one encrypted list outside every repos
 # The targets released, and the ones left out; between them they name every target of the releasable's members.
 include = ["go"]
 exclude = []
+release_commit = "a66111d92befdf159310a0986cb760ace9300032"
+[released_trees]
+"." = "873509c029d76b1417528500817010abd09a2b95"
