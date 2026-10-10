@@ -2,7 +2,7 @@
   "schema_version": 2,
   "name": "release-checkout",
   "slug": "selfdoc",
-  "version": "0.47.0",
+  "version": "0.48.0",
   "description": "Static Site Generator that builds a project's documentation site directly from its source code, so the docs can never drift from the code they describe, with SEO/AEO, first-class blog, search, and cross-project linking built in",
   "language": "go",
   "base_url": "https://smmh.dev/selfdoc",
@@ -12250,7 +12250,7 @@
       ]
     }
   ],
-  "last_gen": "2026-10-10T21:18:54.404069+00:00",
+  "last_gen": "2026-10-10T21:48:22.423710+00:00",
   "theme": "minimal",
   "vocabulary": {
     "accepted": [
