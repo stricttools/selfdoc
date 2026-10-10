@@ -312,3 +312,22 @@ func TestRepublishAllRefusesABuildNamingAConfidentialTerm(t *testing.T) {
 		t.Fatalf("the republish was refused after the term was removed: %s", result.Stderr)
 	}
 }
+
+// The list's status is information, not a refusal: a deploy with no list
+// says so on its answer stream and is not reported as an error.
+func TestTheListStatusIsNoError(t *testing.T) {
+	tools := newFakeTools(t, "wrangler")
+	tools.Reply(toolReply{Match: "", Code: 0})
+	dir := deployProject(t, map[string]any{"provider": "cloudflare-pages", "project": "docs"})
+	writeText(t, filepath.Join(dir, ".strictmetadata", ".docs-cache", "build", "index.html"), "<p>hello</p>\n")
+	result := run(t, dir, "deploy", "--approve-consequential")
+	if result.ExitCode != 0 {
+		t.Fatalf("the deploy failed: %s", result.Stderr)
+	}
+	if !strings.Contains(result.Stdout, "Confidential terms: the confidential-term list") || !strings.Contains(result.Stdout, "does not exist, so there are no confidential terms") {
+		t.Errorf("the list's status is not on the answer stream:\nstdout:\n%s", result.Stdout)
+	}
+	if strings.Contains(result.Stderr, "Confidential terms") {
+		t.Errorf("the list's status is reported as an error:\n%s", result.Stderr)
+	}
+}

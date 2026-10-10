@@ -25,7 +25,8 @@ func (c *cli) publicOutputAllowed(h *effects.Handle, output lifecycle.Output) er
 // holding dir and that repository's resolutions, and returns the refusal
 // naming every unresolved hit, or nil. what names the output in the refusal;
 // texts reads the content. The list's status (a missing list has no terms)
-// is reported on stderr.
+// is reported on the command's answer stream: it is information, not a
+// refusal.
 func (c *cli) confidentialTermRefusal(h *effects.Handle, dir, what string, texts func(*strictconfidential.Matcher) ([]confidential.Text, error)) error {
 	loc, err := strictconfidential.DefaultLocation()
 	if err != nil {
@@ -51,7 +52,7 @@ func (c *cli) confidentialTermRefusal(h *effects.Handle, dir, what string, texts
 	if err != nil {
 		return err
 	}
-	c.eprintf("Confidential terms: %s\n", status)
+	c.printf("Confidential terms: %s\n", status)
 	return nil
 }
 
